@@ -223,7 +223,7 @@
 	</div>
 
 
-	<div class="modal fade loading" id="modal-loading" tabindex="-1" aria-hidden="true">
+	<div class="modal loading" id="modal-loading" tabindex="-1" aria-hidden="true">
 		<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center justify-content-center">
 			<div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
 				<span class="sr-only ">Loading...</span>
@@ -236,7 +236,7 @@
 
 <script type="text/javascript">
 	$('.carousel').carousel();
-	
+
 	$(document).ready(function() {
 		bsCustomFileInput.init()
 	})
