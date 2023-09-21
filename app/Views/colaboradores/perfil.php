@@ -110,26 +110,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-sm-12">
-						<div class="card">
-							<div class="card-body">
-								<h5 class="d-flex align-items-center mb-3">Suas Conquistas:</h5>
-								<div class="row">
-									<?php foreach ($conquistas as $conquista): ?>
-										<div class="col-lg-3 mt-2 mb-2">
-											<img class="rounded-circle center-block" src="<?= $conquista['imagem']; ?>"
-												alt="<?= $conquista['imagem']; ?>" data-toggle="tooltip"
-												data-placement="top"
-												title="<?= $conquista['nome']; ?> - <?= $conquista['descricao']; ?>"
-												width="128" height="128">
-										</div>
-									<?php endforeach; ?>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 			<div class="col-lg-12 font-weight-light text-right"><small><a class="text-danger" data-toggle="modal"
 						data-target="#modal-excluir" href="">Excluir minha conta</a></small></div>

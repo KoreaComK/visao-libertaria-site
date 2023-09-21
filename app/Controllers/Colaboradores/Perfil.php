@@ -103,7 +103,6 @@ class Perfil extends BaseController
 		$data['colaboradores'] = $colaboradoresModel->find($session['id']);
 
 		$data['atribuicoes'] = $this->widgetAtribuicoes($session);
-		$data['conquistas'] = $this->widgetConquistas($session);
 
 		$data['contribuicoes_mensal'] = $this->widgetContribuicoes($session, date('Y-m-d'), array(6, 7));
 
@@ -128,12 +127,6 @@ class Perfil extends BaseController
 		return $artigos;
 	}
 
-	private function widgetConquistas($colaborador)
-	{
-		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
-		$colaboradoresConquistas = $colaboradoresConquistasModel->getNomeConquistasColaborador($colaborador['id']);
-		return $colaboradoresConquistas;
-	}
 
 	private function widgetContribuicoes($colaborador, $data = null, $fases = array())
 	{

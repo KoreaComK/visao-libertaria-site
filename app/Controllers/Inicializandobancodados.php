@@ -31,21 +31,6 @@ class Inicializandobancodados extends BaseController
 		`excluido` datetime DEFAULT null
 			);
 		');
-		$db->query('CREATE TABLE IF NOT EXISTS  `conquistas` (
-		`id` int PRIMARY KEY AUTO_INCREMENT,
-		`nome` varchar(255) NOT NULL,
-		`descricao` varchar(255) NOT NULL,
-		`imagem` varchar(255) NOT NULL,
-		`criado` datetime DEFAULT now(),
-		`atualizado` datetime DEFAULT now(),
-		`excluido` datetime DEFAULT null
-			);
-		');
-		$db->query('CREATE TABLE IF NOT EXISTS  `colaboradores_conquistas` (
-		`colaboradores_id` int NOT NULL,
-		`conquistas_id` int NOT NULL,
-		PRIMARY KEY (`colaboradores_id`, `conquistas_id`) );
-		');
 		$db->query('CREATE TABLE IF NOT EXISTS  `atribuicoes` (
 		`id` int PRIMARY KEY AUTO_INCREMENT,
 		`nome` varchar(255) NOT NULL,
@@ -192,12 +177,6 @@ class Inicializandobancodados extends BaseController
 		);
 		');
 
-		$db->query('
-			ALTER TABLE `colaboradores_conquistas` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
-			');
-		$db->query('
-			ALTER TABLE `colaboradores_conquistas` ADD FOREIGN KEY (`conquistas_id`) REFERENCES `conquistas` (`id`);
-			');
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');
