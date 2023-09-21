@@ -113,6 +113,8 @@
 			contentType: false,
 			cache: false,
 			dataType: "json",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
 				if (retorno.status) {
 					$('#pauta_' + id_pauta).toggle();
@@ -148,6 +150,8 @@
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 
 					$('.badge-' + id_pauta).html(nome_tag);
@@ -175,6 +179,8 @@
 			contentType: false,
 			cache: false,
 			dataType: "json",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
 				$('.badge-' + id_pauta).html('');
 				$('#div_tag_' + id_pauta).collapse();
@@ -200,6 +206,8 @@
 			contentType: false,
 			cache: false,
 			dataType: "json",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
 				if (retorno.status == true) {
 					$('.mensagem').addClass('bg-success');

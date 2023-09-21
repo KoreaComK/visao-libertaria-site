@@ -19,6 +19,8 @@
 			url: window.location.href,
 			data: $('#esqueci').serialize(),
 			dataType: 'json',
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
 				if (retorno.status == true) {
 					$('.mensagem').addClass('bg-success');

@@ -90,7 +90,7 @@ use CodeIgniter\I18n\Time;
 		<div class="mensagem p-3 mb-2 rounded text-white text-center <?= (!isset($retorno)) ? ('collapse') : (''); ?> <?= (isset($retorno) && $retorno['status'] === true) ? ('bg-success') : ('bg-danger'); ?> col-12">
 			<?= (isset($retorno)) ? ($retorno['mensagem']) : (''); ?></div>
 
-		<?php if ($artigo['marcado_colaboradores_id'] != $_SESSION['colaboradores']['id'] && !in_array($fase_producao,array(5,1))) : ?>
+		<?php if ($artigo['marcado_colaboradores_id'] != $_SESSION['colaboradores']['id'] && !in_array($fase_producao, array(5, 1))) : ?>
 			<div class="d-block mb-5 mt-5 text-left">
 				<form class="needs-validation w-100" id="form-marcar" novalidate="yes" method="post" enctype="multipart/form-data">
 					<div class="row">
@@ -235,7 +235,7 @@ use CodeIgniter\I18n\Time;
 		$('.confirmacao-acao').removeClass('confirmacao-reverter');
 		$('.confirmacao-acao').addClass('confirmacao-continuar-marcar');
 	});
-	
+
 	$(".revisar").on("click", function() {
 		window.location.href = "<?= site_url('colaboradores/artigos/revisar/' . $artigo['id']); ?>"
 	});
@@ -298,6 +298,8 @@ use CodeIgniter\I18n\Time;
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
 				method: "GET",
 				dataType: "html",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function(retorno) {
 					$('.div-list-comentarios').html(retorno);
 				}
@@ -323,6 +325,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()
@@ -350,6 +354,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function(retorno) {
 					if (retorno.status) {
 						window.location.reload();
@@ -377,6 +383,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()

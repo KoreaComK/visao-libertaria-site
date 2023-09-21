@@ -384,6 +384,8 @@
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					if (retorno.status == true) {
 						$('.mensagem').addClass('bg-success');
@@ -411,6 +413,8 @@
 				contentType: false,
 				cache: false,
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					if (retorno.status == true) {
 						$('.mensagem').addClass('bg-success');
@@ -435,6 +439,8 @@
 				url: "<?php echo base_url('site/excluir'); ?>",
 				method: "POST",
 				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					if (retorno.status == true) {
 						$('.mensagem').addClass('bg-success');

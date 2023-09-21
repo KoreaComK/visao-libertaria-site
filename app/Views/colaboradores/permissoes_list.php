@@ -82,6 +82,8 @@ use CodeIgniter\I18n\Time;
 				atribuicao: $('#atribuicao').val(),
 				status: $('#status').val(),
 			},
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (data) {
 				$('.permissoes-list').html(data);
 			}

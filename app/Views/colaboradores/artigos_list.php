@@ -123,6 +123,8 @@
 			contentType: false,
 			cache: false,
 			dataType: "json",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
 				if (retorno.status) {
 					location.reload();

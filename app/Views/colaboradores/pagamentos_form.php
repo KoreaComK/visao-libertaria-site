@@ -117,6 +117,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -136,6 +138,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -153,6 +157,8 @@
 				data: form,
 				cache: false,
 				dataType: "JSON",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 					console.log(retorno);
 					if (retorno.status) {
