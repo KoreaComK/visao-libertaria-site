@@ -69,9 +69,9 @@ class Pautas extends BaseController
 				$img = null;
 
 				$d = new \DOMDocument();
-				if (empty($str) && ($titulo == null && $descricao == null)) {
-					return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
-				}
+				// if (empty($str) && ($titulo == null && $descricao == null)) {
+				// 	return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
+				// }
 				@$d->loadHTML($str);
 				$xp = new \DOMXPath($d);
 
