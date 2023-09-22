@@ -48,24 +48,82 @@ class Pautas extends BaseController
 				@$url = parse_url($b);
 				@$tags = get_meta_tags($main_url);
 
-				$titulo = isset($tags['twitter:title']) ? ($tags['twitter:title']) : ('');
-				$descricao = isset($tags['description']) ? ($tags['description']) : ('');
+				$titulo = null;
+				if (isset($tags['twitter:title'])) {
+					$titulo = @$tags['twitter:title'];
+				} elseif (isset($tags['title'])) {
+					$titulo = @$tags['title'];
+				} else {
+					$titulo = null;
+				}
+
+				$descricao = null;
+				if (isset($tags['twitter:description'])) {
+					$descricao = $tags['twitter:description'];
+				} elseif (isset($tags['description'])) {
+					$descricao = $tags['description'];
+				} else {
+					$descricao = null;
+				}
+
+				$img = null;
 
 				$d = new \DOMDocument();
-				if($d === null || empty($str)) {
-					return $retorno->retorno(false,'Não foi possível trazer informações da pauta automaticamente.', true);
+				if (empty($str) && ($titulo == null && $descricao == null)) {
+					return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
 				}
 				@$d->loadHTML($str);
 				$xp = new \DOMXPath($d);
+
+				if ($titulo == '') {
+					foreach ($xp->query("//h1") as $i) {
+						$titulo = $i->nodeValue;
+					}
+				}
+				if ($titulo == '') {
+					foreach ($xp->query("//h2") as $i) {
+						$titulo = $i->nodeValue;
+					}
+				}
+				if ($titulo == '') {
+					foreach ($xp->query("//h3") as $i) {
+						$titulo = $i->nodeValue;
+					}
+				}
+				if ($titulo == '') {
+					foreach ($xp->query("//h4") as $i) {
+						$titulo = $i->nodeValue;
+					}
+				}
+				if ($titulo == '') {
+					foreach ($xp->query("//title") as $i) {
+						$titulo = $i->nodeValue;
+					}
+				}
+				if ($descricao == '') {
+					foreach ($xp->query("//p") as $i) {
+						$descricao = $i->nodeValue;
+					}
+				}
 				foreach ($xp->query("//meta[@property='og:image']") as $el) {
 					$l2 = parse_url($el->getAttribute("content"));
 					if ($l2['scheme']) {
-						$img[] = $el->getAttribute("content");
-					} else {
-
+						$img = $el->getAttribute("content");
 					}
 				}
-				if (isset($title) && $titulo != '' && isset($tags['description']) && $descricao != '') {
+				if ($img == null) {
+					foreach ($xp->query("//img") as $el) {
+						if ($img == null && $el->getAttribute('alt') != '') {
+							if (strstr($el->getAttribute('src'), 'https://') || strstr($el->getAttribute('src'), 'http://')) {
+								$img = $el->getAttribute('src');
+							} else {
+								$linkImagem = explode('/', str_replace('https://', '', $main_url))[0];
+								$img = 'https://' . $linkImagem . $el->getAttribute('src');
+							}
+						}
+					}
+				}
+				if ($titulo != '' && $descricao != '') {
 					$retorno = [
 						'status' => true,
 						'titulo' => $titulo,
@@ -74,10 +132,10 @@ class Pautas extends BaseController
 					];
 					return json_encode($retorno);
 				} else {
-					return $retorno->retorno(false,'Não foi possível trazer informações da pauta automaticamente.', true);
+					return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
 				}
 			} else {
-				return $retorno->retorno(false,'Pauta já cadastrada', true);
+				return $retorno->retorno(false, 'Pauta já cadastrada', true);
 			}
 		}
 
@@ -103,7 +161,7 @@ class Pautas extends BaseController
 				if ($pautas) {
 					return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
 				} else {
-					$data['erros'] = $retorno->retorno(false,'Ocorreu um erro ao cadastrar a pauta', false);
+					$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
 				}
 			} else {
 				$erros = $valida->getErrors();
@@ -120,60 +178,56 @@ class Pautas extends BaseController
 
 	public function fechar()
 	{
-		
+
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');
 		if ($this->request->getMethod() == 'post') {
 			$post = service('request')->getPost();
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$pautasModel = new \App\Models\PautasModel();
-			if(isset($post['metodo'])&&$post['metodo']=='descartar')
-			{
+			if (isset($post['metodo']) && $post['metodo'] == 'descartar') {
 				$pautasModel->delete($post['id']);
 				return $retorno->retorno(true, '', true);
 			}
-			if(isset($post['metodo'])&&$post['metodo']=='reservar')
-			{
+			if (isset($post['metodo']) && $post['metodo'] == 'reservar') {
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = $pautasModel->getNow();
 				$gravar['tag_fechamento'] = trim($post['tag']);
 				$pautasModel->save($gravar);
 				return $retorno->retorno(true, '', true);
 			}
-			if(isset($post['metodo'])&&$post['metodo']=='cancelar')
-			{
+			if (isset($post['metodo']) && $post['metodo'] == 'cancelar') {
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = NULL;
 				$gravar['tag_fechamento'] = NULL;
 				$pautasModel->save($gravar);
 				return $retorno->retorno(true, '', true);
 			}
-			if(isset($post['metodo'])&&$post['metodo']=='fechar')
-			{
+			if (isset($post['metodo']) && $post['metodo'] == 'fechar') {
 				helper('date');
-				
+
 				$pautasFechadasModel = new \App\Models\PautasFechadasModel();
-				$pautasPautasFechadasModel = new \App\Models\PautasPautasFechadasModel();	
-				
-				$gravar['titulo'] = ($post['titulo'] == '')?('Pauta do dia '.Time::now()->toLocalizedString('dd MMMM yyyy')):($post['titulo']);
-				
+				$pautasPautasFechadasModel = new \App\Models\PautasPautasFechadasModel();
+
+				$gravar['titulo'] = ($post['titulo'] == '') ? ('Pauta do dia ' . Time::now()->toLocalizedString('dd MMMM yyyy')) : ($post['titulo']);
+
 				$pautas = $pautasModel->getPautasFechamento();
-				if($pautas == null || empty($pautas)){
+				if ($pautas == null || empty($pautas)) {
 					return $retorno->retorno(false, 'Atenção! Não foi reservada nenhuma pauta.', true);
 				}
 
 				$idPautasFechadas = $pautasFechadasModel->insert($gravar);
-				foreach($pautas as $pauta){
-					$pautasPautasFechadasModel->insert(array('pautas_fechadas_id'=>$idPautasFechadas, 'pautas_id'=>$pauta['id']));
+				foreach ($pautas as $pauta) {
+					$pautasPautasFechadasModel->insert(array('pautas_fechadas_id' => $idPautasFechadas, 'pautas_id' => $pauta['id']));
 					$pautasModel->delete($pauta['id']);
-				}				
+				}
 
 				return $retorno->retorno(true, 'Fechamento da pauta feita com sucesso. A página será recarregada dentro de instantes.', true);
 			}
 			return false;
 		}
-		
-		
+
+
 		$data = array();
 		$data['titulo'] = 'Fechamento de Pautas';
 		$pautasModel = new \App\Models\PautasModel();
@@ -193,8 +247,7 @@ class Pautas extends BaseController
 			$post = service('request')->getPost();
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$pautasModel = new \App\Models\PautasModel();
-			if(isset($post['metodo'])&&$post['metodo']=='cancelar')
-			{
+			if (isset($post['metodo']) && $post['metodo'] == 'cancelar') {
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = NULL;
 				$gravar['tag_fechamento'] = NULL;
@@ -203,11 +256,11 @@ class Pautas extends BaseController
 			}
 			return false;
 		}
-		
+
 		$data = array();
 		$pautasFechadasModel = new \App\Models\PautasFechadasModel();
-		
-		if($idPautasFechadas == null){
+
+		if ($idPautasFechadas == null) {
 			$data['titulo'] = 'Pautas Fechadas';
 			$pautas = $pautasFechadasModel->getPautasFechadas();
 			$data['pautasList'] = [
@@ -221,28 +274,26 @@ class Pautas extends BaseController
 			$pautaDetail = $pautasFechadasModel->find($idPautasFechadas);
 			$pautasPautaFechada = $pautasPautasFechadasModel->getPautasPorPautaFechada($idPautasFechadas);
 			$data['pautaDetail'] = $pautaDetail;
-			
+
 			$pautasArray = [];
 			$tag = NULL;
-			foreach($pautasPautaFechada as $ppf){
-				if($tag != $ppf['tag_fechamento'])
-				{
+			foreach ($pautasPautaFechada as $ppf) {
+				if ($tag != $ppf['tag_fechamento']) {
 					$pautasArray[$ppf['tag_fechamento']] = array();
 					$pautasArray[$ppf['tag_fechamento']]['pautas'] = array();
 					$pautasArray[$ppf['tag_fechamento']]['colaboradores'] = array();
 					$tag = $ppf['tag_fechamento'];
 				}
 				$pautasArray[$ppf['tag_fechamento']]['pautas'][] = $ppf;
-				if(!in_array($ppf['apelido'],$pautasArray[$ppf['tag_fechamento']]['colaboradores']))
-				{
+				if (!in_array($ppf['apelido'], $pautasArray[$ppf['tag_fechamento']]['colaboradores'])) {
 					$pautasArray[$ppf['tag_fechamento']]['colaboradores'][] = $ppf['apelido'];
 				}
 			}
-			
+
 			$data['pautasList'] = $pautasArray;
 			return view('colaboradores/pautas_fechadas_detail', $data);
 		}
-		
+
 	}
 
 }

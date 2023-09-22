@@ -79,6 +79,10 @@
 		form = new FormData();
 		form.append('link_pauta', link);
 
+		if(link == '') {
+			return false;
+		}
+
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/pautas/cadastrar'); ?>",
 			method: "POST",
@@ -101,6 +105,7 @@
 					$('.mensagem').removeClass('bg-success');
 					$('.mensagem').addClass('bg-danger');
 					$(".enviar_pauta").prop('disabled', true);
+					$('#preview_imagem').attr('src', '');
 				}
 				$('.mensagem').addClass(retorno.classe);
 				$('.mensagem').html(retorno.mensagem);

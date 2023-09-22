@@ -9,9 +9,6 @@ class Inicializandobancodados extends BaseController
 	public function index()
 	{
 		$db = db_connect();
-		$db->query('CREATE DATABASE IF NOT EXISTS visaolibertaria');
-
-		$db->query('USE visaolibertaria');
 
 		$db->query('CREATE TABLE IF NOT EXISTS `colaboradores` (
 		`id` int PRIMARY KEY AUTO_INCREMENT,
