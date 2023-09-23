@@ -197,7 +197,7 @@ use CodeIgniter\I18n\Time;
 				<div class="row">
 					<div class="col-12 text-center">
 						<button class="btn btn-danger mb-3 col-md-3 reverter" data-toggle="modal" data-target="#modalConfirmacao" id="reverter" type="button">Reverter para Escrita</button>
-						<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="salvar" type="submit">Salvar
+						<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3 salvar" id="salvar" type="submit">Salvar
 							revisão</button>
 						<button class="btn btn-success mb-3 col-md-3 continuar" data-toggle="modal" data-target="#modalConfirmacao" id="narrar" <?= (!isset($artigo['texto_revisado']) || $artigo['texto_revisado'] == null) ? ('disabled') : (''); ?> type="button">Enviar para
 							Narração</button>
@@ -267,6 +267,9 @@ use CodeIgniter\I18n\Time;
 	$('#texto_original').keyup(contapalavras);
 	$(document).ready(function() {
 		contapalavras();
+		<?php if ($fase_producao == '2') : ?>
+			$('.salvar').prop('disabled', true);
+		<?php endif; ?>
 	})
 
 	function contapalavras() {
@@ -384,6 +387,16 @@ use CodeIgniter\I18n\Time;
 					}
 				});
 			}
+		<?php if ($fase_producao == '2') : ?>
+			$('input').on('click',function() {
+				$('.continuar').prop('disabled', true);
+				$('.salvar').prop('disabled', false);
+			});
+			$('textarea').on('click',function() {
+				$('.continuar').prop('disabled', true);
+				$('.salvar').prop('disabled', false);
+			});
+		<?php endif; ?>
 	<?php endif; ?>
 </script>
 
