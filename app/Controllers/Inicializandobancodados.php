@@ -173,6 +173,16 @@ class Inicializandobancodados extends BaseController
 			`config_valor` TEXT NOT NULL
 		);
 		');
+		
+		$db->query('CREATE TABLE IF NOT EXISTS  `colaboradores_historicos` (
+			`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+			`colaboradores_id` int NOT NULL,
+			`acao` varchar(256) DEFAULT null,
+			`objeto` varchar(256) DEFAULT null,
+			`objeto_id` varchar(256) DEFAULT null,
+			`criado` datetime DEFAULT now()
+		);
+		');
 
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
@@ -240,6 +250,8 @@ class Inicializandobancodados extends BaseController
 
 		$db->query('ALTER TABLE `artigos_historicos` ADD FOREIGN KEY (`artigos_id`) REFERENCES `artigos` (`id`);');
 		$db->query('ALTER TABLE `artigos_historicos` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
+
+		$db->query('ALTER TABLE `colaboradores_historicos` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
 
 
 		echo 'Banco de dados e tabelas criadas com sucesso';
