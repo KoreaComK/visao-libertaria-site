@@ -234,6 +234,7 @@ class Artigos extends BaseController
 
 			if ($this->request->getMethod() == 'post') {
 				$data['artigo'] = $this->request->getPost();
+				$data['artigo']['id'] = $artigoId;
 				$valida = $validaFormularios->validaFormularioArtigo($this->request->getPost(), false);
 				if (empty($valida->getErrors())) {
 					$status_alteracao = $this->revisarArtigo($artigoId);

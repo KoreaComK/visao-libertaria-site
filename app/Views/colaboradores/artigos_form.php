@@ -302,7 +302,6 @@ use CodeIgniter\I18n\Time;
 	});
 
 
-	<?php if (isset($artigo['id']) && $artigo['id'] !== null) : ?>
 		$("#btn-comentarios").on("click", function() {
 			$(".div-comentarios").toggle();
 			getComentarios();
@@ -387,16 +386,16 @@ use CodeIgniter\I18n\Time;
 					}
 				});
 			}
-		<?php if ($fase_producao == '2') : ?>
-			$('input').on('click',function() {
-				$('.continuar').prop('disabled', true);
-				$('.salvar').prop('disabled', false);
-			});
-			$('textarea').on('click',function() {
-				$('.continuar').prop('disabled', true);
-				$('.salvar').prop('disabled', false);
-			});
-		<?php endif; ?>
+
+	<?php if ($fase_producao == '2') : ?>
+		$('input').on('click',function() {
+			$('.continuar').prop('disabled', true);
+			$('.salvar').prop('disabled', false);
+		});
+		$('textarea').on('click',function() {
+			$('.continuar').prop('disabled', true);
+			$('.salvar').prop('disabled', false);
+		});
 	<?php endif; ?>
 </script>
 
