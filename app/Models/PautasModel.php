@@ -39,10 +39,14 @@ class PautasModel extends Model
 	// protected $beforeDelete   = [];
 	// protected $afterDelete    = [];
 
-	public function isPautaCadastrada($link)
+	public function isPautaCadastrada($link, $id = null)
 	{
-		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE link = '" . $this->db->escapeString($link) . "'");
-		return $query->getResult('array')[0]['contador'];
+		$where = '';
+		if($id != null) {
+			$where = " AND id <> '$id'";
+		}
+		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE link = '" . $this->db->escapeString($link) . "' $where");
+		return $query->getResultArray()[0]['contador'];
 	}
 
 	public function getNovaUUID()

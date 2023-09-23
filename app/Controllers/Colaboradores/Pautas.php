@@ -22,142 +22,49 @@ class Pautas extends BaseController
 		return view('colaboradores/pautas_list', $data);
 	}
 
-	public function cadastrar()
+	public function cadastrar($idPautas = null)
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
 		$data = array();
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['titulo'] = 'Sugira uma pauta';
+
+		$pautasModel = new \App\Models\PautasModel();
+
 		if ($this->request->isAJAX()) {
 			$post = service('request')->getPost();
 
-			$pautasModel = new \App\Models\PautasModel();
-			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta']);
+			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'],$idPautas);
 
 			if ($countPautas == 0) {
-				$main_url = $post['link_pauta'];
-				@$str = file_get_contents($main_url);
-
-				if (strlen($str) > 0) {
-					$str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
-					preg_match("/\<title\>(.*)\<\/title\>/i", $str, $title);
-				}
-
-				$b = $main_url;
-				@$url = parse_url($b);
-				@$tags = get_meta_tags($main_url);
-
-				$titulo = null;
-				if (isset($tags['twitter:title'])) {
-					$titulo = @$tags['twitter:title'];
-				} elseif (isset($tags['title'])) {
-					$titulo = @$tags['title'];
-				} else {
-					$titulo = null;
-				}
-
-				$descricao = null;
-				if (isset($tags['twitter:description'])) {
-					$descricao = $tags['twitter:description'];
-				} elseif (isset($tags['description'])) {
-					$descricao = $tags['description'];
-				} else {
-					$descricao = null;
-				}
-
-				$img = null;
-
-				$d = new \DOMDocument();
-				// if (empty($str) && ($titulo == null && $descricao == null)) {
-				// 	return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
-				// }
-				@$d->loadHTML($str);
-				$xp = new \DOMXPath($d);
-
-				if ($titulo == '') {
-					foreach ($xp->query("//h1") as $i) {
-						$titulo = $i->nodeValue;
-					}
-				}
-				if ($titulo == '') {
-					foreach ($xp->query("//h2") as $i) {
-						$titulo = $i->nodeValue;
-					}
-				}
-				if ($titulo == '') {
-					foreach ($xp->query("//h3") as $i) {
-						$titulo = $i->nodeValue;
-					}
-				}
-				if ($titulo == '') {
-					foreach ($xp->query("//h4") as $i) {
-						$titulo = $i->nodeValue;
-					}
-				}
-				if ($titulo == '') {
-					foreach ($xp->query("//title") as $i) {
-						$titulo = $i->nodeValue;
-					}
-				}
-				if ($descricao == '') {
-					foreach ($xp->query("//p") as $i) {
-						$descricao = $i->nodeValue;
-					}
-				}
-				foreach ($xp->query("//meta[@property='og:image']") as $el) {
-					$l2 = parse_url($el->getAttribute("content"));
-					if ($l2['scheme']) {
-						$img = $el->getAttribute("content");
-					}
-				}
-				if ($img == null) {
-					foreach ($xp->query("//img") as $el) {
-						if ($img == null && $el->getAttribute('alt') != '') {
-							if (strstr($el->getAttribute('src'), 'https://') || strstr($el->getAttribute('src'), 'http://')) {
-								$img = $el->getAttribute('src');
-							} else {
-								$linkImagem = explode('/', str_replace('https://', '', $main_url))[0];
-								$img = 'https://' . $linkImagem . $el->getAttribute('src');
-							}
-						}
-					}
-				}
-				if ($titulo != '' && $descricao != '') {
-					$retorno = [
-						'status' => true,
-						'titulo' => $titulo,
-						'texto' => $descricao,
-						'imagem' => $img
-					];
-					return json_encode($retorno);
-				} else {
-					return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
-				}
+				return $this->getInformacaoLink($post);
 			} else {
 				return $retorno->retorno(false, 'Pauta já cadastrada', true);
 			}
 		}
 
 		if ($this->request->getMethod() == 'post') {
+			
 			$post = service('request')->getPost();
 			$session = $this->session->get('colaboradores');
-
-			$pautasModel = new \App\Models\PautasModel();
 
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
-
 				$dados = array();
-				$dados['id'] = $pautasModel->getNovaUUID();
 				$dados['colaboradores_id'] = $session['id'];
 				$dados['link'] = $post['link'];
 				$dados['titulo'] = $post['titulo'];
 				$dados['texto'] = $post['texto'];
 				$dados['imagem'] = $post['imagem'];
+				if ($idPautas != null) {
+					$pautas = $pautasModel->update($idPautas, $dados);
+				} else {
+					$dados['id'] = $pautasModel->getNovaUUID();
+					$pautas = $pautasModel->insert($dados);
+				}
 
-				$pautas = $pautasModel->save($dados);
 				if ($pautas) {
 					return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
 				} else {
@@ -173,6 +80,35 @@ class Pautas extends BaseController
 				$data['post'] = $post;
 			}
 		}
+
+		if ($idPautas != null) {
+			$data['post'] = $pautasModel->find($idPautas);
+			if($data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
+				return redirect()->to(base_url() . 'colaboradores/pautas');
+			}
+		}
+		return view('colaboradores/pautas_form', $data);
+	}
+
+	public function detalhe($idPautas = null)
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+		$data = array();
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$data['titulo'] = 'Leia a pauta';
+
+		$pautasModel = new \App\Models\PautasModel();
+		
+		if ($idPautas != null) {
+			$data['post'] = $pautasModel->find($idPautas);
+			if($data['post'] == null || empty($data['post'])) {
+				return redirect()->to(base_url() . 'colaboradores/pautas');
+			}
+		} else {
+			return redirect()->to(base_url() . 'colaboradores/pautas');
+		}
+		$data['readOnly'] = true;
 		return view('colaboradores/pautas_form', $data);
 	}
 
@@ -294,6 +230,109 @@ class Pautas extends BaseController
 			return view('colaboradores/pautas_fechadas_detail', $data);
 		}
 
+	}
+
+	private function getInformacaoLink($post)
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$main_url = $post['link_pauta'];
+		@$str = file_get_contents($main_url);
+
+		if (strlen($str) > 0) {
+			$str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
+			preg_match("/\<title\>(.*)\<\/title\>/i", $str, $title);
+		}
+
+		$b = $main_url;
+		@$url = parse_url($b);
+		@$tags = get_meta_tags($main_url);
+
+		$titulo = null;
+		if (isset($tags['twitter:title'])) {
+			$titulo = @$tags['twitter:title'];
+		} elseif (isset($tags['title'])) {
+			$titulo = @$tags['title'];
+		} else {
+			$titulo = null;
+		}
+
+		$descricao = null;
+		if (isset($tags['twitter:description'])) {
+			$descricao = $tags['twitter:description'];
+		} elseif (isset($tags['description'])) {
+			$descricao = $tags['description'];
+		} else {
+			$descricao = null;
+		}
+
+		$img = null;
+
+		$d = new \DOMDocument();
+		// if (empty($str) && ($titulo == null && $descricao == null)) {
+		// 	return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
+		// }
+		@$d->loadHTML($str);
+		$xp = new \DOMXPath($d);
+
+		if ($titulo == '') {
+			foreach ($xp->query("//h1") as $i) {
+				$titulo = $i->nodeValue;
+			}
+		}
+		if ($titulo == '') {
+			foreach ($xp->query("//h2") as $i) {
+				$titulo = $i->nodeValue;
+			}
+		}
+		if ($titulo == '') {
+			foreach ($xp->query("//h3") as $i) {
+				$titulo = $i->nodeValue;
+			}
+		}
+		if ($titulo == '') {
+			foreach ($xp->query("//h4") as $i) {
+				$titulo = $i->nodeValue;
+			}
+		}
+		if ($titulo == '') {
+			foreach ($xp->query("//title") as $i) {
+				$titulo = $i->nodeValue;
+			}
+		}
+		if ($descricao == '') {
+			foreach ($xp->query("//p") as $i) {
+				$descricao = $i->nodeValue;
+			}
+		}
+		foreach ($xp->query("//meta[@property='og:image']") as $el) {
+			$l2 = parse_url($el->getAttribute("content"));
+			if ($l2['scheme']) {
+				$img = utf8_decode($el->getAttribute("content"));
+			}
+		}
+		if ($img == null) {
+			foreach ($xp->query("//img") as $el) {
+				if ($img == null && $el->getAttribute('alt') != '') {
+					if (strstr($el->getAttribute('src'), 'https://') || strstr($el->getAttribute('src'), 'http://')) {
+						$img = utf8_decode($el->getAttribute('src'));
+					} else {
+						$linkImagem = explode('/', str_replace('https://', '', $main_url))[0];
+						$img = 'https://' . $linkImagem . utf8_decode($el->getAttribute('src'));
+					}
+				}
+			}
+		}
+		if ($titulo != '' && $descricao != '') {
+			$retorno = [
+				'status' => true,
+				'titulo' => $titulo,
+				'texto' => $descricao,
+				'imagem' => $img
+			];
+			return json_encode($retorno);
+		} else {
+			return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
+		}
 	}
 
 }

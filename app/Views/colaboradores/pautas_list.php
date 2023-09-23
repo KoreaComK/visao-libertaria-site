@@ -4,7 +4,9 @@
 
 <div class="container w-auto">
 	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0"><?= $titulo; ?></h3>
+		<h3 class="m-0">
+			<?= $titulo; ?>
+		</h3>
 	</div>
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 
@@ -24,15 +26,25 @@
 						<?= $pauta['apelido']; ?>
 					</small>
 					<small class="d-block text-right mt-3">
-						<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta='.$pauta['id']); ?>">Escrever artigo</a></small>
+						<a href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>">Ler Pauta</a>
+					</small>
+					<?php if ($pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+						<small class="d-block text-right mt-3">
+							<a href="<?= site_url('colaboradores/pautas/cadastrar/' . $pauta['id']); ?>">Editar Pauta</a>
+						</small>
+					<?php endif; ?>
+					<small class="d-block text-right mt-3">
+						<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $pauta['id']); ?>">Escrever
+							artigo</a>
+					</small>
 				</p>
 			</div>
 
 		<?php endforeach; ?>
 		<div class="d-block mt-3">
-		<?php if ($pautasList['pager']) : ?>
-			<?= $pautasList['pager']->simpleLinks('pautas', 'default_template') ?>
-		<?php endif; ?>
+			<?php if ($pautasList['pager']): ?>
+				<?= $pautasList['pager']->simpleLinks('pautas', 'default_template') ?>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>

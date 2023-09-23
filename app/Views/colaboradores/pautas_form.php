@@ -23,18 +23,18 @@
 							</svg></span>
 					</div>
 					<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
-						name="link" onblur="getInformationLink(this.value)" required value="<?=(isset($post))?($post['link']):(''); ?>">
+						name="link" onblur="getInformationLink(this.value)" required value="<?=(isset($post))?($post['link']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
 			</div>
 
 			<div class="mb-3">
 				<label for="titulo">Título</label>
-				<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta" required value="<?=(isset($post))?($post['titulo']):(''); ?>">
+				<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta" required value="<?=(isset($post))?($post['titulo']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 			</div>
 
 			<div class="mb-3">
-				<label for="address">Texto <span class="text-muted">Máx. 100 palavras</span> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
-				<textarea class="form-control" name="texto" id="texto" required><?=(isset($post))?($post['texto']):(''); ?></textarea>
+				<label for="address">Texto <span class="text-muted">Máx. 100 palavras. Mín. 10 palavras.</span> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
+				<textarea class="form-control" name="texto" id="texto" required <?= (isset($readOnly))?('disabled'):('');?>><?=(isset($post))?($post['texto']):(''); ?></textarea>
 			</div>
 
 			<div class="mb-3">
@@ -50,7 +50,7 @@
 							</svg></span>
 					</div>
 					<input type="text" class="form-control" id="imagem" name="imagem"
-						placeholder="Link da imagem da notícia" required value="<?=(isset($post))?($post['imagem']):(''); ?>">
+						placeholder="Link da imagem da notícia" required value="<?=(isset($post))?($post['imagem']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
 			</div>
 
@@ -58,7 +58,11 @@
 				<image class="img-thumbnail" src="" data-toggle="tooltip" data-placement="top" id="preview_imagem"
 					title="Preview da Imagem da Pauta" style="max-height: 200px;" />
 			</div>
-			<button class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" type="submit">Sugerir pauta</button>
+			<?php if(!isset($readOnly)) : ?>
+				<button class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" type="submit">Sugerir pauta</button>
+			<?php else: ?>
+				<a class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" href="<?= site_url('colaboradores/pautas'); ?>">Voltar</a>
+			<?php endif; ?>
 		</form>
 	</div>
 </div>
@@ -72,6 +76,8 @@
 
 	$('#texto').keyup(contapalavras);
 
+	<?php if(isset($readOnly)) : ?>
+
 	function getInformationLink(link) {
 		$('#pautas_form').trigger("reset");
 		$('#link').val(link);
@@ -84,7 +90,7 @@
 		}
 
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/cadastrar'); ?>",
+			url: "<?= (isset($post['id']))?(site_url('colaboradores/pautas/cadastrar/'.$post['id'])):(site_url('colaboradores/pautas/cadastrar')); ; ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -118,6 +124,8 @@
 	$('#imagem').change(function () {
 		$('#preview_imagem').attr('src', $('#imagem').val());
 	});
+
+	<?php endif; ?>
 
 	$(document).ready(function() {
 		contapalavras();

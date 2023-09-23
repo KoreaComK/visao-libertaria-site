@@ -187,9 +187,10 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'link' => [
 				'label' => 'Link da Notícia',
-				'rules' => 'required|max_length[255]|valid_url_strict|is_unique[pautas.link]',
+				//'rules' => 'required|max_length[255]|valid_url_strict|is_unique[pautas.link]',
+				'rules' => 'required|max_length[255]|valid_url_strict',
 				'errors' => [
-					'is_unique' => 'A pauta já foi cadastrada.',
+					//'is_unique' => 'A pauta já foi cadastrada.',
 					'required' => 'O campo {field} é obrigatório.',
 					'max_length' => 'O campo {field} é muito grande. O máximo é {param} caracteres',
 					'valid_url_strict' => 'O campo {field} precisa ser uma URL válida.',
