@@ -76,7 +76,7 @@
 
 	$('#texto').keyup(contapalavras);
 
-	<?php if(isset($readOnly)) : ?>
+	<?php if(!isset($readOnly)) : ?>
 
 	function getInformationLink(link) {
 		$('#pautas_form').trigger("reset");
