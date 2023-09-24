@@ -51,7 +51,8 @@ class Perfil extends BaseController
 							return $retorno->retorno(false, $string_erros, true);
 						}
 					}
-					$colaborador = $colaboradoresModel->save($dados);
+					//$colaborador = $colaboradoresModel->save($dados);
+					$colaborador = $this->gravarColaborador('save', $dados);
 					if ($colaborador) {
 						$session['nome'] = $dados['apelido'];
 						$this->session->set(array('colaboradores' => $session));
@@ -79,7 +80,8 @@ class Perfil extends BaseController
 					if ($colaborador['senha'] == hash('sha256', $post['senha_antiga'])) {
 						$dados['id'] = $session['id'];
 						$dados['senha'] = hash('sha256', $post['senha_nova']);
-						$salvado = $colaboradoresModel->save($dados);
+						//$salvado = $colaboradoresModel->save($dados);
+						$salvado = $this->gravarColaborador('save', $dados);
 						if ($salvado) {
 							return $retorno->retorno(true, 'Senha alterada com sucesso.', true);
 						} else {
@@ -137,5 +139,31 @@ class Perfil extends BaseController
 
 	private function widgetPagamentos($colaborador)
 	{
+	}
+
+	private function gravarColaborador($tipo, $dados, $id = null)
+	{
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$retorno = null;
+		$colaboradoresModel->db->transStart();
+		switch ($tipo) {
+			case 'update':
+				$retorno = $colaboradoresModel->update($id, $dados);
+				break;
+			case 'insert':
+				$retorno = $colaboradoresModel->insert($dados);
+				break;
+			case 'save':
+				$retorno = $colaboradoresModel->save($dados);
+				break;
+			case 'delete':
+				$retorno = $colaboradoresModel->delete($id);
+				break;
+			default:
+				$retorno = false;
+				break;
+		}
+		$colaboradoresModel->db->transComplete();
+		return $retorno;
 	}
 }

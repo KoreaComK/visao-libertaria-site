@@ -28,16 +28,16 @@ class ArtigosModel extends Model
 	// protected $skipValidation       = false;
 	// protected $cleanValidationRules = true;
 
-	// // Callbacks
-	// protected $allowCallbacks = true;
+	// Callbacks
+	protected $allowCallbacks = true;
 	// protected $beforeInsert   = [];
-	// protected $afterInsert    = [];
+	protected $afterInsert    = ['cadastraHistoricoUsuarioInserir'];
 	// protected $beforeUpdate   = [];
-	// protected $afterUpdate    = [];
+	protected $afterUpdate    = ['cadastraHistoricoUsuarioAlterar'];
 	// protected $beforeFind     = [];
 	// protected $afterFind      = [];
 	// protected $beforeDelete   = [];
-	// protected $afterDelete    = [];
+	protected $afterDelete    = ['cadastraHistoricoUsuarioExcluir'];
 
 	public function getArtigosHome($limit = 21){
 		$this->whereIn('artigos.fase_producao_id', array(5,6,7));
@@ -287,5 +287,46 @@ class ArtigosModel extends Model
 	{
 		$query = $this->db->query("SELECT now() AS now");
 		return $query->getResult('array')[0]['now'];
+	}
+
+	protected function cadastraHistoricoUsuarioInserir(array $dados) {
+		return $this->cadastraHistoricoUsuario($dados, 'inserir');
+	}
+
+	protected function cadastraHistoricoUsuarioAlterar(array $dados) {
+		return $this->cadastraHistoricoUsuario($dados, 'alterar');
+	}
+
+	protected function cadastraHistoricoUsuarioExcluir(array $dados) {
+		return $this->cadastraHistoricoUsuario($dados, 'excluir');
+	}
+
+	private function cadastraHistoricoUsuario(array $dados, $acao)
+	{	
+		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
+		$this->session = \Config\Services::session();
+		$this->session->start();
+		
+		$dados_inseridos = $dados['data'];
+		if(!isset($dados_inseridos['id']) && isset($dados['id'])) {
+			$dados_inseridos['id'] = $dados['id'][0];
+		}
+
+		$dados_inseridos['colaboradores_id'] = $this->session->get('colaboradores')['id'];
+
+		if (!isset($dados_inseridos['colaboradores_id'])) {
+			return $dados;
+		}
+
+		$inserirArray = [
+			'id' => $colaboradoresHistoricosModel->getNovaUUID(),
+			'colaboradores_id' => $dados_inseridos['colaboradores_id'],
+			'acao' => $acao,
+			'objeto' => 'artigos',
+			'objeto_id' => $dados_inseridos['id'],
+			'criado' => $colaboradoresHistoricosModel->getNow()
+		];
+		$colaboradoresHistoricosModel->insert($inserirArray);
+		return $dados_inseridos;
 	}
 }

@@ -300,7 +300,8 @@ class Artigos extends BaseController
 							$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
 							$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
 
-							$retorno = $artigosModel->save($artigo);
+							//$retorno = $artigosModel->save($artigo);
+							$retorno = $this->gravarArtigos('save', $artigo);
 							$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
 							$this->artigosMarcacao->desmarcarArtigo($artigoId);
 							if ($retorno === true) {
@@ -372,7 +373,8 @@ class Artigos extends BaseController
 					$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
 					$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
 
-					$retorno = $artigosModel->save($artigo);
+					//$retorno = $artigosModel->save($artigo);
+					$retorno = $this->gravarArtigos('save', $artigo);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'produziu', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -448,7 +450,8 @@ class Artigos extends BaseController
 					$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
 					$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
 
-					$retorno = $artigosModel->save($artigo);
+					//$retorno = $artigosModel->save($artigo);
+					$retorno = $this->gravarArtigos('save', $artigo);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'publicou', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -553,7 +556,9 @@ class Artigos extends BaseController
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
 					$comentario['atualizado'] = $artigosComentariosModel->getNow();
 					$artigosComentariosModel->save($comentario);
+					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->delete($comentario['id']);
+					$artigosComentariosModel->db->transComplete();
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -565,7 +570,9 @@ class Artigos extends BaseController
 					'artigos_id' => $idArtigo,
 					'comentario' => $post['comentario']
 				];
+				$artigosComentariosModel->db->transStart();
 				$save = $artigosComentariosModel->insert($comentario);
+				$artigosComentariosModel->db->transComplete();
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
@@ -573,7 +580,9 @@ class Artigos extends BaseController
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
 					$comentario['atualizado'] = $artigosComentariosModel->getNow();
 					$comentario['comentario'] = $post['comentario'];
+					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->save($comentario);
+					$artigosComentariosModel->db->transComplete();
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -657,7 +666,8 @@ class Artigos extends BaseController
 		if ($faseProducao['etapa_posterior'] == '6') {
 			$artigo['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 		}
-		$retorno = $artigosModel->save($artigo);
+		//$retorno = $artigosModel->save($artigo);
+		$retorno = $this->gravarArtigos('save', $artigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
 		return $retorno;
 	}
@@ -668,9 +678,11 @@ class Artigos extends BaseController
 		$artigo = $artigosModel->find($idArtigo);
 
 		$artigo['descartado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-		$artigosModel->save($artigo);
+		//$artigosModel->save($artigo);
+		$retorno = $this->gravarArtigos('save', $artigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
-		$retorno = $artigosModel->delete($artigo);
+		//$retorno = $artigosModel->delete($artigo);
+		$retorno = $this->gravarArtigos('delete', $artigo);
 		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'descartou', $this->session->get('colaboradores')['id']);
 		return $retorno;
 	}
@@ -706,7 +718,8 @@ class Artigos extends BaseController
 			$artigo['link_produzido'] = NULL;
 			$artigo['produzido_colaboradores_id'] = NULL;
 		}
-		$retorno = $artigosModel->save($artigo);
+		//$retorno = $artigosModel->save($artigo);
+		$retorno = $this->gravarArtigos('save', $artigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
 		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
 		return $retorno;
@@ -728,7 +741,8 @@ class Artigos extends BaseController
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$gravar['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 
-			$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
+			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
+			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'revisou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -766,7 +780,8 @@ class Artigos extends BaseController
 			} else {
 				$gravar['link'] = $post['link'];
 			}
-			$artigo_id = $artigosModel->insert($gravar);
+			//$artigo_id = $artigosModel->insert($gravar);
+			$artigo_id = $this->gravarArtigos('insert', $gravar);
 			$this->artigosHistoricos->cadastraHistorico($artigo_id, 'escreveu', $this->session->get('colaboradores')['id']);
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// foreach ($post['categorias'] as $categoria) {
@@ -792,7 +807,8 @@ class Artigos extends BaseController
 			$gravar['link'] = $post['link'];
 			$gravar['atualizado'] = $artigosModel->getNow();
 
-			$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
+			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
+			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'alterou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -826,5 +842,31 @@ class Artigos extends BaseController
 				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '/' . $idArtigo . '?status=false');
 			}
 		}
+	}
+
+	private function gravarArtigos($tipo, $dados, $id = null)
+	{
+		$artigosModel = new \App\Models\ArtigosModel();
+		$retorno = null;
+		$artigosModel->db->transStart();
+		switch ($tipo) {
+			case 'update':
+				$retorno = $artigosModel->update($id, $dados);
+				break;
+			case 'insert':
+				$retorno = $artigosModel->insert($dados);
+				break;
+			case 'save':
+				$retorno = $artigosModel->save($dados);
+				break;
+			case 'delete':
+				$retorno = $artigosModel->delete($id);
+				break;
+			default:
+				$retorno = false;
+				break;
+		}
+		$artigosModel->db->transComplete();
+		return $retorno;
 	}
 }

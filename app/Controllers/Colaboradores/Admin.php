@@ -41,9 +41,13 @@ class Admin extends BaseController
 		if ($this->request->getMethod() == 'post') {
 			$post = service('request')->getPost();
 			if (isset($post['atribuicoes']) && isset($post['colaborador_id'])) {
+				$colaboradoresAtribuicoesModel->db->transStart();
 				$colaboradoresAtribuicoesModel->deletarAtribuicoesColaborador($post['colaborador_id']);
+				$colaboradoresAtribuicoesModel->db->transComplete();
 				foreach ($post['atribuicoes'] as $atribuicao) {
+					$colaboradoresAtribuicoesModel->db->transStart();
 					$colaboradoresAtribuicoesModel->insert(array('colaboradores_id' => $post['colaborador_id'], 'atribuicoes_id' => $atribuicao));
+					$colaboradoresAtribuicoesModel->db->transComplete();
 				}
 				return $retorno->retorno(true, 'Permissões do colaborador salvas.', true);
 			}
@@ -267,11 +271,14 @@ class Admin extends BaseController
 		$gravar['multiplicador_narrado'] = $post['multiplicador_narrado'];
 		$gravar['multiplicador_produzido'] = $post['multiplicador_produzido'];
 		$gravar['hash_transacao'] = $post['hash_transacao'];
+		$pagamentosModel->db->transStart();
 		$idPagamentos = $pagamentosModel->insert($gravar);
+		$pagamentosModel->db->transComplete();
 
 		$faseProducao = $faseProducaoModel->find(6);
 		$faseProducao = $faseProducao['etapa_posterior'];
 		foreach ($artigos as $artigo) {
+			
 			$pagamentosArtigosModel->save(
 				array(
 					'artigos_id' => $artigo['id'],

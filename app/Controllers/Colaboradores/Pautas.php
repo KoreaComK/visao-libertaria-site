@@ -35,7 +35,7 @@ class Pautas extends BaseController
 		if ($this->request->isAJAX()) {
 			$post = service('request')->getPost();
 
-			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'],$idPautas);
+			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'], $idPautas);
 
 			if ($countPautas == 0) {
 				return $this->getInformacaoLink($post);
@@ -45,7 +45,7 @@ class Pautas extends BaseController
 		}
 
 		if ($this->request->getMethod() == 'post') {
-			
+
 			$post = service('request')->getPost();
 			$session = $this->session->get('colaboradores');
 
@@ -59,10 +59,10 @@ class Pautas extends BaseController
 				$dados['texto'] = $post['texto'];
 				$dados['imagem'] = $post['imagem'];
 				if ($idPautas != null) {
-					$pautas = $pautasModel->update($idPautas, $dados);
+					$pautas = $this->gravarPautas('update', $dados, $idPautas);
 				} else {
 					$dados['id'] = $pautasModel->getNovaUUID();
-					$pautas = $pautasModel->insert($dados);
+					$pautas = $this->gravarPautas('insert', $dados);
 				}
 
 				if ($pautas) {
@@ -83,7 +83,7 @@ class Pautas extends BaseController
 
 		if ($idPautas != null) {
 			$data['post'] = $pautasModel->find($idPautas);
-			if($data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
+			if ($data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
 				return redirect()->to(base_url() . 'colaboradores/pautas');
 			}
 		}
@@ -99,10 +99,10 @@ class Pautas extends BaseController
 		$data['titulo'] = 'Leia a pauta';
 
 		$pautasModel = new \App\Models\PautasModel();
-		
+
 		if ($idPautas != null) {
 			$data['post'] = $pautasModel->find($idPautas);
-			if($data['post'] == null || empty($data['post'])) {
+			if ($data['post'] == null || empty($data['post'])) {
 				return redirect()->to(base_url() . 'colaboradores/pautas');
 			}
 		} else {
@@ -122,21 +122,21 @@ class Pautas extends BaseController
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$pautasModel = new \App\Models\PautasModel();
 			if (isset($post['metodo']) && $post['metodo'] == 'descartar') {
-				$pautasModel->delete($post['id']);
+				$this->gravarPautas('delete', null, $post['id']);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'reservar') {
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = $pautasModel->getNow();
 				$gravar['tag_fechamento'] = trim($post['tag']);
-				$pautasModel->save($gravar);
+				$this->gravarPautas('save', $gravar);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'cancelar') {
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = NULL;
 				$gravar['tag_fechamento'] = NULL;
-				$pautasModel->save($gravar);
+				$this->gravarPautas('save', $gravar);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'fechar') {
@@ -155,7 +155,7 @@ class Pautas extends BaseController
 				$idPautasFechadas = $pautasFechadasModel->insert($gravar);
 				foreach ($pautas as $pauta) {
 					$pautasPautasFechadasModel->insert(array('pautas_fechadas_id' => $idPautasFechadas, 'pautas_id' => $pauta['id']));
-					$pautasModel->delete($pauta['id']);
+					$this->gravarPautas('delete', null, $post['id']);
 				}
 
 				return $retorno->retorno(true, 'Fechamento da pauta feita com sucesso. A página será recarregada dentro de instantes.', true);
@@ -187,7 +187,7 @@ class Pautas extends BaseController
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = NULL;
 				$gravar['tag_fechamento'] = NULL;
-				$pautasModel->save($gravar);
+				$this->gravarPautas('save', $gravar);
 				return $retorno->retorno(true, '', true);
 			}
 			return false;
@@ -333,6 +333,32 @@ class Pautas extends BaseController
 		} else {
 			return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
 		}
+	}
+
+	private function gravarPautas($tipo, $dados, $id = null)
+	{
+		$pautasModel = new \App\Models\PautasModel();
+		$retorno = null;
+		$pautasModel->db->transStart();
+		switch ($tipo) {
+			case 'update':
+				$retorno = $pautasModel->update($id, $dados);
+				break;
+			case 'insert':
+				$retorno = $pautasModel->insert($dados);
+				break;
+			case 'save':
+				$retorno = $pautasModel->save($dados);
+				break;
+			case 'delete':
+				$retorno = $pautasModel->delete($id);
+				break;
+			default:
+				$retorno = false;
+				break;
+		}
+		$pautasModel->db->transComplete();
+		return $retorno;
 	}
 
 }
