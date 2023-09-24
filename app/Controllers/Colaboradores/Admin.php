@@ -75,6 +75,22 @@ class Admin extends BaseController
 		return view('template/templatePermissoesList', $data);
 	}
 
+	public function historico()
+	{
+
+		$this->verificaPermissao->PermiteAcesso('9');
+		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
+		if ($this->request->getMethod() == 'get') {
+			$get = service('request')->getGet();
+			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id',$get['apelido'])->orderBy('criado','DESC');
+			$data['colaboradoresHistoricosList'] = [
+				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate(12, 'historico'),
+				'pager' => $colaboradoresHistoricos->pager
+			];
+		}
+		return view('template/templateHistoricosList', $data);
+	}
+
 	public function financeiro($acao = null)
 	{
 		$pagamentosModel = new \App\Models\PagamentosModel();
