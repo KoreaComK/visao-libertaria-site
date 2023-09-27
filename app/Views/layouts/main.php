@@ -34,6 +34,9 @@
 			color: #4b515c;
 		}
 	</style>
+	<title>Visão Libertária</title>
+	<link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico'); ?>">
+</head>
 
 	<div class="container-fluid" style="background-image:url(https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj); height: 150px; background-size: 100%;">
 		<div class="row align-items-center py-2 px-lg-5">
@@ -158,8 +161,7 @@
 		</nav>
 	</div>
 
-	<title>Visão Libertária</title>
-</head>
+
 
 <body>
 	<?= $this->renderSection('content'); ?>
