@@ -94,8 +94,8 @@ class ColaboradoresAtribuicoesModel extends Model
 		$this->session->start();
 		
 		$dados_inseridos = $dados['data'];
-		if(!isset($dados_inseridos['id']) && isset($dados['id'])) {
-			$dados_inseridos['id'] = $dados['id'][0];
+		if(!isset($dados_inseridos['atribuicoes_id']) && isset($dados['atribuicoes_id'])) {
+			$dados_inseridos['atribuicoes_id'] = $dados['atribuicoes_id'];
 		}
 
 		$dados_inseridos['colaboradores_id'] = $this->session->get('colaboradores')['id'];
@@ -109,7 +109,7 @@ class ColaboradoresAtribuicoesModel extends Model
 			'colaboradores_id' => $dados_inseridos['colaboradores_id'],
 			'acao' => $acao,
 			'objeto' => 'colaboradores_atribuicoes',
-			'objeto_id' => $dados_inseridos['id'],
+			'objeto_id' => $dados_inseridos['atribuicoes_id'],
 			'criado' => $colaboradoresHistoricosModel->getNow()
 		];
 		$colaboradoresHistoricosModel->insert($inserirArray);
