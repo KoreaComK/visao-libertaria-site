@@ -16,10 +16,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="position-relative mb-3">
-					<iframe class="w-100" height="625" src="<?=str_replace('watch?v=','embed/',$artigo['link_video_youtube'])?>"
-						title="YouTube video player" frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						allowfullscreen></iframe>
+					<img class="w-100" height="625" src="<?=$artigo['imagem']?>"></img>
 					<div class="overlay position-relative bg-light p-3">
 						<div class="mb-3">
 							<?php helper("month_helper"); ?>
