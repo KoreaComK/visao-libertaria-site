@@ -24,6 +24,7 @@ use CodeIgniter\I18n\Time;
 					<br />
 				</p>
 			</div>
+			<p><a href="<?= $artigo['link_produzido']; ?>" target="_blank">Ir para o vídeo produzido.</a></p>
 		</div>
 
 		<?php if (isset($artigo['id']) && $artigo['id'] !== null) : ?>
