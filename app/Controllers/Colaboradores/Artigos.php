@@ -290,8 +290,8 @@ class Artigos extends BaseController
 				if (empty($valida->getErrors())) {
 					if ($audio->getName() != '') {
 						$nome_arquivo = $artigo['id'] . '.' . $audio->guessExtension();
-						if ($audio->move('../public/assets/audio', $nome_arquivo, true)) {
-							$artigo['arquivo_audio'] = base_url('assets/audio/' . $nome_arquivo);
+						if ($audio->move('public/assets/audio', $nome_arquivo, true)) {
+							$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
 
 							$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 
