@@ -23,7 +23,7 @@ use CodeIgniter\I18n\Time;
 						<div class="carousel-inner">
 							<?php foreach ($artigos as $chave => $artigo) : ?>
 								<div class="carousel-item <?= ($chave == 0) ? ('active') : (''); ?>">
-									<img class="img-fluid h-100" src="<?= $artigo['imagem']; ?>">
+									<img class="img-fluid w-100" style="max-height: 480px;" src="<?= $artigo['imagem']; ?>">
 									<div class="carousel-caption d-none d-md-block" style="background: RGBA(0,0,0,0.5);">
 										<h5><span class="text-reset">
 												<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
