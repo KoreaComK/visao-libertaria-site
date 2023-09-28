@@ -38,8 +38,8 @@ class Perfil extends BaseController
 						$valida = $validaFormularios->validaFormularioPerfilColaboradorFile();
 						if (empty($valida->getErrors())) {
 							$nome_arquivo = $session['id'] . '.' . $avatar->guessExtension();
-							if ($avatar->move('../public/assets/avatars', $nome_arquivo, true)) {
-								$dados['avatar'] = base_url('assets/avatars/' . $nome_arquivo);
+							if ($avatar->move('public/assets/avatars', $nome_arquivo, true)) {
+								$dados['avatar'] = base_url('public/assets/avatars/' . $nome_arquivo);
 								$session['avatar'] = $dados['avatar'];
 							}
 						} else {
