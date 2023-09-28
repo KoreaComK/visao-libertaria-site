@@ -307,6 +307,8 @@ use CodeIgniter\I18n\Time;
 			getComentarios();
 		});
 
+		<?php if (!isset($artigo['id'])) : ?>
+
 		function getComentarios() {
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
@@ -386,6 +388,7 @@ use CodeIgniter\I18n\Time;
 					}
 				});
 			}
+			<?php endif; ?>
 
 	<?php if ($fase_producao == '2') : ?>
 		$('input').on('click',function() {
