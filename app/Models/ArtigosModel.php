@@ -47,7 +47,7 @@ class ArtigosModel extends Model
 	}
 
 	public function getArtigosHomeRand($limit = 3){
-		$this->whereIn('artigos.fase_producao_id', array(5,6,7));
+		$this->whereIn('artigos.fase_producao_id', array(6,7));
 		$this->orderBy('RAND()');
 		$this->limit($limit);
 		return $this->get()->getResultArray();
