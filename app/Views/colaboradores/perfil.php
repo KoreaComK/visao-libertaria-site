@@ -11,7 +11,7 @@
 				<div class="card mb-3">
 					<div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
-							<img src="<?= $colaboradores['avatar'] ?>" id="avatar_perfil"
+							<img src="<?= ($colaboradores['avatar']!=NULL)?($colaboradores['avatar']):(site_url('public/assets/avatar-default.png')); ?>" id="avatar_perfil"
 								class="rounded-circle p-1 bg-primary vl-bg-c" width="110" height="110">
 							<div class="mt-3">
 								<h4 class="apelido_colaborador">

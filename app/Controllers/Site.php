@@ -279,7 +279,7 @@ class Site extends BaseController
 							'id' => $colaborador['id'],
 							'nome' => $colaborador['apelido'],
 							'email' => $colaborador['email'],
-							'avatar' => $colaborador['avatar'],
+							'avatar' => ($colaborador['avatar']!=NULL)?($colaborador['avatar']):(site_url('public/assets/avatar-default.png')),
 							'permissoes' => array()
 						]
 					];

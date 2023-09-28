@@ -6,7 +6,7 @@ use CodeIgniter\I18n\Time;
 <?php if (!empty($comentarios)) : ?>
 	<?php foreach ($comentarios as $chave => $comentario) : ?>
 		<div class="card-body <?= (count($comentarios) == $chave + 1) ? ('') : ('border-bottom'); ?> ml-1 mr-1 mb-1" id="<?= $comentario['id']; ?>"><small><small>
-			<img src="<?= $comentario['avatar']; ?>" class="rounded float-left mr-3" style="height:auto; width:4.5rem;">	
+			<img src="<?= ($comentario['avatar']!=NULL)?($comentario['avatar']):(site_url('public/assets/avatar-default.png')); ?>" class="rounded float-left mr-3" style="height:auto; width:4.5rem;">	
 				<span class="card-title badge badge-secondary"><?= $comentario['apelido']; ?></span> <span class="badge badge-primary"><?= Time::createFromFormat('Y-m-d H:i:s', $comentario['atualizado'])->toLocalizedString('dd MMMM yyyy H:mm:ss'); ?></span>
 					<p class="card-text comentario-<?= $comentario['id']; ?>"><?= $comentario['comentario']; ?></p>
 					<?php if ($colaborador == $comentario['colaboradores_id']) : ?>
