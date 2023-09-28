@@ -40,7 +40,7 @@ class ArtigosModel extends Model
 	protected $afterDelete    = ['cadastraHistoricoUsuarioExcluir'];
 
 	public function getArtigosHome($limit = 21){
-		$this->whereIn('artigos.fase_producao_id', array(5,6,7));
+		$this->whereIn('artigos.fase_producao_id', array(6,7));
 		$this->orderBy('artigos.criado', 'DESC');
 		$this->limit($limit);
 		return $this->get()->getResultArray();
