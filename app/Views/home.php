@@ -21,7 +21,7 @@ use CodeIgniter\I18n\Time;
 							<?php endforeach; ?>
 						</ol>
 						<div class="carousel-inner">
-							<?php foreach ($artigos as $chave => $artigo) : ?>
+							<?php foreach ($banner as $chave => $artigo) : ?>
 								<div class="carousel-item <?= ($chave == 0) ? ('active') : (''); ?>">
 									<img class="img-fluid w-100" style="max-height: 480px;" src="<?= $artigo['imagem']; ?>">
 									<div class="carousel-caption d-none d-md-block" style="background: RGBA(0,0,0,0.5);">
