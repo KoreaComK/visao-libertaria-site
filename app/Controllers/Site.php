@@ -145,14 +145,16 @@ class Site extends BaseController
 			$colaboradoresModel = new \App\Models\ColaboradoresModel();
 			$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 			$colaboradores = $colaboradoresModel->getColaboradorPeloHash($hash);
-			$gravar = array();
-			$gravar['id'] = $colaboradores['id'];
-			$gravar['confirmado_data'] = $colaboradoresModel->getNow();
-			$gravar['confirmacao_hash'] = NULL;
-			$gravar['atualizado'] = $gravar['confirmado_data'];
-			$colaboradoresModel->save($gravar);
-			$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
-			//$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
+			if($colaboradores !== NULL && $colaboradores !== false) {
+				$gravar = array();
+				$gravar['id'] = $colaboradores['id'];
+				$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+				$gravar['confirmacao_hash'] = NULL;
+				$gravar['atualizado'] = $gravar['confirmado_data'];
+				$colaboradoresModel->save($gravar);
+				$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
+				//$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);	
+			}
 			return redirect()->to(base_url() . 'site/login');
 		}
 	}
