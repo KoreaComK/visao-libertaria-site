@@ -40,7 +40,7 @@
 						</ul>
 					</div>
 				</div>
-				<div class="card mb-3">
+				<!-- <div class="card mb-3">
 					<div class="card-body text-center">
 						<div class="border-light">
 							<h4 class="text-normal mt-1 mb-2 fw-normal">Histórico total</h4>
@@ -64,7 +64,7 @@
 									data-target="#modal-pagamentos">Ver Pagamentos</a></h6>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 			<div class="col-lg-8">
 				<div class="card mb-3">
