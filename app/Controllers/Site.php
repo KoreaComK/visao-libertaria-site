@@ -145,7 +145,7 @@ class Site extends BaseController
 			$colaboradoresModel = new \App\Models\ColaboradoresModel();
 			$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 			$colaboradores = $colaboradoresModel->getColaboradorPeloHash($hash);
-			if($colaboradores !== NULL && $colaboradores !== false) {
+			if($colaboradores !== NULL && $colaboradores !== false && !empty($colaboradores)) {
 				$gravar = array();
 				$gravar['id'] = $colaboradores['id'];
 				$gravar['confirmado_data'] = $colaboradoresModel->getNow();
