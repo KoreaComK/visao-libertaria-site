@@ -2,11 +2,11 @@
 
 # Criando a base de dados do Visão Libertária
 
-Comentar a linha ´´´database.default.database´´´ no arquivo .env
+Comentar a linha `database.default.database` no arquivo .env
 
-Executar o criador de banco de dados e tabelas ´´´http://localhost/vl20/public/Inicializandobancodados´´´
+Executar o criador de banco de dados e tabelas http://localhost/vl20/public/Inicializandobancodados
 
-Descomentar a linha ´´´database.default.database´´´ no arquivo .env
+Descomentar a linha `database.default.database` no arquivo .env
 
 Executar o comando no CLI para popular as tabelas
-´´´> php spark db:seed Main´´´
+`> php spark db:seed Main`
