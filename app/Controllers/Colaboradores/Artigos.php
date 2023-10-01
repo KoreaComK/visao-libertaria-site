@@ -182,7 +182,7 @@ class Artigos extends BaseController
 
 	public function revisar($artigoId = NULL)
 	{
-		$this->verificaPermissao->PermiteAcesso('2');
+		$this->verificaPermissao->PermiteAcesso('3');
 		$artigosModel = new \App\Models\ArtigosModel();
 		$validaFormularios = new \App\Libraries\ValidaFormularios();
 		$retorno = new \App\Libraries\RetornoPadrao();
@@ -259,7 +259,7 @@ class Artigos extends BaseController
 
 	public function narrar($artigoId = NULL)
 	{
-		$this->verificaPermissao->PermiteAcesso('3');
+		$this->verificaPermissao->PermiteAcesso('4');
 		$artigosModel = new \App\Models\ArtigosModel();
 
 		$data = $this->iniciaVariavel;
@@ -335,7 +335,7 @@ class Artigos extends BaseController
 
 	public function produzir($artigoId = null)
 	{
-		$this->verificaPermissao->PermiteAcesso('4');
+		$this->verificaPermissao->PermiteAcesso('5');
 		$artigosModel = new \App\Models\ArtigosModel();
 
 		$data = $this->iniciaVariavel;
@@ -406,7 +406,7 @@ class Artigos extends BaseController
 
 	public function publicar($artigoId = null)
 	{
-		$this->verificaPermissao->PermiteAcesso('5');
+		$this->verificaPermissao->PermiteAcesso('6');
 		$artigosModel = new \App\Models\ArtigosModel();
 
 		$data = $this->iniciaVariavel;
@@ -483,7 +483,7 @@ class Artigos extends BaseController
 
 	public function geraDescricaoVideo($idArtigo = null)
 	{
-		$this->verificaPermissao->PermiteAcesso('5');
+		$this->verificaPermissao->PermiteAcesso('6');
 		
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
