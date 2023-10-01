@@ -115,7 +115,7 @@ class Site extends BaseController
 			if (empty($valida->getErrors())) {
 				$colaboradoresModel = new \App\Models\ColaboradoresModel();
 				$gravar = array();
-				$gravar['apelido'] = $post['apelido'];
+				$gravar['apelido'] = $colaboradoresModel->db->escapeString($post['apelido']);
 				$gravar['email'] = $post['email'];
 				$gravar['senha'] = hash('sha256', $post['senha']);
 				$gravar['confirmacao_hash'] = hash('sha256', $post['email'] . rand() . $post['senha']);

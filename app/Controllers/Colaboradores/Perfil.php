@@ -32,7 +32,7 @@ class Perfil extends BaseController
 					$colaboradoresModel = new \App\Models\ColaboradoresModel();
 					$dados['id'] = $session['id'];
 					$dados['carteira'] = $post['carteira'];
-					$dados['apelido'] = $post['apelido'];
+					$dados['apelido'] = $colaboradoresModel->db->escapeString($post['apelido']);
 
 					if ($avatar->getName() != '') {
 						$valida = $validaFormularios->validaFormularioPerfilColaboradorFile();
