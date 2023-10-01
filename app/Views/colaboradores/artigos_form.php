@@ -307,7 +307,7 @@ use CodeIgniter\I18n\Time;
 			getComentarios();
 		});
 
-		<?php if (!isset($artigo['id'])) : ?>
+		<?php if (isset($artigo['id'])) : ?>
 
 		function getComentarios() {
 			$.ajax({
