@@ -155,7 +155,7 @@ class Pautas extends BaseController
 				$idPautasFechadas = $pautasFechadasModel->insert($gravar);
 				foreach ($pautas as $pauta) {
 					$pautasPautasFechadasModel->insert(array('pautas_fechadas_id' => $idPautasFechadas, 'pautas_id' => $pauta['id']));
-					$this->gravarPautas('delete', null, $post['id']);
+					$this->gravarPautas('delete', null, $pauta['id']);
 				}
 
 				return $retorno->retorno(true, 'Fechamento da pauta feita com sucesso. A página será recarregada dentro de instantes.', true);
