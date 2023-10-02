@@ -320,22 +320,32 @@ class Pautas extends BaseController
 		foreach ($xp->query("//meta[@property='og:image']") as $el) {
 			$l2 = parse_url($el->getAttribute("content"));
 			if ($l2['scheme']) {
-				$img = utf8_decode($el->getAttribute("content"));
+				$img = $el->getAttribute("content");
 			}
 		}
 		if ($img == null) {
 			foreach ($xp->query("//img") as $el) {
 				if ($img == null && $el->getAttribute('alt') != '') {
 					if (strstr($el->getAttribute('src'), 'https://') || strstr($el->getAttribute('src'), 'http://')) {
-						$img = utf8_decode($el->getAttribute('src'));
+						$img = $el->getAttribute('src');
 					} else {
 						$linkImagem = explode('/', str_replace('https://', '', $main_url))[0];
-						$img = 'https://' . $linkImagem . utf8_decode($el->getAttribute('src'));
+						$img = 'https://' . $linkImagem . $el->getAttribute('src');
 					}
 				}
 			}
 		}
 		if ($titulo != '' && $descricao != '') {
+			if(!mb_detect_encoding($titulo,'UTF-8',true)) {
+				$titulo = utf8_encode($titulo);
+			}
+			if(!mb_detect_encoding($descricao,'UTF-8',true)) {
+				$descricao = utf8_encode($descricao);
+			}
+			if(!mb_detect_encoding($img,'UTF-8',true)) {
+				$img = utf8_encode($img);
+			}
+
 			$retorno = [
 				'status' => true,
 				'titulo' => $titulo,
