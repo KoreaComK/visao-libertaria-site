@@ -166,13 +166,26 @@ class Pautas extends BaseController
 
 		$data = array();
 		$data['titulo'] = 'Fechamento de Pautas';
-		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->getPautas(null);
-		$data['pautasList'] = [
-			'pautas' => $pautas->paginate(12, 'pautas'),
-			'pager' => $pautas->pager
-		];
 		return view('colaboradores/pautas_closing', $data);
+	}
+
+	public function pautasList()
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('10');
+		if ($this->request->getMethod() == 'get') {
+			$get = service('request')->getGet();
+			$pautasModel = new \App\Models\PautasModel();
+			if(!isset($get['pesquisa']) || $get['pesquisa'] == '') {
+				$get['pesquisa'] = NULL;
+			}
+			$pautas = $pautasModel->getPautasPesquisa($get['pesquisa']);
+			$data['pautasList'] = [
+				'pautas' => $pautas->paginate(12, 'pautas'),
+				'pager' => $pautas->pager
+			];
+		}
+		return view('template/templatePautasList', $data);
 	}
 
 	public function fechadas($idPautasFechadas = null)

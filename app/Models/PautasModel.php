@@ -82,15 +82,30 @@ class PautasModel extends Model
 		return $this;
 	}
 
-	protected function cadastraHistoricoUsuarioInserir(array $dados) {
+	public function getPautasPesquisa($pesquisa = NULL)
+	{
+		$this->builder()
+			->select('pautas.*, colaboradores.apelido AS apelido')
+			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
+		if($pesquisa !== NULL) {
+			$this->builder->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");
+		}
+		$this->builder()->orderBy('pautas.criado', 'DESC');
+		return $this;
+	}
+
+	protected function cadastraHistoricoUsuarioInserir(array $dados)
+	{
 		return $this->cadastraHistoricoUsuario($dados, 'inserir');
 	}
 
-	protected function cadastraHistoricoUsuarioAlterar(array $dados) {
+	protected function cadastraHistoricoUsuarioAlterar(array $dados)
+	{
 		return $this->cadastraHistoricoUsuario($dados, 'alterar');
 	}
 
-	protected function cadastraHistoricoUsuarioExcluir(array $dados) {
+	protected function cadastraHistoricoUsuarioExcluir(array $dados)
+	{
 		return $this->cadastraHistoricoUsuario($dados, 'excluir');
 	}
 
@@ -100,7 +115,7 @@ class PautasModel extends Model
 		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
 		$this->session = \Config\Services::session();
 		$this->session->start();
-		
+
 		$dados_inseridos = $dados['data'];
 		if(!isset($dados_inseridos['id']) && isset($dados['id'])) {
 			$dados_inseridos['id'] = $dados['id'][0];
