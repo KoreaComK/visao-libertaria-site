@@ -291,6 +291,14 @@ class Site extends BaseController
 					if($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
 						return $retorno->retorno(false, 'Sua conta está bloqueada até '.Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
 					}
+
+					$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+					$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
+					
+					if(empty($colaboradoresAtribuicoes)) {
+						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
+					}
+
 					$estrutura_session = [
 						'colaboradores' => [
 							'id' => $colaborador['id'],
@@ -300,9 +308,6 @@ class Site extends BaseController
 							'permissoes' => array()
 						]
 					];
-
-					$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-					$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
 
 					$permissoes = array();
 					foreach ($colaboradoresAtribuicoes as $atribuicao) {
