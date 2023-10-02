@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\WidgetsSite;
 use Config\App;
+use CodeIgniter\I18n\Time;
 
 class Site extends BaseController
 {
@@ -173,6 +174,9 @@ class Site extends BaseController
 				if (empty($valida->getErrors())) {
 					$colaboradoresModel = new \App\Models\ColaboradoresModel();
 					$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
+					if($colaborador['excluido'] != NULL) {
+						return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);	
+					}
 					$gravar = array();
 					$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
 					$gravar['id'] = $colaborador['id'];
@@ -276,6 +280,17 @@ class Site extends BaseController
 				$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
 				if (count($colaborador) > 0) {
 					$colaborador = $colaborador[0];
+					if($colaborador['excluido'] !== NULL) {
+						return $retorno->retorno(false, 'Esta conta está excluída.', true);
+					}
+					if($colaborador['confirmado_data'] === NULL) {
+						$enviaEmail = new \App\Libraries\EnviaEmail();
+						$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
+						return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
+					}
+					if($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
+						return $retorno->retorno(false, 'Sua conta está bloqueada até '.Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
+					}
 					$estrutura_session = [
 						'colaboradores' => [
 							'id' => $colaborador['id'],
