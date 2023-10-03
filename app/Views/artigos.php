@@ -2,8 +2,6 @@
 
 <?= $this->section('content'); ?>
 
-<?php helper('verifica_imagem_existente'); ?>
-
 <!-- <div class="container">
 	<div class="">
 		<div class="bg-light py-2 px-4 mb-3">
@@ -43,7 +41,7 @@
 			foreach ($artigosList['artigos'] as $artigo) : ?>
 				<div class="col-lg-3">
 					<div class="position-relative mb-3">
-						<img class="img-fluid w-100" src="<?=verifica_imagem_existente($artigo['imagem']); ?>" style="object-fit: cover; max-height: 135px;">
+						<img class="img-fluid w-100" src="<?= $artigo['imagem']; ?>" style="object-fit: cover; max-height: 135px;">
 						<div class="overlay position-relative bg-light p-2">
 							<div class="mb-2" style="font-size: 14px;">
 								<span><?= date_format(new DateTime($artigo['criado']), 'd') . ' ' . month_helper(date_format(new DateTime($artigo['criado']), 'F'), 3) . ' ' . date_format(new DateTime($artigo['criado']), 'Y'); ?></span>

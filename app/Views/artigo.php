@@ -2,8 +2,6 @@
 
 <?= $this->section('content'); ?>
 
-<?php helper('verifica_imagem_existente'); ?>
-
 <div class="container-fluid">
 	<div class="container">
 		<nav class="breadcrumb bg-transparent m-0 p-0">
@@ -18,7 +16,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="position-relative mb-3">
-					<img class="w-100" height="625" src="<?=verifica_imagem_existente($artigo['imagem']);?>"></img>
+					<img class="w-100" height="625" src="<?=$artigo['imagem']?>"></img>
 					<div class="overlay position-relative bg-light p-3">
 						<div class="mb-3">
 							<?php helper("month_helper"); ?>

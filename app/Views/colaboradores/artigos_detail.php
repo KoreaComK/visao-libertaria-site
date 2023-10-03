@@ -1,9 +1,11 @@
+<?php
 
+use CodeIgniter\I18n\Time;
+
+?>
 <?= $this->extend('layouts/main'); ?>
 
 <?= $this->section('content'); ?>
-<?php use CodeIgniter\I18n\Time; ?>
-<?php helper('verifica_imagem_existente'); ?>
 
 <div class="container-fluid py-3">
 	<div class="container">
@@ -14,7 +16,7 @@
 						<h3 class="mb-5">
 							<?= $artigo['titulo']; ?>
 						</h3>
-						<img class="img-fluid w-100 mb-4" src="<?=verifica_imagem_existente($artigo['imagem']); ?>" style="object-fit: cover;">
+						<img class="img-fluid w-100 mb-4" src="<?= $artigo['imagem']; ?>" style="object-fit: cover;">
 
 						<p>
 							<?= $artigo['gancho']; ?>
