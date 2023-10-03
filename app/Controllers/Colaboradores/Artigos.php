@@ -441,8 +441,8 @@ class Artigos extends BaseController
 					$artigo['publicado'] = $artigosModel->getNow();
 
 					//SE A QUANTIDADE DE PALAVRAS DO REVISOR FOR MENOR DO QUE A QUANTIDADE DO ESCRITOR, ABAIXA A QUANTIDADE DO ESCRITOR.
-					if ($artigo['palavras_escritor'] > str_word_count($artigo['texto_revisado'])) {
-						$artigo['palavras_escritor'] = str_word_count($artigo['texto_revisado']);
+					if ($artigo['palavras_escritor'] > str_word_count($artigo['texto_original'])) {
+						$artigo['palavras_escritor'] = str_word_count($artigo['texto_original']);
 					}
 
 					$faseProducaoModel = new \App\Models\FaseProducaoModel();
