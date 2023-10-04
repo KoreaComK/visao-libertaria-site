@@ -125,7 +125,7 @@ use CodeIgniter\I18n\Time;
 						<label for="imagem">Arquivo de áudio</label>
 						<div class="custom-file">
 							<input type="hidden" name="blah" />
-							<input type="file" class="custom-file-input" id="audio" name="audio" required aria-describedby="audio">
+							<input type="file" class="custom-file-input" id="audio" name="audio" required aria-describedby="audio" accept=".mp3">
 							<label class="custom-file-label" for="audio">Escolha o arquivo de
 								narração...</label>
 						</div>

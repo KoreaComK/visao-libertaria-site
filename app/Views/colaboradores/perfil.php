@@ -152,7 +152,7 @@
 								<div class="input-group mb-3">
 									<div class="custom-file">
 										<input type="file" class="custom-file-input" id="avatar" name="avatar"
-											onchange="onFileUpload(this);" aria-describedby="avatar">
+											onchange="onFileUpload(this);" aria-describedby="avatar" accept=".png">
 										<label class="custom-file-label" for="avatar">Escolha o avatar</label>
 									</div>
 								</div>
