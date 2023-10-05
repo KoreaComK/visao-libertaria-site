@@ -83,11 +83,9 @@ class ArtigosModel extends Model
 			$where .= ' AND DATE_FORMAT(artigos.publicado,"%m-%Y") = DATE_FORMAT("' . $data . '","%m-%Y") ';
 		}
 
-		if (!empty($array)) {
+		if (!empty($fases)) {
 			$fases = implode(',', $fases);
-			if ($data !== null) {
-				$where .= " AND artigos.fase_producao_id IN ($fases)";
-			}
+			$where .= " AND artigos.fase_producao_id IN ($fases)";
 		}
 
 		$query = $this->db->query("
@@ -150,7 +148,7 @@ class ArtigosModel extends Model
 		$query = $this->db->query("
 		SELECT
 			COALESCE(count(1),0) AS total,
-			COALESCE(SUM(palavras_escritor),0) AS pontos
+			COALESCE(SUM(palavras_revisor),0) AS pontos
 		FROM 
 			artigos
 		INNER JOIN 
@@ -168,7 +166,7 @@ class ArtigosModel extends Model
 		$query = $this->db->query("
 		SELECT
 			COALESCE(count(1),0) AS total,
-			COALESCE(SUM(palavras_escritor),0) AS pontos
+			COALESCE(SUM(palavras_narrador),0) AS pontos
 		FROM 
 			artigos
 		INNER JOIN 
@@ -186,7 +184,7 @@ class ArtigosModel extends Model
 		$query = $this->db->query("
 		SELECT
 			COALESCE(count(1),0) AS total,
-			COALESCE(SUM(palavras_escritor),0) AS pontos
+			COALESCE(SUM(palavras_produtor),0) AS pontos
 		FROM 
 			artigos
 		INNER JOIN 

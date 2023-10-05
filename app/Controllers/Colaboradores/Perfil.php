@@ -106,11 +106,11 @@ class Perfil extends BaseController
 
 		$data['atribuicoes'] = $this->widgetAtribuicoes($session);
 
-		$data['contribuicoes_mensal'] = $this->widgetContribuicoes($session, date('Y-m-d'), array(6, 7));
+		$data['contribuicoes_mensal'] = $this->widgetContribuicoes($session, null, array(6));
 
-		$data['contribuicoes_total'] = $this->widgetContribuicoes($session, null, array(6, 7));
+		$data['contribuicoes_total'] = $this->widgetContribuicoes($session, null, array(6));
 
-		$data['lista_artigos_mes'] = $this->widgetArtigosContribuicoes($session, date('Y-m-d'), array(6, 7));
+		$data['lista_artigos_mes'] = $this->widgetArtigosContribuicoes($session, null, array(6));
 
 		return view('colaboradores/perfil', $data);
 	}

@@ -70,7 +70,7 @@
 				<div class="card mb-3">
 					<div class="card-body text-center">
 						<div class="border-light">
-							<h4 class="text-normal mt-1 mb-2 fw-normal">Contribuições deste mês</h4>
+							<h4 class="text-normal mt-1 mb-2 fw-normal">Contribuições Aprovadas e Pendentes</h4>
 						</div>
 						<div class="row">
 							<div class="col-6 border-end border-light">
