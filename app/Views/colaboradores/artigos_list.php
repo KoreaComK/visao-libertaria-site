@@ -71,21 +71,21 @@
 									href="<?= site_url('colaboradores/artigos/cadastrar/' . $artigo['id']); ?>">Alterar
 									artigo</a></small>
 						<?php endif; ?>
-						<?php if ($artigo['fase_producao_id'] == '2' && in_array('2', $permissoes) && $artigo['escrito_colaboradores_id'] != $usuario && $artigo['descartado'] == NULL): ?>
+						<?php if ($artigo['fase_producao_id'] == '2' && in_array('3', $permissoes) && $artigo['escrito_colaboradores_id'] != $usuario && $artigo['descartado'] == NULL): ?>
 							<small class="d-block text-right mt-3"><a
 									href="<?= site_url('colaboradores/artigos/previa/' . $artigo['id']); ?>">Ver detalhe do
 									artigo</a></small>
 						<?php endif; ?>
-						<?php if ($artigo['fase_producao_id'] == '3' && in_array('3', $permissoes) && $artigo['descartado'] == NULL): ?>
+						<?php if ($artigo['fase_producao_id'] == '3' && in_array('4', $permissoes) && $artigo['descartado'] == NULL): ?>
 							<small class="d-block text-right mt-3"><a
 									href="<?= site_url('colaboradores/artigos/narrar/' . $artigo['id']); ?>">Narrar artigo</a></small>
 						<?php endif; ?>
-						<?php if ($artigo['fase_producao_id'] == '4' && in_array('4', $permissoes) && $artigo['descartado'] == NULL): ?>
+						<?php if ($artigo['fase_producao_id'] == '4' && in_array('5', $permissoes) && $artigo['descartado'] == NULL): ?>
 							<small class="d-block text-right mt-3"><a
 									href="<?= site_url('colaboradores/artigos/produzir/' . $artigo['id']); ?>">Produzir
 									artigo</a></small>
 						<?php endif; ?>
-						<?php if ($artigo['fase_producao_id'] == '5' && in_array('5', $permissoes) && $artigo['descartado'] == NULL): ?>
+						<?php if ($artigo['fase_producao_id'] == '5' && in_array('6', $permissoes) && $artigo['descartado'] == NULL): ?>
 							<small class="d-block text-right mt-3"><a
 									href="<?= site_url('colaboradores/artigos/publicar/' . $artigo['id']); ?>">Publicar
 									artigo</a></small>
