@@ -30,7 +30,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="control-group">
+							<div class="control-group mb-2">
 								<input type="email" class="form-control p-4" id="email" placeholder="E-mail"
 									required name="email"
 									data-validation-required-message="Por favor digite o seu e-mail">
@@ -46,7 +46,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="control-group">
+							<div class="control-group mb-2">
 								<input type="password" class="form-control p-4" name="senhaconfirmacao"
 									id="senhaconfirmacao" placeholder="Digite a senha novamente" required
 									data-validation-required-message="Please enter a subject">

@@ -8,7 +8,7 @@
 	</div>
 	<div class="justify-content-center row">
 		<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
-		<form class="form-signin col-4 mb-5 mt-5" id="login" method="post" onsubmit="return validateLogin();">
+		<form class="form-signin col-12 col-md-4 mb-5 mt-5" id="login" method="post" onsubmit="return validateLogin();">
 			<div class="form-label-group mb-3">
 				<input type="email" id="email" name="email" class="form-control" value="<?=$email_form;?>" placeholder="E-mail" required autofocus />
 			</div>

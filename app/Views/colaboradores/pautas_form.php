@@ -8,7 +8,7 @@
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center <?=(!isset($erros))?('collapse'):('bg-danger');?> col-12"><?=(!isset($erros))?('collapse'):($erros['mensagem']); ?></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
-		<form class="needs-validation w-50" novalidate="yes" method="post" id="pautas_form">
+		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
 			<div class="mb-3">
 				<label for="username">Link da Notícia</label>
