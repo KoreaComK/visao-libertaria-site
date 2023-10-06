@@ -35,7 +35,7 @@
 			color: #4b515c;
 		}
 
-		@media screen {
+		@media screen and (max-width: 600px) {
  			.media {
 				display: block;
 				text-align: center;
