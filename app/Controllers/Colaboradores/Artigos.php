@@ -193,7 +193,7 @@ class Artigos extends BaseController
 
 		if ($artigoId == NULL) {
 			$artigos = $artigosModel->getArtigos(2);
-			$data['permissoes'] = array('2');
+			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate(12, 'artigos'),
@@ -268,7 +268,7 @@ class Artigos extends BaseController
 
 		if ($artigoId == NULL) {
 			$artigos = $artigosModel->getArtigos(3);
-			$data['permissoes'] = array('3');
+			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate(12, 'artigos'),
@@ -344,7 +344,7 @@ class Artigos extends BaseController
 
 		if ($artigoId == NULL) {
 			$artigos = $artigosModel->getArtigos(4);
-			$data['permissoes'] = array('4');
+			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate(12, 'artigos'),
@@ -415,7 +415,7 @@ class Artigos extends BaseController
 
 		if ($artigoId == NULL) {
 			$artigos = $artigosModel->getArtigos(5);
-			$data['permissoes'] = array('5');
+			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate(12, 'artigos'),
