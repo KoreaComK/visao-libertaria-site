@@ -26,7 +26,7 @@
 						<?= $pauta['apelido']; ?>
 					</small>
 					<small class="d-block text-right mt-3">
-						<a href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>">Ler Pauta</a>
+						<a href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>" target="_blank">Ler Pauta</a>
 					</small>
 					<?php if ($pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 						<small class="d-block text-right mt-3">

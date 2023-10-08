@@ -11,7 +11,7 @@
 		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
 			<div class="mb-3">
-				<label for="username">Link da Notícia</label>
+				<label for="username">Link da Notícia <?php if (isset($post)): ?></label><a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original.</a><?php endif; ?>
 				<div class="input-group">
 					<div class="input-group-prepend">
 						<span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

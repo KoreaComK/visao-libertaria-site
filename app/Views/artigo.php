@@ -30,7 +30,7 @@
 							<?php //endforeach; ?>
 						</div> -->
 						<div class="mb-3">
-							<a href="<?=$artigo['link_video_youtube']?>">Ver no YouTube</a>
+							<a href="<?=$artigo['link_video_youtube']?>" target="_blank">Ver no YouTube</a>
 						</div>
 						<div class="mb-3">
 							<?php if ($artigo['colaboradores']['sugerido'] !== null) : ?>
