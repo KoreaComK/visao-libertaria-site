@@ -806,6 +806,10 @@ class Artigos extends BaseController
 			$gravar['palavras_escritor'] = str_word_count($post['texto_original']);
 			$gravar['link'] = $post['link'];
 			$gravar['atualizado'] = $artigosModel->getNow();
+			$artigoGravado = $artigosModel->find($idArtigo);
+			if($artigoGravado['fase_producao_id'] == '1') {
+				$gravar['fase_producao_id'] = 2;
+			}
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
