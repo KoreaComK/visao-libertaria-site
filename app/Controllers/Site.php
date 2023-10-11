@@ -171,58 +171,63 @@ class Site extends BaseController
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['formulario'] = ($hash === null) ? ('email') : ('senha');
 		if ($this->request->isAJAX()) {
-			if ($hash == null) {
-				$post = $this->request->getPost();
-				$validaFormularios = new \App\Libraries\ValidaFormularios();
-				$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
-				if (empty($valida->getErrors())) {
-					$colaboradoresModel = new \App\Models\ColaboradoresModel();
-					$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
-					if($colaborador['excluido'] != NULL) {
-						return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);	
+			$post = $this->request->getPost();
+			$validaFormularios = new \App\Libraries\ValidaFormularios();
+				if ($hash == null) {
+					$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
+					if (empty($valida->getErrors())) {
+						if(!$this->verificaCaptcha($post['h-captcha-response'])) {
+							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
+						} else {
+							$colaboradoresModel = new \App\Models\ColaboradoresModel();
+							$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
+							if($colaborador['excluido'] != NULL) {
+								return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);	
+							}
+							$gravar = array();
+							$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
+							$gravar['id'] = $colaborador['id'];
+							$colaboradoresModel->save($gravar);
+							$enviaEmail = new \App\Libraries\EnviaEmail();
+							$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - REDEFINIÇÃO DE SENHA', $enviaEmail->getMensagemEsqueciSenha($gravar['confirmacao_hash']));
+							return $retorno->retorno(true, 'Foi enviado um e-mail para redefinição de senha. Clique no link para ter acesso a área redefinição de senha.', true);
+						}
+					} else {
+						$erros = $valida->getErrors();
+						$string_erros = '';
+						foreach ($erros as $erro) {
+							$string_erros .= $erro . "<br/>";
+						}
+						return $retorno->retorno(false, $string_erros, true);
 					}
-					$gravar = array();
-					$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
-					$gravar['id'] = $colaborador['id'];
-					$colaboradoresModel->save($gravar);
-					$enviaEmail = new \App\Libraries\EnviaEmail();
-					$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - REDEFINIÇÃO DE SENHA', $enviaEmail->getMensagemEsqueciSenha($gravar['confirmacao_hash']));
-					return $retorno->retorno(true, 'Foi enviado um e-mail para redefinição de senha. Clique no link para ter acesso a área redefinição de senha.', true);
-				} else {
-					$erros = $valida->getErrors();
-					$string_erros = '';
-					foreach ($erros as $erro) {
-						$string_erros .= $erro . "<br/>";
-					}
-					return $retorno->retorno(false, $string_erros, true);
 				}
-			}
-			if ($hash != null) {
-				$post = $this->request->getPost();
-				$validaFormularios = new \App\Libraries\ValidaFormularios();
-				$valida = $validaFormularios->validaFormularioEsqueciSenhaSenhaColaborador($post);
-
-				if (empty($valida->getErrors())) {
-					$colaboradoresModel = new \App\Models\ColaboradoresModel();
-					$colaborador = $colaboradoresModel->getColaboradorPeloHash($hash);
-					$gravar = array();
-					$gravar['id'] = $colaborador['id'];
-					$gravar['senha'] = hash('sha256', $post['senha']);
-					$gravar['confirmacao_hash'] = NULL;
-					if($colaborador['confirmado_data'] == NULL) {
-						$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+				if ($hash != null) {
+					$valida = $validaFormularios->validaFormularioEsqueciSenhaSenhaColaborador($post);
+					if (empty($valida->getErrors())) {
+						if(!$this->verificaCaptcha($post['h-captcha-response'])) {
+							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
+						} else {
+							$colaboradoresModel = new \App\Models\ColaboradoresModel();
+							$colaborador = $colaboradoresModel->getColaboradorPeloHash($hash);
+							$gravar = array();
+							$gravar['id'] = $colaborador['id'];
+							$gravar['senha'] = hash('sha256', $post['senha']);
+							$gravar['confirmacao_hash'] = NULL;
+							if($colaborador['confirmado_data'] == NULL) {
+								$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+							}
+							$colaboradoresModel->save($gravar);
+							return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
+						}
+					} else {
+						$erros = $valida->getErrors();
+						$string_erros = '';
+						foreach ($erros as $erro) {
+							$string_erros .= $erro . "<br/>";
+						}
+						return $retorno->retorno(false, $string_erros, true);
 					}
-					$colaboradoresModel->save($gravar);
-					return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
-				} else {
-					$erros = $valida->getErrors();
-					$string_erros = '';
-					foreach ($erros as $erro) {
-						$string_erros .= $erro . "<br/>";
-					}
-					return $retorno->retorno(false, $string_erros, true);
 				}
-			}
 		}
 		return view('esqueci', $data);
 	}
@@ -283,49 +288,53 @@ class Site extends BaseController
 			$valida = $validaFormularios->validaFormularioLoginColaborador($post);
 
 			if (empty($valida->getErrors())) {
-				$colaboradoresModel = new \App\Models\ColaboradoresModel();
-				$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
-				if (count($colaborador) > 0) {
-					$colaborador = $colaborador[0];
-					if($colaborador['excluido'] !== NULL) {
-						return $retorno->retorno(false, 'Esta conta está excluída.', true);
-					}
-					if($colaborador['confirmado_data'] === NULL) {
-						$enviaEmail = new \App\Libraries\EnviaEmail();
-						$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
-						return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
-					}
-					if($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
-						return $retorno->retorno(false, 'Sua conta está bloqueada até '.Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
-					}
-
-					$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-					$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
-					
-					if(empty($colaboradoresAtribuicoes)) {
-						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
-					}
-
-					$estrutura_session = [
-						'colaboradores' => [
-							'id' => $colaborador['id'],
-							'nome' => $colaborador['apelido'],
-							'email' => $colaborador['email'],
-							'avatar' => ($colaborador['avatar']!=NULL)?($colaborador['avatar']):(site_url('public/assets/avatar-default.png')),
-							'permissoes' => array()
-						]
-					];
-
-					$permissoes = array();
-					foreach ($colaboradoresAtribuicoes as $atribuicao) {
-						$permissoes[] = $atribuicao['atribuicoes_id'];
-					}
-					$estrutura_session['colaboradores']['permissoes'] = $permissoes;
-
-					$this->session->set($estrutura_session);
-					return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
+				if(!$this->verificaCaptcha($post['h-captcha-response'])) {
+					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
-					return $retorno->retorno(false, 'E-mail ou Senha inválida.', true);
+					$colaboradoresModel = new \App\Models\ColaboradoresModel();
+					$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
+					if (count($colaborador) > 0) {
+						$colaborador = $colaborador[0];
+						if($colaborador['excluido'] !== NULL) {
+							return $retorno->retorno(false, 'Esta conta está excluída.', true);
+						}
+						if($colaborador['confirmado_data'] === NULL) {
+							$enviaEmail = new \App\Libraries\EnviaEmail();
+							$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
+							return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
+						}
+						if($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
+							return $retorno->retorno(false, 'Sua conta está bloqueada até '.Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
+						}
+
+						$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+						$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
+						
+						if(empty($colaboradoresAtribuicoes)) {
+							return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
+						}
+
+						$estrutura_session = [
+							'colaboradores' => [
+								'id' => $colaborador['id'],
+								'nome' => $colaborador['apelido'],
+								'email' => $colaborador['email'],
+								'avatar' => ($colaborador['avatar']!=NULL)?($colaborador['avatar']):(site_url('public/assets/avatar-default.png')),
+								'permissoes' => array()
+							]
+						];
+
+						$permissoes = array();
+						foreach ($colaboradoresAtribuicoes as $atribuicao) {
+							$permissoes[] = $atribuicao['atribuicoes_id'];
+						}
+						$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+						$this->session->set($estrutura_session);
+						return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
+					} else {
+						return $retorno->retorno(false, 'E-mail ou Senha inválida.', true);
+					}
 				}
 			} else {
 				$erros = $valida->getErrors();
