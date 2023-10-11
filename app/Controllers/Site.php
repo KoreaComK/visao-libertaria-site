@@ -205,6 +205,9 @@ class Site extends BaseController
 					$gravar['id'] = $colaborador['id'];
 					$gravar['senha'] = hash('sha256', $post['senha']);
 					$gravar['confirmacao_hash'] = NULL;
+					if($colaborador['confirmado_data'] == NULL) {
+						$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+					}
 					$colaboradoresModel->save($gravar);
 					return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
 				} else {
