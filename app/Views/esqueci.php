@@ -26,7 +26,9 @@
 						placeholder="Digite novamente a Senha" required autofocus />
 				</div>
 			<?php endif; ?>
-
+			<div class="d-flex justify-content-center">
+				<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+			</div>
 			<button class="btn btn-lg btn-primary btn-block btn-submeter" type="button">Enviar</button>
 		</form>
 		<div class="col-12 mb-5">
