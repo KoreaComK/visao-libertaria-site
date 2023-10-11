@@ -172,7 +172,7 @@ class Site extends BaseController
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
 				$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
 				if (empty($valida->getErrors())) {
-					$colaboradoresModel = new \App\Models\ColaboradoresModel(); 
+					$colaboradoresModel = new \App\Models\ColaboradoresModel();
 					$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
 					if($colaborador['excluido'] != NULL) {
 						return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);	
