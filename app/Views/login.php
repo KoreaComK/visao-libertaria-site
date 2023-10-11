@@ -17,6 +17,10 @@
 				<input type="password" id="senha" name="senha" class="form-control" value="<?=$senha_form;?>" placeholder="Senha" required>
 			</div>
 
+			<div class="d-flex justify-content-center">
+				<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+			</div>
+
 			<div class="checkbox mb-3">
 				<label>
 					<input type="checkbox" id="lembrar" name="lembrar" value="lembrar" <?=($email_form!='')?('checked'):('');?>> Lembre-se de mim
