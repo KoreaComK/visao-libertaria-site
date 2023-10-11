@@ -114,16 +114,20 @@ class Site extends BaseController
 
 			$valida = $validaFormularios->validaFormularioCadastroColaborador($post);
 			if (empty($valida->getErrors())) {
-				$colaboradoresModel = new \App\Models\ColaboradoresModel();
-				$gravar = array();
-				$gravar['apelido'] = $colaboradoresModel->db->escapeString($post['apelido']);
-				$gravar['email'] = $post['email'];
-				$gravar['senha'] = hash('sha256', $post['senha']);
-				$gravar['confirmacao_hash'] = hash('sha256', $post['email'] . rand() . $post['senha']);
-				$colaboradoresModel->save($gravar);
-				$enviaEmail = new \App\Libraries\EnviaEmail();
-				$enviaEmail->enviaEmail($gravar['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($gravar['confirmacao_hash']));
-				return $retorno->retorno(true, 'Foi enviado um e-mail para confirmação. Clique no link para ter acesso a área de colaboração.', true);
+				if(!$this->verificaCaptcha($post['h-captcha-response'])) {
+					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
+				} else {
+					$colaboradoresModel = new \App\Models\ColaboradoresModel();
+					$gravar = array();
+					$gravar['apelido'] = $colaboradoresModel->db->escapeString($post['apelido']);
+					$gravar['email'] = $post['email'];
+					$gravar['senha'] = hash('sha256', $post['senha']);
+					$gravar['confirmacao_hash'] = hash('sha256', $post['email'] . rand() . $post['senha']);
+					$colaboradoresModel->save($gravar);
+					$enviaEmail = new \App\Libraries\EnviaEmail();
+					$enviaEmail->enviaEmail($gravar['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($gravar['confirmacao_hash']));
+					return $retorno->retorno(true, 'Foi enviado um e-mail para confirmação. Clique no link para ter acesso a área de colaboração.', true);
+				}
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';
@@ -344,10 +348,29 @@ class Site extends BaseController
 		}
 	}
 
-
 	public function logout()
 	{
 		$this->session->destroy();
 		return redirect()->to(base_url() . 'site/login');
+	}
+
+	private function verificaCaptcha($captcha_response) {
+		$data = array(
+			'secret' => "ES_99f25bb22874418ea4aff1e104784bb3",
+			'response' => $captcha_response
+			);$verify = curl_init();
+		curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
+		curl_setopt($verify, CURLOPT_POST, true);
+		curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($verify);
+		// var_dump($response);
+		$responseData = json_decode($response);
+		if($responseData->success) {
+			return true;
+		} 
+		else {
+			return false;
+		}
 	}
 }
