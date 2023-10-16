@@ -12,6 +12,7 @@ use CodeIgniter\I18n\Time;
 					style="max-height: 120px; max-width:250px;" src="<?= $pauta['imagem']; ?>" />
 				<p class="media-body pb-3 mb-0 small lh-125  border-gray">
 					<strong class="d-block">
+						<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> - 
 						<?= $pauta['titulo']; ?>
 					</strong>
 					<?= $pauta['texto']; ?><br />
