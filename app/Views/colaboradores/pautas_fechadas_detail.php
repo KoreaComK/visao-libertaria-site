@@ -1,3 +1,6 @@
+<?php 
+use CodeIgniter\I18n\Time;
+?>
 <?= $this->extend('layouts/main'); ?>
 
 <?= $this->section('content'); ?>
@@ -24,7 +27,7 @@
 					<p class="card-text"><small class="text-muted">Notícias selecionadas para a pauta</small></p>
 					<p class="card-text">
 					<?php foreach ($pautas['pautas'] as $pauta): ?>
-						<a href="<?= $pauta['link']; ?>" target="_blank"><?= $pauta['titulo']; ?></a><br/>
+						<a href="<?= $pauta['link']; ?>" target="_blank"><?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> - <?= $pauta['titulo']; ?></a><br/>
 					<?php endforeach; ?>
 					</p>
 				</div>

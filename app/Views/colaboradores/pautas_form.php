@@ -1,3 +1,6 @@
+<?php 
+use CodeIgniter\I18n\Time;
+?>
 <?= $this->extend('layouts/main'); ?>
 
 <?= $this->section('content'); ?>
@@ -10,8 +13,10 @@
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
+			<?php if (isset($post)): ?> <div class="mb-3"><label><span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span></label></div><?php endif; ?>
+		
 			<div class="mb-3">
-				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?><a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original.</a><?php endif; ?>
+				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original.</a><?php endif; ?>
 				<div class="input-group">
 					<div class="input-group-prepend">
 						<span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
