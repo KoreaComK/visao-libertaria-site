@@ -9,6 +9,7 @@
 	<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 
 	<style type="text/css">
 		.vl-bg-c,
@@ -55,7 +56,7 @@
 	<link rel="icon" type="image/x-icon" href="<?= base_url('public/favicon.ico'); ?>">
 </head>
 
-	<div class="container-fluid" style="background-image:url(https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj); height: 7vmax; background-size: 100%;">
+	<div class="container-fluid" style="background-image:url(https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj); height: 16.5vw; background-size: 100%;">
 		<div class="row align-items-center py-2 px-lg-5">
 			<div class="col-lg-4">
 				<a href="index" class="navbar-brand d-none d-lg-block">

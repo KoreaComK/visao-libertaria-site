@@ -57,6 +57,9 @@
 						</div>
 					</div>
 					<div class="d-flex justify-content-center">
+						<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+					</div>
+					<div class="d-flex justify-content-center">
 						<button class="btn btn-primary font-weight-semi-bold px-4 btn-submeter"
 							type="button">Cadastrar</button>
 					</div>
