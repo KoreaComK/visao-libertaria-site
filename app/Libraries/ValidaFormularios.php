@@ -35,7 +35,7 @@ class ValidaFormularios extends BaseController
 			],
 			'senha' => [
 				'label' => 'Senha',
-				'rules' => 'required|max_length[50]|min_length[10]|matches[senhaconfirmacao]',
+				'rules' => 'required|max_length[5000]|min_length[10]|matches[senhaconfirmacao]',
 				'errors' => [
 					'min_length' => 'Sua {field} é muito pequena. Quer ser hackeado?',
 					'required' => 'O campo {field} é obrigatório.',
@@ -73,7 +73,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'senha' => [
 				'label' => 'Senha',
-				'rules' => 'required|max_length[50]|min_length[10]|matches[senhaconfirmacao]',
+				'rules' => 'required|max_length[5000]|min_length[10]|matches[senhaconfirmacao]',
 				'errors' => [
 					'min_length' => 'Sua {field} é muito pequena. Quer ser hackeado?',
 					'required' => 'O campo {field} é obrigatório.',
@@ -170,7 +170,7 @@ class ValidaFormularios extends BaseController
 			],
 			'senha_nova' => [
 				'label' => 'Nova Senha',
-				'rules' => 'required|max_length[50]|min_length[10]|matches[senha_nova_confirmacao]',
+				'rules' => 'required|max_length[5000]|min_length[10]|matches[senha_nova_confirmacao]',
 				'errors' => [
 					'min_length' => 'Sua {field} é muito pequena. Quer ser hackeado?',
 					'required' => 'O campo {field} é obrigatório.',
