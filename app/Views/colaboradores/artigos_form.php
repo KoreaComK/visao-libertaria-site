@@ -195,6 +195,7 @@ use CodeIgniter\I18n\Time;
 
 			<?php if ($fase_producao == '2') : ?>
 				<div class="row">
+					<div class="atencao pt-2 pb-2 mb-2 rounded text-center col-md-12 col-12 bg-warning collapse"></div>
 					<div class="col-12 text-center">
 						<button class="btn btn-danger mb-3 col-md-3 reverter" data-toggle="modal" data-target="#modalConfirmacao" id="reverter" type="button">Reverter para Escrita</button>
 						<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3 salvar" id="salvar" type="submit">Salvar
@@ -287,9 +288,11 @@ use CodeIgniter\I18n\Time;
 		if (number < 1000 || number > 2000) {
 			$("#enviar_artigo").prop('disabled', true);
 			$("#narrar").prop('disabled', true);
+			$('.atencao').removeClass('collapse');
+			$('.atencao').html('O artigo não está dentro do tamanho permitido.');
 		} else {
-			$("#enviar_artigo").prop('disabled', false);
-			$("#narrar").prop('disabled', true);
+			$("#enviar_artigo").removeProp('disabled');
+			$("#narrar").removeProp('disabled');
 		}
 		$('#count_message').html(number + " palavra" + s)
 	}
@@ -396,10 +399,14 @@ use CodeIgniter\I18n\Time;
 		$('input').on('click',function() {
 			$('.continuar').prop('disabled', true);
 			$('.salvar').prop('disabled', false);
+			$('.atencao').removeClass('collapse');
+			$('.atencao').html('Salve o artigo antes de enviar para narração.');
 		});
 		$('textarea').on('click',function() {
 			$('.continuar').prop('disabled', true);
 			$('.salvar').prop('disabled', false);
+			$('.atencao').removeClass('collapse');
+			$('.atencao').html('Salve o artigo antes de enviar para narração.');
 		});
 	<?php endif; ?>
 </script>
