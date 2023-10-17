@@ -247,6 +247,10 @@ class Artigos extends BaseController
 				} else {
 					$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
 				}
+			} else {
+				if($data['artigo']['fase_producao_id'] == 2 && $data['artigo']['texto_revisado'] != NULL) {
+					$data['artigo']['texto_original'] = $data['artigo']['texto_revisado'];
+				}
 			}
 
 			$widgetsSite = new \App\Libraries\WidgetsSite();
