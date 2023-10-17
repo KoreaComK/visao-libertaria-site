@@ -286,8 +286,10 @@ use CodeIgniter\I18n\Time;
 		}
 		if (number < 1000 || number > 2000) {
 			$("#enviar_artigo").prop('disabled', true);
+			$("#narrar").prop('disabled', true);
 		} else {
 			$("#enviar_artigo").prop('disabled', false);
+			$("#narrar").prop('disabled', true);
 		}
 		$('#count_message').html(number + " palavra" + s)
 	}
