@@ -188,7 +188,7 @@ use CodeIgniter\I18n\Time;
 
 			<?php if ($fase_producao == '1') : ?>
 				<div class="d-flex justify-content-center">
-					<button class="btn btn-primary btn-lg btn-block mb-3 w-50" id="enviar_artigo" type="submit" disabled>Enviar
+					<button class="btn btn-primary btn-lg btn-block mb-3 w-50" id="enviar_artigo" type="submit">Enviar
 						Artigo</button>
 				</div>
 			<?php endif; ?>
@@ -264,12 +264,14 @@ use CodeIgniter\I18n\Time;
 		}
 	});
 
+	var enabled = true;
+
 	$('#count_message').html('0 palavra');
 	$('#texto_original').keyup(contapalavras);
 	$(document).ready(function() {
 		contapalavras();
 		<?php if ($fase_producao == '2') : ?>
-			$('.salvar').prop('disabled', true);
+			$('.salvar').attr('disabled', true);
 		<?php endif; ?>
 	})
 
@@ -286,13 +288,15 @@ use CodeIgniter\I18n\Time;
 			s = '';
 		}
 		if (number < 1000 || number > 2000) {
-			$("#enviar_artigo").prop('disabled', true);
-			$("#narrar").prop('disabled', true);
+			$("#enviar_artigo").attr('disabled', true);
+			$("#narrar").attr('disabled', true);
 			$('.atencao').removeClass('collapse');
 			$('.atencao').html('O artigo não está dentro do tamanho permitido.');
 		} else {
-			$("#enviar_artigo").removeProp('disabled');
-			$("#narrar").removeProp('disabled');
+			if(enabled) {
+				$("#narrar").removeAttr('disabled');
+			}
+			$("#enviar_artigo").removeAttr('disabled');
 		}
 		$('#count_message').html(number + " palavra" + s)
 	}
@@ -397,16 +401,18 @@ use CodeIgniter\I18n\Time;
 
 	<?php if ($fase_producao == '2') : ?>
 		$('input').on('click',function() {
-			$('.continuar').prop('disabled', true);
-			$('.salvar').prop('disabled', false);
+			$('.continuar').attr('disabled', true);
+			$('.salvar').removeAttr('disabled');
 			$('.atencao').removeClass('collapse');
 			$('.atencao').html('Salve o artigo antes de enviar para narração.');
+			enabled = false;
 		});
 		$('textarea').on('click',function() {
-			$('.continuar').prop('disabled', true);
-			$('.salvar').prop('disabled', false);
+			$('.continuar').attr('disabled', true);
+			$('.salvar').removeAttr('disabled');
 			$('.atencao').removeClass('collapse');
 			$('.atencao').html('Salve o artigo antes de enviar para narração.');
+			enabled = false;
 		});
 	<?php endif; ?>
 </script>
