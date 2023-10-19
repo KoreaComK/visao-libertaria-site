@@ -36,15 +36,17 @@
 			color: #4b515c;
 		}
 
+		.media img {
+			width: auto;
+			height: auto;
+			max-width: 250px;
+			max-height: 120px;
+		}
+			
 		@media screen and (max-width: 600px) {
  			.media {
 				display: block;
 				text-align: center;
-			}
-
-			.media img {
-				width: 20rem;
-				height: auto;
 			}
 
 			.media p {
