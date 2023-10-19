@@ -48,6 +48,24 @@ class Pautas extends BaseController
 
 			$post = service('request')->getPost();
 			$session = $this->session->get('colaboradores');
+			
+			$pautasModel = new \App\Models\PautasModel();
+			$time = new Time('-1 days');
+			$time = $time->toDateTimeString();
+			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
+			if($quantidade_pautas >= 5) {
+				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
+				return view('colaboradores/pautas_form', $data);
+			}
+
+			$time = new Time('-7 days');
+			$time = $time->toDateTimeString();
+			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
+			if($quantidade_pautas >= 20) {
+				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);
+				return view('colaboradores/pautas_form', $data);
+			}
+
 
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
