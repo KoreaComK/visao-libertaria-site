@@ -94,6 +94,12 @@ class PautasModel extends Model
 		return $this;
 	}
 
+	public function getPautasPorUsuario($data, $usuario)
+	{
+		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE colaboradores_id = $usuario AND criado >= '$data'");
+		return $query->getResult('array');
+	}
+
 	protected function cadastraHistoricoUsuarioInserir(array $dados)
 	{
 		return $this->cadastraHistoricoUsuario($dados, 'inserir');
