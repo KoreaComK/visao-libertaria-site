@@ -16,6 +16,14 @@ class Admin extends BaseController
 		helper('url_friendly,data');
 	}
 
+	public function administracao()
+	{
+
+		$this->verificaPermissao->PermiteAcesso('7');
+		$data=array();
+		return view('colaboradores/administracao', $data);
+	}
+
 	public function permissoes($idColaboradores = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('9');
