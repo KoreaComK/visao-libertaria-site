@@ -21,7 +21,7 @@ class Admin extends BaseController
 
 		$this->verificaPermissao->PermiteAcesso('7');
 		$data=array();
-		return view('colaboradores/administracao', $data);
+		return view('colaboradores/administracao_detail', $data);
 	}
 
 	public function permissoes($idColaboradores = NULL)
