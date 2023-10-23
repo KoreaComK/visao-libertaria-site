@@ -13,12 +13,12 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Apelido',
-				'rules' => 'required|max_length[255]|string|is_unique[colaboradores.apelido]|alpha_numeric_space|min_length[6]',
+				'rules' => 'required|max_length[20]|string|is_unique[colaboradores.apelido]|alpha_numeric_space|min_length[6]',
 				'errors' => [
 					//'required' => 'O campo ({value}) for {field} must have at least {param} characters.',
 					'required' => 'O campo {field} é obrigatório.',
-					'alpha_numeric_space' => 'O campo {field} aceita apenas letras, números e espaço.',
-					'max_length' => 'O campo {field} tem que ter menos que 255 caracteres.',
+					'alpha_numeric_space' => 'O campo {field} aceita apenas letras, números e espaço. Sem acentuação.',
+					'max_length' => 'O campo {field} tem que ter menos que {param} caracteres.',
 					'min_length' => 'O campo {field} tem que ter pelo menos 6 caracteres.',
 					'is_unique' => 'O apelido {value} já está sendo utilizado por outro colaborador.',
 				],
@@ -117,10 +117,10 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Nome Público (Apelido)',
-				'rules' => 'required|max_length[255]|alpha_numeric_space|is_unique[colaboradores.apelido,id,' . $id . ']',
+				'rules' => 'required|max_length[20]|alpha_numeric_space|is_unique[colaboradores.apelido,id,' . $id . ']',
 				'errors' => [
-					'max_length' => 'Apelido grande demais.',
-					'alpha_numeric_space' => '{field} aceita apenas letras, números e espaço.',
+					'max_length' => 'Apelido grande demais. O tamanho máximo é de {param} caracteres.',
+					'alpha_numeric_space' => '{field} aceita apenas letras, números e espaço. Sem acentuação.',
 					'required' => 'O campo {field} é obrigatório.',
 					'is_unique' => 'O apelido já está sendo utilizado por outro colaborador.',
 				],
