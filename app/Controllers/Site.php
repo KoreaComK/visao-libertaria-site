@@ -158,7 +158,7 @@ class Site extends BaseController
 				$gravar['atualizado'] = $gravar['confirmado_data'];
 				$colaboradoresModel->save($gravar);
 				$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
-				//$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);	
+				$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
 			}
 			return redirect()->to(base_url() . 'site/login');
 		}
@@ -215,6 +215,9 @@ class Site extends BaseController
 							$gravar['confirmacao_hash'] = NULL;
 							if($colaborador['confirmado_data'] == NULL) {
 								$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+								$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+								$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
+								$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
 							}
 							$colaboradoresModel->save($gravar);
 							return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
