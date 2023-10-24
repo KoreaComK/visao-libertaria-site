@@ -74,6 +74,7 @@ class Inicializandobancodados extends BaseController
 		`arquivo_audio` varchar(255) DEFAULT null,
 		`narrado_colaboradores_id` int DEFAULT null,
 		`link_produzido` varchar(255) DEFAULT null,
+		`link_shorts` VARCHAR(255) NULL, 
 		`produzido_colaboradores_id` int DEFAULT null,
 		`publicado` datetime DEFAULT null,
 		`publicado_colaboradores_id` int DEFAULT null,

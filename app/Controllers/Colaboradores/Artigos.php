@@ -372,6 +372,7 @@ class Artigos extends BaseController
 					$artigo['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 					$artigo['palavras_produtor'] = $artigo['palavras_revisor'];
 					$artigo['link_produzido'] = $post['video_link'];
+					$artigo['link_shorts'] = $post['shorts_link'];
 					$faseProducaoModel = new \App\Models\FaseProducaoModel();
 
 					$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
@@ -712,6 +713,7 @@ class Artigos extends BaseController
 		}
 		if ($faseProducao['etapa_anterior'] == '3') {
 			$artigo['link_produzido'] = NULL;
+			$artigo['link_shorts'] = NULL;
 			$artigo['produzido_colaboradores_id'] = NULL;
 			$artigo['arquivo_audio'] = NULL;
 			$artigo['narrado_colaboradores_id'] = NULL;
@@ -720,6 +722,7 @@ class Artigos extends BaseController
 			$artigo['publicado'] = NULL;
 			$artigo['publicado_colaboradores_id'] = NULL;
 			$artigo['link_produzido'] = NULL;
+			$artigo['link_shorts'] = NULL;
 			$artigo['produzido_colaboradores_id'] = NULL;
 		}
 		//$retorno = $artigosModel->save($artigo);

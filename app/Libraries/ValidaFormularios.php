@@ -328,6 +328,14 @@ class ValidaFormularios extends BaseController
 					'max_length' => 'O campo {field} é muito grande. O máximo é {param} caracteres',
 					'valid_url_strict' => 'O campo {field} precisa ser uma URL válida.',
 				],
+			],
+			'shorts_link' => [
+				'label' => 'Link do Shorts',
+				'rules' => 'permit_empty|max_length[255]|valid_url_strict',
+				'errors' => [
+					'max_length' => 'O campo {field} é muito grande. O máximo é {param} caracteres',
+					'valid_url_strict' => 'O campo {field} precisa ser uma URL válida.',
+				],
 			]
 		]);
 		$validation->run($post);
