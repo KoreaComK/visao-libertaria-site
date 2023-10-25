@@ -31,7 +31,7 @@ class PagamentosModel extends Model
 	// Callbacks
 	protected $allowCallbacks = true;
 	// protected $beforeInsert   = [];
-	protected $afterInsert = ['cadastraHistoricoUsuarioInserir'];
+	//protected $afterInsert = ['cadastraHistoricoUsuarioInserir'];
 	// protected $beforeUpdate   = [];
 	// protected $afterUpdate = ['cadastraHistoricoUsuarioAlterar'];
 	// protected $beforeFind     = [];
