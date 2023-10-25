@@ -37,6 +37,10 @@ use CodeIgniter\I18n\Time;
 						<p>Obrigado por sua audiência. Se você gostou do vídeo, compartilhe em suas redes sociais. Caso
 							deseje ser avisado de outros vídeos, clique em se inscrever e depois no botão da campainha.
 							Até a próxima.</p>
+						<p>
+							<b>Referências:</b><br/>
+							<?= str_replace("\n", "<br/>", $artigo['referencias']); ?>
+						</p>
 					</div>
 				</div>
 			</div>
