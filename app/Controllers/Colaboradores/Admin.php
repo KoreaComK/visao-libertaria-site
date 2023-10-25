@@ -295,9 +295,9 @@ class Admin extends BaseController
 		$gravar['multiplicador_narrado'] = $post['multiplicador_narrado'];
 		$gravar['multiplicador_produzido'] = $post['multiplicador_produzido'];
 		$gravar['hash_transacao'] = $post['hash_transacao'];
-		$pagamentosModel->db->transStart();
+		//$pagamentosModel->db->transStart();
 		$idPagamentos = $pagamentosModel->insert($gravar);
-		$pagamentosModel->db->transComplete();
+		//$pagamentosModel->db->transComplete();
 
 		$faseProducao = $faseProducaoModel->find(6);
 		$faseProducao = $faseProducao['etapa_posterior'];
