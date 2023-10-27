@@ -13,7 +13,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Apelido',
-				'rules' => 'required|max_length[20]|string|is_unique[colaboradores.apelido]|alpha_numeric_space|min_length[6]',
+				'rules' => 'required|max_length[40]|string|is_unique[colaboradores.apelido]|alpha_numeric_space|min_length[6]',
 				'errors' => [
 					//'required' => 'O campo ({value}) for {field} must have at least {param} characters.',
 					'required' => 'O campo {field} é obrigatório.',
@@ -117,7 +117,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Nome Público (Apelido)',
-				'rules' => 'required|max_length[20]|alpha_numeric_space|is_unique[colaboradores.apelido,id,' . $id . ']',
+				'rules' => 'required|max_length[40]|alpha_numeric_space|is_unique[colaboradores.apelido,id,' . $id . ']',
 				'errors' => [
 					'max_length' => 'Apelido grande demais. O tamanho máximo é de {param} caracteres.',
 					'alpha_numeric_space' => '{field} aceita apenas letras, números e espaço. Sem acentuação.',
