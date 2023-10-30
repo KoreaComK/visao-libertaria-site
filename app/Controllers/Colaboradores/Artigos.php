@@ -871,7 +871,7 @@ class Artigos extends BaseController
 				$retorno = $artigosModel->save($dados);
 				break;
 			case 'delete':
-				$retorno = $artigosModel->delete($id);
+				$retorno = $artigosModel->delete($dados['id']);
 				break;
 			default:
 				$retorno = false;
