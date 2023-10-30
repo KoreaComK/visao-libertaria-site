@@ -18,9 +18,37 @@ class Admin extends BaseController
 
 	public function administracao()
 	{
-
 		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if ($this->request->isAJAX()) {
+			$post = $this->request->getPost();
+			foreach($post as $indice => $dado) {
+				$gravar = array();
+				if($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
+					$indice = 'cron_pautas_data_delete';
+					$gravar[$indice] = $post['cron_pautas_data_delete_number'].' '.$post['cron_pautas_data_delete_time'];
+				} else {
+					$gravar[$indice] = $dado;
+				}
+				if(!$configuracaoModel->update($indice, array('config_valor'=>$gravar[$indice]))) {
+					return $retorno->retorno(false, 'Erro ao atualizar as configurações.', true);
+				}
+			}
+			return $retorno->retorno(true, 'Atualização feita com sucesso.', true);
+		}
+
+
+
+
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
 		$data=array();
+		foreach($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
 		return view('colaboradores/administracao_detail', $data);
 	}
 

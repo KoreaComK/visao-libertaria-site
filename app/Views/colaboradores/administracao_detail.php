@@ -11,24 +11,31 @@ use CodeIgniter\I18n\Time;
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
+				<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 				<ul class="nav nav-tabs" id="myTab" role="tablist">
 					<li class="nav-item" role="presentation">
-						<button class="nav-link active" id="cron-tab" data-toggle="tab" data-target="#cron" type="button" role="tab" aria-controls="cron" aria-selected="true">Cron</button>
+						<button class="nav-link active" id="cron-tab" data-toggle="tab" data-target="#cron"
+							type="button" role="tab" aria-controls="cron" aria-selected="true">Cron</button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="pautas-tab" data-toggle="tab" data-target="#pautas" type="button" role="tab" aria-controls="pautas" aria-selected="false">Pautas</button>
+						<button class="nav-link" id="pautas-tab" data-toggle="tab" data-target="#pautas" type="button"
+							role="tab" aria-controls="pautas" aria-selected="false">Pautas</button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="gerais-tab" data-toggle="tab" data-target="#gerais" type="button" role="tab" aria-controls="gerais" aria-selected="false">Geral</button>
+						<button class="nav-link" id="gerais-tab" data-toggle="tab" data-target="#gerais" type="button"
+							role="tab" aria-controls="gerais" aria-selected="false">Geral</button>
 					</li>
 				</ul>
 				<div class="tab-content" id="myTabContent">
-					<div class="tab-pane fade d-flex justify-content-center mt-2 show active" id="cron" role="tabpanel" aria-labelledby="cron-tab">
-						<form class="col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
+					<div class="tab-pane fade d-flex justify-content-center mt-2 show active" id="cron" role="tabpanel"
+						aria-labelledby="cron-tab">
+						<form class="col-12" novalidate="yes" method="post" id="pautas_form">
 							<div class="mb-3">
-								<label for="username">Hash do Cron</label>
+								<label for="username">Hash do Cron <span class="text-muted">Ao alterar o hash, é necessário alterar o Cron no servidor</span></label>
 								<div class="input-group">
-									<input type="text" class="form-control" id="cron_hash" placeholder="Hash do Cron" name="cron_hash" required value="<?= (isset($post)) ? ($post['cron_hash']) : (''); ?>">
+									<input type="text" class="form-control" id="cron_hash" placeholder="Hash do Cron"
+										name="cron_hash" required
+										value="<?= (isset($dados['cron_hash'])) ? ($dados['cron_hash']) : (''); ?>">
 								</div>
 							</div>
 
@@ -38,9 +45,11 @@ use CodeIgniter\I18n\Time;
 
 							<div class="mb-3">
 								<label for="titulo">Habilitar exclusão das pautas</label>
-								<select class="custom-select" id="status">
-									<option selected value="A">Ativar</option>
-									<option value="I">Inativar</option>
+								<select class="custom-select" id="cron_pautas_status_delete" name="cron_pautas_status_delete">
+									<option value="1" <?= (isset($dados['cron_pautas_status_delete']) && $dados['cron_pautas_status_delete'] == '1') ? ('selected') : (''); ?>>Ativar
+									</option>
+									<option value="0" <?= (isset($dados['cron_pautas_status_delete']) && $dados['cron_pautas_status_delete'] == '0') ? ('selected') : (''); ?>>Inativar
+									</option>
 								</select>
 							</div>
 
@@ -48,20 +57,26 @@ use CodeIgniter\I18n\Time;
 								<label for="titulo">Data limite para exclusão</label>
 								<div class="form-row">
 									<div class="col-md-8 mb-8">
-										<input type="number" class="form-control" id="cron_pautas_data_delete_number" placeholder="Data para exclusão" name="cron_pautas_data_delete_number" required value="<?= (isset($post)) ? ($post['cron_pautas_data_delete_number']) : (''); ?>">
+										<input type="number" class="form-control" id="cron_pautas_data_delete_number"
+											placeholder="Data para exclusão" name="cron_pautas_data_delete_number"
+											required min="1"
+											value="<?= (isset($dados['cron_pautas_data_delete'])) ? (explode(' ', $dados['cron_pautas_data_delete'])[0]) : (''); ?>">
 									</div>
 									<div class="col-md-4 mb-4">
-										<select class="custom-select" id="cron_pautas_data_delete_time" name="cron_pautas_data_delete_time">
-											<option selected value="days">dia(s)</option>
-											<option value="weeks">semana(s)</option>
-											<option value="months">mes(es)</option>
-											<option value="years">ano(s)</option>
+										<select class="custom-select" id="cron_pautas_data_delete_time"
+											name="cron_pautas_data_delete_time">
+											<option selected value="days" <?= (isset($dados['cron_pautas_data_delete']) && explode(' ', $dados['cron_pautas_data_delete'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+											<option value="weeks" <?= (isset($dados['cron_pautas_data_delete']) && explode(' ', $dados['cron_pautas_data_delete'])[1] == 'weeks') ? ('selected') : (''); ?>>semana(s)</option>
+											<option value="months" <?= (isset($dados['cron_pautas_data_delete']) && explode(' ', $dados['cron_pautas_data_delete'])[1] == 'months') ? ('selected') : (''); ?>>mes(es)</option>
+											<option value="years" <?= (isset($dados['cron_pautas_data_delete']) && explode(' ', $dados['cron_pautas_data_delete'])[1] == 'years') ? ('selected') : (''); ?>>ano(s)</option>
 										</select>
 									</div>
 								</div>
 							</div>
 
-							<button class="btn btn-primary btn-block mb-3" type="submit">Salvar alterações do Cron</button>
+							<button class="btn btn-primary btn-block mb-3 salvar-config" type="button">Salvar alterações
+								do
+								Cron</button>
 						</form>
 					</div>
 					<div class="tab-pane fade" id="pautas" role="tabpanel" aria-labelledby="pautas-tab">...</div>
@@ -72,5 +87,38 @@ use CodeIgniter\I18n\Time;
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(".salvar-config").on("click", function () {
+		form = new FormData(pautas_form);
+		submit(form);
+	});
+
+	function submit(form) {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/admin/administracao'); ?>",
+			method: "POST",
+			data: form,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function () { $('#modal-loading').modal('show'); },
+			complete: function () { $('#modal-loading').modal('hide'); },
+			success: function (retorno) {
+				$('.mensagem').show();
+				$('.mensagem').html(retorno.mensagem);
+				if (retorno.status) {
+					$('.mensagem').removeClass('bg-danger');
+					$('.mensagem').addClass('bg-success');
+				} else {
+					$('.mensagem').addClass('bg-danger');
+					$('.mensagem').removeClass('bg-success');
+				}
+			}
+		});
+	}
+</script>
+
 
 <?= $this->endSection(); ?>

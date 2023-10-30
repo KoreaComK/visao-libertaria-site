@@ -128,7 +128,7 @@
 									<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">Administração</a>
 									<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
 										<?php if (isset($_SESSION) && in_array('7', $_SESSION['colaboradores']['permissoes'])) : ?>
-											<a href="#" class="dropdown-item">Configuração</a>
+											<a href="<?= site_url('colaboradores/admin/administracao'); ?>" class="dropdown-item">Configuração do Site</a>
 										<?php endif; ?>
 										<?php if (isset($_SESSION) && in_array('8', $_SESSION['colaboradores']['permissoes'])) : ?>
 											<a href="<?= site_url('colaboradores/admin/financeiro'); ?>" class="dropdown-item">Financeiro</a>
