@@ -27,11 +27,12 @@ use CodeIgniter\I18n\Time;
 					</li>
 				</ul>
 				<div class="tab-content" id="myTabContent">
-					<div class="tab-pane fade d-flex justify-content-center mt-2 show active" id="cron" role="tabpanel"
+					<div class="tab-pane fade justify-content-center mt-2 show active" id="cron" role="tabpanel"
 						aria-labelledby="cron-tab">
-						<form class="col-12" novalidate="yes" method="post" id="pautas_form">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="cron_form">
 							<div class="mb-3">
-								<label for="username">Hash do Cron <span class="text-muted">Ao alterar o hash, é necessário alterar o Cron no servidor</span></label>
+								<label for="username">Hash do Cron <span class="text-muted">Ao alterar o hash, é
+										necessário alterar o Cron no servidor</span></label>
 								<div class="input-group">
 									<input type="text" class="form-control" id="cron_hash" placeholder="Hash do Cron"
 										name="cron_hash" required
@@ -45,7 +46,8 @@ use CodeIgniter\I18n\Time;
 
 							<div class="mb-3">
 								<label for="titulo">Habilitar exclusão das pautas</label>
-								<select class="custom-select" id="cron_pautas_status_delete" name="cron_pautas_status_delete">
+								<select class="custom-select" id="cron_pautas_status_delete"
+									name="cron_pautas_status_delete">
 									<option value="1" <?= (isset($dados['cron_pautas_status_delete']) && $dados['cron_pautas_status_delete'] == '1') ? ('selected') : (''); ?>>Ativar
 									</option>
 									<option value="0" <?= (isset($dados['cron_pautas_status_delete']) && $dados['cron_pautas_status_delete'] == '0') ? ('selected') : (''); ?>>Inativar
@@ -74,12 +76,39 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<button class="btn btn-primary btn-block mb-3 salvar-config" type="button">Salvar alterações
+							<button class="btn btn-primary btn-block mb-3 salvar-config-cron" type="button">Salvar alterações
 								do
 								Cron</button>
 						</form>
 					</div>
-					<div class="tab-pane fade" id="pautas" role="tabpanel" aria-labelledby="pautas-tab">...</div>
+					<div class="tab-pane fade" id="pautas" role="tabpanel" aria-labelledby="pautas-tab">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="pautas_form">
+							<div class="mb-3">
+								<h4>Limites</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="limite_pautas_diario">Limites DIÁRIOS de Pautas</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="limite_pautas_diario"
+										placeholder="Data para exclusão" name="limite_pautas_diario" required min="1"
+										value="<?= (isset($dados['limite_pautas_diario'])) ? ($dados['limite_pautas_diario']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="limite_pautas_semanal">Limites SEMANAIS de Pautas</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="limite_pautas_semanal"
+										placeholder="Data para exclusão" name="limite_pautas_semanal" required min="1"
+										value="<?= (isset($dados['limite_pautas_semanal'])) ? ($dados['limite_pautas_semanal']) : (''); ?>">
+								</div>
+							</div>
+
+							<button class="btn btn-primary btn-block mb-3 salvar-config-pautas" type="button">Salvar alterações
+								das Pautas</button>
+						</form>
+					</div>
 					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">...</div>
 				</div>
 
@@ -89,7 +118,12 @@ use CodeIgniter\I18n\Time;
 </div>
 
 <script type="text/javascript">
-	$(".salvar-config").on("click", function () {
+	$(".salvar-config-cron").on("click", function () {
+		form = new FormData(cron_form);
+		submit(form);
+	});
+
+	$(".salvar-config-pautas").on("click", function () {
 		form = new FormData(pautas_form);
 		submit(form);
 	});
