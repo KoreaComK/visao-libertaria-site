@@ -329,6 +329,7 @@ class Admin extends BaseController
 
 		$faseProducao = $faseProducaoModel->find(6);
 		$faseProducao = $faseProducao['etapa_posterior'];
+		$pontuacaoTotalPagamento = 0;
 		foreach ($artigos as $artigo) {
 			
 			$pagamentosArtigosModel->save(
@@ -340,18 +341,34 @@ class Admin extends BaseController
 
 			$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_escritor'];
+			if($colaborador['carteira']!=NULL) {
+				$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
+				$pontuacaoTotalPagamento+=$pontos;	
+			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['revisado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_revisor'];
+			if($colaborador['carteira']!=NULL) {
+				$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
+				$pontuacaoTotalPagamento+=$pontos;
+			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['narrado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_narrador'];
+			if($colaborador['carteira']!=NULL) {
+				$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
+				$pontuacaoTotalPagamento+=$pontos;
+			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['produzido_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_produtor'];
+			if($colaborador['carteira']!=NULL) {
+				$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
+				$pontuacaoTotalPagamento+=$pontos;
+			}
 			$colaboradoresModel->save($colaborador);
 
 			$art = array();
@@ -359,6 +376,7 @@ class Admin extends BaseController
 			$art['fase_producao_id'] = $faseProducao;
 			$artigosModel->update($artigo['id'], $art);
 		}
+		$pagamentosModel->update($idPagamentos,array('pontuacao_total'=>$pontuacaoTotalPagamento));
 		return true;
 	}
 }
