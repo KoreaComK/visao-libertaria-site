@@ -148,6 +148,7 @@ class Inicializandobancodados extends BaseController
 			`multiplicador_narrado` float DEFAULT 0,
 			`multiplicador_produzido` float DEFAULT 0,
 			`hash_transacao` varchar(256) DEFAULT null,
+			`pontuacao_total` float DEFAULT null,
 			`criado` datetime DEFAULT now(),
 			`atualizado` datetime DEFAULT now()
 		);

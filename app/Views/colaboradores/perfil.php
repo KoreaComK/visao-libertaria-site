@@ -1,3 +1,6 @@
+<?php
+use CodeIgniter\I18n\Time;
+?>
 <?= $this->extend('layouts/main'); ?>
 
 <?= $this->section('content'); ?>
@@ -40,31 +43,25 @@
 						</ul>
 					</div>
 				</div>
-				<!-- <div class="card mb-3">
+				<div class="card mb-3">
 					<div class="card-body text-center">
 						<div class="border-light">
 							<h4 class="text-normal mt-1 mb-2 fw-normal">Histórico total</h4>
 						</div>
 						<div class="row">
-							<div class="col-6 border-end border-light">
-								<h6 class="text-muted mt-1 mb-2 fw-normal">Colaborações</h6>
-								<h3 class="mb-0 fw-bold">
-									<?= number_format($contribuicoes_total['colaboracoes'], 0, ',', '.'); ?>
-								</h3>
-							</div>
-							<div class="col-6 border-end border-light">
+							<div class="col-12 border-end border-light">
 								<h6 class="text-muted mt-1 mb-2 fw-normal">Pontuações</h6>
 								<h3 class="mb-0 fw-bold">
-									<?= number_format($contribuicoes_total['pontos'], 0, ',', '.'); ?>
+									<?= number_format($contribuicoes_total, 0, ',', '.'); ?>
 								</h3>
 							</div>
 						</div>
 						<div class="border-light">
 							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-toggle="modal"
-									data-target="#modal-pagamentos">Ver Pagamentos</a></h6>
+								data-target="#modal-pagamentos">Ver Pagamentos</a></h6>
 						</div>
 					</div>
-				</div> -->
+				</div>
 			</div>
 			<div class="col-lg-8">
 				<div class="card mb-3">
@@ -240,38 +237,42 @@
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ($lista_artigos_mes as $chave => $artigo): ?>
-							<?php $total = 0; ?>
-							<tr>
-								<th scope="row">
-									<?= $chave + 1 ?>
-								</th>
-								<td><a
-										href="<?= site_url('/site/artigo/' . $artigo['url_friendly']); ?>"><?= $artigo['titulo']; ?></a>
-								</td>
-								<td>
-									<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
-										<?php $total += $artigo['pontos_escritor']; ?>
-										<label class="badge badge-info">Escritor</label>
-									<?php endif; ?>
-									<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
-										<?php $total += $artigo['pontos_revisor']; ?>
-										<label class="badge badge-info">Revisor</label>
-									<?php endif; ?>
-									<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
-										<?php $total += $artigo['pontos_narrador']; ?>
-										<label class="badge badge-info">Narrador</label>
-									<?php endif; ?>
-									<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
-										<?php $total += $artigo['pontos_produtor']; ?>
-										<label class="badge badge-info">Produtor</label>
-									<?php endif; ?>
-								</td>
-								<td>
-									<?= number_format($total, 0, ',', '.'); ?>
-								</td>
-							</tr>
-						<?php endforeach; ?>
+						<?php if (empty($lista_artigos_mes)): ?>
+							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+						<?php else: ?>
+							<?php foreach ($lista_artigos_mes as $chave => $artigo): ?>
+								<?php $total = 0; ?>
+								<tr>
+									<th scope="row">
+										<?= $chave + 1 ?>
+									</th>
+									<td><a
+											href="<?= site_url('/site/artigo/' . $artigo['url_friendly']); ?>"><?= $artigo['titulo']; ?></a>
+									</td>
+									<td>
+										<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
+											<?php $total += $artigo['pontos_escritor']; ?>
+											<label class="badge badge-info">Escritor</label>
+										<?php endif; ?>
+										<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
+											<?php $total += $artigo['pontos_revisor']; ?>
+											<label class="badge badge-info">Revisor</label>
+										<?php endif; ?>
+										<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
+											<?php $total += $artigo['pontos_narrador']; ?>
+											<label class="badge badge-info">Narrador</label>
+										<?php endif; ?>
+										<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
+											<?php $total += $artigo['pontos_produtor']; ?>
+											<label class="badge badge-info">Produtor</label>
+										<?php endif; ?>
+									</td>
+									<td>
+										<?= number_format($total, 0, ',', '.'); ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
 					</tbody>
 				</table>
 			</div>
@@ -284,7 +285,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Colaborações deste mês</h5>
+				<h5 class="modal-title" id="modal-perfilLabel">Pagamentos pelas Contribuições</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -293,38 +294,29 @@
 				<table class="table table-striped">
 					<thead>
 						<tr>
-							<th scope="col">Mês referência</th>
+							<th scope="col">Data Pagamento</th>
 							<th scope="col">Hash da Transação</th>
-							<th scope="col">Pontos do mês</th>
+							<th scope="col">Pontos totais</th>
+							<th scope="col">Sats/Pontos</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<th scope="row">Dez/2020</td>
-							<td>
-								<a
-									href="https://mempool.space/pt/tx/e06cf2da2b10bcebd45b45b0eadb5577fc6391d0cd73f61a46f1714913fbeebe">
-									e06cf2...beebe
-								</a>
-							</td>
-							<td>2.952</td>
-						</tr>
-						<tr>
-							<th scope="row">Jan/2021</th>
-							<td><a
-									href="https://mempool.space/pt/tx/e06cf2da2b10bcebd45b45b0eadb5577fc6391d0cd73f61a46f1714913fbeebe">
-									e06cf2...beebe
-								</a></td>
-							<td>9.480</td>
-						</tr>
-						<tr>
-							<th scope="row">Fev/2022</th>
-							<td><a
-									href="https://mempool.space/pt/tx/e06cf2da2b10bcebd45b45b0eadb5577fc6391d0cd73f61a46f1714913fbeebe">
-									e06cf2...beebe
-								</a></td>
-							<td>1.698</td>
-						</tr>
+						<?php if (empty($lista_pagamentos)): ?>
+							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+						<?php else: ?>
+							<?php foreach ($lista_pagamentos as $indice => $pagamento): ?>
+							<tr>
+								<th scope="row"><?= Time::createFromFormat('Y-m-d H:i:s', $pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?></td>
+								<td>
+									<a href="https://mempool.space/pt/tx/<?=$pagamento['hash_transacao'];?>" target="_blank">
+										<?=substr($pagamento['hash_transacao'],0,5);?>...<?=substr($pagamento['hash_transacao'],-5,5);?>
+									</a>
+								</td>
+								<td><?=number_format($pagamento['pontuacao_total'], 0, ',', '.');?></td>
+								<td><?=number_format(($pagamento['quantidade_bitcoin']*100000000)/$pagamento['pontuacao_total'], 0, ',', '.');?> sats</td>
+							</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
 					</tbody>
 				</table>
 			</div>
