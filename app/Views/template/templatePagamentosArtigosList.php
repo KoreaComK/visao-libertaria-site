@@ -50,7 +50,7 @@ use CodeIgniter\I18n\Time;
 				<th scope="row" colspan="5">Total de Pontos</th>
 				<td>
 				<td>
-					<?= $total; ?>
+					<?= number_format($total, 0, ',', '.');?>
 				</td>
 			</tr>
 		</tbody>
@@ -104,7 +104,7 @@ use CodeIgniter\I18n\Time;
 				<th scope="row" colspan="5">Total de Pontos</th>
 				<td>
 				<td>
-					<?= $total; ?>
+					<?= number_format($total, 0, ',', '.');?>
 				</td>
 			</tr>
 		</tbody>
