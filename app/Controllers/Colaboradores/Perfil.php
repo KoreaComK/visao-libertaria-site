@@ -108,9 +108,11 @@ class Perfil extends BaseController
 
 		$data['contribuicoes_mensal'] = $this->widgetContribuicoes($session, null, array(6));
 
-		$data['contribuicoes_total'] = $this->widgetContribuicoes($session, null, array(6));
+		$data['contribuicoes_total'] = $data['colaboradores']['pontuacao_total'];
 
 		$data['lista_artigos_mes'] = $this->widgetArtigosContribuicoes($session, null, array(6));
+
+		$data['lista_pagamentos'] = $this->widgetPagamentos();
 
 		return view('colaboradores/perfil', $data);
 	}
@@ -137,8 +139,11 @@ class Perfil extends BaseController
 		return $artigos;
 	}
 
-	private function widgetPagamentos($colaborador)
+	private function widgetPagamentos()
 	{
+		$pagamentosModel = new \App\Models\PagamentosModel();
+		$pagamentos = $pagamentosModel->getPagamentos()->get()->getResultArray();
+		return $pagamentos;
 	}
 
 	private function gravarColaborador($tipo, $dados, $id = null)
