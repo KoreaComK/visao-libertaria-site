@@ -32,6 +32,8 @@ class Pautas extends BaseController
 		$data['config'] = array();
 		$data['config']['pauta_tamanho_maximo'] = $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'];
 		$data['config']['pauta_tamanho_minimo'] = $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'];
+		$data['config']['limite_pautas_diario'] = $configuracaoModel->find('limite_pautas_diario')['config_valor'];
+		$data['config']['limite_pautas_semanal'] = $configuracaoModel->find('limite_pautas_semanal')['config_valor'];
 
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['titulo'] = 'Sugira uma pauta';
@@ -59,7 +61,7 @@ class Pautas extends BaseController
 			$time = new Time('-1 days');
 			$time = $time->toDateTimeString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
-			if($quantidade_pautas >= 5) {
+			if($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
@@ -67,7 +69,7 @@ class Pautas extends BaseController
 			$time = new Time('-7 days');
 			$time = $time->toDateTimeString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
-			if($quantidade_pautas >= 20) {
+			if($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
