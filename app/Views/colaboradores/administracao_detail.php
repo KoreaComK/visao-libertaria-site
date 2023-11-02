@@ -84,7 +84,7 @@ use CodeIgniter\I18n\Time;
 					<div class="tab-pane fade" id="pautas" role="tabpanel" aria-labelledby="pautas-tab">
 						<form class="col-12 mt-4" novalidate="yes" method="post" id="pautas_form">
 							<div class="mb-3">
-								<h4>Limites</h4>
+								<h4>Limites de Envio</h4>
 							</div>
 
 							<div class="mb-3">
@@ -102,6 +102,28 @@ use CodeIgniter\I18n\Time;
 									<input type="number" class="form-control" id="limite_pautas_semanal"
 										placeholder="Data para exclusão" name="limite_pautas_semanal" required min="1"
 										value="<?= (isset($dados['limite_pautas_semanal'])) ? ($dados['limite_pautas_semanal']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<h4>Limites de Escrita</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="pauta_tamanho_minimo">Tamanho Mínimo da Pauta</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="pauta_tamanho_minimo"
+										placeholder="Data para exclusão" name="pauta_tamanho_minimo" required min="1"
+										value="<?= (isset($dados['pauta_tamanho_minimo'])) ? ($dados['pauta_tamanho_minimo']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="pauta_tamanho_maximo">Tamanho Máximo da Pauta</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="pauta_tamanho_maximo"
+										placeholder="Data para exclusão" name="pauta_tamanho_maximo" required min="1"
+										value="<?= (isset($dados['pauta_tamanho_maximo'])) ? ($dados['pauta_tamanho_maximo']) : (''); ?>">
 								</div>
 							</div>
 
