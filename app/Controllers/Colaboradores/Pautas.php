@@ -26,7 +26,13 @@ class Pautas extends BaseController
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
+		
 		$data = array();
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$data['config'] = array();
+		$data['config']['pauta_tamanho_maximo'] = $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'];
+		$data['config']['pauta_tamanho_minimo'] = $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'];
+
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['titulo'] = 'Sugira uma pauta';
 
@@ -66,10 +72,14 @@ class Pautas extends BaseController
 				return view('colaboradores/pautas_form', $data);
 			}
 
-
+			$gerenciadorTextos = new \App\Libraries\GerenciadorTextos();
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
+				if($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
+					$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
+					return view('colaboradores/pautas_form', $data);
+				}
 				$dados = array();
 				$dados['colaboradores_id'] = $session['id'];
 				$dados['link'] = $post['link'];

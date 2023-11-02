@@ -13,10 +13,10 @@ use CodeIgniter\I18n\Time;
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
-			<?php if (isset($post)): ?> <div class="mb-3"><label><span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span></label></div><?php endif; ?>
+			<?php if (isset($post['criado'])): ?> <div class="mb-3"><label><span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span></label></div><?php endif; ?>
 		
 			<div class="mb-3">
-				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original.</a><?php endif; ?>
+				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original</a><?php endif; ?>
 				<div class="input-group">
 					<div class="input-group-prepend">
 						<span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -27,7 +27,7 @@ use CodeIgniter\I18n\Time;
 									d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
 							</svg></span>
 					</div>
-					<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
+					<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta" <?=(isset($post['id']))?('disabled'):(''); ?>
 						name="link" onblur="getInformationLink(this.value)" required value="<?=(isset($post))?($post['link']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
 			</div>
@@ -38,7 +38,7 @@ use CodeIgniter\I18n\Time;
 			</div>
 
 			<div class="mb-3">
-				<label for="address">Texto <span class="text-muted">Máx. 100 palavras. Mín. 10 palavras.</span> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
+				<label for="address">Texto <span class="text-muted">Máx. <?=$config['pauta_tamanho_maximo']; ?> palavras. Mín. <?=$config['pauta_tamanho_minimo']; ?> palavras.</span> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
 				<textarea class="form-control" name="texto" id="texto" required <?= (isset($readOnly))?('disabled'):('');?>><?=(isset($post))?($post['texto']):(''); ?></textarea>
 			</div>
 
@@ -148,7 +148,7 @@ use CodeIgniter\I18n\Time;
 		} else {
 			s = '';
 		}
-		if (number > 100 || number < 10) {
+		if (number > <?=$config['pauta_tamanho_maximo']; ?> || number < <?=$config['pauta_tamanho_minimo']; ?>) {
 			$(".enviar_pauta").prop('disabled', true);
 		} else {
 			$(".enviar_pauta").prop('disabled', false);
