@@ -17,9 +17,13 @@
 				<input type="password" id="senha" name="senha" class="form-control" value="<?=$senha_form;?>" placeholder="Senha" required>
 			</div>
 
-			<div class="d-flex justify-content-center">
-				<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
-			</div>
+			<?php if($lembrar==''): ?>
+
+				<div class="d-flex justify-content-center">
+					<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+				</div>
+
+			<?php endif; ?>
 
 			<div class="checkbox mb-3">
 				<label>
@@ -55,7 +59,7 @@
 				$('.mensagem').show();
 				if(retorno.status == true)
 				{
-					window.location.href = "<?= base_url('colaboradores/perfil'); ?>";
+					window.location.href = "<?= ($url===false)?(base_url('colaboradores/perfil')):($url); ?>";
 				}
 			}
 		});

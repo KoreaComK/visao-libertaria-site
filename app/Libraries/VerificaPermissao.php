@@ -7,7 +7,7 @@ class VerificaPermissao
 
 	public function PermiteAcesso($codigoPermissao = null, $url = null)
 	{
-		$url = ($url === null) ? (base_url() . 'site/logout') : ($url);
+		$url = ($url === null) ? (base_url() . 'site/logout?url='.current_url()) : ($url);
 		if ($codigoPermissao == null) {
 			header("location: " . $url);
 		}
