@@ -13,7 +13,7 @@ use CodeIgniter\I18n\Time;
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-8">
-				<?php if (isset($banner) && is_array($banner)) : ?>
+				<?php if (isset($banner) && is_array($banner) && $config['home_banner_mostrar'] == '1') : ?>
 					<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
 						<ol class="carousel-indicators">
 							<?php foreach ($banner as $chave => $b) : ?>
@@ -48,28 +48,30 @@ use CodeIgniter\I18n\Time;
 				<?php endif; ?>
 			</div>
 
-			<div class="col-lg-4 pb-3">
-				<div class="bg-light py-2 px-4 mb-3">
-					<h3 class="m-0">Talvez você goste</h3>
-				</div>
-				<?php if (is_array($rand)) : ?>
-					<?php foreach ($rand as $chave => $r) : ?>
-						<div class="d-flex mb-3">
-							<img src="<?= $r['imagem']; ?>" style="width: 100px; height: 100px; object-fit: cover;">
-							<div class="w-100 d-flex flex-column justify-content-center bg-light px-3" style="height: 100px;">
-								<span>
-									<?= Time::createFromFormat('Y-m-d H:i:s', $r['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
-								</span>
-								<a class="h6 m-0" href="<?= site_url('site/artigo/' . $r['url_friendly']); ?>">
-									<?= $r['titulo']; ?>
-								</a>
+			<?php if($config['home_talvez_goste_mostrar'] == '1'): ?>
+				<div class="col-lg-4 pb-3">
+					<div class="bg-light py-2 px-4 mb-3">
+						<h3 class="m-0">Talvez você goste</h3>
+					</div>
+					<?php if (is_array($rand)) : ?>
+						<?php foreach ($rand as $chave => $r) : ?>
+							<div class="d-flex mb-3">
+								<img src="<?= $r['imagem']; ?>" style="width: 100px; height: 100px; object-fit: cover;">
+								<div class="w-100 d-flex flex-column justify-content-center bg-light px-3" style="height: 100px;">
+									<span>
+										<?= Time::createFromFormat('Y-m-d H:i:s', $r['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+									</span>
+									<a class="h6 m-0" href="<?= site_url('site/artigo/' . $r['url_friendly']); ?>">
+										<?= $r['titulo']; ?>
+									</a>
+								</div>
 							</div>
-						</div>
-					<?php endforeach; ?>
-				<?php else : ?>
-					<div class="text-center">Nenhum artigo encontrado.</div>
-				<?php endif; ?>
-			</div>
+						<?php endforeach; ?>
+					<?php else : ?>
+						<div class="text-center">Nenhum artigo encontrado.</div>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 
 			<!-- <div class="col-lg-4">
 				<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
@@ -92,58 +94,60 @@ use CodeIgniter\I18n\Time;
 <div class="container-fluid py-3">
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-8">
-				<div class="row mb-3">
-					<div class="col-12">
-						<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
-							<h3 class="m-0">Últimos Vídeos Visão Libertária</h3>
-							<a class="text-secondary font-weight-medium text-decoration-none" href="<?= site_url('site/artigos') ?>">Ver Todos</a>
+			<?php if($config['home_ultimos_videos_mostrar'] == '1'): ?>
+				<div class="col-lg-8">
+					<div class="row mb-3">
+						<div class="col-12">
+							<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
+								<h3 class="m-0">Últimos Vídeos Visão Libertária</h3>
+								<a class="text-secondary font-weight-medium text-decoration-none" href="<?= site_url('site/artigos') ?>">Ver Todos</a>
+							</div>
+						</div>
+						<div class="col-lg-12 row">
+							<?php if (is_array($artigos)) : ?>
+								<?php foreach ($artigos as $chave => $artigo) : ?>
+
+									<?php if ($chave < 2) : ?>
+										<div class="col-lg-6 mb-3">
+											<img class="img-fluid w-100" src="<?= $artigo['imagem'] ?>" style="object-fit: cover;">
+											<div class="overlay position-relative bg-light">
+												<div class="mb-2" style="font-size: 14px;">
+													<span>
+														<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+													</span>
+												</div>
+												<a class="h4" href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>">
+													<?= $artigo['titulo'] ?>
+												</a>
+												<p class="m-0">
+													<?= $artigo['gancho'] ?>
+												</p>
+											</div>
+										</div>
+									<?php else : ?>
+										<div class="col-lg-6 d-flex mb-3">
+											<img src="<?= $artigo['imagem'] ?>" style="width: 100px; height: 100px; object-fit: cover;">
+											<div class="w-100 d-flex flex-column justify-content-center bg-light px-3" style="height: 100px;">
+												<div class="mb-1" style="font-size: 13px;">
+													<span>
+														<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+													</span>
+												</div>
+												<a class="h6 m-0" href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>">
+													<?= $artigo['titulo'] ?>
+												</a>
+											</div>
+										</div>
+									<?php endif; ?>
+
+								<?php endforeach; ?>
+							<?php else : ?>
+								<div class="w-100 text-center">Nenhum artigo encontrado.</div>
+							<?php endif; ?>
 						</div>
 					</div>
-					<div class="col-lg-12 row">
-						<?php if (is_array($artigos)) : ?>
-							<?php foreach ($artigos as $chave => $artigo) : ?>
-
-								<?php if ($chave < 2) : ?>
-									<div class="col-lg-6 mb-3">
-										<img class="img-fluid w-100" src="<?= $artigo['imagem'] ?>" style="object-fit: cover;">
-										<div class="overlay position-relative bg-light">
-											<div class="mb-2" style="font-size: 14px;">
-												<span>
-													<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
-												</span>
-											</div>
-											<a class="h4" href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>">
-												<?= $artigo['titulo'] ?>
-											</a>
-											<p class="m-0">
-												<?= $artigo['gancho'] ?>
-											</p>
-										</div>
-									</div>
-								<?php else : ?>
-									<div class="col-lg-6 d-flex mb-3">
-										<img src="<?= $artigo['imagem'] ?>" style="width: 100px; height: 100px; object-fit: cover;">
-										<div class="w-100 d-flex flex-column justify-content-center bg-light px-3" style="height: 100px;">
-											<div class="mb-1" style="font-size: 13px;">
-												<span>
-													<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
-												</span>
-											</div>
-											<a class="h6 m-0" href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>">
-												<?= $artigo['titulo'] ?>
-											</a>
-										</div>
-									</div>
-								<?php endif; ?>
-
-							<?php endforeach; ?>
-						<?php else : ?>
-							<div class="w-100 text-center">Nenhum artigo encontrado.</div>
-						<?php endif; ?>
-					</div>
 				</div>
-			</div>
+			<?php endif; ?>
 			<div class="col-lg-4 pt-3 pt-lg-0">
 
 				<div class="pb-3">
@@ -233,22 +237,24 @@ use CodeIgniter\I18n\Time;
 						</div>
 					</div>
 				</div> -->
-
-				<div class="pb-3">
-					<div class="bg-light py-2 px-4 mb-3">
-						<h3 class="m-0">Newsletter</h3>
-					</div>
-					<div class="bg-light text-center p-4 mb-3">
-						<p>Assine nossa Newsletter
-						<div class="input-group" style="width: 100%;">
-							<input type="text" class="form-control form-control-lg" placeholder="Seu e-mail">
-							<div class="input-group-append">
-								<button class="btn btn-primary">Assinar</button>
-							</div>
+			
+				<?php if($config['home_newsletter_mostrar'] == '1'): ?>
+					<div class="pb-3">
+						<div class="bg-light py-2 px-4 mb-3">
+							<h3 class="m-0">Newsletter</h3>
 						</div>
-						<small>Toda semana, um e-mail com as novidades.</small>
+						<div class="bg-light text-center p-4 mb-3">
+							<p>Assine nossa Newsletter
+							<div class="input-group" style="width: 100%;">
+								<input type="text" class="form-control form-control-lg" placeholder="Seu e-mail">
+								<div class="input-group-append">
+									<button class="btn btn-primary">Assinar</button>
+								</div>
+							</div>
+							<small>Toda semana, um e-mail com as novidades.</small>
+						</div>
 					</div>
-				</div>
+				<?php endif; ?>
 
 			</div>
 		</div>
