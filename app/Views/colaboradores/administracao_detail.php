@@ -144,11 +144,10 @@ use CodeIgniter\I18n\Time;
 					<div class="tab-pane fade" id="artigos" role="tabpanel" aria-labelledby="artigos-tab">artigos</div>
 					<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
 						<form class="col-12 mt-4" novalidate="yes" method="post" id="home_form">
-							
+
 							<div class="mb-3">
 								<label for="home_banner_mostrar">Mostrar Banner</label>
-								<select class="custom-select" id="home_banner_mostrar"
-									name="home_banner_mostrar">
+								<select class="custom-select" id="home_banner_mostrar" name="home_banner_mostrar">
 									<option value="1" <?= (isset($dados['home_banner_mostrar']) && $dados['home_banner_mostrar'] == '1') ? ('selected') : (''); ?>>Mostrar
 									</option>
 									<option value="0" <?= (isset($dados['home_banner_mostrar']) && $dados['home_banner_mostrar'] == '0') ? ('selected') : (''); ?>>Esconder
@@ -193,7 +192,8 @@ use CodeIgniter\I18n\Time;
 								<label for="home_banner">Quantidade de artigos no banner</label>
 								<div class="input-group">
 									<input type="number" class="form-control" id="home_banner"
-										placeholder="Quantidade de artigos no banner" name="home_banner" required min="1"
+										placeholder="Quantidade de artigos no banner" name="home_banner" required
+										min="1"
 										value="<?= (isset($dados['home_banner'])) ? ($dados['home_banner']) : (''); ?>">
 								</div>
 							</div>
@@ -202,7 +202,8 @@ use CodeIgniter\I18n\Time;
 								<label for="home_talvez_goste">Quantidade de artigos no Talvez Goste</label>
 								<div class="input-group">
 									<input type="number" class="form-control" id="home_talvez_goste"
-										placeholder="Quantidade de artigos no Talvez Goste" name="home_talvez_goste" required min="1"
+										placeholder="Quantidade de artigos no Talvez Goste" name="home_talvez_goste"
+										required min="1"
 										value="<?= (isset($dados['home_talvez_goste'])) ? ($dados['home_talvez_goste']) : (''); ?>">
 								</div>
 							</div>
@@ -211,7 +212,8 @@ use CodeIgniter\I18n\Time;
 								<label for="home_ultimos_videos">Quantidade de artigos nos últimos vídeos</label>
 								<div class="input-group">
 									<input type="number" class="form-control" id="home_ultimos_videos"
-										placeholder="Quantidade de artigos nos últimos vídeos" name="home_ultimos_videos" required min="2" step="2"
+										placeholder="Quantidade de artigos nos últimos vídeos"
+										name="home_ultimos_videos" required min="2" step="2"
 										value="<?= (isset($dados['home_ultimos_videos'])) ? ($dados['home_ultimos_videos']) : (''); ?>">
 								</div>
 							</div>
@@ -221,7 +223,27 @@ use CodeIgniter\I18n\Time;
 						</form>
 
 					</div>
-					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">gerais</div>
+					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="gerais_form">
+
+							<div class="mb-3">
+								<h4>Listagens</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="site_quantidade_listagem">Quantidade de itens nas listagens do site</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="site_quantidade_listagem"
+										placeholder="Quantidade de itens nas listagens do site"
+										name="site_quantidade_listagem" required min="1"
+										value="<?= (isset($dados['site_quantidade_listagem'])) ? ($dados['site_quantidade_listagem']) : (''); ?>">
+								</div>
+							</div>
+
+							<button class="btn btn-primary btn-block mb-3 salvar-config-gerais" type="button">Salvar
+								alterações da home</button>
+						</form>
+					</div>
 				</div>
 
 			</div>
@@ -242,6 +264,11 @@ use CodeIgniter\I18n\Time;
 
 	$(".salvar-config-home").on("click", function () {
 		form = new FormData(home_form);
+		submit(form);
+	});
+
+	$(".salvar-config-gerais").on("click", function () {
+		form = new FormData(gerais_form);
 		submit(form);
 	});
 

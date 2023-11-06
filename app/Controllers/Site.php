@@ -76,6 +76,10 @@ class Site extends BaseController
 	{
 		$data = array();
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
@@ -96,7 +100,7 @@ class Site extends BaseController
 			  }*/
 
 		$data['artigosList'] = [
-			'artigos' => $artigosModel->paginate(12, 'artigos'),
+			'artigos' => $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigosModel->pager
 		];
 

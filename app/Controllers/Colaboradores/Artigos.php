@@ -47,8 +47,13 @@ class Artigos extends BaseController
 		$artigos = $artigosModel->getArtigosUsuario($this->session->get('colaboradores')['id']);
 		$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 		$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
 		$data['artigosList'] = [
-			'artigos' => $artigos->paginate(12, 'artigos'),
+			'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigos->pager
 		];
 		return view('colaboradores/artigos_list', $data);
@@ -73,8 +78,12 @@ class Artigos extends BaseController
 			$artigos = $artigosModel->getArtigosUsuario($this->session->get('colaboradores')['id']);
 			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
-				'artigos' => $artigos->paginate(12, 'artigos'),
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
 			];
 			return view('colaboradores/artigos_list', $data);
@@ -195,8 +204,12 @@ class Artigos extends BaseController
 			$artigos = $artigosModel->getArtigos(2);
 			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
-				'artigos' => $artigos->paginate(12, 'artigos'),
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
 			];
 			$data['titulo'] = 'Artigos Esperando Revisão';
@@ -274,8 +287,12 @@ class Artigos extends BaseController
 			$artigos = $artigosModel->getArtigos(3);
 			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
-				'artigos' => $artigos->paginate(12, 'artigos'),
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
 			];
 			return view('colaboradores/artigos_list', $data);
@@ -350,8 +367,12 @@ class Artigos extends BaseController
 			$artigos = $artigosModel->getArtigos(4);
 			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
-				'artigos' => $artigos->paginate(12, 'artigos'),
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
 			];
 			return view('colaboradores/artigos_list', $data);
@@ -422,8 +443,12 @@ class Artigos extends BaseController
 			$artigos = $artigosModel->getArtigos(5);
 			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
-				'artigos' => $artigos->paginate(12, 'artigos'),
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
 			];
 			return view('colaboradores/artigos_list', $data);
