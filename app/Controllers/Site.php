@@ -20,13 +20,13 @@ class Site extends BaseController
 		$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigos = $artigosModel->getArtigosHome();
-		if($artigos === null || empty($artigos)) {
+		if ($artigos === null || empty($artigos)) {
 			$data['artigos'] = false;
 		} else {
 			$data['banner'] = [];
 			$data['artigos'] = [];
-			for($i=0; $i<count($artigos); $i++) {
-				if(isset($artigos[$i]) && count($data['banner']) < 3){
+			for ($i = 0; $i < count($artigos); $i++) {
+				if (isset($artigos[$i]) && count($data['banner']) < 3) {
 					$data['banner'][] = $artigos[$i];
 				} else {
 					$data['artigos'][] = $artigos[$i];
@@ -34,13 +34,13 @@ class Site extends BaseController
 			}
 		}
 		$artigos = $artigosModel->getArtigosHomeRand();
-		if($artigos === null || empty($artigos)) {
+		if ($artigos === null || empty($artigos)) {
 			$data['rand'] = false;
 		} else {
 			$data['rand'] = $artigos;
 		}
-		
-		
+
+
 		helper('colors_helper');
 		return view('home', $data);
 	}
@@ -60,14 +60,14 @@ class Site extends BaseController
 		$data['idCategoriaAtual'] = $id_categoria;
 		$data['nomeCategoriaAtual'] = null;
 		/*foreach ($data['widgetCategorias'] as $cat) {
-			if ($cat['id'] == $id_categoria) {
-				$data['nomeCategoriaAtual'] = $cat['nome'];
-			}
-		}
+				  if ($cat['id'] == $id_categoria) {
+					  $data['nomeCategoriaAtual'] = $cat['nome'];
+				  }
+			  }
 
-		if ($id_categoria !== null) {
-			$artigosModel->join('artigos_categorias', 'artigos.id=artigos_categorias.artigos_id')->where('artigos_categorias.categorias_id', $id_categoria);
-		}*/
+			  if ($id_categoria !== null) {
+				  $artigosModel->join('artigos_categorias', 'artigos.id=artigos_categorias.artigos_id')->where('artigos_categorias.categorias_id', $id_categoria);
+			  }*/
 
 		$data['artigosList'] = [
 			'artigos' => $artigosModel->paginate(12, 'artigos'),
@@ -114,7 +114,7 @@ class Site extends BaseController
 
 			$valida = $validaFormularios->validaFormularioCadastroColaborador($post);
 			if (empty($valida->getErrors())) {
-				if(!$this->verificaCaptcha($post['h-captcha-response'])) {
+				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
 					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
 					$colaboradoresModel = new \App\Models\ColaboradoresModel();
@@ -150,7 +150,7 @@ class Site extends BaseController
 			$colaboradoresModel = new \App\Models\ColaboradoresModel();
 			$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 			$colaboradores = $colaboradoresModel->getColaboradorPeloHash($hash);
-			if($colaboradores !== NULL && $colaboradores !== false && !empty($colaboradores)) {
+			if ($colaboradores !== NULL && $colaboradores !== false && !empty($colaboradores)) {
 				$gravar = array();
 				$gravar['id'] = $colaboradores['id'];
 				$gravar['confirmado_data'] = $colaboradoresModel->getNow();
@@ -173,64 +173,64 @@ class Site extends BaseController
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
-				if ($hash == null) {
-					$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
-					if (empty($valida->getErrors())) {
-						if(!$this->verificaCaptcha($post['h-captcha-response'])) {
-							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
-						} else {
-							$colaboradoresModel = new \App\Models\ColaboradoresModel();
-							$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
-							if($colaborador['excluido'] != NULL) {
-								return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);	
-							}
-							$gravar = array();
-							$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
-							$gravar['id'] = $colaborador['id'];
-							$colaboradoresModel->save($gravar);
-							$enviaEmail = new \App\Libraries\EnviaEmail();
-							$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - REDEFINIÇÃO DE SENHA', $enviaEmail->getMensagemEsqueciSenha($gravar['confirmacao_hash']));
-							return $retorno->retorno(true, 'Foi enviado um e-mail para redefinição de senha. Clique no link para ter acesso a área redefinição de senha.', true);
-						}
+			if ($hash == null) {
+				$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
+				if (empty($valida->getErrors())) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					} else {
-						$erros = $valida->getErrors();
-						$string_erros = '';
-						foreach ($erros as $erro) {
-							$string_erros .= $erro . "<br/>";
+						$colaboradoresModel = new \App\Models\ColaboradoresModel();
+						$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
+						if ($colaborador['excluido'] != NULL) {
+							return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);
 						}
-						return $retorno->retorno(false, $string_erros, true);
+						$gravar = array();
+						$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
+						$gravar['id'] = $colaborador['id'];
+						$colaboradoresModel->save($gravar);
+						$enviaEmail = new \App\Libraries\EnviaEmail();
+						$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - REDEFINIÇÃO DE SENHA', $enviaEmail->getMensagemEsqueciSenha($gravar['confirmacao_hash']));
+						return $retorno->retorno(true, 'Foi enviado um e-mail para redefinição de senha. Clique no link para ter acesso a área redefinição de senha.', true);
 					}
+				} else {
+					$erros = $valida->getErrors();
+					$string_erros = '';
+					foreach ($erros as $erro) {
+						$string_erros .= $erro . "<br/>";
+					}
+					return $retorno->retorno(false, $string_erros, true);
 				}
-				if ($hash != null) {
-					$valida = $validaFormularios->validaFormularioEsqueciSenhaSenhaColaborador($post);
-					if (empty($valida->getErrors())) {
-						if(!$this->verificaCaptcha($post['h-captcha-response'])) {
-							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
-						} else {
-							$colaboradoresModel = new \App\Models\ColaboradoresModel();
-							$colaborador = $colaboradoresModel->getColaboradorPeloHash($hash);
-							$gravar = array();
-							$gravar['id'] = $colaborador['id'];
-							$gravar['senha'] = hash('sha256', $post['senha']);
-							$gravar['confirmacao_hash'] = NULL;
-							if($colaborador['confirmado_data'] == NULL) {
-								$gravar['confirmado_data'] = $colaboradoresModel->getNow();
-								$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-								$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
-								$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
-							}
-							$colaboradoresModel->save($gravar);
-							return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
-						}
+			}
+			if ($hash != null) {
+				$valida = $validaFormularios->validaFormularioEsqueciSenhaSenhaColaborador($post);
+				if (empty($valida->getErrors())) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					} else {
-						$erros = $valida->getErrors();
-						$string_erros = '';
-						foreach ($erros as $erro) {
-							$string_erros .= $erro . "<br/>";
+						$colaboradoresModel = new \App\Models\ColaboradoresModel();
+						$colaborador = $colaboradoresModel->getColaboradorPeloHash($hash);
+						$gravar = array();
+						$gravar['id'] = $colaborador['id'];
+						$gravar['senha'] = hash('sha256', $post['senha']);
+						$gravar['confirmacao_hash'] = NULL;
+						if ($colaborador['confirmado_data'] == NULL) {
+							$gravar['confirmado_data'] = $colaboradoresModel->getNow();
+							$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+							$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
+							$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
 						}
-						return $retorno->retorno(false, $string_erros, true);
+						$colaboradoresModel->save($gravar);
+						return $retorno->retorno(true, 'Senhas alteradas. Você será redicionado para a área de login em 5 segundos.', true);
 					}
+				} else {
+					$erros = $valida->getErrors();
+					$string_erros = '';
+					foreach ($erros as $erro) {
+						$string_erros .= $erro . "<br/>";
+					}
+					return $retorno->retorno(false, $string_erros, true);
 				}
+			}
 		}
 		return view('esqueci', $data);
 	}
@@ -282,63 +282,71 @@ class Site extends BaseController
 		if ($this->request->isAJAX()) {
 			$resposta = array();
 			$post = service('request')->getPost();
-			if (isset($post['lembrar'])) {
-				set_cookie('email', $post['email'], 60 * 60 * 24 * 30);
-				set_cookie('senha', $post['senha'], 60 * 60 * 24 * 30);
-			}
 
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioLoginColaborador($post);
 
 			if (empty($valida->getErrors())) {
-				if(!$this->verificaCaptcha($post['h-captcha-response'])) {
-					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
-				} else {
-					$colaboradoresModel = new \App\Models\ColaboradoresModel();
-					$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
-					if (count($colaborador) > 0) {
-						$colaborador = $colaborador[0];
-						if($colaborador['excluido'] !== NULL) {
-							return $retorno->retorno(false, 'Esta conta está excluída.', true);
-						}
-						if($colaborador['confirmado_data'] === NULL) {
-							$enviaEmail = new \App\Libraries\EnviaEmail();
-							$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
-							return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
-						}
-						if($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
-							return $retorno->retorno(false, 'Sua conta está bloqueada até '.Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
-						}
 
-						$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-						$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
-						
-						if(empty($colaboradoresAtribuicoes)) {
-							return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
-						}
-
-						$estrutura_session = [
-							'colaboradores' => [
-								'id' => $colaborador['id'],
-								'nome' => $colaborador['apelido'],
-								'email' => $colaborador['email'],
-								'avatar' => ($colaborador['avatar']!=NULL)?($colaborador['avatar']):(site_url('public/assets/avatar-default.png')),
-								'permissoes' => array()
-							]
-						];
-
-						$permissoes = array();
-						foreach ($colaboradoresAtribuicoes as $atribuicao) {
-							$permissoes[] = $atribuicao['atribuicoes_id'];
-						}
-						$estrutura_session['colaboradores']['permissoes'] = $permissoes;
-
-						$this->session->set($estrutura_session);
-						return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
-					} else {
-						return $retorno->retorno(false, 'E-mail ou Senha inválida.', true);
+				if(get_cookie('lembrar') != 1) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					}
 				}
+
+				$retorno = new \App\Libraries\RetornoPadrao();
+				$colaboradoresModel = new \App\Models\ColaboradoresModel();
+				$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
+				if (count($colaborador) > 0) {
+					$colaborador = $colaborador[0];
+					if ($colaborador['excluido'] !== NULL) {
+						return $retorno->retorno(false, 'Esta conta está excluída.', true);
+					}
+					if ($colaborador['confirmado_data'] === NULL) {
+						$enviaEmail = new \App\Libraries\EnviaEmail();
+						$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
+						return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
+					}
+					if ($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
+						return $retorno->retorno(false, 'Sua conta está bloqueada até ' . Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
+					}
+
+					$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+					$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
+
+					if (empty($colaboradoresAtribuicoes)) {
+						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
+					}
+
+					$estrutura_session = [
+						'colaboradores' => [
+							'id' => $colaborador['id'],
+							'nome' => $colaborador['apelido'],
+							'email' => $colaborador['email'],
+							'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+							'permissoes' => array()
+						]
+					];
+
+					$permissoes = array();
+					foreach ($colaboradoresAtribuicoes as $atribuicao) {
+						$permissoes[] = $atribuicao['atribuicoes_id'];
+					}
+					$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+					$this->session->set($estrutura_session);
+
+					if (isset($post['lembrar'])) {
+						set_cookie('email', $post['email'], 60 * 60 * 24 * 7);
+						set_cookie('senha', $post['senha'], 60 * 60 * 24 * 7);
+						set_cookie('lembrar', true, 60 * 60 * 24 * 7);
+					}
+
+					return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
+				} else {
+					return $retorno->retorno(false, 'E-mail ou Senha inválida.', true);
+				}
+
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';
@@ -349,12 +357,22 @@ class Site extends BaseController
 			}
 		} else {
 			$this->session->destroy();
+
+			$get = service('request')->getGet();
+			$url = false;
+			if(!empty($get) && isset($get['url'])) {
+				$url = $get['url'];
+			}
+			$data['url'] = $url;
+
 			if (get_cookie('email') !== null && get_cookie('senha') !== null) {
 				$data['email_form'] = get_cookie('email');
 				$data['senha_form'] = get_cookie('senha');
+				$data['lembrar'] = get_cookie('lembrar');
 			} else {
 				$data['email_form'] = '';
 				$data['senha_form'] = '';
+				$data['lembrar'] = '';
 			}
 			return view('login', $data);
 		}
@@ -363,14 +381,21 @@ class Site extends BaseController
 	public function logout()
 	{
 		$this->session->destroy();
-		return redirect()->to(base_url() . 'site/login');
+		$link = base_url() . 'site/login';
+		$get = $this->request->getGet();
+		if(!empty($get)) {
+			$link.='?url='.$get['url'];
+		}
+		return redirect()->to($link);
 	}
 
-	private function verificaCaptcha($captcha_response) {
+	private function verificaCaptcha($captcha_response)
+	{
 		$data = array(
 			'secret' => "ES_99f25bb22874418ea4aff1e104784bb3",
 			'response' => $captcha_response
-			);$verify = curl_init();
+		);
+		$verify = curl_init();
 		curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
 		curl_setopt($verify, CURLOPT_POST, true);
 		curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
@@ -378,11 +403,11 @@ class Site extends BaseController
 		$response = curl_exec($verify);
 		// var_dump($response);
 		$responseData = json_decode($response);
-		if($responseData->success) {
+		if ($responseData->success) {
 			return true;
-		} 
-		else {
+		} else {
 			return false;
 		}
 	}
+	
 }
