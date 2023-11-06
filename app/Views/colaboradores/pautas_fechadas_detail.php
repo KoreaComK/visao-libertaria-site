@@ -27,7 +27,7 @@ use CodeIgniter\I18n\Time;
 					<p class="card-text"><small class="text-muted">Notícias selecionadas para a pauta</small></p>
 					<p class="card-text">
 					<?php foreach ($pautas['pautas'] as $pauta): ?>
-						<a href="<?= $pauta['link']; ?>" target="_blank"><?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> - <?= $pauta['titulo']; ?></a><br/>
+						<a href="<?= site_url('colaboradores/pautas/detalhe/'.$pauta['id']); ?>" target="_blank"><?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> - <?= $pauta['titulo']; ?></a> <a href="<?= $pauta['link']; ?>" target="_blank">Ir para a notícia</a><br/>
 					<?php endforeach; ?>
 					</p>
 				</div>
