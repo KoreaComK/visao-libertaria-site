@@ -22,6 +22,14 @@ use CodeIgniter\I18n\Time;
 							role="tab" aria-controls="pautas" aria-selected="false">Pautas</button>
 					</li>
 					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="artigos-tab" data-toggle="tab" data-target="#artigos" type="button"
+							role="tab" aria-controls="artigos" aria-selected="false">Artigos</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="home-tab" data-toggle="tab" data-target="#home" type="button"
+							role="tab" aria-controls="home" aria-selected="false">Home</button>
+					</li>
+					<li class="nav-item" role="presentation">
 						<button class="nav-link" id="gerais-tab" data-toggle="tab" data-target="#gerais" type="button"
 							role="tab" aria-controls="gerais" aria-selected="false">Geral</button>
 					</li>
@@ -76,7 +84,8 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<button class="btn btn-primary btn-block mb-3 salvar-config-cron" type="button">Salvar alterações
+							<button class="btn btn-primary btn-block mb-3 salvar-config-cron" type="button">Salvar
+								alterações
 								do
 								Cron</button>
 						</form>
@@ -127,11 +136,92 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<button class="btn btn-primary btn-block mb-3 salvar-config-pautas" type="button">Salvar alterações
+							<button class="btn btn-primary btn-block mb-3 salvar-config-pautas" type="button">Salvar
+								alterações
 								das Pautas</button>
 						</form>
 					</div>
-					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">...</div>
+					<div class="tab-pane fade" id="artigos" role="tabpanel" aria-labelledby="artigos-tab">artigos</div>
+					<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="home_form">
+							
+							<div class="mb-3">
+								<label for="home_banner_mostrar">Mostrar Banner</label>
+								<select class="custom-select" id="home_banner_mostrar"
+									name="home_banner_mostrar">
+									<option value="1" <?= (isset($dados['home_banner_mostrar']) && $dados['home_banner_mostrar'] == '1') ? ('selected') : (''); ?>>Mostrar
+									</option>
+									<option value="0" <?= (isset($dados['home_banner_mostrar']) && $dados['home_banner_mostrar'] == '0') ? ('selected') : (''); ?>>Esconder
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_newsletter_mostrar">Mostrar Newsletter</label>
+								<select class="custom-select" id="home_newsletter_mostrar"
+									name="home_newsletter_mostrar">
+									<option value="1" <?= (isset($dados['home_newsletter_mostrar']) && $dados['home_newsletter_mostrar'] == '1') ? ('selected') : (''); ?>>Mostrar
+									</option>
+									<option value="0" <?= (isset($dados['home_newsletter_mostrar']) && $dados['home_newsletter_mostrar'] == '0') ? ('selected') : (''); ?>>Esconder
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_talvez_goste_mostrar">Mostrar Talvez Goste</label>
+								<select class="custom-select" id="home_talvez_goste_mostrar"
+									name="home_talvez_goste_mostrar">
+									<option value="1" <?= (isset($dados['home_talvez_goste_mostrar']) && $dados['home_talvez_goste_mostrar'] == '1') ? ('selected') : (''); ?>>Mostrar
+									</option>
+									<option value="0" <?= (isset($dados['home_talvez_goste_mostrar']) && $dados['home_talvez_goste_mostrar'] == '0') ? ('selected') : (''); ?>>Esconder
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_ultimos_videos_mostrar">Mostrar Últimos Vídeos</label>
+								<select class="custom-select" id="home_ultimos_videos_mostrar"
+									name="home_ultimos_videos_mostrar">
+									<option value="1" <?= (isset($dados['home_ultimos_videos_mostrar']) && $dados['home_ultimos_videos_mostrar'] == '1') ? ('selected') : (''); ?>>Mostrar
+									</option>
+									<option value="0" <?= (isset($dados['home_ultimos_videos_mostrar']) && $dados['home_ultimos_videos_mostrar'] == '0') ? ('selected') : (''); ?>>Esconder
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_banner">Quantidade de artigos no banner</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="home_banner"
+										placeholder="Quantidade de artigos no banner" name="home_banner" required min="1"
+										value="<?= (isset($dados['home_banner'])) ? ($dados['home_banner']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_talvez_goste">Quantidade de artigos no Talvez Goste</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="home_talvez_goste"
+										placeholder="Quantidade de artigos no Talvez Goste" name="home_talvez_goste" required min="1"
+										value="<?= (isset($dados['home_talvez_goste'])) ? ($dados['home_talvez_goste']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_ultimos_videos">Quantidade de artigos nos últimos vídeos</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="home_ultimos_videos"
+										placeholder="Quantidade de artigos nos últimos vídeos" name="home_ultimos_videos" required min="2" step="2"
+										value="<?= (isset($dados['home_ultimos_videos'])) ? ($dados['home_ultimos_videos']) : (''); ?>">
+								</div>
+							</div>
+
+							<button class="btn btn-primary btn-block mb-3 salvar-config-home" type="button">Salvar
+								alterações da home</button>
+						</form>
+
+					</div>
+					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">gerais</div>
 				</div>
 
 			</div>
@@ -147,6 +237,11 @@ use CodeIgniter\I18n\Time;
 
 	$(".salvar-config-pautas").on("click", function () {
 		form = new FormData(pautas_form);
+		submit(form);
+	});
+
+	$(".salvar-config-home").on("click", function () {
+		form = new FormData(home_form);
 		submit(form);
 	});
 

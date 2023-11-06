@@ -12,6 +12,18 @@ class Site extends BaseController
 	public function index(): string
 	{
 		$data = array();
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$data['config'] = array();
+		$data['config']['home_banner'] = (int)$configuracaoModel->find('home_banner')['config_valor'];
+		$data['config']['home_banner_mostrar'] = $configuracaoModel->find('home_banner_mostrar')['config_valor'];
+		$data['config']['home_newsletter_mostrar'] = $configuracaoModel->find('home_newsletter_mostrar')['config_valor'];
+		$data['config']['home_talvez_goste'] = (int)$configuracaoModel->find('home_talvez_goste')['config_valor'];
+		$data['config']['home_talvez_goste_mostrar'] = $configuracaoModel->find('home_talvez_goste_mostrar')['config_valor'];
+		$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
+		$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
+
+
+
 		$data['colaboradores'] = $this->session->get('colaboradores');
 
 		$widgets = new WidgetsSite();
@@ -19,21 +31,35 @@ class Site extends BaseController
 		//$data['widgetCategorias'] = $widgets->widgetCategorias();
 		$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->getArtigosHome();
+		
+		$quantidade_artigos = 0;
+		if($data['config']['home_banner_mostrar'] == '1') {
+			$quantidade_artigos += $data['config']['home_banner'];
+		}
+		if($data['config']['home_ultimos_videos_mostrar'] == '1') {
+			$quantidade_artigos += $data['config']['home_ultimos_videos'];
+		}
+
+		$artigos = $artigosModel->getArtigosHome($quantidade_artigos);
 		if ($artigos === null || empty($artigos)) {
 			$data['artigos'] = false;
 		} else {
 			$data['banner'] = [];
 			$data['artigos'] = [];
 			for ($i = 0; $i < count($artigos); $i++) {
-				if (isset($artigos[$i]) && count($data['banner']) < 3) {
+				if (isset($artigos[$i]) && count($data['banner']) < $data['config']['home_banner']) {
 					$data['banner'][] = $artigos[$i];
 				} else {
 					$data['artigos'][] = $artigos[$i];
 				}
 			}
 		}
-		$artigos = $artigosModel->getArtigosHomeRand();
+
+		$quantidade_artigos = 0;
+		if($data['config']['home_talvez_goste_mostrar'] == '1') {
+			$quantidade_artigos += $data['config']['home_talvez_goste'];
+		}
+		$artigos = $artigosModel->getArtigosHomeRand($quantidade_artigos);
 		if ($artigos === null || empty($artigos)) {
 			$data['rand'] = false;
 		} else {
@@ -409,5 +435,5 @@ class Site extends BaseController
 			return false;
 		}
 	}
-	
+
 }
