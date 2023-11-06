@@ -150,7 +150,7 @@ use CodeIgniter\I18n\Time;
 
 		<?php if ($fase_producao == '4' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']) : ?>
 			<div class="d-block mb-5 text-left">
-				<audio controls autoplay>
+				<audio controls>
 					<source src="<?= $artigo['arquivo_audio']; ?>" type="audio/mpeg">
 					Your browser does not support the audio element.
 				</audio>
