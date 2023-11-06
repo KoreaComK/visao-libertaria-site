@@ -18,26 +18,8 @@ use CodeIgniter\I18n\Time;
 						</h3>
 						<img class="img-fluid w-100 mb-4" src="<?= $artigo['imagem']; ?>" style="object-fit: cover;">
 
-						<p>
-							<?= $artigo['gancho']; ?>
-						</p>
+						<?=$texto;?>
 
-						<p>Este é o visão Libertária. Sua fonte de informações descentralizadas e distribuídas.</p>
-
-						<p>Este artigo foi
-							<?= ($artigo['colaboradores']['sugerido'] !== null) ? ('sugerido por ' . $artigo['colaboradores']['sugerido']) : (''); ?>
-							<?= ($artigo['colaboradores']['escrito'] !== null) ? ('escrito por ' . $artigo['colaboradores']['escrito']) : (''); ?>
-							<?= ($artigo['colaboradores']['revisado'] !== null) ? ('revisado por ' . $artigo['colaboradores']['revisado']) : (''); ?>
-							<?= ($artigo['colaboradores']['narrado'] !== null) ? ('narrado por ' . $artigo['colaboradores']['narrado']) : (''); ?>
-							<?= ($artigo['colaboradores']['produzido'] !== null) ? ('produzido por ' . $artigo['colaboradores']['produzido']) : (''); ?>.
-						</p>
-						<p>
-							<?= str_replace("\n", "<br/>", ($artigo['texto_revisado'] !== NULL) ? ($artigo['texto_revisado']) : ($artigo['texto_original'])); ?>
-						</p>
-						<p>Obrigado por sua audiência. Se você gostou do vídeo, compartilhe em suas redes sociais. Caso
-							deseje ser avisado de outros vídeos, clique em se inscrever e depois no botão da campainha.
-							Até a próxima.</p>
-						<p>
 							<b>Referências:</b><br/>
 							<?= str_replace("\n", "<br/>", $artigo['referencias']); ?>
 						</p>

@@ -141,7 +141,29 @@ use CodeIgniter\I18n\Time;
 								das Pautas</button>
 						</form>
 					</div>
-					<div class="tab-pane fade" id="artigos" role="tabpanel" aria-labelledby="artigos-tab">artigos</div>
+					<div class="tab-pane fade" id="artigos" role="tabpanel" aria-labelledby="artigos-tab">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="artigos_form">
+
+							<div class="mb-3">
+								<label for="artigo_visualizacao_narracao">Texto para narração</label> <span class="text-muted">Tags disponíveis: {gancho}, {texto}, {colaboradores}</span>
+								<textarea id="artigo_visualizacao_narracao" name="artigo_visualizacao_narracao" class="form-control" rows="5" placeholder="Como mostrar o texto da narração"><?= (isset($dados['artigo_visualizacao_narracao'])) ? ($dados['artigo_visualizacao_narracao']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label for="home_ultimos_videos">Quantidade de artigos nos últimos vídeos</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="home_ultimos_videos"
+										placeholder="Quantidade de artigos nos últimos vídeos"
+										name="home_ultimos_videos" required min="2" step="2"
+										value="<?= (isset($dados['home_ultimos_videos'])) ? ($dados['home_ultimos_videos']) : (''); ?>">
+								</div>
+							</div>
+
+							<button class="btn btn-primary btn-block mb-3 salvar-config-artigos" type="button">Salvar
+								alterações das pautas</button>
+						</form>
+
+					</div>
 					<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
 						<form class="col-12 mt-4" novalidate="yes" method="post" id="home_form">
 
@@ -269,6 +291,11 @@ use CodeIgniter\I18n\Time;
 
 	$(".salvar-config-gerais").on("click", function () {
 		form = new FormData(gerais_form);
+		submit(form);
+	});
+
+	$(".salvar-config-artigos").on("click", function () {
+		form = new FormData(artigos_form);
 		submit(form);
 	});
 
