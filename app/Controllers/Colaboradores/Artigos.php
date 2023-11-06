@@ -97,6 +97,7 @@ class Artigos extends BaseController
 			//$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			//$data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
+			$data['texto'] = $this->criaTextoDinamizado($artigo);
 			
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
@@ -348,6 +349,7 @@ class Artigos extends BaseController
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
+			$data['texto'] = $this->criaTextoDinamizado($artigo);
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
@@ -424,6 +426,7 @@ class Artigos extends BaseController
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
+			$data['texto'] = $this->criaTextoDinamizado($artigo);
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
@@ -570,6 +573,7 @@ class Artigos extends BaseController
 		// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 		// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 		$data['artigo'] = $artigo;
+		$data['texto'] = $this->criaTextoDinamizado($artigo);
 
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 		return view('colaboradores/artigos_detail', $data);
@@ -904,5 +908,37 @@ class Artigos extends BaseController
 		}
 		$artigosModel->db->transComplete();
 		return $retorno;
+	}
+
+	private function criaTextoDinamizado($artigo)
+	{
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['artigo_visualizacao_narracao'] = $configuracaoModel->find('artigo_visualizacao_narracao')['config_valor'];
+		$config['artigo_visualizacao_narracao'] = explode("\n",$config['artigo_visualizacao_narracao']);
+
+		$colaboradores = "";
+		$colaboradores .= ($artigo['colaboradores']['sugerido'] !== null) ? ('sugerido por ' . $artigo['colaboradores']['sugerido'].' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['escrito'] !== null) ? ('escrito por ' . $artigo['colaboradores']['escrito'].' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['revisado'] !== null) ? ('revisado por ' . $artigo['colaboradores']['revisado'].' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['narrado'] !== null) ? ('narrado por ' . $artigo['colaboradores']['narrado'].' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['produzido'] !== null) ? ('produzido por ' . $artigo['colaboradores']['produzido'].' ') : ('');
+
+		foreach($config['artigo_visualizacao_narracao'] as $indice => $linha){
+			$alterado = null;
+			$alterado = str_replace("{gancho}",$artigo['gancho'],$linha);
+			if($artigo['texto_revisado'] !== NULL) {
+				$alterado = str_replace("{texto}",$artigo['texto_revisado'],$alterado);
+			} else {
+				$alterado = str_replace("{texto}",$artigo['texto_original'],$alterado);
+			}
+
+			$alterado = str_replace("{colaboradores}",$colaboradores,$alterado);
+			$config['artigo_visualizacao_narracao'][$indice] = $alterado;
+		}
+
+		$config['artigo_visualizacao_narracao'] = '<p>'.implode('</p><p>',$config['artigo_visualizacao_narracao']).'</p>';
+		$config['artigo_visualizacao_narracao'] = str_replace("\n", "<br/>", $config['artigo_visualizacao_narracao']);
+		return $config['artigo_visualizacao_narracao'];
 	}
 }
