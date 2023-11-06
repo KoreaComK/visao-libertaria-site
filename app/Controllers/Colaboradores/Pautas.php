@@ -125,6 +125,13 @@ class Pautas extends BaseController
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
 		$data = array();
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$data['config'] = array();
+		$data['config']['pauta_tamanho_maximo'] = $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'];
+		$data['config']['pauta_tamanho_minimo'] = $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'];
+		$data['config']['limite_pautas_diario'] = $configuracaoModel->find('limite_pautas_diario')['config_valor'];
+		$data['config']['limite_pautas_semanal'] = $configuracaoModel->find('limite_pautas_semanal')['config_valor'];
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['titulo'] = 'Leia a pauta';
 
