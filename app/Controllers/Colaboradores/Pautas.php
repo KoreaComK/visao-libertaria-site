@@ -138,7 +138,7 @@ class Pautas extends BaseController
 		$pautasModel = new \App\Models\PautasModel();
 
 		if ($idPautas != null) {
-			$data['post'] = $pautasModel->find($idPautas);
+			$data['post'] = $pautasModel->withDeleted()->find($idPautas);
 			if ($data['post'] == null || empty($data['post'])) {
 				return redirect()->to(base_url() . 'colaboradores/pautas');
 			}
