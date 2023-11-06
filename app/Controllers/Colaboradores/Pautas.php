@@ -15,8 +15,12 @@ class Pautas extends BaseController
 		$data['titulo'] = 'Pautas Sugeridas';
 		$pautasModel = new \App\Models\PautasModel();
 		$pautas = $pautasModel->getPautas();
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 		$data['pautasList'] = [
-			'pautas' => $pautas->paginate(12, 'pautas'),
+			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
 			'pager' => $pautas->pager
 		];
 		return view('colaboradores/pautas_list', $data);
@@ -217,8 +221,12 @@ class Pautas extends BaseController
 				$get['pesquisa'] = NULL;
 			}
 			$pautas = $pautasModel->getPautasPesquisa($get['pesquisa']);
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['pautasList'] = [
-				'pautas' => $pautas->paginate(12, 'pautas'),
+				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
 				'pager' => $pautas->pager
 			];
 		}
@@ -249,8 +257,12 @@ class Pautas extends BaseController
 		if ($idPautasFechadas == null) {
 			$data['titulo'] = 'Pautas Fechadas';
 			$pautas = $pautasFechadasModel->getPautasFechadas();
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['pautasList'] = [
-				'pautas' => $pautas->paginate(12, 'pautas'),
+				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
 				'pager' => $pautas->pager
 			];
 			return view('colaboradores/pautas_fechadas_list', $data);

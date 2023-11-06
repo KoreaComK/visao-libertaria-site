@@ -98,13 +98,17 @@ class Admin extends BaseController
 	public function permissoesList()
 	{
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
 		$this->verificaPermissao->PermiteAcesso('9');
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		if ($this->request->getMethod() == 'get') {
 			$get = service('request')->getGet();
 			$colaboradores = $colaboradoresModel->getTodosColaboradores($get['apelido'], $get['email'], $get['atribuicao'], $get['status']);
 			$data['colaboradoresList'] = [
-				'colaboradores' => $colaboradores->paginate(12, 'colaboradores'),
+				'colaboradores' => $colaboradores->paginate($config['site_quantidade_listagem'], 'colaboradores'),
 				'pager' => $colaboradores->pager
 			];
 		}
@@ -113,14 +117,18 @@ class Admin extends BaseController
 
 	public function historico()
 	{
-
 		$this->verificaPermissao->PermiteAcesso('9');
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
 		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
 		if ($this->request->getMethod() == 'get') {
 			$get = service('request')->getGet();
 			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id',$get['apelido'])->orderBy('criado','DESC');
 			$data['colaboradoresHistoricosList'] = [
-				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate(12, 'historico'),
+				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate($config['site_quantidade_listagem'], 'historico'),
 				'pager' => $colaboradoresHistoricos->pager
 			];
 		}
@@ -193,8 +201,12 @@ class Admin extends BaseController
 			$data['titulo'] = 'Pagamentos realizados';
 			$pagamentosModel = new \App\Models\PagamentosModel();
 			$pagamentos = $pagamentosModel->getPagamentos();
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['pagamentosList'] = [
-				'pagamentos' => $pagamentos->paginate(12, 'pagamentos'),
+				'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
 				'pager' => $pagamentos->pager
 			];
 			return view('colaboradores/pagamentos_list', $data);
