@@ -384,6 +384,33 @@ class Pautas extends BaseController
 				}
 			}
 		}
+
+		$dias = null;
+		foreach($xp->query("//script") as $i) {
+			if(strpos($i->nodeValue,"datePublished") > 0) {
+				$json = json_decode($i->nodeValue);
+				if($json !== NULL && is_array($json) && $dias === null) {
+					foreach($json as $j) {
+						if($j !== NULL && is_object($j) && isset($j->datePublished)) {
+							$time = strtotime($j->datePublished);
+							$agora = Time::now();
+							$time = Time::parse(date ('Y-m-d',$time));
+
+							$dias = $time->difference($agora);
+						}
+					}
+				}
+
+				if($json !== NULL && is_object($json) && $dias === null) {
+					$time = strtotime($json->datePublished);
+					$agora = Time::now();
+					$time = Time::parse(date ('Y-m-d',$time));
+
+					$dias = $time->difference($agora);
+				}
+			}
+		}
+
 		if ($titulo != '' && $descricao != '') {
 			if(!mb_detect_encoding($titulo,'UTF-8',true)) {
 				$titulo = utf8_encode($titulo);
@@ -395,11 +422,16 @@ class Pautas extends BaseController
 				$img = utf8_encode($img);
 			}
 
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$dataMaximaPauta = (int)$configuracaoModel->find('pauta_dias_antigo')['config_valor'];
+
 			$retorno = [
-				'status' => true,
+				'status' => ($dias !== null && $dias->days > $dataMaximaPauta)?(false):(true),
 				'titulo' => html_entity_decode($titulo),
 				'texto' => html_entity_decode($descricao),
-				'imagem' => $img
+				'imagem' => $img,
+				'dias' => ($dias !== null)?($dias->days):($dias),
+				'mensagem' => ($dias !== null && $dias->days > $dataMaximaPauta)?('ATENÇÃO! A pauta deve ter menos de '.$dataMaximaPauta.' dias para ser sugerida'):(NULL)
 			];
 			return json_encode($retorno);
 		} else {
