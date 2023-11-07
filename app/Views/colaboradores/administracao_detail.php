@@ -150,13 +150,38 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
-								<label for="home_ultimos_videos">Quantidade de artigos nos últimos vídeos</label>
+								<label for="artigo_tamanho_minimo">Tamanho mínimo permitido do artigo</label>
 								<div class="input-group">
-									<input type="number" class="form-control" id="home_ultimos_videos"
+									<input type="number" class="form-control" id="artigo_tamanho_minimo"
 										placeholder="Quantidade de artigos nos últimos vídeos"
-										name="home_ultimos_videos" required min="2" step="2"
-										value="<?= (isset($dados['home_ultimos_videos'])) ? ($dados['home_ultimos_videos']) : (''); ?>">
+										name="artigo_tamanho_minimo" required min="1"
+										value="<?= (isset($dados['artigo_tamanho_minimo'])) ? ($dados['artigo_tamanho_minimo']) : (''); ?>">
 								</div>
+							</div>
+							
+							<div class="mb-3">
+								<label for="artigo_tamanho_maximo">Tamanho máximo permitido do artigo</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="artigo_tamanho_maximo"
+										placeholder="Quantidade de artigos nos últimos vídeos"
+										name="artigo_tamanho_maximo" required min="1"
+										value="<?= (isset($dados['artigo_tamanho_maximo'])) ? ($dados['artigo_tamanho_maximo']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="artigo_regras_escrever">Regras de Escrita</label> <span class="text-muted">Permitido usar HTML</span>
+								<textarea id="artigo_regras_escrever" name="artigo_regras_escrever" class="form-control" rows="10" placeholder="Regras de escrita"><?= (isset($dados['artigo_regras_escrever'])) ? ($dados['artigo_regras_escrever']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label for="artigo_regras_revisar">Regras de Revisão</label> <span class="text-muted">Permitido usar HTML</span>
+								<textarea id="artigo_regras_revisar" name="artigo_regras_revisar" class="form-control" rows="10" placeholder="Regras de revisão"><?= (isset($dados['artigo_regras_revisar'])) ? ($dados['artigo_regras_revisar']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label for="descricao_padrao_youtube">Descrição do padrão do Youtube na publicação</label> <span class="text-muted">Tags disponíveis: {referencias}, {tags}</span>
+								<textarea id="descricao_padrao_youtube" name="descricao_padrao_youtube" class="form-control" rows="10" placeholder="Descrição de publicação no YouTube"><?= (isset($dados['descricao_padrao_youtube'])) ? ($dados['descricao_padrao_youtube']) : (''); ?></textarea>
 							</div>
 
 							<button class="btn btn-primary btn-block mb-3 salvar-config-artigos" type="button">Salvar

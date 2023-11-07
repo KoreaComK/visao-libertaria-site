@@ -185,6 +185,13 @@ class Artigos extends BaseController
 		if ($this->request->getGet('status') !== null && $valida == null) {
 			$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
 		}
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['artigo_tamanho_maximo'] = (int)$configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
+		$config['artigo_tamanho_minimo'] = (int)$configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
+		$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
+		$data['config'] = $config;
 		
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($id_artigo);
 		return view('colaboradores/artigos_form', $data);
@@ -269,6 +276,13 @@ class Artigos extends BaseController
 
 			$widgetsSite = new \App\Libraries\WidgetsSite();
 			// $data['categorias'] = $widgetsSite->widgetCategorias();
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['artigo_tamanho_maximo'] = (int)$configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
+			$config['artigo_tamanho_minimo'] = (int)$configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
+			$config['artigo_regras_revisar'] = $configuracaoModel->find('artigo_regras_revisar')['config_valor'];
+			$data['config'] = $config;
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_form', $data);
