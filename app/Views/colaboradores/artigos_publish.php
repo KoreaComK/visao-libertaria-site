@@ -33,15 +33,13 @@ use CodeIgniter\I18n\Time;
 		<?php if (isset($artigo['id']) && $artigo['id'] !== null) : ?>
 			<div class="row">
 				<div class="col-12 text-center">
-					<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="btn-comentarios" type="button">Mostrar
-						Comentários</button>
+					<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="btn-comentarios" type="button">Atualizar Comentários</button>
 				</div>
 				<div class="mensagem-comentario p-3 mb-2 rounded text-white text-center col-12" style="display: none;"></div>
 				<div class="mensagem-salvar p-3 mb-2 rounded text-white text-center col-12" style="display: none;"></div>
 				<div class="col-12 d-flex justify-content-center">
 
-					<div class="col-12 collapse div-comentarios">
-						<div class="card m-3 div-list-comentarios"></div>
+					<div class="col-12 div-comentarios">
 						<div class="col-12">
 							<div class="mb-3">
 								<input type="hidden" id="id_comentario" name="id_comentario" />
@@ -51,6 +49,7 @@ use CodeIgniter\I18n\Time;
 								<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="enviar-comentario" type="button">Enviar comentário</button>
 							</div>
 						</div>
+						<div class="card m-3 div-list-comentarios"></div>
 					</div>
 				</diV>
 			</div>
@@ -199,7 +198,6 @@ use CodeIgniter\I18n\Time;
 
 	<?php if (isset($artigo['id']) && $artigo['id'] !== null) : ?>
 		$("#btn-comentarios").on("click", function() {
-			$(".div-comentarios").toggle();
 			getComentarios();
 		});
 		$('#btn-comentarios').trigger('click');
