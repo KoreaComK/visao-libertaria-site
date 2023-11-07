@@ -287,6 +287,45 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
+							<div class="mb-3">
+								<h4>Rodapé</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="link_youtube">Link Youtube</label>
+								<div class="input-group">
+									<input type="text" class="form-control" id="link_youtube"
+										placeholder="Link do Youtube"
+										name="link_youtube" required min="1"
+										value="<?= (isset($dados['link_youtube'])) ? ($dados['link_youtube']) : (''); ?>">
+								</div>
+							</div>
+							
+							<div class="mb-3">
+								<label for="link_instagram">Link Instagram</label>
+								<div class="input-group">
+									<input type="text" class="form-control" id="link_youtube"
+										placeholder="Link do Instagram"
+										name="link_instagram" required min="1"
+										value="<?= (isset($dados['link_instagram'])) ? ($dados['link_instagram']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="link_twitter">Link Twitter</label>
+								<div class="input-group">
+									<input type="text" class="form-control" id="link_twitter"
+										placeholder="Link do Twitter"
+										name="link_twitter" required min="1"
+										value="<?= (isset($dados['link_twitter'])) ? ($dados['link_twitter']) : (''); ?>">
+								</div>
+							</div>
+							
+							<div class="mb-3">
+								<label for="texto_rodape">Texto do Rodapé</label>
+								<textarea id="texto_rodape" name="texto_rodape" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['texto_rodape'])) ? ($dados['texto_rodape']) : (''); ?></textarea>
+							</div>
+
 							<button class="btn btn-primary btn-block mb-3 salvar-config-gerais" type="button">Salvar
 								alterações da home</button>
 						</form>
