@@ -204,6 +204,7 @@ use CodeIgniter\I18n\Time;
 	});
 
 	$(".confirmacao-acao").on("click", function() {
+		$(this).prop( "disabled", true);
 		if ($('.confirmacao-acao').hasClass('confirmacao-descartar')) {
 			window.location.href = location.href + '?descartar=true';
 		}
