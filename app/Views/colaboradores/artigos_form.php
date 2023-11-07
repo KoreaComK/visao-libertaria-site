@@ -11,63 +11,14 @@ use CodeIgniter\I18n\Time;
 		<h3 class="m-0"><?= $titulo; ?></h3>
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center <?= (!isset($retorno)) ? ('collapse') : (''); ?> <?= (isset($retorno) && $retorno['status'] === true) ? ('bg-success') : ('bg-danger'); ?> col-12"><?= (isset($retorno)) ? ($retorno['mensagem']) : (''); ?></div>
+	<div class="mb-5 text-left">
 	<?php if ($fase_producao == '1') : ?>
-		<div class="mb-5 text-left">
-			<h3>Atenção ao escrever artigos</h3>
-			<p>O estilo geral de artigos no Visão Libertária mudou. Note que artigos precisam seguir o tipo de artigo e
-				estilo do canal. Precisam ter uma visão libertária em algum ponto. Apenas notícia, não serve.</p>
-			<ul>
-				<li>Buscar escrever artigos lógicos, com contribuição, citando notícia ou fato, desenvolvimento, com visão
-					libertária, e conclusão.</li>
-				<li>Use corretores ortográficos para evitar erros de grafia e concordância.</li>
-				<li>Evite frases longas. Elas podem funcionar em livros, mas, para ser narrada, precisa ter, no máximo 30
-					palavras.</li>
-			</ul>
-			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual modou:</p>
-			<ul>
-				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>
-				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como "aquele país
-					que estatistas chamam de xxxx" ou frases similares.</li>
-				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>
-				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões
-					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou
-					seja, título, gancho, e nas primeiras 200 palavras.</li>
-				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são
-					políticos ou pessoas muito conhecidas.</li>
-			</ul>
-		</div>
+		<?= $config['artigo_regras_escrever']; ?>
 	<?php endif; ?>
-
 	<?php if ($fase_producao == '2') : ?>
-		<div class="mb-5 text-left">
-			<h3>Informações importantes sobre a revisão de artigos.</h3>
-			<p>O texto precisa ser revisado, relendo-se todo o texto e corrigindo pontos necessários para</p>
-			<ul>
-				<li>Ortografia deve estar perfeita, pode-se revisar usando o MS Word.</li>
-				<li>Concordância verbal e outras regras de gramática estão boas.</li>
-				<li>Narração sempre usa ou todos os verbos em terceira pessoa ou todos em primeira pessoa, jamais
-					misturando.</li>
-				<li>Mugidos e vozes de personagens são terminantemente proíbidos.</li>
-			</ul>
-			<p>Lembre-se: você não pode revisar seu próprio texto. É notório que quando a pessoa revisa seu texto, por mais
-				que se esforce, não gera uma revisão tão eficiente.</p>
-			<p>Qualquer dúvida converse com o pessoal no Discord no fórum #duvidas-revisao ou tire suas dúvidas no e-mail:
-				anpsu@gmail.com</p>
-			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual mudou.</p>
-			<ul>
-				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>
-				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como "aquele país
-					que estatistas chamam de xxxx" ou frases similares.</li>
-				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>
-				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões
-					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou
-					seja, título, gancho, e nas primeiras 200 palavras.</li>
-				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são
-					políticos ou pessoas muito conhecidas.</li>
-			</ul>
-		</div>
-
+		<?= $config['artigo_regras_revisar']; ?>
 	<?php endif; ?>
+	</div>
 
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation w-100" novalidate="yes" method="post">
@@ -134,7 +85,7 @@ use CodeIgniter\I18n\Time;
 			</div> -->
 
 			<div class="mb-3">
-				<label for="address w-100">Texto do artigo (<span class="pull-right label label-default text-muted" id="count_message"></span>) <span class="text-muted">Artigo deve ter entre 1.000 e 2.000
+				<label for="address w-100">Texto do artigo (<span class="pull-right label label-default text-muted" id="count_message"></span>) <span class="text-muted">Artigo deve ter entre <?=$config['artigo_tamanho_minimo'];?> e <?=$config['artigo_tamanho_maximo'];?>
 						palavras.</span></label>
 				<textarea id="texto_original" name="texto_original" class="form-control" rows="20"><?= $artigo['texto_original']; ?></textarea>
 			</div>
@@ -287,7 +238,7 @@ use CodeIgniter\I18n\Time;
 		} else {
 			s = '';
 		}
-		if (number < 1000 || number > 2000) {
+		if (number < <?=$config['artigo_tamanho_minimo'];?> || number > <?=$config['artigo_tamanho_maximo'];?>) {
 			$("#enviar_artigo").attr('disabled', true);
 			$("#narrar").attr('disabled', true);
 			$('.atencao').removeClass('collapse');
