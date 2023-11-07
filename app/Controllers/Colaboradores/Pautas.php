@@ -397,8 +397,8 @@ class Pautas extends BaseController
 
 			$retorno = [
 				'status' => true,
-				'titulo' => $titulo,
-				'texto' => $descricao,
+				'titulo' => html_entity_decode($titulo),
+				'texto' => html_entity_decode($descricao),
 				'imagem' => $img
 			];
 			return json_encode($retorno);
