@@ -401,7 +401,7 @@ class Pautas extends BaseController
 					}
 				}
 
-				if($json !== NULL && is_object($json) && $dias === null) {
+				if($json !== NULL && is_object($json) && isset($j->datePublished) && $dias === null) {
 					$time = strtotime($json->datePublished);
 					$agora = Time::now();
 					$time = Time::parse(date ('Y-m-d',$time));
