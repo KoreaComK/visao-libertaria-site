@@ -48,6 +48,20 @@ abstract class BaseController extends Controller
 		$this->session = \Config\Services::session();
 		$this->session->start();
 
+		if(!($this->session->has('site_config')))
+		{
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$estrutura_session = [
+					'site_config' => [
+						'youtube' => $configuracaoModel->find('link_youtube')['config_valor'],
+						'twitter' => $configuracaoModel->find('link_twitter')['config_valor'],
+						'instagram' => $configuracaoModel->find('link_instagram')['config_valor'],
+						'rodape_texto' => $configuracaoModel->find('rodape_texto')['config_valor'],
+					]
+				];
+			$this->session->set($estrutura_session);
+		}
+
 		if(!($this->session->has('colaboradores')))
 		{
 			$estrutura_session = [
