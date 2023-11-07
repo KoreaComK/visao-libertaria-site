@@ -440,4 +440,9 @@ class Site extends BaseController
 		}
 	}
 
+	public function calculadoras()
+	{
+		return view('calculadoras');
+	}
+
 }
