@@ -115,6 +115,15 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
+								<label for="pauta_dias_antigo">Idade Máxima da Pauta</label>
+								<div class="input-group">
+									<input type="number" class="form-control" id="pauta_dias_antigo"
+										placeholder="Idade Máxima da Pauta" name="pauta_dias_antigo" required min="0"
+										value="<?= (isset($dados['pauta_dias_antigo'])) ? ($dados['pauta_dias_antigo']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
 								<h4>Limites de Escrita</h4>
 							</div>
 
