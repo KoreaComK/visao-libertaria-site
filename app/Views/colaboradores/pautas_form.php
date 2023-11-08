@@ -14,6 +14,16 @@ use CodeIgniter\I18n\Time;
 		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
 			<?php if (isset($post['criado'])): ?> <div class="mb-3"><label><span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span></label></div><?php endif; ?>
+			<?php if (isset($post['pauta_antiga']) && $post['pauta_antiga']=='S'): ?> 
+				<div class="mb-3">
+					<label>
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" alt="Pauta Antiga" fill="currentColor" class="bi bi-patch-exclamation-fill text-danger" viewBox="0 0 16 16">
+							<path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+						</svg>
+						<span class="text-muted" target="_blank">Atenção! Esta pauta é antiga.</span>
+					</label>
+				</div>
+			<?php endif; ?>
 		
 			<div class="mb-3">
 				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original</a><?php endif; ?>
@@ -34,6 +44,7 @@ use CodeIgniter\I18n\Time;
 
 			<div class="mb-3">
 				<label for="titulo">Título</label>
+				<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N"/>
 				<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta" required value="<?=(isset($post))?($post['titulo']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 			</div>
 
@@ -107,6 +118,10 @@ use CodeIgniter\I18n\Time;
 			beforeSend: function() { $('#modal-loading').modal('show'); },
 			complete: function() { $('#modal-loading').modal('hide'); },
 			success: function (retorno) {
+				$('.mensagem').hide();
+				$('.mensagem').removeClass('bg-success');
+				$('.mensagem').removeClass('bg-alert');
+				$('.mensagem').removeClass('bg-danger');
 				if (retorno.status) {
 					$('#titulo').val(retorno.titulo);
 					$('#texto').val(retorno.texto);
@@ -114,16 +129,23 @@ use CodeIgniter\I18n\Time;
 					$('#preview_imagem').attr('src', retorno.imagem);
 					$('.preview_imagem_div').show();
 					contapalavras()
+					if(retorno.mensagem == null) {
+						$('#pauta_antiga').val('N');
+					} else {
+						$('#pauta_antiga').val('S');
+						$('.mensagem').addClass('bg-info');
+						$('.mensagem').html(retorno.mensagem);
+						$('.mensagem').show();
+					}
 				} else {
 					$('.mensagem').removeClass('bg-success');
 					$('.mensagem').addClass('bg-danger');
 					$(".enviar_pauta").prop('disabled', true);
 					$('#preview_imagem').attr('src', '');
+					$('.mensagem').addClass(retorno.classe);
+					$('.mensagem').html(retorno.mensagem);
+					$('.mensagem').show();
 				}
-				$('.mensagem').addClass(retorno.classe);
-				$('.mensagem').html(retorno.mensagem);
-				$('.mensagem').show();
-				$('#modal-perfil').modal('toggle');
 			}
 		});
 	}

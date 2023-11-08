@@ -57,11 +57,16 @@ class Pautas extends BaseController
 		}
 
 		if ($this->request->getMethod() == 'post') {
+			$pautasModel = new \App\Models\PautasModel();
 
 			$post = service('request')->getPost();
+			if($idPautas !== null) {
+				$post['link'] = $pautasModel->find($idPautas)['link'];
+			}
+
 			$session = $this->session->get('colaboradores');
 			
-			$pautasModel = new \App\Models\PautasModel();
+			
 			$time = new Time('-1 days');
 			$time = $time->toDateTimeString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
@@ -92,6 +97,9 @@ class Pautas extends BaseController
 				$dados['titulo'] = $post['titulo'];
 				$dados['texto'] = $post['texto'];
 				$dados['imagem'] = $post['imagem'];
+				if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
+					$dados['pauta_antiga'] = $post['pauta_antiga'];
+				}
 				if ($idPautas != null) {
 					$pautas = $this->gravarPautas('update', $dados, $idPautas);
 				} else {
@@ -401,7 +409,7 @@ class Pautas extends BaseController
 					}
 				}
 
-				if($json !== NULL && is_object($json) && isset($j->datePublished) && $dias === null) {
+				if($json !== NULL && is_object($json) && isset($json->datePublished) && $dias === null) {
 					$time = strtotime($json->datePublished);
 					$agora = Time::now();
 					$time = Time::parse(date ('Y-m-d',$time));
@@ -426,12 +434,12 @@ class Pautas extends BaseController
 			$dataMaximaPauta = (int)$configuracaoModel->find('pauta_dias_antigo')['config_valor'];
 
 			$retorno = [
-				'status' => ($dias !== null && $dias->days > $dataMaximaPauta)?(false):(true),
+				'status' => true,
 				'titulo' => html_entity_decode($titulo),
 				'texto' => html_entity_decode($descricao),
 				'imagem' => $img,
 				'dias' => ($dias !== null)?($dias->days):($dias),
-				'mensagem' => ($dias !== null && $dias->days > $dataMaximaPauta)?('ATENÇÃO! A pauta deve ter menos de '.$dataMaximaPauta.' dias para ser sugerida'):(NULL)
+				'mensagem' => ($dias !== null && $dias->days > $dataMaximaPauta)?('ATENÇÃO! A pauta é de mais de '.$dataMaximaPauta.' dias atrás. Ela será marcada como antiga.'):(NULL)
 			];
 			return json_encode($retorno);
 		} else {

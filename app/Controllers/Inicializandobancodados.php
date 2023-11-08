@@ -50,6 +50,7 @@ class Inicializandobancodados extends BaseController
 		`titulo` varchar(255),
 		`texto` TEXT,
 		`imagem` varchar(255),
+		`pauta_antiga` CHAR(1) NOT NULL DEFAULT "N",
 		`reservado` datetime DEFAULT null,
 		`tag_fechamento` varchar(255) DEFAULT null,
 		`criado` datetime DEFAULT now(),
