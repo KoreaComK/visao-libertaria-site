@@ -256,6 +256,42 @@ class Inicializandobancodados extends BaseController
 
 		$db->query('ALTER TABLE `colaboradores_historicos` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
 
+		$db->query("INSERT INTO `configuracao` (`config`, `config_valor`) VALUES
+		('artigo_regras_escrever', '			<h3>Atenção ao escrever artigos</h3>\r\n			<p>O estilo geral de artigos no Visão Libertária mudou. Note que artigos precisam seguir o tipo de artigo e\r\n				estilo do canal. Precisam ter uma visão libertária em algum ponto. Apenas notícia, não serve.</p>\r\n			<ul>\r\n				<li>Buscar escrever artigos lógicos, com contribuição, citando notícia ou fato, desenvolvimento, com visão\r\n					libertária, e conclusão.</li>\r\n				<li>Use corretores ortográficos para evitar erros de grafia e concordância.</li>\r\n				<li>Evite frases longas. Elas podem funcionar em livros, mas, para ser narrada, precisa ter, no máximo 30\r\n					palavras.</li>\r\n			</ul>\r\n			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual modou:</p>\r\n			<ul>\r\n				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>\r\n				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como \"aquele país\r\n					que estatistas chamam de xxxx\" ou frases similares.</li>\r\n				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>\r\n				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões\r\n					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou\r\n					seja, título, gancho, e nas primeiras 200 palavras.</li>\r\n				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são\r\n					políticos ou pessoas muito conhecidas.</li>\r\n			</ul>'),
+		('artigo_regras_revisar', '			<h3>Informações importantes sobre a revisão de artigos.</h3>\r\n			<p>O texto precisa ser revisado, relendo-se todo o texto e corrigindo pontos necessários para</p>\r\n			<ul>\r\n				<li>Ortografia deve estar perfeita, pode-se revisar usando o MS Word.</li>\r\n				<li>Concordância verbal e outras regras de gramática estão boas.</li>\r\n				<li>Narração sempre usa ou todos os verbos em terceira pessoa ou todos em primeira pessoa, jamais\r\n					misturando.</li>\r\n				<li>Mugidos e vozes de personagens são terminantemente proibidos.</li>\r\n			</ul>\r\n			<p>Lembre-se: você não pode revisar seu próprio texto. É notório que quando a pessoa revisa seu texto, por mais\r\n				que se esforce, não gera uma revisão tão eficiente.</p>\r\n			<p>Qualquer dúvida converse com o pessoal no Discord no fórum #duvidas-revisao ou tire suas dúvidas no e-mail:\r\n				anpsu@gmail.com</p>\r\n			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual mudou.</p>\r\n			<ul>\r\n				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>\r\n				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como \"aquele país\r\n					que estatistas chamam de xxxx\" ou frases similares.</li>\r\n				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>\r\n				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões\r\n					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou\r\n					seja, título, gancho, e nas primeiras 200 palavras.</li>\r\n				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são\r\n					políticos ou pessoas muito conhecidas.</li>\r\n			</ul>'),
+		('artigo_tamanho_maximo', '2500'),
+		('artigo_tamanho_minimo', '1000'),
+		('artigo_visualizacao_narracao', '{gancho}\r\nEste é o Visão Libertária, sua fonte de informações descentralizadas e distribuídas.\r\n{texto}\r\nObrigado por sua audiência.\r\nEste artigo foi {colaboradores}\r\nSe você gostou do vídeo, compartilhe em suas redes sociais. Caso deseje ser avisado de outros vídeos, inscreva-se no canal, e depois clique no botão da campainha. Escreva artigos você também, acesse visão libertária ponto com. Até a próxima.'),
+		('contato_email', 'email@email.com'),
+		('contato_email_copia', 'email2@email2.com'),
+		('cron_hash', 'ADICIONE A SUA HASH AQUI'),
+		('cron_pautas_data_delete', '7 days'),
+		('cron_pautas_status_delete', '1'),
+		('descricao_padrao_youtube', 'Referências:\r\n{referencias}\r\n\r\nVeja nosso site: http://visaolibertaria.com\r\n\r\nCamisas e merchandising: http://pimentanocafe.com.br/visaolibe...\r\n\r\n{tags}\r\n\r\nAjude o canal:\r\n\r\nhttps://picpay.me/ancapsu\r\nhttps://padrim.com.br/ancapsu\r\n16vmNcrA4Mvf7CaRLirAmpnjz1ZH3bWNkQ (Bitcoin)\r\nLSCnrubCVcpuLrGTTLMqpwRTXvYz7vMbbA (Litecoin)\r\n0x28aec946919c70e5e25d7c6785ede7622278b463 (Ethereum)\r\nnano_1s6i6xwujzqnmie8nc3x8rfumdnebpsd6h4cp9wgkcpk4eb1xn5u7n48ok5b (Nano)\r\n0x1302536c28695e47aaedd020aaf39f500cf6c22f (BNB)'),
+		('home_banner', '5'),
+		('home_banner_mostrar', '1'),
+		('home_newsletter_mostrar', '0'),
+		('home_talvez_goste', '3'),
+		('home_talvez_goste_mostrar', '1'),
+		('home_ultimos_videos', '10'),
+		('home_ultimos_videos_mostrar', '1'),
+		('limite_pautas_diario', '5'),
+		('limite_pautas_semanal', '20'),
+		('link_instagram', 'https://www.instagram.com'),
+		('link_twitter', 'https://twitter.com'),
+		('link_youtube', 'https://www.youtube.com'),
+		('pauta_dias_antigo', '5'),
+		('pauta_tamanho_maximo', '100'),
+		('pauta_tamanho_minimo', '10'),
+		('rodape_texto', 'Visão Libertária é um jornal diário no YouTube, parte do canal ancap.su com conteúdo voltado ao libertarianismo. Trata-se de um jornal colaborativo em que muita gente participa da criação, edição, escolha dos temas e consegue receber algumas migalhas que o YouTube, de vez em quando, joga pra gente.'),
+		('site_quantidade_listagem', '12'),
+		('texto_artigo_narrar', ''),
+		('texto_artigo_produzir', ''),
+		('texto_artigo_revisar', '			<h3>Informações importantes sobre a revisão de artigos.</h3>\n			<p>O texto precisa ser revisado, relendo-se todo o texto e corrigindo pontos necessários para</p>\n			<ul>\n				<li>Ortografia deve estar perfeita, pode-se revisar usando o MS Word.</li>\n				<li>Concordância verbal e outras regras de gramática estão boas.</li>\n				<li>Narração sempre usa ou todos os verbos em terceira pessoa ou todos em primeira pessoa, jamais\n					misturando.</li>\n				<li>Mugidos e vozes de personagens são terminantemente proíbidos.</li>\n			</ul>\n			<p>Lembre-se: você não pode revisar seu próprio texto. É notório que quando a pessoa revisa seu texto, por mais\n				que se esforce, não gera uma revisão tão eficiente.</p>\n			<p>Qualquer dúvida converse com o pessoal no Discord no fórum #duvidas-revisao ou tire suas dúvidas no e-mail:\n				anpsu@gmail.com</p>\n			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual mudou.</p>\n			<ul>\n				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>\n				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como \"aquele país\n					que estatistas chamam de xxxx\" ou frases similares.</li>\n				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>\n				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões\n					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou\n					seja, título, gancho, e nas primeiras 200 palavras.</li>\n				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são\n					políticos ou pessoas muito conhecidas.</li>\n			</ul>'),
+		('texto_informacao_perfil', 'Leia nossas diretrizes para aceitar artigos no Visão Libertária, clicando aqui.\r\n\r\nVeja as diretrizes e cuidados para ser um revisor, clicando aqui.\r\n\r\nSaiba as configurações e definições para enviar seu arquivo de áudio, clicando aqui.\r\n\r\nEncontre todos os parâmetros e insumos para produzir os vídeos do canal, clicando aqui.'),
+		('texto_rodape', 'Visão Libertária é um jornal diário no YouTube, parte do canal ancap.su com conteúdo voltado ao libertarianismo. Trata-se de um jornal colaborativo em que muita gente participa da criação, edição, escolha dos temas e consegue receber algumas migalhas que o YouTube, de vez em quando, joga pra gente.');
+		");
+
 
 		echo 'Banco de dados e tabelas criadas com sucesso';
 	}
