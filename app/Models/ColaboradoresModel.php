@@ -41,7 +41,7 @@ class ColaboradoresModel extends Model
 
 	public function getColaboradores($email, $senha)
 	{
-		$query = $this->db->query("SELECT * FROM colaboradores WHERE email = '" . $this->db->escapeLikeString($email) . "' AND senha = '" . $this->db->escapeLikeString($senha) . "'");
+		$query = $this->db->query("SELECT * FROM colaboradores WHERE email = '$email' AND senha = '$senha'");
 		return $query->getResult('array');
 	}
 
@@ -50,7 +50,7 @@ class ColaboradoresModel extends Model
 		if ($hash === false) {
 			return false;
 		}
-		$query = $this->db->query("SELECT * FROM colaboradores WHERE confirmacao_hash = '" . $this->db->escapeLikeString($hash) . "'");
+		$query = $this->db->query("SELECT * FROM colaboradores WHERE confirmacao_hash = '$hash'");
 		if(!isset($query->getResult('array')[0]))
 		{
 			return array();
@@ -60,7 +60,7 @@ class ColaboradoresModel extends Model
 
 	public function getColaboradorPeloEmail($email)
 	{
-		$query = $this->db->query("SELECT * FROM colaboradores WHERE email = '" . $this->db->escapeLikeString($email) . "'");
+		$query = $this->db->query("SELECT * FROM colaboradores WHERE email = '$email'");
 		if(!isset($query->getResult('array')[0]))
 		{
 			return array();
@@ -79,10 +79,10 @@ class ColaboradoresModel extends Model
 		$this->select('*');
 		$this->join('colaboradores_atribuicoes','colaboradores_atribuicoes.colaboradores_id = colaboradores.id');
 		if($apelido !== ''){
-			$this->like('apelido', $this->db->escapeLikeString($apelido));
+			$this->like('apelido', $apelido);
 		}
 		if($email !== ''){
-			$this->like('email', $this->db->escapeLikeString($email));
+			$this->like('email', $email);
 		}
 		if($atribuicao != ''){
 			$this->where('colaboradores_atribuicoes.atribuicoes_id',$atribuicao);
