@@ -60,6 +60,7 @@
 						<option value="revisado">Revisado</option>
 						<option value="narrado">Narrado</option>
 						<option value="produzido">Produzido</option>
+						<option value="marcado">Marcado</option>
 					</select>
 				</div>
 			</div>

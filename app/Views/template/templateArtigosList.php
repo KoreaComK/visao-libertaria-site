@@ -86,7 +86,7 @@ use CodeIgniter\I18n\Time;
 						<?= $artigo['marcado']; ?>
 					</small>
 				<?php endif; ?>
-				<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+				<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id'] || ($artigo['marcado_colaboradores_id'] !== NULL && in_array('7', $permissoes))): ?>
 					<small class="d-block text-right mt-3"><a href="#" class="desmarcar"
 							data-information="<?= $artigo['id']; ?>">Desmarcar artigo</a></small>
 				<?php endif; ?>

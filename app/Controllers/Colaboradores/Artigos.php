@@ -86,7 +86,8 @@ class Artigos extends BaseController
 				D.apelido AS narrado,
 				E.apelido AS produzido,
 				F.apelido AS publicado,
-				G.apelido AS descartado
+				G.apelido AS descartado,
+				H.apelido AS marcado
 			')
 				->join('colaboradores A', 'artigos.sugerido_colaboradores_id = A.id', 'LEFT')
 				->join('colaboradores B', 'artigos.escrito_colaboradores_id = B.id', 'LEFT')
@@ -94,7 +95,8 @@ class Artigos extends BaseController
 				->join('colaboradores D', 'artigos.narrado_colaboradores_id = D.id', 'LEFT')
 				->join('colaboradores E', 'artigos.produzido_colaboradores_id = E.id', 'LEFT')
 				->join('colaboradores F', 'artigos.publicado_colaboradores_id = F.id', 'LEFT')
-				->join('colaboradores G', 'artigos.descartado_colaboradores_id = G.id', 'LEFT');
+				->join('colaboradores G', 'artigos.descartado_colaboradores_id = G.id', 'LEFT')
+				->join('colaboradores H', 'artigos.marcado_colaboradores_id = H.id', 'LEFT');
 
 			if (!is_null($get['titulo']) && !empty($get['titulo']) && $get['titulo'] != '') {
 				$artigosModel->like('artigos.titulo', $get['titulo']);
@@ -118,7 +120,8 @@ class Artigos extends BaseController
 						D.apelido like \'%' . $get['colaborador'] . '%\' OR 
 						E.apelido like \'%' . $get['colaborador'] . '%\' OR 
 						F.apelido like \'%' . $get['colaborador'] . '%\' OR 
-						G.apelido like \'%' . $get['colaborador'] . '%\'
+						G.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						H.apelido like \'%' . $get['colaborador'] . '%\'
 					)');
 				} elseif ($get['atribuicao'] == 'sugerido') {
 					$artigosModel->like('A.apelido', $get['colaborador']);
@@ -130,6 +133,8 @@ class Artigos extends BaseController
 					$artigosModel->like('D.apelido', $get['colaborador']);
 				} elseif ($get['atribuicao'] == 'produzido') {
 					$artigosModel->like('E.apelido', $get['colaborador']);
+				} elseif ($get['atribuicao'] == 'marcado') {
+					$artigosModel->like('H.apelido', $get['colaborador']);
 				}
 			}
 
@@ -757,11 +762,12 @@ class Artigos extends BaseController
 			
 			$artigo = $artigosModel->find($idArtigo);
 			$idColaborador = $this->session->get('colaboradores')['id'];
+			$permissoes = $this->session->get('colaboradores')['permissoes'];
 
 			if($artigo === null || empty($artigo)) {
 				return $retorno->retorno(false, 'Erro ao encontrar artigo.', true);
 			}
-			if($artigo['marcado_colaboradores_id'] != $idColaborador) {
+			if($artigo['marcado_colaboradores_id'] != $idColaborador && !in_array('7',$permissoes)) {
 				return $retorno->retorno(false, 'O artigo não está marcado por você.', true);
 			}
 			$dado = $this->artigosMarcacao->desmarcarArtigo($artigo['id']);
