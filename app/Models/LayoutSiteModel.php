@@ -13,7 +13,7 @@ class LayoutSiteModel{
 
 	function widgetEsteiraProducao(){
 		$builder = $this->db->table('fase_producao')->where('mostrar_site','S');
-		$builder->join('artigos','artigos.fase_producao_id = fase_producao.id');
+		$builder->join('artigos','artigos.fase_producao_id = fase_producao.id')->where('artigos.descartado',NULL);
 		$builder->groupBy('fase_producao_id');
 		$builder->select('count(1) AS quantidade, fase_producao.nome AS nome');
 		$fase_producao = $builder->get()->getResult();
