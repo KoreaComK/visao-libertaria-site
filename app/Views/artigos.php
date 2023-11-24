@@ -32,7 +32,7 @@
 	<div class="container">
 		<div class="">
 			<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
-				<h3 class="m-0"><?= ($nomeCategoriaAtual !== null) ? ($nomeCategoriaAtual) : ('Todos os artigos'); ?></h3>
+				<h3 class="m-0"><?= ($nomeCategoriaAtual !== null) ? ($nomeCategoriaAtual) : ('Artigos Publicados'); ?></h3>
 			</div>
 		</div>
 

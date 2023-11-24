@@ -81,7 +81,7 @@
 							<a class="nav-link" href="<?= site_url('site'); ?>">Principal</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Todos os Artigos</a>
+							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos Publicados</a>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null) : ?>
 							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])) : ?>
@@ -105,8 +105,7 @@
 											<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="dropdown-item">Escrever Artigo</a>
 										<?php endif; ?>
 										<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])) : ?>
-											<a href="<?= site_url('colaboradores/artigos'); ?>" class="dropdown-item">Ver Meus
-												Artigos</a>
+											<a href="<?= site_url('colaboradores/artigos'); ?>" class="dropdown-item">Ver Todos Artigos</a>
 										<?php endif; ?>
 										<?php if (isset($_SESSION) && in_array('3', $_SESSION['colaboradores']['permissoes'])) : ?>
 											<a href="<?= site_url('colaboradores/artigos/revisar'); ?>" class="dropdown-item">Revisar</a>
