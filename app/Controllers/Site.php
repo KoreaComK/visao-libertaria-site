@@ -206,14 +206,14 @@ class Site extends BaseController
 			if ($hash == null) {
 				$valida = $validaFormularios->validaFormularioEsqueciSenhaEmailColaborador($post);
 				if (empty($valida->getErrors())) {
+					$colaboradoresModel = new \App\Models\ColaboradoresModel();
+					$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
+					if ($colaborador['excluido'] != NULL) {
+						return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);
+					}
 					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					} else {
-						$colaboradoresModel = new \App\Models\ColaboradoresModel();
-						$colaborador = $colaboradoresModel->getColaboradorPeloEmail($post['email']);
-						if ($colaborador['excluido'] != NULL) {
-							return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);
-						}
 						$gravar = array();
 						$gravar['confirmacao_hash'] = hash('sha256', $colaborador['email'] . rand() . $colaborador['senha']);
 						$gravar['id'] = $colaborador['id'];
@@ -318,12 +318,6 @@ class Site extends BaseController
 
 			if (empty($valida->getErrors())) {
 
-				if(get_cookie('lembrar') != 1) {
-					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
-						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
-					}
-				}
-
 				$retorno = new \App\Libraries\RetornoPadrao();
 				$colaboradoresModel = new \App\Models\ColaboradoresModel();
 				$colaborador = $colaboradoresModel->getColaboradores($post['email'], hash('sha256', $post['senha']));
@@ -346,6 +340,12 @@ class Site extends BaseController
 
 					if (empty($colaboradoresAtribuicoes)) {
 						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
+					}
+
+					if(get_cookie('lembrar') != 1) {
+						if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
+						}
 					}
 
 					$estrutura_session = [
