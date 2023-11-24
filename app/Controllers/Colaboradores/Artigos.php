@@ -39,7 +39,7 @@ class Artigos extends BaseController
 	public function index()
 	{
 		$data = array();
-		$data['titulo'] = 'Meus Artigos Cadastrados';
+		$data['titulo'] = 'Listagem de Todos os Artigos';
 
 		//Se usuário tem acesso a escritor
 		$this->verificaPermissao->PermiteAcesso('1');
@@ -49,14 +49,98 @@ class Artigos extends BaseController
 		$data['usuario'] = $this->session->get('colaboradores')['id'];
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$faseProducaoModel = new \App\Models\FaseProducaoModel();
+		$data['fase_producao'] = $faseProducaoModel->findAll();
 		$config = array();
-		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$data['artigosList'] = [
 			'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigos->pager
 		];
-		return view('colaboradores/artigos_list', $data);
+		return view('colaboradores/artigos_search_list', $data);
+	}
+
+	public function artigosList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$data = array();
+
+		$this->verificaPermissao->PermiteAcesso('2');
+		$artigosModel = new \App\Models\ArtigosModel();
+		if ($this->request->getMethod() == 'get') {
+			$get = service('request')->getGet();
+
+			$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
+			$data['usuario'] = $this->session->get('colaboradores')['id'];
+
+			$artigosModel
+				->select('
+				artigos.*,
+				A.apelido AS sugerido,
+				B.apelido AS escrito,
+				C.apelido AS revisado,
+				D.apelido AS narrado,
+				E.apelido AS produzido,
+				F.apelido AS publicado,
+				G.apelido AS descartado
+			')
+				->join('colaboradores A', 'artigos.sugerido_colaboradores_id = A.id', 'LEFT')
+				->join('colaboradores B', 'artigos.escrito_colaboradores_id = B.id', 'LEFT')
+				->join('colaboradores C', 'artigos.revisado_colaboradores_id = C.id', 'LEFT')
+				->join('colaboradores D', 'artigos.narrado_colaboradores_id = D.id', 'LEFT')
+				->join('colaboradores E', 'artigos.produzido_colaboradores_id = E.id', 'LEFT')
+				->join('colaboradores F', 'artigos.publicado_colaboradores_id = F.id', 'LEFT')
+				->join('colaboradores G', 'artigos.descartado_colaboradores_id = G.id', 'LEFT');
+
+			if (!is_null($get['titulo']) && !empty($get['titulo']) && $get['titulo'] != '') {
+				$artigosModel->like('artigos.titulo', $get['titulo']);
+			}
+
+			if (!is_null($get['fase_producao']) && !empty($get['fase_producao']) && $get['fase_producao'] != '') {
+				$artigosModel->where('artigos.fase_producao_id', $get['fase_producao']);
+			}
+
+			if (!is_null($get['descartado']) && !empty($get['descartado']) && $get['descartado'] != 'N') {
+				$artigosModel->onlyDeleted();
+			}
+
+			if (!is_null($get['colaborador']) && !empty($get['colaborador']) && $get['colaborador'] != '') {
+				if (is_null($get['atribuicao']) || empty($get['atribuicao']) || $get['atribuicao'] == '') {
+					$artigosModel
+						->where('(
+						A.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						B.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						C.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						D.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						E.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						F.apelido like \'%' . $get['colaborador'] . '%\' OR 
+						G.apelido like \'%' . $get['colaborador'] . '%\'
+					)');
+				} elseif ($get['atribuicao'] == 'sugerido') {
+					$artigosModel->like('A.apelido', $get['colaborador']);
+				} elseif ($get['atribuicao'] == 'escrito') {
+					$artigosModel->like('B.apelido', $get['colaborador']);
+				} elseif ($get['atribuicao'] == 'revisado') {
+					$artigosModel->like('C.apelido', $get['colaborador']);
+				} elseif ($get['atribuicao'] == 'narrado') {
+					$artigosModel->like('D.apelido', $get['colaborador']);
+				} elseif ($get['atribuicao'] == 'produzido') {
+					$artigosModel->like('E.apelido', $get['colaborador']);
+				}
+			}
+
+
+			$artigos = $artigosModel;
+			$data['artigosList'] = [
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
+				'pager' => $artigos->pager
+			];
+		}
+		return view('template/templateArtigosList', $data);
 	}
 
 	public function detalhe($artigoId = null)
