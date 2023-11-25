@@ -66,7 +66,7 @@ use CodeIgniter\I18n\Time;
 							<div class="mb-3">
 								<label for="titulo">Data limite para exclusão</label>
 								<div class="form-row">
-									<div class="col-md-8 mb-8">
+									<div class="col-md-8 mb-2">
 										<input type="number" class="form-control" id="cron_pautas_data_delete_number"
 											placeholder="Data para exclusão" name="cron_pautas_data_delete_number"
 											required min="1"
@@ -84,6 +84,78 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
+							<div class="mb-3">
+								<h4>Marcação de Artigos</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="titulo">Habilitar desmarcação de artigos</label>
+								<select class="custom-select" id="cron_artigos_desmarcar_status"
+									name="cron_artigos_desmarcar_status">
+									<option value="1" <?= (isset($dados['cron_artigos_desmarcar_status']) && $dados['cron_artigos_desmarcar_status'] == '1') ? ('selected') : (''); ?>>Ativar
+									</option>
+									<option value="0" <?= (isset($dados['cron_artigos_desmarcar_status']) && $dados['cron_artigos_desmarcar_status'] == '0') ? ('selected') : (''); ?>>Inativar
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_desmarcar_data_revisao_number">Tempo limite para desmarcação da revisão</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_revisao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_revisao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_desmarcar_data_revisao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_desmarcar_data_revisao_time"
+											name="cron_artigos_desmarcar_data_revisao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_desmarcar_data_narracao_number">Tempo limite para desmarcação da narração</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_narracao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_narracao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_desmarcar_data_narracao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_desmarcar_data_narracao_time"
+											name="cron_artigos_desmarcar_data_narracao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_desmarcar_data_producao_number">Tempo limite para desmarcação da produção</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_producao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_producao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_desmarcar_data_producao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_desmarcar_data_producao_time"
+											name="cron_artigos_desmarcar_data_producao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
 							<button class="btn btn-primary btn-block mb-3 salvar-config-cron" type="button">Salvar
 								alterações
 								do
@@ -92,6 +164,15 @@ use CodeIgniter\I18n\Time;
 					</div>
 					<div class="tab-pane fade" id="pautas" role="tabpanel" aria-labelledby="pautas-tab">
 						<form class="col-12 mt-4" novalidate="yes" method="post" id="pautas_form">
+							<div class="mb-3">
+								<label for="pauta_bot_hash">Hash de acesso do Ancapsubot</label> <span class="text-muted">Ao alterar o hash, é necessário alterar a hash de acesso do Ancapsubot</span>
+								<div class="input-group">
+									<input type="text" class="form-control" id="pauta_bot_hash"
+										placeholder="Hash do Ancapsubot" name="pauta_bot_hash" required min="1"
+										value="<?= (isset($dados['pauta_bot_hash'])) ? ($dados['pauta_bot_hash']) : (''); ?>">
+								</div>
+							</div>
+						
 							<div class="mb-3">
 								<h4>Limites de Envio</h4>
 							</div>
