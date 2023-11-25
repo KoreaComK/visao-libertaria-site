@@ -21,23 +21,33 @@ class Admin extends BaseController
 		$this->verificaPermissao->PermiteAcesso('7');
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$retorno = new \App\Libraries\RetornoPadrao();
-
+		
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
-			foreach($post as $indice => $dado) {
+			foreach ($post as $indice => $dado) {
 				$gravar = array();
-				if($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
+				if ($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
 					$indice = 'cron_pautas_data_delete';
-					$gravar[$indice] = $post['cron_pautas_data_delete_number'].' '.$post['cron_pautas_data_delete_time'];
+					$gravar[$indice] = $post['cron_pautas_data_delete_number'] . ' ' . $post['cron_pautas_data_delete_time'];
+				} elseif ($indice == 'cron_artigos_desmarcar_data_revisao_number' || $indice == 'cron_artigos_desmarcar_data_revisao_number') {
+					$indice = 'cron_artigos_desmarcar_data_revisao';
+					$gravar[$indice] = $post['cron_artigos_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_desmarcar_data_revisao_time'];
+				} elseif ($indice == 'cron_artigos_desmarcar_data_narracao_number' || $indice == 'cron_artigos_desmarcar_data_narracao_time') {
+					$indice = 'cron_artigos_desmarcar_data_narracao';
+					$gravar[$indice] = $post['cron_artigos_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_desmarcar_data_narracao_time'];
+				} elseif ($indice == 'cron_artigos_desmarcar_data_producao_number' || $indice == 'cron_artigos_desmarcar_data_producao_time') {
+					$indice = 'cron_artigos_desmarcar_data_producao';
+					$gravar[$indice] = $post['cron_artigos_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_desmarcar_data_producao_time'];
 				} else {
 					$gravar[$indice] = $dado;
 				}
-				if(!$configuracaoModel->update($indice, array('config_valor'=>$gravar[$indice]))) {
+				if (!$configuracaoModel->update($indice, array('config_valor' => $gravar[$indice]))) {
 					return $retorno->retorno(false, 'Erro ao atualizar as configurações.', true);
 				}
 			}
 			return $retorno->retorno(true, 'Atualização feita com sucesso.', true);
 		}
+
 
 
 

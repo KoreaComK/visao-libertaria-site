@@ -36,6 +36,46 @@ class Cron extends BaseController
 				$pautasModel->delete($pauta['id'],true);
 			}
 		}
+
+		/*PARTE RELACIONADA A DESMARCAÇÃO DOS ARTIGOS*/
+		$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
+		if($cronArtigos == '1') {
+			/*Revisão*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_revisao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",2);
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+			
+			/*Narração*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_narracao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",3);
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+
+			/*Produção*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_producao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",4);
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+		}
 				
 		return 'Cron Finalizado';
 	}
