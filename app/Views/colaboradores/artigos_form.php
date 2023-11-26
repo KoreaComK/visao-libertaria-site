@@ -45,13 +45,13 @@ use CodeIgniter\I18n\Time;
 
 			<div class="mb-3">
 				<label for="titulo">Título do Artigo</label>
-				<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título do artigo" value="<?= addslashes($artigo['titulo']); ?>">
+				<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título do artigo" value="<?= str_replace('"',"'",$artigo['titulo']); ?>">
 			</div>
 
 			<div class="mb-3">
 				<label for="gancho">Gancho <span class="text-muted">Texto curto antes da vinheta. Máx. 100
 						palavras</span></label>
-				<input type="text" class="form-control" id="gancho" name="gancho" value="<?= addslashes($artigo['gancho']); ?>" placeholder="Gancho do artigo">
+				<input type="text" class="form-control" id="gancho" name="gancho" value="<?= str_replace('"',"'",$artigo['titulo']); ?>" placeholder="Gancho do artigo">
 			</div>
 
 			<div class="mb-3">
