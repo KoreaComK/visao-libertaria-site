@@ -162,6 +162,7 @@ use CodeIgniter\I18n\Time;
 
 	function contapalavras() {
 		var texto = $("#texto").val().replaceAll('\n', " ");
+		texto = texto.replace(/[0-9]/gi,"");
 		var matches = texto.split(" ");
 		number = matches.filter(function(word) {
 			return word.length > 0;
