@@ -87,30 +87,35 @@ class Pautas extends BaseController
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
-				if($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
-					$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
-					return view('colaboradores/pautas_form', $data);
-				}
-				$dados = array();
-				$dados['colaboradores_id'] = $session['id'];
-				$dados['link'] = $post['link'];
-				$dados['titulo'] = $post['titulo'];
-				$dados['texto'] = $post['texto'];
-				$dados['imagem'] = $post['imagem'];
-				if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
-					$dados['pauta_antiga'] = $post['pauta_antiga'];
-				}
-				if ($idPautas != null) {
-					$pautas = $this->gravarPautas('update', $dados, $idPautas);
+				if (is_array(@getimagesize($post['imagem']))) {
+					if($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
+						$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
+						return view('colaboradores/pautas_form', $data);
+					}
+					$dados = array();
+					$dados['colaboradores_id'] = $session['id'];
+					$dados['link'] = $post['link'];
+					$dados['titulo'] = $post['titulo'];
+					$dados['texto'] = $post['texto'];
+					$dados['imagem'] = $post['imagem'];
+					if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
+						$dados['pauta_antiga'] = $post['pauta_antiga'];
+					}
+					if ($idPautas != null) {
+						$pautas = $this->gravarPautas('update', $dados, $idPautas);
+					} else {
+						$dados['id'] = $pautasModel->getNovaUUID();
+						$pautas = $this->gravarPautas('insert', $dados);
+					}
+	
+					if ($pautas) {
+						return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
+					} else {
+						$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
+					}
 				} else {
-					$dados['id'] = $pautasModel->getNovaUUID();
-					$pautas = $this->gravarPautas('insert', $dados);
-				}
-
-				if ($pautas) {
-					return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
-				} else {
-					$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
+					$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
+					$data['post'] = $post;
 				}
 			} else {
 				$erros = $valida->getErrors();

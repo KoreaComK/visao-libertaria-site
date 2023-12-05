@@ -225,9 +225,13 @@ class Artigos extends BaseController
 			if ($id_artigo != null && $this->request->getMethod() == 'post') {
 				$valida = $validaFormularios->validaFormularioArtigo($post, false);
 				if (empty($valida->getErrors())) {
-					$artigoId = $this->alterarArtigo($id_artigo);
-					if ($artigoId != false) {
-						$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
+					if (is_array(@getimagesize($post['imagem']))) {
+						$artigoId = $this->alterarArtigo($id_artigo);
+						if ($artigoId != false) {
+							$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
+						}	
+					} else {
+						$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
 					}
 				} else {
 					$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
@@ -244,8 +248,13 @@ class Artigos extends BaseController
 			$post = $this->request->getPost();
 			$valida = $validaFormularios->validaFormularioArtigo($post, ($this->request->getGet('pauta')) ? (true) : (false));
 			if (empty($valida->getErrors())) {
-				$artigoId = $this->cadastrarArtigo();
-				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/' . $artigoId . '?status=true');
+				if (is_array(@getimagesize($post['imagem']))) {
+					$artigoId = $this->cadastrarArtigo();
+					return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/' . $artigoId . '?status=true');
+				} else {
+					$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
+					$data['artigo'] = $post;
+				}
 			} else {
 				$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
 				if ($this->request->getGet('pauta') !== null) {
@@ -347,13 +356,19 @@ class Artigos extends BaseController
 				$data['artigo']['id'] = $artigoId;
 				$valida = $validaFormularios->validaFormularioArtigo($this->request->getPost(), false);
 				if (empty($valida->getErrors())) {
-					$status_alteracao = $this->revisarArtigo($artigoId);
-					if ($status_alteracao) {
-						$data['artigo']['texto_revisado'] = $artigo['texto_original'];
-						$data['retorno'] = $retorno->retorno(true, 'Revisão feita com sucesso.', false);
+					
+					if (is_array(@getimagesize($data['artigo']['imagem']))) {
+						$status_alteracao = $this->revisarArtigo($artigoId);
+						if ($status_alteracao) {
+							$data['artigo']['texto_revisado'] = $artigo['texto_original'];
+							$data['retorno'] = $retorno->retorno(true, 'Revisão feita com sucesso.', false);
+						} else {
+							$data['retorno'] = $retorno->retorno(false, 'Houve um erro no cadastro da revisão.', false);
+						}
 					} else {
-						$data['retorno'] = $retorno->retorno(false, 'Houve um erro no cadastro da revisão.', false);
+						$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
 					}
+					
 				} else {
 					$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
 				}
