@@ -304,11 +304,11 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'audio' => [
 				'label' => 'Arquivo de Áudio',
-				'rules' => 'uploaded[audio]|ext_in[audio,mp3]|max_size[audio,25600]',
+				'rules' => 'uploaded[audio]|ext_in[audio,mp3]|max_size[audio,30720]',
 				'errors' => [
-					'uploaded' => 'O campo {field} é obrigatório e não pode ser maior que 25MB',
+					'uploaded' => 'O campo {field} é obrigatório e não pode ser maior que 30MB',
 					'ext_in' => 'Arquivo de áudio aceito apenas em .mp3',
-					'max_size' => 'Tamanho do arquivo de áudio deve ser menor que 25MB.',
+					'max_size' => 'Tamanho do arquivo de áudio deve ser menor que 30MB.',
 				],
 			],
 		]);
