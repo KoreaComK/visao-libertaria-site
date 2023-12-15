@@ -58,7 +58,7 @@ use CodeIgniter\I18n\Time;
 						</div>
 						<div class="border-light">
 							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-toggle="modal"
-								data-target="#modal-pagamentos">Ver Pagamentos</a></h6>
+								data-target="#modal-pagamentos">Ver Todos os Pagamentos</a></h6>
 						</div>
 					</div>
 				</div>
