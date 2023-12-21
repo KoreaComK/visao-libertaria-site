@@ -129,7 +129,7 @@
 	<?php else: ?>
 
 		$('.gerar-preview').on('click', function (e) {
-			form = new FormData(pagamentos_form);
+			form = new FormData(document.getElementById('pagamentos_form'));
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/admin/financeiro/preview'); ?>",
 				method: "POST",
@@ -148,7 +148,7 @@
 		});
 
 		$('.submit-pagamento').on('click', function (e) {
-			form = new FormData(pagamentos_form);
+			form = new FormData(document.getElementById('pagamentos_form'));
 			$.ajax({
 				url: "<?= base_url('colaboradores/admin/financeiro/salvar'); ?>",
 				method: "POST",
