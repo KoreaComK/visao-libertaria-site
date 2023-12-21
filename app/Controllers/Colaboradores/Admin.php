@@ -242,7 +242,7 @@ class Admin extends BaseController
 		$multiplicadores['revisado'] = (float) $post['multiplicador_revisado'] / 100;
 		$multiplicadores['narrado'] = (float) $post['multiplicador_narrado'] / 100;
 		$multiplicadores['produzido'] = (float) $post['multiplicador_produzido'] / 100;
-		$repasse_bitcoin = (float) $post['quantidade_bitcoin'];
+		$repasse_bitcoin = (float) str_replace(",",".",$post['quantidade_bitcoin']);
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
