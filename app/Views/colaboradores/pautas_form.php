@@ -97,7 +97,7 @@ use CodeIgniter\I18n\Time;
 	function getInformationLink(link) {
 		$('#pautas_form').trigger("reset");
 		link = link.trim();
-		link = link.split('?')[0];
+		link = link.substring(0, 254);
 		$('#link').val(link);
 
 		form = new FormData();
