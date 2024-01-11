@@ -136,6 +136,17 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
+								<label for="twitter">Usuário no X (antigo Twitter)</label>
+								<div class="input-group mb-2">
+									<div class="input-group-prepend">
+									<div class="input-group-text">@</div>
+									</div>
+									<input type="text" class="form-control" id="twitter" placeholder="Digite seu @ para usar o AncapsuBot"
+									value="<?= $colaboradores['twitter']; ?>" name="twitter">
+								</div>
+							</div>
+
+							<div class="mb-3">
 								<label for="username">Carteira Bitcoin</label>
 								<div class="input-group">
 									<input type="text" class="form-control" id="carteira" name="carteira"
