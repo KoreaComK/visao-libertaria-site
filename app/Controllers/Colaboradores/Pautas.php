@@ -180,11 +180,12 @@ class Pautas extends BaseController
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'reservar') {
+				$gerenciadorTextos = new \App\Libraries\GerenciadorTextos();
 				$gravar['id'] = $post['id'];
 				$gravar['reservado'] = $pautasModel->getNow();
-				$gravar['tag_fechamento'] = trim($post['tag']);
+				$gravar['tag_fechamento'] = $gerenciadorTextos->simplificaString($post['tag']);
 				$this->gravarPautas('save', $gravar);
-				return $retorno->retorno(true, '', true);
+				return $retorno->retorno(true, $gravar['tag_fechamento'], true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'cancelar') {
 				$gravar['id'] = $post['id'];

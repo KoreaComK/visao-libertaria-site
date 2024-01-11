@@ -14,7 +14,7 @@ use CodeIgniter\I18n\Time;
 	</div>
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 
-		<?php helper('month_helper');
+		<?php
 		foreach ($pautasList['pautas'] as $pauta): ?>
 
 			<div class="media text-muted pt-3 border-bottom">

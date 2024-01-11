@@ -143,7 +143,7 @@ use CodeIgniter\I18n\Time;
 				complete: function () { $('#modal-loading').modal('hide'); },
 				success: function (retorno) {
 
-					$('.badge-' + id_pauta).html(nome_tag);
+					$('.badge-' + id_pauta).html(retorno.mensagem);
 					$('#div_tag_' + id_pauta).collapse();
 					$('#div_reserva_' + id_pauta).hide();
 					$('.btn-cancelar-' + id_pauta).show();
