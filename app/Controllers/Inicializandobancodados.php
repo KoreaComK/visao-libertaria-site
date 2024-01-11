@@ -15,6 +15,7 @@ class Inicializandobancodados extends BaseController
 		`apelido` varchar(255) NOT NULL,
 		`avatar` varchar(255) DEFAULT null,
 		`email` varchar(255) NOT NULL,
+		`twitter` varchar(255) DEFAULT null,
 		`carteira` varchar(255) DEFAULT null,
 		`senha` varchar(64) NOT NULL,
 		`pontuacao_total` double DEFAULT 0,

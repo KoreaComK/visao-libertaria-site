@@ -125,6 +125,14 @@ class ValidaFormularios extends BaseController
 					'is_unique' => 'O apelido já está sendo utilizado por outro colaborador.',
 				],
 			],
+			'twitter' => [
+				'label' => 'Twitter',
+				'rules' => 'max_length[255]|is_unique[colaboradores.twitter]',
+				'errors' => [
+					'max_length' => 'O campo {field} tem que ter menos que 255 caracteres.',
+					'is_unique' => 'O @{value} já está cadastrado em nossa base de dados.',
+				],
+			],
 			'carteira' => [
 				'label' => 'Carteira Bitcoin',
 				'rules' => 'permit_empty|max_length[255]|alpha_numeric',

@@ -23,9 +23,12 @@ class Perfil extends BaseController
 			$retorno = new \App\Libraries\RetornoPadrao();
 
 			if (isset($post['apelido'])) {
+				$gerenciadorTextos = new \App\Libraries\GerenciadorTextos();
 				$avatar = $this->request->getFile('avatar');
 
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
+				
+				$post['twitter'] = $gerenciadorTextos->simplificaString($post['twitter']);
 				$valida = $validaFormularios->validaFormularioPerfilColaborador($post, $session['id']);
 				if (empty($valida->getErrors())) {
 
@@ -33,6 +36,7 @@ class Perfil extends BaseController
 					$dados['id'] = $session['id'];
 					$dados['carteira'] = $post['carteira'];
 					$dados['apelido'] = $colaboradoresModel->db->escapeString($post['apelido']);
+					$dados['twitter'] = $gerenciadorTextos->simplificaString($post['twitter']);
 
 					if ($avatar->getName() != '') {
 						$valida = $validaFormularios->validaFormularioPerfilColaboradorFile();
