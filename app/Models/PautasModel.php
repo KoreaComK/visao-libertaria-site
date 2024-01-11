@@ -85,13 +85,17 @@ class PautasModel extends Model
 	public function getPautasPesquisa($pesquisa = NULL)
 	{
 		$this->builder()
-			->select('pautas.*, colaboradores.apelido AS apelido')
-			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
-		if($pesquisa !== NULL) {
-			$this->builder->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");
-		}
+			->select('pautas.*, colaboradores.apelido AS apelido, pautas_fechadas.titulo AS nome_pauta_fechada')
+			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
+			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
+			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT');
 		$this->builder()->orderBy('pautas.criado', 'DESC');
+		if($pesquisa !== NULL) {
+			$this->builder()->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");
+			return $this->withDeleted();
+		}
 		return $this;
+		
 	}
 
 	public function getPautasPorUsuario($data, $usuario)

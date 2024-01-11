@@ -11,6 +11,11 @@ use CodeIgniter\I18n\Time;
 				<image class="mr-2 rounded img-thumbnail float-left" for="btn-check-outlined"
 					style="max-height: 120px; max-width:250px;" src="<?= $pauta['imagem']; ?>" />
 				<p class="media-body pb-3 mb-0 small lh-125  border-gray">
+					<?php if($pauta['nome_pauta_fechada'] != NULL): ?>
+						<strong class="text-danger d-block">
+							Pauta fechada - <?= $pauta['nome_pauta_fechada']; ?>
+						</strong>
+					<?php endif; ?>
 					<strong class="d-block">
 						<?php if ($pauta['pauta_antiga'] == 'S'): ?>
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" alt="Pauta Antiga" fill="currentColor"
@@ -28,35 +33,37 @@ use CodeIgniter\I18n\Time;
 						<?= $pauta['apelido']; ?>
 					</small>
 			</div>
-			<div class="col-12 row text-center mb-3">
-				<small class="col-9 mt-3">
-					<button type="button" data-information="<?= $pauta['id']; ?>"
-						class="btn btn-danger btn-sm descartar">Descartar</button>
-				</small>
-				<small class="col-3 mt-3">
-					<button type="button" data-information="<?= $pauta['id']; ?>"
-						class="btn btn-success btn-sm reservar <?= ($pauta['reservado'] != null) ? ('collapse') : (''); ?>"
-						id="btn-reservar-<?= $pauta['id']; ?>">Reservar</button>
-					<div class="collapse" id="div_reserva_<?= $pauta['id']; ?>">
-						<div class="input-group input-group-sm mb-3">
-							<input type="text" id="tema_<?= $pauta['id']; ?>" class="form-control " placeholder="Tema da Pauta"
-								aria-label="Tema da Pauta" aria-describedby="button-addon2">
-							<div class="input-group-append">
-								<button class="btn btn-outline-primary btn-salvar" type="button"
-									data-information="<?= $pauta['id']; ?>">Salvar Tema</button>
+			<?php if($pauta['nome_pauta_fechada'] == NULL): ?>
+				<div class="col-12 row text-center mb-3">
+					<small class="col-9 mt-3">
+						<button type="button" data-information="<?= $pauta['id']; ?>"
+							class="btn btn-danger btn-sm descartar">Descartar</button>
+					</small>
+					<small class="col-3 mt-3">
+						<button type="button" data-information="<?= $pauta['id']; ?>"
+							class="btn btn-success btn-sm reservar <?= ($pauta['reservado'] != null) ? ('collapse') : (''); ?>"
+							id="btn-reservar-<?= $pauta['id']; ?>">Reservar</button>
+						<div class="collapse" id="div_reserva_<?= $pauta['id']; ?>">
+							<div class="input-group input-group-sm mb-3">
+								<input type="text" id="tema_<?= $pauta['id']; ?>" class="form-control " placeholder="Tema da Pauta"
+									aria-label="Tema da Pauta" aria-describedby="button-addon2">
+								<div class="input-group-append">
+									<button class="btn btn-outline-primary btn-salvar" type="button"
+										data-information="<?= $pauta['id']; ?>">Salvar Tema</button>
+								</div>
 							</div>
 						</div>
-					</div>
-					<button type="button" data-information="<?= $pauta['id']; ?>"
-						class="btn btn-warning btn-sm btn-cancelar btn-cancelar-<?= $pauta['id']; ?> <?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>">Cancelar
-						Reserva</button>
-					<div class="<?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>" id="div_tag_<?= $pauta['id']; ?>">
-						<label class="badge badge-primary badge-<?= $pauta['id']; ?>">
-							<?= $pauta['tag_fechamento']; ?>
-						</label>
-					</div>
-				</small>
-			</div>
+						<button type="button" data-information="<?= $pauta['id']; ?>"
+							class="btn btn-warning btn-sm btn-cancelar btn-cancelar-<?= $pauta['id']; ?> <?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>">Cancelar
+							Reserva</button>
+						<div class="<?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>" id="div_tag_<?= $pauta['id']; ?>">
+							<label class="badge badge-primary badge-<?= $pauta['id']; ?>">
+								<?= $pauta['tag_fechamento']; ?>
+							</label>
+						</div>
+					</small>
+				</div>
+			<?php endif; ?>
 
 			</p>
 		</div>
