@@ -760,6 +760,7 @@ class Artigos extends BaseController
 			}
 			$dado = $this->artigosMarcacao->marcarArtigo($artigo['id'],$idColaborador);
 			if($dado){
+				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'marcou', $idColaborador);
 				return $retorno->retorno(true, 'Artigo marcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'O artigo já está marcado por outro colaborador.', true);
@@ -787,6 +788,7 @@ class Artigos extends BaseController
 			}
 			$dado = $this->artigosMarcacao->desmarcarArtigo($artigo['id']);
 			if($dado){
+				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $idColaborador);
 				return $retorno->retorno(true, 'Artigo desmarcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'Ocorreu um erro ao desmarcar o artigo.', true);
