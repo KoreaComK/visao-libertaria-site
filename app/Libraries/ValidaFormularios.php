@@ -346,10 +346,10 @@ class ValidaFormularios extends BaseController
 			],
 			'favicon' => [
 				'label' => 'Imagem Favicon',
-				'rules' => 'ext_in[favicon,ico]|max_size[favicon,10]',
+				'rules' => 'ext_in[favicon,ico]|max_size[favicon,100]',
 				'errors' => [
 					'ext_in' => '{field} precisa ser .ico.',
-					'max_size' => 'Tamanho do arquivo deve ser menor que 10KB.',
+					'max_size' => 'Tamanho do arquivo deve ser menor que 100KB.',
 				],
 			],
 			'estilos' => [
