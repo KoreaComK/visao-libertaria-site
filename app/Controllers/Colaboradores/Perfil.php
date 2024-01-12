@@ -27,7 +27,7 @@ class Perfil extends BaseController
 				$avatar = $this->request->getFile('avatar');
 
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
-				
+
 				$post['twitter'] = $gerenciadorTextos->simplificaString($post['twitter']);
 				$valida = $validaFormularios->validaFormularioPerfilColaborador($post, $session['id']);
 				if (empty($valida->getErrors())) {
@@ -118,6 +118,8 @@ class Perfil extends BaseController
 
 		$data['lista_pagamentos'] = $this->widgetPagamentos();
 
+		$data['lista_pautas'] = $this->widgetPautas($session);
+
 		return view('colaboradores/perfil', $data);
 	}
 
@@ -148,6 +150,17 @@ class Perfil extends BaseController
 		$pagamentosModel = new \App\Models\PagamentosModel();
 		$pagamentos = $pagamentosModel->getPagamentos()->get()->getResultArray();
 		return $pagamentos;
+	}
+
+	private function widgetPautas($colaborador)
+	{
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])
+		->where('reservado IS NOT NULL')
+		->where('tag_fechamento IS NOT NULL')
+		->where('excluido IS NOT NULL')
+		->get()->getResultArray();
+		return $pautas;
 	}
 
 	private function gravarColaborador($tipo, $dados, $id = null)

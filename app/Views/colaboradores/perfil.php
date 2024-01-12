@@ -38,7 +38,13 @@ use CodeIgniter\I18n\Time;
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 								<h6 class="mb-0"><a href="<?= site_url('site/artigos'); ?>">Listar artigos do
-										colaborador</a></h6>
+									colaborador</a></h6>
+							</li>
+						</ul>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+								<h6 class="mb-0"><a href="#modal-pautas" data-toggle="modal" data-target="#modal-pautas">Listar pautas 
+									usadas em vídeos</a></h6>
 							</li>
 						</ul>
 					</div>
@@ -325,6 +331,42 @@ use CodeIgniter\I18n\Time;
 								</td>
 								<td><?=number_format($pagamento['pontuacao_total'], 0, ',', '.');?></td>
 								<td><?=number_format(($pagamento['quantidade_bitcoin']*100000000)/$pagamento['pontuacao_total'], 0, ',', '.');?> sats</td>
+							</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modal-pautas" tabindex="-1" role="dialog"
+	aria-labelledby="modal-perfilLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modal-perfilLabel">Pautas utilizadas nos vídeos</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Data do Fechamento</th>
+							<th scope="col">Título</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if (empty($lista_pautas)): ?>
+							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+						<?php else: ?>
+							<?php foreach ($lista_pautas as $indice => $pautas): ?>
+							<tr>
+								<th scope="row"><?= Time::createFromFormat('Y-m-d H:i:s', $pautas['reservado'])->toLocalizedString('dd MMMM yyyy'); ?></td>
+								<td><a href="<?= site_url('colaboradores/pautas/detalhe/'.$pautas['id']); ?>"><?= $pautas['titulo']; ?></a></td>
 							</tr>
 							<?php endforeach; ?>
 						<?php endif; ?>
