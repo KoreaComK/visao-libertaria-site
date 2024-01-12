@@ -155,7 +155,7 @@ use CodeIgniter\I18n\Time;
 					<div class="bg-light py-2 px-4 mb-3">
 						<h3 class="m-0">Esteira de Produção</h3>
 					</div>
-					<div class="d-flex py-2 px-3 text-center">
+					<div class="py-2 px-3 text-center">
 						<?php foreach ($widgetEsteiraProducao as $key => $qtde) : ?>
 							<div class="badge <?= getColors($key); ?> m-1 p-1">
 								<?= $key; ?>:

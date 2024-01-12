@@ -62,16 +62,13 @@
 	<link rel="icon" type="image/x-icon" href="<?= base_url('public/favicon.ico'); ?>">
 </head>
 
-	<div class="container-fluid" style="background-image:url(https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj); height: 16.5vw; background-size: 100%;">
-		<div class="row align-items-center py-2 px-lg-5">
-			<div class="col-lg-4">
-				<a href="index" class="navbar-brand d-none d-lg-block">
-					<h1 class="m-0 display-5 text-uppercase" style="background-image:url(https://yt3.googleusercontent.com/ytc/AOPolaRg29yzgWrtwjpAOuKvr3BM6NQxExpGUqMixyYGbQ=s176-c-k-c0x00ffffff-no-rj);">
-					</h1>
-				</a>
-			</div>
-		</div>
-	</div>
+	<?php
+		$banner = 'https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj';
+		if(file_exists('public/assets/banner.png')) {
+			$banner = base_url('public/assets/banner.png');
+		}
+	?>
+	<div class="container-fluid" style="background-image:url(<?= $banner; ?>); height: 16.5vw; background-size: 100%;"></div>
 	<div class="container-fluid mb-3 vl-bg-c">
 		<nav class="navbar navbar-expand-lg navbar-light bg-light vl-bg-c">
 			<div class="container">

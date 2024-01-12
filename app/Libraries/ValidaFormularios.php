@@ -323,6 +323,23 @@ class ValidaFormularios extends BaseController
 		$validation->run();
 		return $validation;
 	}
+
+	public function validaFormularioAdministracaoGerais()
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'banner' => [
+				'label' => 'Arquivo do Banner',
+				'rules' => 'ext_in[banner,png]|max_size[banner,3072]',
+				'errors' => [
+					'ext_in' => 'Arquivo do Banner precisa ser .png.',
+					'max_size' => 'Tamanho do arquivo de áudio deve ser menor que 3MB.',
+				],
+			],
+		]);
+		$validation->run();
+		return $validation;
+	}
 	
 	public function validaFormularioProducao($post, $pauta = false)
 	{

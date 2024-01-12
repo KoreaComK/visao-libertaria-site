@@ -361,7 +361,21 @@ use CodeIgniter\I18n\Time;
 
 					</div>
 					<div class="tab-pane fade" id="gerais" role="tabpanel" aria-labelledby="gerais-tab">
-						<form class="col-12 mt-4" novalidate="yes" method="post" id="gerais_form">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="gerais_form" enctype="multipart/form-data">
+
+							<div class="mb-3">
+								<h4>Banner</h4>
+							</div>
+
+
+						<div class="mb-3">
+							<label for="imagem">Imagem do Banner</label>
+							<div class="custom-file">
+								<input type="hidden" name="blah" />
+								<input type="file" class="custom-file-input" id="banner" name="banner" required aria-describedby="image" accept="image/png">
+								<label class="custom-file-label" for="audio">Escolha o arquivo do banner...</label>
+							</div>
+						</div>
 
 							<div class="mb-3">
 								<h4>Listagens</h4>

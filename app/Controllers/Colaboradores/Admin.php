@@ -24,6 +24,23 @@ class Admin extends BaseController
 		
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
+			
+			if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
+				$file = $this->request->getFiles()['banner'];
+				$validaFormularios = new \App\Libraries\ValidaFormularios();
+				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
+				if (empty($valida->getErrors())) {
+					$nome_arquivo = 'banner.' . $file->guessExtension();
+					if (!$file->move('public/assets', $nome_arquivo, true)) {
+						return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+					}
+
+				} else {
+					return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+				}
+				
+			}
+			
 			foreach ($post as $indice => $dado) {
 				$gravar = array();
 				if ($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
