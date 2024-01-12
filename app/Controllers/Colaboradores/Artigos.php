@@ -36,7 +36,7 @@ class Artigos extends BaseController
 			'historico' => null
 		];
 	}
-	public function index()
+	public function index($idColaborador = NULL)
 	{
 		$data = array();
 		$data['titulo'] = 'Listagem de Todos os Artigos';
@@ -58,6 +58,14 @@ class Artigos extends BaseController
 			'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigos->pager
 		];
+
+		if($idColaborador != NULL) {
+			$idColaborador = (int)$idColaborador;
+			if($idColaborador != 0) {
+				$colaboradoresModel = new \App\Models\ColaboradoresModel();
+				$data['colaborador'] = $colaboradoresModel->find($idColaborador);
+			}
+		}
 		return view('colaboradores/artigos_search_list', $data);
 	}
 

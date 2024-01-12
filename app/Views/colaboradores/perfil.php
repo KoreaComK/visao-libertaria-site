@@ -37,7 +37,7 @@ use CodeIgniter\I18n\Time;
 						<hr class="my-4">
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-								<h6 class="mb-0"><a href="<?= site_url('site/artigos'); ?>">Listar artigos do
+								<h6 class="mb-0"><a href="<?= site_url('colaboradores/artigos/index/'.$colaboradores['id']); ?>">Listar artigos do
 									colaborador</a></h6>
 							</li>
 						</ul>
@@ -319,7 +319,7 @@ use CodeIgniter\I18n\Time;
 					</thead>
 					<tbody>
 						<?php if (empty($lista_pagamentos)): ?>
-							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+							<td colspan="4" class="text-center">Não há pagamentos feitos até o momento</td>
 						<?php else: ?>
 							<?php foreach ($lista_pagamentos as $indice => $pagamento): ?>
 							<tr>
@@ -361,7 +361,7 @@ use CodeIgniter\I18n\Time;
 					</thead>
 					<tbody>
 						<?php if (empty($lista_pautas)): ?>
-							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+							<td colspan="4" class="text-center">Nenhuma pauta foi utilizada para vídeos até o momento</td>
 						<?php else: ?>
 							<?php foreach ($lista_pautas as $indice => $pautas): ?>
 							<tr>

@@ -44,11 +44,10 @@
 
 		</div>
 		<div class="form-row">
-
 			<div class="col-md-6 pb-2">
 				<div class="control-group">
 					<input type="text" class="form-control form-control-sm" id="colaborador" name="colaborador"
-						placeholder="Pesquise pelo nome do colaborador" />
+						placeholder="Pesquise pelo nome do colaborador" value="<?= (isset($colaborador)&&$colaborador['apelido']!=NULL)?($colaborador['apelido']):(''); ?>"/>
 				</div>
 			</div>
 			<div class="col-md-3 pb-2">
