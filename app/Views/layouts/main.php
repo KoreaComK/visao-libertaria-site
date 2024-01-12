@@ -227,15 +227,15 @@
 			<div class="col-lg-4 col-md-6 mb-5">
 				<h4 class="font-weight-bold mb-4">Quick Links</h4>
 				<div class="d-flex flex-column justify-content-start">
-					<a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Entre em
+					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Entre em
 						contato</a>
-					<a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Saiba mais
+					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Saiba mais
 						sobre o projeto</a>
-					<a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Seja um
+					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Seja um
 						colaborador</a>
-					<a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Como
+					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Como
 						funciona a colaboração</a>
-					<a class="text-secondary" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Veja todos os
+					<a class="" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Veja todos os
 						nossos canais</a>
 				</div>
 			</div>
