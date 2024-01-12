@@ -52,6 +52,10 @@
 			.media p {
 				text-align: left;
 			}
+
+			#pautas_form textarea {
+				height: 180px;
+			}
 		}
 	</style>
 	<title>Visão Libertária</title>
