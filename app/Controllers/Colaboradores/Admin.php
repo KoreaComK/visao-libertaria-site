@@ -25,20 +25,43 @@ class Admin extends BaseController
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
 			
-			if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
-				$file = $this->request->getFiles()['banner'];
+			if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
+				
 				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
 				if (empty($valida->getErrors())) {
-					$nome_arquivo = 'banner.' . $file->guessExtension();
-					if (!$file->move('public/assets', $nome_arquivo, true)) {
-						return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+					if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['banner'];
+						$nome_arquivo = 'banner.png';
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
 					}
-
+					if($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['estilos'];
+						$nome_arquivo = 'estilos.css';
+						if (!$file->move('public/assets', $nome_arquivo)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+					if($this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['rodape'];
+						$nome_arquivo = 'rodape.png';
+						if (!$file->move('public/assets', $nome_arquivo)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+					if($this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['favicon'];
+						$nome_arquivo = 'favicon.ico';
+						if (!$file->move('public/assets', $nome_arquivo)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+					
 				} else {
 					return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
 				}
-				
 			}
 			
 			foreach ($post as $indice => $dado) {

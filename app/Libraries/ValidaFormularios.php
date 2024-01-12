@@ -332,8 +332,32 @@ class ValidaFormularios extends BaseController
 				'label' => 'Arquivo do Banner',
 				'rules' => 'ext_in[banner,png]|max_size[banner,3072]',
 				'errors' => [
-					'ext_in' => 'Arquivo do Banner precisa ser .png.',
-					'max_size' => 'Tamanho do arquivo de áudio deve ser menor que 3MB.',
+					'ext_in' => '{field}  precisa ser .png.',
+					'max_size' => 'Tamanho do arquivo deve ser menor que 3MB.',
+				],
+			],
+			'rodape' => [
+				'label' => 'Imagem Rodapé',
+				'rules' => 'ext_in[rodape,png]|max_size[rodape,1024]',
+				'errors' => [
+					'ext_in' => '{field} precisa ser .png.',
+					'max_size' => 'Tamanho do arquivo deve ser menor que 1MB.',
+				],
+			],
+			'favicon' => [
+				'label' => 'Imagem Favicon',
+				'rules' => 'ext_in[favicon,ico]|max_size[favicon,10]',
+				'errors' => [
+					'ext_in' => '{field} precisa ser .ico.',
+					'max_size' => 'Tamanho do arquivo deve ser menor que 10KB.',
+				],
+			],
+			'estilos' => [
+				'label' => 'Arquivo de Estilos',
+				'rules' => 'ext_in[estilos,css]|max_size[estilos,3072]',
+				'errors' => [
+					'ext_in' => '{field} precisa ser .css.',
+					'max_size' => 'Tamanho do arquivo deve ser menor que 3MB.',
 				],
 			],
 		]);

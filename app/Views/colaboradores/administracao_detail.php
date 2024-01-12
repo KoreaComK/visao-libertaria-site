@@ -33,6 +33,10 @@ use CodeIgniter\I18n\Time;
 						<button class="nav-link" id="gerais-tab" data-toggle="tab" data-target="#gerais" type="button"
 							role="tab" aria-controls="gerais" aria-selected="false">Geral</button>
 					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="estilos-tab" data-toggle="tab" data-target="#estilos" type="button"
+							role="tab" aria-controls="estilos" aria-selected="false">Estilo</button>
+					</li>
 				</ul>
 				<div class="tab-content" id="myTabContent">
 					<div class="tab-pane fade justify-content-center mt-2 show active" id="cron" role="tabpanel"
@@ -364,20 +368,6 @@ use CodeIgniter\I18n\Time;
 						<form class="col-12 mt-4" novalidate="yes" method="post" id="gerais_form" enctype="multipart/form-data">
 
 							<div class="mb-3">
-								<h4>Banner</h4>
-							</div>
-
-
-						<div class="mb-3">
-							<label for="imagem">Imagem do Banner</label>
-							<div class="custom-file">
-								<input type="hidden" name="blah" />
-								<input type="file" class="custom-file-input" id="banner" name="banner" required aria-describedby="image" accept="image/png">
-								<label class="custom-file-label" for="audio">Escolha o arquivo do banner...</label>
-							</div>
-						</div>
-
-							<div class="mb-3">
 								<h4>Listagens</h4>
 							</div>
 
@@ -434,6 +424,50 @@ use CodeIgniter\I18n\Time;
 								alterações da home</button>
 						</form>
 					</div>
+					<div class="tab-pane fade" id="estilos" role="tabpanel" aria-labelledby="estilos-tab">
+						<form class="col-12 mt-4" novalidate="yes" method="post" id="estilos_form" enctype="multipart/form-data">
+
+							<div class="mb-3">
+								<h4>Banner</h4>
+							</div>
+
+
+							<div class="mb-3">
+								<label for="banner">Imagem do Banner</label>
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="banner" name="banner" required aria-describedby="image" accept="image/png">
+									<label class="custom-file-label" for="banner">Escolha o arquivo do banner...</label>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="banner">Imagem do Favicon</label>
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="favicon" name="favicon" required aria-describedby="image" accept="image/ico">
+									<label class="custom-file-label" for="banner">Escolha o arquivo do favicon...</label>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="banner">Imagem de Rodapé</label>
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="rodape" name="rodape" required aria-describedby="image" accept="image/png">
+									<label class="custom-file-label" for="banner">Escolha o arquivo do rodapé...</label>
+								</div>
+							</div>
+								
+							<div class="mb-3">
+								<label for="estilos">Folha de estilos</label> <?= (file_exists('public/assets/estilos.css'))?('<a href="'.site_url("public/assets/estilos.css").'" target="_blank" class="text-muted">Clique aqui para ver a folha de estilos atual.</a>'):(''); ?>
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="estilos" name="estilos" required aria-describedby="css" accept="text/css">
+									<label class="custom-file-label" for="estilos">Escolha o arquivo de estilo css...</label>
+								</div>
+							</div>
+
+							<button class="btn btn-primary btn-block mb-3 salvar-config-estilos" type="button">Salvar
+								alterações do estilo</button>
+						</form>
+					</div>
 				</div>
 
 			</div>
@@ -466,6 +500,12 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(artigos_form);
 		submit(form);
 	});
+
+	$(".salvar-config-estilos").on("click", function () {
+		form = new FormData(estilos_form);
+		submit(form);
+	});
+
 
 	function submit(form) {
 		$.ajax({
