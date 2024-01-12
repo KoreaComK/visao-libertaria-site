@@ -399,28 +399,41 @@ class Pautas extends BaseController
 			}
 		}
 
+		
 		$dias = null;
-		foreach($xp->query("//script") as $i) {
-			if(strpos($i->nodeValue,"datePublished") > 0) {
-				$json = json_decode($i->nodeValue);
-				if($json !== NULL && is_array($json) && $dias === null) {
-					foreach($json as $j) {
-						if($j !== NULL && is_object($j) && isset($j->datePublished)) {
-							$time = strtotime($j->datePublished);
-							$agora = Time::now();
-							$time = Time::parse(date ('Y-m-d',$time));
-
-							$dias = $time->difference($agora);
+		
+		foreach ($xp->query("//meta[@property='article:published_time']") as $el) {
+			$content = $el->getAttribute("content");
+			if($content !== NULL && !empty($content)) {
+				$time = strtotime($content);
+				$agora = Time::now();
+				$time = Time::parse(date ('Y-m-d',$time));
+				$dias = $time->difference($agora);
+			}
+		}
+		
+		if($dias == null) {	
+			foreach($xp->query("//script") as $i) {
+				if(strpos($i->nodeValue,"datePublished") > 0) {
+					$json = json_decode($i->nodeValue);
+					if($json !== NULL && is_array($json) && $dias === null) {
+						foreach($json as $j) {
+							if($j !== NULL && is_object($j) && isset($j->datePublished)) {
+								$time = strtotime($j->datePublished);
+								$agora = Time::now();
+								$time = Time::parse(date ('Y-m-d',$time));
+								$dias = $time->difference($agora);
+							}
 						}
 					}
-				}
 
-				if($json !== NULL && is_object($json) && isset($json->datePublished) && $dias === null) {
-					$time = strtotime($json->datePublished);
-					$agora = Time::now();
-					$time = Time::parse(date ('Y-m-d',$time));
+					if($json !== NULL && is_object($json) && isset($json->datePublished) && $dias === null) {
+						$time = strtotime($json->datePublished);
+						$agora = Time::now();
+						$time = Time::parse(date ('Y-m-d',$time));
 
-					$dias = $time->difference($agora);
+						$dias = $time->difference($agora);
+					}
 				}
 			}
 		}
