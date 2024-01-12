@@ -40,21 +40,21 @@ class Admin extends BaseController
 					if($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['estilos'];
 						$nome_arquivo = 'estilos.css';
-						if (!$file->move('public/assets', $nome_arquivo)) {
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
 					if($this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['rodape'];
 						$nome_arquivo = 'rodape.png';
-						if (!$file->move('public/assets', $nome_arquivo)) {
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
 					if($this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['favicon'];
 						$nome_arquivo = 'favicon.ico';
-						if (!$file->move('public/assets', $nome_arquivo)) {
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
