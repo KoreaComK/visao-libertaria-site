@@ -74,7 +74,7 @@ class Ancapsubot extends BaseController
 					if ($retorno !== false) {
 						return $this->respondCreated('Pauta cadastrada com sucesso.');
 					} else {
-						return $this->fail('Erro na hora da gravação das informações.');
+						return $this->fail('Erro na gravação das informações.');
 					}
 				} else {
 					$erros = $valida->getErrors();
