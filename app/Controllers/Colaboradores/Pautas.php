@@ -415,6 +415,16 @@ class Pautas extends BaseController
 		if($dias == null) {	
 			foreach($xp->query("//script") as $i) {
 				if(strpos($i->nodeValue,"datePublished") > 0) {
+
+					if(strpos($i->nodeValue,'datePublished":"') > 0 && $dias === null) {
+						$x = explode('datePublished":"',$i->nodeValue)[1];
+						$x = explode('"',$x)[0];
+						$time = strtotime($x);
+						$agora = Time::now();
+						$time = Time::parse(date ('Y-m-d',$time));
+						$dias = $time->difference($agora);
+					}
+					
 					$json = json_decode($i->nodeValue);
 					if($json !== NULL && is_array($json) && $dias === null) {
 						foreach($json as $j) {
