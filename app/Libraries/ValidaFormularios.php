@@ -127,7 +127,7 @@ class ValidaFormularios extends BaseController
 			],
 			'twitter' => [
 				'label' => 'Twitter',
-				'rules' => 'max_length[255]|is_unique[colaboradores.twitter]',
+				'rules' => 'permit_empty|max_length[255]|is_unique[colaboradores.twitter]',
 				'errors' => [
 					'max_length' => 'O campo {field} tem que ter menos que 255 caracteres.',
 					'is_unique' => 'O @{value} já está cadastrado em nossa base de dados.',
