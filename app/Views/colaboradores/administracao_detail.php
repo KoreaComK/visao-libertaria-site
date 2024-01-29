@@ -414,10 +414,19 @@ use CodeIgniter\I18n\Time;
 										value="<?= (isset($dados['link_twitter'])) ? ($dados['link_twitter']) : (''); ?>">
 								</div>
 							</div>
+
+							<div class="mb-3">
+								<h4>Nome e Descrição dos Sites</h4>
+							</div>
 							
 							<div class="mb-3">
-								<label for="texto_rodape">Texto do Rodapé</label>
-								<textarea id="texto_rodape" name="texto_rodape" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['texto_rodape'])) ? ($dados['texto_rodape']) : (''); ?></textarea>
+								<label for="site_nome">Nome</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
+								<textarea id="site_nome" name="site_nome" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['site_nome'])) ? ($dados['site_nome']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label for="site_descricao">Descrição</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
+								<textarea id="site_descricao" name="site_descricao" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['site_descricao'])) ? ($dados['site_descricao']) : (''); ?></textarea>
 							</div>
 
 							<button class="btn btn-primary btn-block mb-3 salvar-config-gerais" type="button">Salvar

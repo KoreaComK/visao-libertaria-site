@@ -25,7 +25,7 @@ class Admin extends BaseController
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
 			
-			if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
+			if(!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
 				
 				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
