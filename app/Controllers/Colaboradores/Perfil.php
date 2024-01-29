@@ -159,6 +159,7 @@ class Perfil extends BaseController
 		->where('reservado IS NOT NULL')
 		->where('tag_fechamento IS NOT NULL')
 		->where('excluido IS NOT NULL')
+		->orderBy('reservado','DESC')
 		->get()->getResultArray();
 		return $pautas;
 	}
