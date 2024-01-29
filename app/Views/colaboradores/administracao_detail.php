@@ -274,6 +274,16 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
+								<label for="artigo_regras_narrar">Regras de Narração</label> <span class="text-muted">Permitido usar HTML</span>
+								<textarea id="artigo_regras_narrar" name="artigo_regras_narrar" class="form-control" rows="10" placeholder="Regras de narração"><?= (isset($dados['artigo_regras_narrar'])) ? ($dados['artigo_regras_narrar']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
+								<label for="artigo_regras_produzir">Regras de Produção</label> <span class="text-muted">Permitido usar HTML</span>
+								<textarea id="artigo_regras_produzir" name="artigo_regras_produzir" class="form-control" rows="10" placeholder="Regras de produção"><?= (isset($dados['artigo_regras_produzir'])) ? ($dados['artigo_regras_produzir']) : (''); ?></textarea>
+							</div>
+
+							<div class="mb-3">
 								<label for="descricao_padrao_youtube">Descrição do padrão do Youtube na publicação</label> <span class="text-muted">Tags disponíveis: {referencias}, {tags}</span>
 								<textarea id="descricao_padrao_youtube" name="descricao_padrao_youtube" class="form-control" rows="10" placeholder="Descrição de publicação no YouTube"><?= (isset($dados['descricao_padrao_youtube'])) ? ($dados['descricao_padrao_youtube']) : (''); ?></textarea>
 							</div>

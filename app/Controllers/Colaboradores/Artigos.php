@@ -476,6 +476,8 @@ class Artigos extends BaseController
 			// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
 			$data['texto'] = $this->criaTextoDinamizado($artigo);
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config['artigo_regras_narrar'] = $configuracaoModel->find('artigo_regras_narrar')['config_valor'];
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
@@ -553,6 +555,8 @@ class Artigos extends BaseController
 			// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
 			$data['texto'] = $this->criaTextoDinamizado($artigo);
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config['artigo_regras_narrar'] = $configuracaoModel->find('artigo_regras_narrar')['config_valor'];
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
