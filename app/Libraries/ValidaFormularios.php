@@ -67,6 +67,37 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioContato($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'email' => [
+				'label' => 'E-mail',
+				'rules' => 'required|valid_email',
+				'errors' => [
+					'required' => 'O campo {field} é obrigatório.',
+					'valid_email' => 'O campo {field} deve ser um e-mail válido.',
+				],
+			],
+			'assunto' => [
+				'label' => 'Assunto',
+				'rules' => 'required',
+				'errors' => [
+					'required' => 'O campo {field} é obrigatório.',
+				],
+			],
+			'mensagem' => [
+				'label' => 'Mensagem',
+				'rules' => 'required',
+				'errors' => [
+					'required' => 'O campo {field} é obrigatório.',
+				],
+			],
+		]);
+		$validation->run($post);
+		return $validation;
+	}
+
 	public function validaFormularioEsqueciSenhaSenhaColaborador($post)
 	{
 		$validation = \Config\Services::validation();

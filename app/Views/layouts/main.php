@@ -228,7 +228,7 @@
 			<div class="col-lg-4 col-md-6 mb-5">
 				<h4 class="font-weight-bold mb-4">Quick Links</h4>
 				<div class="d-flex flex-column justify-content-start">
-					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Entre em
+					<a class="mb-2" href="<?=site_url('site/contato');?>"><i class="fa fa-angle-right text-dark mr-2"></i>Entre em
 						contato</a>
 					<a class="mb-2" href="#"><i class="fa fa-angle-right text-dark mr-2"></i>Saiba mais
 						sobre o projeto</a>

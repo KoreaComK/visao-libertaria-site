@@ -4,11 +4,13 @@ namespace App\Libraries;
 
 class EnviaEmail
 {
-
-	public function enviaEmail($destinatario = null, $titulo = null, $mensagem = null)
+	public function enviaEmail($destinatario = null, $titulo = null, $mensagem = null, $copia = false)
 	{
 		$email = \Config\Services::email();
 		$email->setTo($destinatario);
+		if($copia !== false) {
+			$email->setCC($copia);
+		}
 		$email->setFrom($email->SMTPUser, 'Visão Libertária');
 
 		$email->setSubject($titulo);
@@ -39,6 +41,12 @@ class EnviaEmail
 	public function getMensagemExcluirConta($hash)
 	{
 		$mensagem = "Olá. Você solicitou a exclusão da sua conta no site Visão Libertária.\r\nPara confirmar a exclusão, clique no link abaixo.\r\n" . site_url('site/excluir/' . $hash);
+		return $mensagem;
+	}
+
+	public function getMensagemContato($mensagem,$email)
+	{
+		$mensagem = "Contato feito através do formulário do site (".site_url()."):\r\nEmail: ".$email."\r\n".$mensagem;
 		return $mensagem;
 	}
 

@@ -419,8 +419,49 @@ class Site extends BaseController
 		return redirect()->to($link);
 	}
 
+	/* CONTATO */
+	public function contato()
+	{
+		$data = array();
+		if ($this->request->isAJAX()) {
+			$validaFormularios = new \App\Libraries\ValidaFormularios();
+			$retorno = new \App\Libraries\RetornoPadrao();
+			$post = $this->request->getPost();
+
+			$valida = $validaFormularios->validaFormularioContato($post);
+			if (empty($valida->getErrors())) {
+				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
+				} else {
+					$configuracaoModel = new \App\Models\ConfiguracaoModel();
+					$config = array();
+					$config['contato_email'] = $configuracaoModel->find('contato_email')['config_valor'];
+					$config['contato_email_copia'] = $configuracaoModel->find('contato_email_copia')['config_valor'];
+					$config['contato_email_copia'] = ($config['contato_email_copia']=='')?(false):($config['contato_email_copia']);
+					$enviaEmail = new \App\Libraries\EnviaEmail();
+					$enviaEmail->enviaEmail($config['contato_email'], 'CONTATO - '.$post['assunto'], $enviaEmail->getMensagemContato($post['mensagem'],$post['email']), $config['contato_email_copia']);
+					return $retorno->retorno(true, 'Contato enviado com sucesso. Iremos responder assim que possível.', true);
+				}
+			} else {
+				$erros = $valida->getErrors();
+				$string_erros = '';
+				foreach ($erros as $erro) {
+					$string_erros .= $erro . "<br/>";
+				}
+				return $retorno->retorno(false, $string_erros, true);
+			}
+		}
+		if(($this->session->has('colaboradores'))) {
+			$data['email'] = $this->session->get('colaboradores')['email'];
+		}
+		return view('contato', $data);
+	}
+
 	private function verificaCaptcha($captcha_response)
 	{
+		if($captcha_response == NULL || $captcha_response == '') {
+			return false;
+		}
 		$data = array(
 			'secret' => "ES_99f25bb22874418ea4aff1e104784bb3",
 			'response' => $captcha_response

@@ -439,6 +439,30 @@ use CodeIgniter\I18n\Time;
 								<textarea id="site_descricao" name="site_descricao" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['site_descricao'])) ? ($dados['site_descricao']) : (''); ?></textarea>
 							</div>
 
+							<div class="mb-3">
+								<h4>E-mails de Contato</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="contato_email">E-mail destinatário</label>
+								<div class="input-group">
+									<input type="text" class="form-control" id="contato_email"
+										placeholder="Link do Youtube"
+										name="contato_email" required min="1"
+										value="<?= (isset($dados['contato_email'])) ? ($dados['contato_email']) : (''); ?>">
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="contato_email_copia">E-mail de cópia</label> <span class="text-muted">Usar vírgulas para adicionar mais de um e-mail.</span>
+								<div class="input-group">
+									<input type="text" class="form-control" id="contato_email_copia"
+										placeholder="Link do Youtube"
+										name="contato_email_copia" required min="1"
+										value="<?= (isset($dados['contato_email_copia'])) ? ($dados['contato_email_copia']) : (''); ?>">
+								</div>
+							</div>
+
 							<button class="btn btn-primary btn-block mb-3 salvar-config-gerais" type="button">Salvar
 								alterações da home</button>
 						</form>
