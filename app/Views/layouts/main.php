@@ -65,7 +65,7 @@
 	<?php
 		endif;
 	?>
-	<title>Visão Libertária</title>
+	<title><?=$_SESSION['site_config']['texto_nome'];?></title>
 	<link rel="icon" type="image/x-icon" href="<?= (file_exists('public/assets/favicon.ico'))?(site_url('public/assets/favicon.ico')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
 </head>
 
@@ -196,8 +196,9 @@
 	<div class="container-fluid bg-light pt-5 px-sm-3 px-md-5 vl-bg-c">
 		<div class="row">
 			<div class="col-lg-4 col-md-6 mb-5">
-				<h4 class="font-weight-bold mb-4"><img class="img-thumbnail rounded-circle mr-3" width="100px" src="<?= (file_exists('public/assets/rodape.png'))?(site_url('public/assets/rodape.png')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />Visão
-					Libertária</h4>
+				<h4 class="font-weight-bold mb-4"><img class="img-thumbnail rounded-circle mr-3" width="100px" src="<?= (file_exists('public/assets/rodape.png'))?(site_url('public/assets/rodape.png')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
+					<?=$_SESSION['site_config']['texto_nome'];?>
+				</h4>
 				<div class="d-flex flex-wrap m-n1 justify-content-start">
 					<p><?=$_SESSION['site_config']['texto_rodape'];?></p>
 				</div>
