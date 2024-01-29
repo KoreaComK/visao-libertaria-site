@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: vl-web
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/localhost/htdocs
+    depends_on:
+      - db
+  db:
+    container_name: vl-db
+    image: mariadb:10.6.9
+    volumes:
+      - ./.db:/var/lib/mysql
+      - .docker/db_test.sql:/docker-entrypoint-initdb.d/1.sql
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+      MARIADB_DATABASE: visao_libertaria

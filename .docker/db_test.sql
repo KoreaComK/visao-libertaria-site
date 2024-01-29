@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS visao_libertaria_test COLLATE utf8_general_ci CHARACTER SET utf8;

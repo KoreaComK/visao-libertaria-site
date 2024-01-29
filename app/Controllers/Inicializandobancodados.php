@@ -6,6 +6,8 @@ use CodeIgniter\Database\Config;
 
 class Inicializandobancodados extends BaseController
 {
+	public function __construct() {}
+
 	public function index()
 	{
 		$db = db_connect();
