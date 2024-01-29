@@ -166,6 +166,28 @@ class Pautas extends BaseController
 		return view('colaboradores/pautas_form', $data);
 	}
 
+	public function excluir($idPauta = null)
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+		$data = array();
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		
+		if ($idPauta != null) {
+			$pautasModel = new \App\Models\PautasModel();
+			$pauta = $pautasModel->find($idPauta);
+			
+			if ($pauta != null && !empty($pauta) && $pauta['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
+				$this->gravarPautas('delete', null, $pauta['id']);
+				return $retorno->retorno(true, 'Pauta excluída com sucesso.', true);
+			}
+			return $retorno->retorno(false, 'Atenção! Pauta não encontrada para o seu usuário.', true);
+		} else {
+			return redirect()->to(base_url() . 'colaboradores/pautas');
+		}
+	}
+
 	public function fechar()
 	{
 

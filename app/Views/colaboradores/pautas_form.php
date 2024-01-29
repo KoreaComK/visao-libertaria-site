@@ -13,7 +13,13 @@ use CodeIgniter\I18n\Time;
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
 
-			<?php if (isset($post['criado'])): ?> <div class="mb-3"><label><span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span></label></div><?php endif; ?>
+			<?php if (isset($post['criado'])): ?>
+				<div class="mb-3">
+					<label>
+						<span class="text-muted" target="_blank">Cadastrado dia: <?= Time::createFromFormat('Y-m-d H:i:s', $post['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span>
+					</label>
+				</div>
+			<?php endif; ?>
 			<?php if (isset($post['pauta_antiga']) && $post['pauta_antiga']=='S'): ?> 
 				<div class="mb-3">
 					<label>
@@ -22,6 +28,12 @@ use CodeIgniter\I18n\Time;
 						</svg>
 						<span class="text-muted" target="_blank">Atenção! Esta pauta é antiga.</span>
 					</label>
+				</div>
+			<?php endif; ?>
+
+			<?php if(isset($post)) : ?>
+				<div class="mb-3">
+					<button class="btn btn-danger btn-lg btn-block excluir_pauta" type="button">Excluir pauta</button>
 				</div>
 			<?php endif; ?>
 		
@@ -75,7 +87,7 @@ use CodeIgniter\I18n\Time;
 					title="Preview da Imagem da Pauta" style="max-height: 200px;" />
 			</div>
 			<?php if(!isset($readOnly)) : ?>
-				<button class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" type="submit">Sugerir pauta</button>
+				<button class="btn btn-primary btn-lg btn-block enviar_pauta" type="submit"><?=isset($post)?('Atualizar'):('Sugerir'); ?> pauta</button>
 			<?php else: ?>
 				<a class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" href="<?= site_url('colaboradores/pautas'); ?>">Voltar</a>
 			<?php endif; ?>
@@ -108,7 +120,7 @@ use CodeIgniter\I18n\Time;
 		}
 
 		$.ajax({
-			url: "<?= (isset($post['id']))?(site_url('colaboradores/pautas/cadastrar/'.$post['id'])):(site_url('colaboradores/pautas/cadastrar')); ; ?>",
+			url: "<?= (isset($post['id']))?(site_url('colaboradores/pautas/cadastrar/'.$post['id'])):(site_url('colaboradores/pautas/cadastrar')); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -153,6 +165,41 @@ use CodeIgniter\I18n\Time;
 	$('#imagem').change(function () {
 		$('#preview_imagem').attr('src', $('#imagem').val());
 	});
+
+		<?php if(isset($post['id'])): ?>
+
+			$(".excluir_pauta").on("click", function(e) {
+				e.preventDefault();
+				$.ajax({
+					url: "<?= site_url('colaboradores/pautas/excluir/'.$post['id']); ?>",
+					method: "POST",
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function() { $('#modal-loading').modal('show'); },
+					complete: function() { $('#modal-loading').modal('hide'); },
+					success: function (retorno) {
+						$('.mensagem').hide();
+						$('.mensagem').removeClass('bg-success');
+						$('.mensagem').removeClass('bg-alert');
+						$('.mensagem').removeClass('bg-danger');
+						if (retorno.status) {
+							window.location.href = '<?= site_url('colaboradores/pautas?status=true'); ?>';
+						} else {
+							$('.mensagem').removeClass('bg-success');
+							$('.mensagem').addClass('bg-danger');
+							$(".enviar_pauta").prop('disabled', true);
+							$('#preview_imagem').attr('src', '');
+							$('.mensagem').addClass(retorno.classe);
+							$('.mensagem').html(retorno.mensagem);
+							$('.mensagem').show();
+						}
+					}
+				});
+			});
+		
+		<?php endif; ?>
 
 	<?php endif; ?>
 
