@@ -56,7 +56,7 @@ abstract class BaseController extends Controller
 						'youtube' => $configuracaoModel->find('link_youtube')['config_valor'],
 						'twitter' => $configuracaoModel->find('link_twitter')['config_valor'],
 						'instagram' => $configuracaoModel->find('link_instagram')['config_valor'],
-						'rodape_texto' => $configuracaoModel->find('rodape_texto')['config_valor'],
+						'texto_rodape' => $configuracaoModel->find('texto_rodape')['config_valor'],
 					]
 				];
 			$this->session->set($estrutura_session);

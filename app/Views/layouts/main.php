@@ -199,7 +199,7 @@
 				<h4 class="font-weight-bold mb-4"><img class="img-thumbnail rounded-circle mr-3" width="100px" src="<?= (file_exists('public/assets/rodape.png'))?(site_url('public/assets/rodape.png')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />Visão
 					Libertária</h4>
 				<div class="d-flex flex-wrap m-n1 justify-content-start">
-					<p><?=$_SESSION['site_config']['rodape_texto'];?></p>
+					<p><?=$_SESSION['site_config']['texto_rodape'];?></p>
 				</div>
 			</div>
 

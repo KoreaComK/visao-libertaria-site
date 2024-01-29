@@ -284,7 +284,6 @@ class Inicializandobancodados extends BaseController
 		('pauta_dias_antigo', '5'),
 		('pauta_tamanho_maximo', '100'),
 		('pauta_tamanho_minimo', '10'),
-		('rodape_texto', 'Visão Libertária é um jornal diário no YouTube, parte do canal ancap.su com conteúdo voltado ao libertarianismo. Trata-se de um jornal colaborativo em que muita gente participa da criação, edição, escolha dos temas e consegue receber algumas migalhas que o YouTube, de vez em quando, joga pra gente.'),
 		('site_quantidade_listagem', '12'),
 		('texto_artigo_narrar', ''),
 		('texto_artigo_produzir', ''),
