@@ -396,33 +396,18 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
-								<label for="link_youtube">Link Youtube</label>
-								<div class="input-group">
-									<input type="text" class="form-control" id="link_youtube"
-										placeholder="Link do Youtube"
-										name="link_youtube" required min="1"
-										value="<?= (isset($dados['link_youtube'])) ? ($dados['link_youtube']) : (''); ?>">
-								</div>
+								<label for="link_youtube">Link Youtube</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
+									<textarea id="link_youtube" name="link_youtube" class="form-control" rows="5" placeholder="Links do Youtube"><?= (isset($dados['link_youtube'])) ? ($dados['link_youtube']) : (''); ?></textarea>
 							</div>
 							
 							<div class="mb-3">
-								<label for="link_instagram">Link Instagram</label>
-								<div class="input-group">
-									<input type="text" class="form-control" id="link_youtube"
-										placeholder="Link do Instagram"
-										name="link_instagram" required min="1"
-										value="<?= (isset($dados['link_instagram'])) ? ($dados['link_instagram']) : (''); ?>">
-								</div>
+								<label for="link_instagram">Link Instagram</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
+								<textarea id="link_instagram" name="link_instagram" class="form-control" rows="5" placeholder="Links do Instagram"><?= (isset($dados['link_instagram'])) ? ($dados['link_instagram']) : (''); ?></textarea>
 							</div>
 
 							<div class="mb-3">
-								<label for="link_twitter">Link Twitter</label>
-								<div class="input-group">
-									<input type="text" class="form-control" id="link_twitter"
-										placeholder="Link do Twitter"
-										name="link_twitter" required min="1"
-										value="<?= (isset($dados['link_twitter'])) ? ($dados['link_twitter']) : (''); ?>">
-								</div>
+								<label for="link_twitter">Link Twitter</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
+								<textarea id="link_twitter" name="link_twitter" class="form-control" rows="5" placeholder="Links do Twitter"><?= (isset($dados['link_twitter'])) ? ($dados['link_twitter']) : (''); ?></textarea>
 							</div>
 
 							<div class="mb-3">
@@ -431,12 +416,12 @@ use CodeIgniter\I18n\Time;
 							
 							<div class="mb-3">
 								<label for="site_nome">Nome</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
-								<textarea id="site_nome" name="site_nome" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['site_nome'])) ? ($dados['site_nome']) : (''); ?></textarea>
+								<textarea id="site_nome" name="site_nome" class="form-control" rows="5" placeholder="Nome do Site"><?= (isset($dados['site_nome'])) ? ($dados['site_nome']) : (''); ?></textarea>
 							</div>
 
 							<div class="mb-3">
 								<label for="site_descricao">Descrição</label> <span class="text-muted">Usar <a href="https://codebeautify.org/string-to-json-online" target="_blank">este site</a> para deixar o JSON configurado corretamente.</span>
-								<textarea id="site_descricao" name="site_descricao" class="form-control" rows="5" placeholder="Regras de escrita"><?= (isset($dados['site_descricao'])) ? ($dados['site_descricao']) : (''); ?></textarea>
+								<textarea id="site_descricao" name="site_descricao" class="form-control" rows="5" placeholder="Descrição do site"><?= (isset($dados['site_descricao'])) ? ($dados['site_descricao']) : (''); ?></textarea>
 							</div>
 
 							<div class="mb-3">
