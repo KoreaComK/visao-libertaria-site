@@ -56,16 +56,16 @@ abstract class BaseController extends Controller
 			$site_nome = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_nome[site_url()]):($site_nome['default']);
 
 			$site_descricao = (array)json_decode($configuracaoModel->find('site_descricao')['config_valor']);
-			$site_descricao = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_descricao[site_url()]):($site_descricao['default']);
+			$site_descricao = (isset($site_descricao[site_url()])&&$site_descricao[site_url()]!='')?($site_descricao[site_url()]):($site_descricao['default']);
 
 			$site_youtube = (array)json_decode($configuracaoModel->find('link_youtube')['config_valor']);
-			$site_youtube = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_youtube[site_url()]):(NULL);
+			$site_youtube = (isset($site_youtube[site_url()])&&$site_youtube[site_url()]!='')?($site_youtube[site_url()]):(NULL);
 
 			$site_instagram = (array)json_decode($configuracaoModel->find('link_instagram')['config_valor']);
-			$site_instagram = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_instagram[site_url()]):(NULL);
+			$site_instagram = (isset($site_instagram[site_url()])&&$site_instagram[site_url()]!='')?($site_instagram[site_url()]):(NULL);
 
 			$site_twitter = (array)json_decode($configuracaoModel->find('link_twitter')['config_valor']);
-			$site_twitter = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_twitter[site_url()]):(NULL);
+			$site_twitter = (isset($site_twitter[site_url()])&&$site_twitter[site_url()]!='')?($site_twitter[site_url()]):(NULL);
 
 			$estrutura_session = [
 					'site_config' => [
