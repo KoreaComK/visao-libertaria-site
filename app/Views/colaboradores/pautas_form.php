@@ -31,7 +31,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 			<?php endif; ?>
 
-			<?php if(isset($post)) : ?>
+			<?php if(isset($post) && $post['colaboradores_id'] == $_SESSION['colaboradores']['id']) : ?>
 				<div class="mb-3">
 					<button class="btn btn-danger btn-lg btn-block excluir_pauta" type="button">Excluir pauta</button>
 				</div>
