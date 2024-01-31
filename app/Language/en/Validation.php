@@ -48,5 +48,7 @@ $lang['mime_in']					= "O campo {field} deve ser do(s) tipo(s) {param}.";
 $lang['ext_in']						= "O campo {field} deve ser do(s) tipo(s) {param}.";
 $lang['is_image']					= "O campo {field} deve ser uma imagem.";
 
+$lang['string_com_acentos']			= "O campo {field} deve ter apenas letras com ou sem acentuação, números, espaço e caracteres especiais.";
+
 // override core en language system validation or define your own en language validation message
 return $lang;

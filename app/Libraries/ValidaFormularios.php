@@ -13,7 +13,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Apelido',
-				'rules' => 'required|max_length[40]|string|is_unique[colaboradores.apelido]|alpha_numeric_space|min_length[6]'
+				'rules' => 'required|max_length[40]|is_unique[colaboradores.apelido]|string_com_acentos|min_length[6]'
 			],
 			'email' => [
 				'label' => 'E-mail',
@@ -98,7 +98,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'apelido' => [
 				'label' => 'Nome Público (Apelido)',
-				'rules' => 'required|max_length[40]|min_length[6]|string|alpha_numeric_space|is_unique[colaboradores.apelido,id,' . $id . ']'
+				'rules' => 'required|max_length[40]|min_length[6]|string_com_acentos|is_unique[colaboradores.apelido,id,' . $id . ']'
 			],
 			'twitter' => [
 				'label' => 'Twitter',
