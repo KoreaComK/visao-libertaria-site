@@ -70,8 +70,8 @@ abstract class BaseController extends Controller
 			$estrutura_session = [
 					'site_config' => [
 						'youtube' => $site_youtube,
-						'twitter' => $site_instagram,
-						'instagram' => $site_twitter,
+						'twitter' => $site_twitter,
+						'instagram' => $site_instagram,
 						'texto_rodape' => $site_descricao,
 						'texto_nome' => $site_nome
 					]
