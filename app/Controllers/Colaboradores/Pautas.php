@@ -351,6 +351,10 @@ class Pautas extends BaseController
 		$main_url = $post['link_pauta'];
 		@$str = file_get_contents($main_url);
 
+		if($str === false) {
+			return $retorno->retorno(false, 'Não foi possível trazer informações da pauta automaticamente.', true);
+		}
+
 		if (strlen($str) > 0) {
 			$str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
 			preg_match("/\<title\>(.*)\<\/title\>/i", $str, $title);
