@@ -137,6 +137,21 @@ class Pautas extends BaseController
 		return view('colaboradores/pautas_form', $data);
 	}
 
+	public function verificaImagem()
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$post = service('request')->getPost();
+		if (is_array(@getimagesize($post['imagem']))) {
+			return $retorno->retorno(true, '', true);
+		} else {
+			return $retorno->retorno(false, 'A imagem não é válida.', true);
+		}
+
+	}
+
+
 	public function detalhe($idPautas = null)
 	{
 		$verifica = new verificaPermissao();

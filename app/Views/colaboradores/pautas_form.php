@@ -163,7 +163,36 @@ use CodeIgniter\I18n\Time;
 	}
 
 	$('#imagem').change(function () {
-		$('#preview_imagem').attr('src', $('#imagem').val());
+		form = new FormData(pautas_form);
+		form.append('imagem', $('#imagem').val());
+		$.ajax({
+			url: "<?= site_url('colaboradores/pautas/verificaImagem/'); ?>",
+			method: "POST",
+			data: form,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
+			success: function (retorno) {
+				$('.mensagem').hide();
+				$('.mensagem').removeClass('bg-success');
+				$('.mensagem').removeClass('bg-alert');
+				$('.mensagem').removeClass('bg-danger');
+				if (retorno.status) {
+					$('#preview_imagem').attr('src', $('#imagem').val());
+				} else {
+					$('.mensagem').removeClass('bg-success');
+					$('.mensagem').addClass('bg-danger');
+					$(".enviar_pauta").prop('disabled', true);
+					$('#preview_imagem').attr('src', '');
+					$('.mensagem').addClass(retorno.classe);
+					$('.mensagem').html(retorno.mensagem);
+					$('.mensagem').show();
+				}
+			}
+		});
 	});
 
 		<?php if(isset($post['id'])): ?>
