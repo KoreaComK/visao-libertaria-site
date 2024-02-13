@@ -5,11 +5,6 @@ use Config\App;
 use Config\Services;
 use Tests\Support\Libraries\ConfigReader;
 
-use CodeIgniter\Test\CIUnitTestCase;
-use Config\App;
-use Config\Services;
-use Tests\Support\Libraries\ConfigReader;
-
 class PautasModelTest extends CIUnitTestCase
 {
     private $pautasModelMock;
