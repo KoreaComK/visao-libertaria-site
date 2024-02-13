@@ -4,6 +4,7 @@ use CodeIgniter\Test\CIUnitTestCase;
 use Config\App;
 use Config\Services;
 use Tests\Support\Libraries\ConfigReader;
+use CodeIgniter\I18n\Time;
 
 class PautasModelTest extends CIUnitTestCase
 {
@@ -70,10 +71,10 @@ class PautasModelTest extends CIUnitTestCase
 
     private function verificarLimiteDiario($pautasModel, $session, $limiteDiario, &$data)
     {
-        $currentDate = date('Y-m-d');
-
         // Obtém a quantidade de pautas do usuário para o dia atual
-        $contadorPautas = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];
+        $time = Time::today();
+        $time = $time->toDateTimeString();
+        $contadorPautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
 
         // Verifica se a quantidade de pautas do último dia ultrapassou o limite diário
         if ($contadorPautas >= $limiteDiario) {

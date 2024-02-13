@@ -66,11 +66,12 @@ class Pautas extends BaseController
 
 			$session = $this->session->get('colaboradores');
 			
-			// Obtém a quantidade de pautas do usuário para o dia atual
-			$contadorPautas = $pautasModel->getPautasPorUsuario(date('Y-m-d'), $session['id'])[0]['contador'];
+			$time = Time::today();
+			$time = $time->toDateTimeString();
+			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
 
 			// Verifica se a quantidade de pautas do último dia ultrapassou o limite diário
-			if ($contadorPautas >= $data['config']['limite_pautas_diario']) {
+			if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
