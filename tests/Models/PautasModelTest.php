@@ -5,6 +5,11 @@ use Config\App;
 use Config\Services;
 use Tests\Support\Libraries\ConfigReader;
 
+use CodeIgniter\Test\CIUnitTestCase;
+use Config\App;
+use Config\Services;
+use Tests\Support\Libraries\ConfigReader;
+
 class PautasModelTest extends CIUnitTestCase
 {
     private $pautasModelMock;
@@ -30,25 +35,31 @@ class PautasModelTest extends CIUnitTestCase
 
     public function testContagemReiniciadaNoNovoDia()
     {
-        $session = ['ultimo_acesso' => '2024-02-12'];
+        // Configuração do cenário
+        $session = ['id' => 1];
         $limiteDiario = 5;
 
+        // Mock do método getPautasPorUsuario
         $this->pautasModelMock->expects($this->atLeastOnce())
             ->method('getPautasPorUsuario')
-            ->willReturn(['contador' => 3]);
+            ->willReturn(['contador' => 3, 'ultima_pauta_data' => '2024-02-12']);
 
+        // Execução da lógica
         $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario);
     }
 
     public function testContagemNaoReiniciadaNoMesmoDia()
     {
-        $session = ['ultimo_acesso' => date('Y-m-d')];
+        // Configuração do cenário
+        $session = ['id' => 1];
         $limiteDiario = 5;
 
+        // Mock do método getPautasPorUsuario
         $this->pautasModelMock->expects($this->atLeastOnce())
             ->method('getPautasPorUsuario')
-            ->willReturn(['contador' => 3]);
+            ->willReturn(['contador' => 3, 'ultima_pauta_data' => date('Y-m-d')]);
 
+        // Execução da lógica
         $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario);
     }
 
@@ -56,7 +67,11 @@ class PautasModelTest extends CIUnitTestCase
     {
         $currentDate = date('Y-m-d');
 
-        if ($session['ultimo_acesso'] !== $currentDate) {
+        // Suponhamos que a data da última pauta seja obtida da função getPautasPorUsuario
+        $ultimaPautaData = $pautasModel->getPautasPorUsuario($session['id'])[0]['ultima_pauta_data'];
+
+        if ($ultimaPautaData !== $currentDate) {
+            // Se a data for diferente, zera a contagem de pautas
             $quantidadePautasUltimoDia = 0;
         } else {
             $quantidadePautasUltimoDia = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];

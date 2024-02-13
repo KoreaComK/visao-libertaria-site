@@ -66,18 +66,20 @@ class Pautas extends BaseController
 
 			$session = $this->session->get('colaboradores');
 			
-			$dataAtual = date('Y-m-d');
-			$limiteDiario = $data['config']['limite_pautas_diario'];
-			$quantidadePautasUltimoDia = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];
+			// Obtém a última pauta do usuário
+			$ultimaPautaData = $pautasModel->getPautasPorUsuario($session['id'])[0]['ultima_pauta_data'];
 
-			// Verifica se a data do último acesso é diferente do dia atual
-			if ($session['ultimo_acesso'] !== $dataAtual) {
+			// Verifica se a data da última pauta é diferente do dia atual
+			if ($ultimaPautaData !== date('Y-m-d')) {
 				// Se a data for diferente, zera a contagem de pautas
 				$quantidadePautasUltimoDia = 0;
+			} else {
+				// Caso contrário, obtém a quantidade de pautas do último dia
+				$quantidadePautasUltimoDia = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];
 			}
 
 			// Verifica se a quantidade de pautas do último dia ultrapassou o limite diário
-			if ($quantidadePautasUltimoDia >= $limiteDiario) {
+			if ($quantidadePautasUltimoDia >= $data['config']['limite_pautas_diario']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
