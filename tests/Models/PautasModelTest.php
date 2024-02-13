@@ -29,7 +29,7 @@ class PautasModelTest extends CIUnitTestCase
             ->getMock();
     }
 
-    public function testVerificarLimiteDiarioAtingido()
+    public function testVerificarLimiteDiario_Atingido()
     {
         // Configuração do cenário
         $session = ['id' => 1];
@@ -49,7 +49,7 @@ class PautasModelTest extends CIUnitTestCase
         $this->assertEquals('O limite diário de pautas foi atingido. Tente novamente amanhã.', $data['erros']);
     }
 
-    public function testVerificarLimiteDiarioNaoAtingido()
+    public function testVerificarLimiteDiario_NaoAtingido()
     {
         // Configuração do cenário
         $session = ['id' => 1];
@@ -74,10 +74,10 @@ class PautasModelTest extends CIUnitTestCase
         // Obtém a quantidade de pautas do usuário para o dia atual
         $time = Time::today();
         $time = $time->toDateTimeString();
-        $contadorPautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
+        $quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
 
         // Verifica se a quantidade de pautas do último dia ultrapassou o limite diário
-        if ($contadorPautas >= $limiteDiario) {
+        if ($quantidade_pautas >= $limiteDiario) {
             $data['erros'] = 'O limite diário de pautas foi atingido. Tente novamente amanhã.';
         }
     }
