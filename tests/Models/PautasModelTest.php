@@ -28,52 +28,56 @@ class PautasModelTest extends CIUnitTestCase
             ->getMock();
     }
 
-    public function testContagemReiniciadaNoNovoDia()
+    public function testVerificarLimiteDiarioAtingido()
     {
         // Configuração do cenário
         $session = ['id' => 1];
         $limiteDiario = 5;
+        $contadorPautas = 6; // Excede o limite diário
 
         // Mock do método getPautasPorUsuario
         $this->pautasModelMock->expects($this->atLeastOnce())
             ->method('getPautasPorUsuario')
-            ->willReturn(['contador' => 3, 'ultima_pauta_data' => '2024-02-12']);
+            ->willReturn(['contador' => $contadorPautas]);
 
-        // Execução da lógica
-        $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario);
+        // Lógica de verificação do limite diário
+        $data = [];
+        $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario, $data);
+
+        // Verifica se o erro foi configurado corretamente
+        $this->assertEquals('O limite diário de pautas foi atingido. Tente novamente amanhã.', $data['erros']);
     }
 
-    public function testContagemNaoReiniciadaNoMesmoDia()
+    public function testVerificarLimiteDiarioNaoAtingido()
     {
         // Configuração do cenário
         $session = ['id' => 1];
         $limiteDiario = 5;
+        $contadorPautas = 4; // Não excede o limite diário
 
         // Mock do método getPautasPorUsuario
         $this->pautasModelMock->expects($this->atLeastOnce())
             ->method('getPautasPorUsuario')
-            ->willReturn(['contador' => 3, 'ultima_pauta_data' => date('Y-m-d')]);
+            ->willReturn(['contador' => $contadorPautas]);
 
-        // Execução da lógica
-        $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario);
+        // Lógica de verificação do limite diário
+        $data = [];
+        $this->verificarLimiteDiario($this->pautasModelMock, $session, $limiteDiario, $data);
+
+        // Verifica se não há erro configurado
+        $this->assertEmpty($data['erros']);
     }
 
-    private function verificarLimiteDiario($pautasModel, $session, $limiteDiario)
+    private function verificarLimiteDiario($pautasModel, $session, $limiteDiario, &$data)
     {
         $currentDate = date('Y-m-d');
 
-        // Suponhamos que a data da última pauta seja obtida da função getPautasPorUsuario
-        $ultimaPautaData = $pautasModel->getPautasPorUsuario($session['id'])[0]['ultima_pauta_data'];
+        // Obtém a quantidade de pautas do usuário para o dia atual
+        $contadorPautas = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];
 
-        if ($ultimaPautaData !== $currentDate) {
-            // Se a data for diferente, zera a contagem de pautas
-            $quantidadePautasUltimoDia = 0;
-        } else {
-            $quantidadePautasUltimoDia = $pautasModel->getPautasPorUsuario($session['id'])[0]['contador'];
-        }
-
-        if ($quantidadePautasUltimoDia >= $limiteDiario) {
-            $this->fail('O limite diário de pautas foi atingido.');
+        // Verifica se a quantidade de pautas do último dia ultrapassou o limite diário
+        if ($contadorPautas >= $limiteDiario) {
+            $data['erros'] = 'O limite diário de pautas foi atingido. Tente novamente amanhã.';
         }
     }
 }
