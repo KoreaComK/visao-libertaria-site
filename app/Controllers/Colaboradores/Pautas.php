@@ -68,7 +68,7 @@ class Pautas extends BaseController
 			
 
 			$time = Time::today();
-			$time = $time->toDateTimeString();
+			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
 			if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
@@ -76,7 +76,7 @@ class Pautas extends BaseController
 			}
 
 			$time = new Time('-7 days');
-			$time = $time->toDateTimeString();
+			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
 			if($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);

@@ -341,7 +341,6 @@ class Site extends BaseController
 					if (empty($colaboradoresAtribuicoes)) {
 						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
 					}
-
 					if(get_cookie('lembrar') != 1) {
 						if (!$this->verificaCaptcha($post['h-captcha-response'])) {
 							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
