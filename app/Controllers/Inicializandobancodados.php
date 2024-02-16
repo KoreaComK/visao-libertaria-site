@@ -190,6 +190,17 @@ class Inicializandobancodados extends BaseController
 		);
 		');
 
+		$db->query('CREATE TABLE IF NOT EXISTS  `pautas_comentarios` (
+		`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+		`pautas_id` varchar(36) NOT NULL,
+		`colaboradores_id` int NOT NULL,
+		`comentario` TEXT NOT NULL,
+		`criado` datetime DEFAULT now(),
+		`atualizado` datetime DEFAULT now(),
+		`excluido` datetime DEFAULT null
+			);
+			');
+
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');
@@ -243,6 +254,12 @@ class Inicializandobancodados extends BaseController
 			');
 		$db->query('
 			ALTER TABLE `artigos_comentarios` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
+			');
+		$db->query('
+			ALTER TABLE `pautas_comentarios` ADD FOREIGN KEY (`pautas_id`) REFERENCES `pautas` (`id`);
+			');
+		$db->query('
+			ALTER TABLE `pautas_comentarios` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');
 		$db->query('
 			ALTER TABLE `pagamentos_artigos` ADD FOREIGN KEY (`artigos_id`) REFERENCES `artigos` (`id`);

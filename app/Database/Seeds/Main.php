@@ -17,6 +17,7 @@ class Main extends Seeder
 		$this->call('Artigos');
 		$this->call('ArtigosCategorias');
 		$this->call('ArtigosComentarios');
+		$this->call('PautasComentarios');
 		
 	}
 }
