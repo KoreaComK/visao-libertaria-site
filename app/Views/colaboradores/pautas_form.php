@@ -189,9 +189,8 @@ use CodeIgniter\I18n\Time;
 
 	$('#imagem').change(function () {
 		form = new FormData(pautas_form);
-		form.append('imagem', $('#imagem').val());
 		$.ajax({
-			url: "<?= site_url('colaboradores/pautas/verificaImagem/'); ?>",
+			url: "<?= site_url('colaboradores/pautas/verificaImagem'); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
