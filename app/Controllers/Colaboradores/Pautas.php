@@ -345,6 +345,55 @@ class Pautas extends BaseController
 
 	}
 
+	public function comentarios($idPauta)
+	{
+		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
+		if ($this->request->getMethod() == 'post') {
+			$retorno = new \App\Libraries\RetornoPadrao();
+			$post = $post = $this->request->getPost();
+			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
+				$comentario = $pautasComentariosModel->find($post['id_comentario']);
+				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
+					$comentario['atualizado'] = $pautasComentariosModel->getNow();
+					$pautasComentariosModel->save($comentario);
+					$pautasComentariosModel->db->transStart();
+					$pautasComentariosModel->delete($comentario['id']);
+					$pautasComentariosModel->db->transComplete();
+					return $retorno->retorno(true, '', true);
+				}
+				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+			}
+			if (isset($post['metodo']) && $post['metodo'] == 'inserir' && trim($post['comentario']) !== '') {
+				$comentario = [
+					'id' => $pautasComentariosModel->getNovaUUID(),
+					'colaboradores_id' => $this->session->get('colaboradores')['id'],
+					'pautas_id' => $idPauta,
+					'comentario' => $post['comentario']
+				];
+				$pautasComentariosModel->db->transStart();
+				$save = $pautasComentariosModel->insert($comentario);
+				$pautasComentariosModel->db->transComplete();
+				return $retorno->retorno(true, '', true);
+			}
+			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
+				$comentario = $pautasComentariosModel->find($post['id_comentario']);
+				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
+					$comentario['atualizado'] = $pautasComentariosModel->getNow();
+					$comentario['comentario'] = $post['comentario'];
+					$pautasComentariosModel->db->transStart();
+					$pautasComentariosModel->save($comentario);
+					$pautasComentariosModel->db->transComplete();
+					return $retorno->retorno(true, '', true);
+				}
+				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+			}
+			return $retorno->retorno(false, 'Erro ao salvar comentário', true);
+		} else {
+			$comentarios = $pautasComentariosModel->getComentarios($idPauta);
+			return view('template/templateComentarios', array('comentarios' => $comentarios, 'colaborador' => $this->session->get('colaboradores')['id']));
+		}
+	}
+
 	private function getInformacaoLink($post)
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();

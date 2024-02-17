@@ -85,7 +85,8 @@ class PautasModel extends Model
 	public function getPautasPesquisa($pesquisa = NULL)
 	{
 		$this->builder()
-			->select('pautas.*, colaboradores.apelido AS apelido, pautas_fechadas.titulo AS nome_pauta_fechada')
+			->select('pautas.*, colaboradores.apelido AS apelido, pautas_fechadas.titulo AS nome_pauta_fechada,
+			(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id and pautas_comentarios.excluido is null) as qtde_comentarios')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
 			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
 			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT');

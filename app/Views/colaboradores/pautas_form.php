@@ -11,7 +11,7 @@ use CodeIgniter\I18n\Time;
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center <?=(!isset($erros))?('collapse'):('bg-danger');?> col-12"><?=(!isset($erros))?('collapse'):($erros['mensagem']); ?></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
-		<form class="needs-validation col-12 col-md-6" novalidate="yes" method="post" id="pautas_form">
+		<form class="needs-validation col-12 col-md-12" novalidate="yes" method="post" id="pautas_form">
 
 			<?php if (isset($post['criado'])): ?>
 				<div class="mb-3">
@@ -86,6 +86,31 @@ use CodeIgniter\I18n\Time;
 				<image class="img-thumbnail" src="" data-toggle="tooltip" data-placement="top" id="preview_imagem"
 					title="Preview da Imagem da Pauta" style="max-height: 200px;" />
 			</div>
+
+			<?php if (isset($readOnly)) : ?>
+				<div class="row">
+					<div class="col-12 text-center">
+						<button class="btn btn-primary mt-3 mb-3 col-md-6" id="btn-comentarios" type="button">Atualizar Comentários</button>
+					</div>
+					<div class="mensagem-comentario p-3 mb-2 rounded text-white text-center col-12"></div>
+					<div class="col-12 d-flex justify-content-center">
+
+						<div class="col-12 div-comentarios">
+							<div class="col-12">
+								<div class="mb-3">
+									<input type="hidden" id="id_comentario" name="id_comentario"/>
+									<textarea id="comentario" name="comentario" class="form-control" rows="5" placeholder="Digite seu comentário aqui"></textarea>
+								</div>
+								<div class="mb-3 text-center">
+									<button class="btn btn-primary mt-3 col-md-6" id="enviar-comentario" type="button">Enviar comentário</button>
+								</div>
+							</div>
+							<div class="card m-3 div-list-comentarios"></div>
+						</div>
+					</diV>
+				</div>
+			<?php endif; ?>
+
 			<?php if(!isset($readOnly)) : ?>
 				<button class="btn btn-primary btn-lg btn-block enviar_pauta" type="submit"><?=isset($post)?('Atualizar'):('Sugerir'); ?> pauta</button>
 			<?php else: ?>
@@ -230,6 +255,92 @@ use CodeIgniter\I18n\Time;
 		
 		<?php endif; ?>
 
+	<?php else: ?>
+
+		$("#btn-comentarios").on("click", function() {
+			getComentarios();
+		});
+
+		$('#btn-comentarios').trigger('click');
+
+		function getComentarios() {
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
+				method: "GET",
+				dataType: "html",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
+				success: function(retorno) {
+					$('.div-list-comentarios').html(retorno);
+				}
+			});
+		}
+
+		$("#enviar-comentario").on("click", function() {
+			form = new FormData();
+			form.append('comentario', $('#comentario').val());
+			if($('#id_comentario').val()==''){
+				form.append('metodo', 'inserir');
+			} else {
+				form.append('metodo', 'alterar');
+				form.append('id_comentario', $('#id_comentario').val());
+			}
+			
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
+				method: "POST",
+				data: form,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
+				success: function(retorno) {
+					if (retorno.status) {
+						getComentarios()
+						$('.mensagem-comentario').hide();
+						$('#comentario').val('');
+						$('#id_comentario').val('');
+						$('.mensagem-comentario').removeClass('bg-danger');
+					} else {
+						$('.mensagem-comentario').show();
+						$('.mensagem-comentario').html(retorno.mensagem);
+						$('.mensagem-comentario').addClass('bg-danger');
+					}
+				}
+			});
+		});
+
+		function excluirComentario(id_comentario)
+		{
+			form = new FormData();
+			form.append('id_comentario', id_comentario);
+			form.append('metodo', 'excluir');
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
+				method: "POST",
+				data: form,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function() { $('#modal-loading').modal('show'); },
+				complete: function() { $('#modal-loading').modal('hide'); },
+				success: function(retorno) {
+					if (retorno.status) {
+						getComentarios()
+						$('mensagem-comentario').hide();
+					} else {
+						$('mensagem-comentario').show();
+						$('mensagem-comentario').html(status.mensagem);
+						$('.mensagem-comentario').addClass('bg-danger');
+					}
+				}
+			});
+		}
 	<?php endif; ?>
 
 	$(document).ready(function() {
