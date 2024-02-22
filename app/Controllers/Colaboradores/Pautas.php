@@ -94,10 +94,10 @@ class Pautas extends BaseController
 					}
 					$dados = array();
 					$dados['colaboradores_id'] = $session['id'];
-					$dados['link'] = $post['link'];
-					$dados['titulo'] = $post['titulo'];
-					$dados['texto'] = $post['texto'];
-					$dados['imagem'] = $post['imagem'];
+					$dados['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
+					$dados['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
+					$dados['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
+					$dados['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
 					if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
 						$dados['pauta_antiga'] = $post['pauta_antiga'];
 					}
@@ -368,7 +368,7 @@ class Pautas extends BaseController
 					'id' => $pautasComentariosModel->getNovaUUID(),
 					'colaboradores_id' => $this->session->get('colaboradores')['id'],
 					'pautas_id' => $idPauta,
-					'comentario' => $post['comentario']
+					'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8')
 				];
 				$pautasComentariosModel->db->transStart();
 				$save = $pautasComentariosModel->insert($comentario);
