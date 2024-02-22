@@ -341,10 +341,8 @@ class Site extends BaseController
 					if (empty($colaboradoresAtribuicoes)) {
 						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
 					}
-					if(get_cookie('lembrar') != 1) {
-						if (!$this->verificaCaptcha($post['h-captcha-response'])) {
-							return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
-						}
+					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					}
 
 					$estrutura_session = [
@@ -366,9 +364,8 @@ class Site extends BaseController
 					$this->session->set($estrutura_session);
 
 					if (isset($post['lembrar'])) {
+						set_cookie('hash_entrada', hash('sha256', $post['email'].hash('sha256', $post['senha'])), 60 * 60 * 24 * 7);
 						set_cookie('email', $post['email'], 60 * 60 * 24 * 7);
-						set_cookie('senha', $post['senha'], 60 * 60 * 24 * 7);
-						set_cookie('lembrar', true, 60 * 60 * 24 * 7);
 					}
 
 					return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
@@ -387,35 +384,46 @@ class Site extends BaseController
 		} else {
 			$this->session->destroy();
 
+			if(get_cookie('senha') !== null) { delete_cookie('senha'); }
+			if(get_cookie('lembrar') !== null) { delete_cookie('lembrar'); }
+			if(get_cookie('hash_entrada') !== null) {
+				$retorno = $this->logar_cookie();
+				$get = service('request')->getGet();
+				$url = 'colaboradores/perfil';
+				if(!empty($get) && isset($get['url'])) {
+					$url = $get['url'];
+				}
+				if($retorno) {
+					return redirect()->to($url);
+				}
+			}
+
 			$get = service('request')->getGet();
 			$url = false;
 			if(!empty($get) && isset($get['url'])) {
 				$url = $get['url'];
 			}
 			$data['url'] = $url;
-
-			if (get_cookie('email') !== null && get_cookie('senha') !== null) {
-				$data['email_form'] = get_cookie('email');
-				$data['senha_form'] = get_cookie('senha');
-				$data['lembrar'] = get_cookie('lembrar');
-			} else {
-				$data['email_form'] = '';
-				$data['senha_form'] = '';
-				$data['lembrar'] = '';
-			}
+			$data['email_form'] = '';
+			$data['senha_form'] = '';
+			$data['lembrar'] = '';
 			return view('login', $data);
 		}
 	}
 
 	public function logout()
 	{
+		helper('cookie');
 		$this->session->destroy();
 		$link = base_url() . 'site/login';
 		$get = $this->request->getGet();
 		if(!empty($get)) {
 			$link.='?url='.$get['url'];
+		} else {
+			delete_cookie('hash_entrada');
+			delete_cookie('email');
 		}
-		return redirect()->to($link);
+		return redirect()->to($link)->withCookies();
 	}
 
 	/* CONTATO */
@@ -476,6 +484,45 @@ class Site extends BaseController
 		if ($responseData->success) {
 			return true;
 		} else {
+			return false;
+		}
+	}
+
+	private function logar_cookie()
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+		if(get_cookie('hash_entrada') !== null && get_cookie('email') !== null) {
+			$colaboradoresModel = new \App\Models\ColaboradoresModel();
+			$colaboradoresModel->where('email',get_cookie('email'));
+			$colaborador = $colaboradoresModel->get()->getResultArray();
+			if(empty($colaborador)) {
+				delete_cookie('hash_entrada');
+				delete_cookie('email');
+				return false;
+			}
+			$colaborador = $colaborador[0];
+			if(hash('sha256', $colaborador['email'].$colaborador['senha']) == get_cookie('hash_entrada')) {
+				$estrutura_session = [
+					'colaboradores' => [
+						'id' => $colaborador['id'],
+						'nome' => $colaborador['apelido'],
+						'email' => $colaborador['email'],
+						'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+						'permissoes' => array()
+					]
+				];
+
+				$permissoes = array();
+				$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+				$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
+				foreach ($colaboradoresAtribuicoes as $atribuicao) {
+					$permissoes[] = $atribuicao['atribuicoes_id'];
+				}
+				$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+				$this->session->set($estrutura_session);
+				return true;
+			}
 			return false;
 		}
 	}
