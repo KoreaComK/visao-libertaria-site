@@ -732,7 +732,7 @@ class Artigos extends BaseController
 					'id' => $artigosComentariosModel->getNovaUUID(),
 					'colaboradores_id' => $this->session->get('colaboradores')['id'],
 					'artigos_id' => $idArtigo,
-					'comentario' => $post['comentario']
+					'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8')
 				];
 				$artigosComentariosModel->db->transStart();
 				$save = $artigosComentariosModel->insert($comentario);
@@ -743,7 +743,7 @@ class Artigos extends BaseController
 				$comentario = $artigosComentariosModel->find($post['id_comentario']);
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
 					$comentario['atualizado'] = $artigosComentariosModel->getNow();
-					$comentario['comentario'] = $post['comentario'];
+					$comentario['comentario'] = htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8');
 					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->save($comentario);
 					$artigosComentariosModel->db->transComplete();
