@@ -379,7 +379,7 @@ class Pautas extends BaseController
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
 					$comentario['atualizado'] = $pautasComentariosModel->getNow();
-					$comentario['comentario'] = $post['comentario'];
+					$comentario['comentario'] = htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8');
 					$pautasComentariosModel->db->transStart();
 					$pautasComentariosModel->save($comentario);
 					$pautasComentariosModel->db->transComplete();
