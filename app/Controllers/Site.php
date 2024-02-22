@@ -364,8 +364,7 @@ class Site extends BaseController
 					$this->session->set($estrutura_session);
 
 					if (isset($post['lembrar'])) {
-						set_cookie('hash_entrada', hash('sha256', $post['email'].hash('sha256', $post['senha'])), 60 * 60 * 24 * 7);
-						set_cookie('email', $post['email'], 60 * 60 * 24 * 7);
+						set_cookie('hash', $this->secured_encrypt(md5($post['email'].hash('sha256', $post['senha']))), 60 * 60 * 24 * 7);
 					}
 
 					return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
@@ -386,7 +385,8 @@ class Site extends BaseController
 
 			if(get_cookie('senha') !== null) { delete_cookie('senha'); }
 			if(get_cookie('lembrar') !== null) { delete_cookie('lembrar'); }
-			if(get_cookie('hash_entrada') !== null) {
+			if(get_cookie('email') !== null) { delete_cookie('email'); }
+			if(get_cookie('hash') !== null) {
 				$retorno = $this->logar_cookie();
 				$get = service('request')->getGet();
 				$url = 'colaboradores/perfil';
@@ -420,8 +420,7 @@ class Site extends BaseController
 		if(!empty($get)) {
 			$link.='?url='.$get['url'];
 		} else {
-			delete_cookie('hash_entrada');
-			delete_cookie('email');
+			delete_cookie('hash');
 		}
 		return redirect()->to($link)->withCookies();
 	}
@@ -491,40 +490,80 @@ class Site extends BaseController
 	private function logar_cookie()
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();
-		if(get_cookie('hash_entrada') !== null && get_cookie('email') !== null) {
+		if(get_cookie('hash') !== null) {
 			$colaboradoresModel = new \App\Models\ColaboradoresModel();
-			$colaboradoresModel->where('email',get_cookie('email'));
+			$colaboradoresModel->where("'".$this->secured_decrypt(get_cookie('hash'))."' = MD5(CONCAT(email,senha))");
 			$colaborador = $colaboradoresModel->get()->getResultArray();
 			if(empty($colaborador)) {
-				delete_cookie('hash_entrada');
-				delete_cookie('email');
+				delete_cookie('hash');
 				return false;
 			}
 			$colaborador = $colaborador[0];
-			if(hash('sha256', $colaborador['email'].$colaborador['senha']) == get_cookie('hash_entrada')) {
-				$estrutura_session = [
-					'colaboradores' => [
-						'id' => $colaborador['id'],
-						'nome' => $colaborador['apelido'],
-						'email' => $colaborador['email'],
-						'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
-						'permissoes' => array()
-					]
-				];
+			$estrutura_session = [
+				'colaboradores' => [
+					'id' => $colaborador['id'],
+					'nome' => $colaborador['apelido'],
+					'email' => $colaborador['email'],
+					'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+					'permissoes' => array()
+				]
+			];
 
-				$permissoes = array();
-				$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-				$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
-				foreach ($colaboradoresAtribuicoes as $atribuicao) {
-					$permissoes[] = $atribuicao['atribuicoes_id'];
-				}
-				$estrutura_session['colaboradores']['permissoes'] = $permissoes;
-
-				$this->session->set($estrutura_session);
-				return true;
+			$permissoes = array();
+			$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+			$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($colaborador['id']);
+			foreach ($colaboradoresAtribuicoes as $atribuicao) {
+				$permissoes[] = $atribuicao['atribuicoes_id'];
 			}
-			return false;
+			$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+			$this->session->set($estrutura_session);
+			return true;
 		}
+		return false;
+	}
+
+	private function secured_encrypt($string)
+	{
+		$first_key = getenv('FIRSTKEY');
+		$second_key = getenv('SECONDKEY');
+
+		$method = getenv('METHOD');
+		$method_hmac = getenv('METHOD_HMAC');
+
+		$iv_length = openssl_cipher_iv_length($method);
+		$iv = openssl_random_pseudo_bytes($iv_length);
+
+		$first_encrypted = openssl_encrypt($string,$method,$first_key, OPENSSL_RAW_DATA ,$iv);    
+		$second_encrypted = hash_hmac($method_hmac, $first_encrypted, $second_key, TRUE);
+
+		$output = base64_encode($iv.$second_encrypted.$first_encrypted);    
+		return $output;
+	}
+
+	private function secured_decrypt($input)
+	{
+		$first_key = getenv('FIRSTKEY');
+		$second_key = getenv('SECONDKEY');
+		$mix = base64_decode($input);
+
+		$method = getenv('METHOD');
+		$method_hmac = getenv('METHOD_HMAC');
+
+		$iv_length = openssl_cipher_iv_length($method);
+		$iv = substr($mix,0,$iv_length);
+
+		$second_encrypted = substr($mix,$iv_length,64);
+		$first_encrypted = substr($mix,$iv_length+64);
+
+		$data = openssl_decrypt($first_encrypted,$method,$first_key,OPENSSL_RAW_DATA,$iv);
+		$second_encrypted_new = hash_hmac($method_hmac, $first_encrypted, $second_key, TRUE);
+
+		if (hash_equals($second_encrypted,$second_encrypted_new)) {
+			return $data;
+		}
+		
+		return false;
 	}
 
 	public function calculadoras()
