@@ -900,13 +900,13 @@ class Artigos extends BaseController
 
 			$post = $this->request->getPost();
 
-			$gravar['titulo'] = $post['titulo'];
-			$gravar['texto_revisado'] = $post['texto_original'];
-			$gravar['imagem'] = $post['imagem'];
-			$gravar['gancho'] = $post['gancho'];
-			$gravar['referencias'] = $post['referencias'];
+			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto_revisado'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
+			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
+			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
+			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
-			$gravar['link'] = $post['link'];
+			$gravar['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$gravar['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 
@@ -931,12 +931,12 @@ class Artigos extends BaseController
 			$post = $this->request->getPost();
 			$gravar = array();
 			$gravar['id'] = $artigosModel->getNovaUUID();
-			$gravar['titulo'] = $post['titulo'];
-			$gravar['url_friendly'] = url_friendly($post['titulo']);
-			$gravar['texto_original'] = $post['texto_original'];
-			$gravar['imagem'] = $post['imagem'];
-			$gravar['gancho'] = $post['gancho'];
-			$gravar['referencias'] = $post['referencias'];
+			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
+			$gravar['url_friendly'] = url_friendly(htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8'));
+			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
+			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
+			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
+			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['escrito_colaboradores_id'] = $session['id'];
 			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
 			$gravar['fase_producao_id'] = 2;
@@ -967,13 +967,13 @@ class Artigos extends BaseController
 			$artigosModel = new \App\Models\ArtigosModel();
 			$post = $this->request->getPost();
 
-			$gravar['titulo'] = $post['titulo'];
-			$gravar['texto_original'] = $post['texto_original'];
-			$gravar['imagem'] = $post['imagem'];
-			$gravar['gancho'] = $post['gancho'];
-			$gravar['referencias'] = $post['referencias'];
+			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto_original'] = htmlspecialchars($post['titutexto_originallo'], ENT_QUOTES, 'UTF-8');
+			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
+			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
+			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
-			$gravar['link'] = $post['link'];
+			$gravar['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$artigoGravado = $artigosModel->find($idArtigo);
 			if($artigoGravado['fase_producao_id'] == '1') {
