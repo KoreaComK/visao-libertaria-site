@@ -968,7 +968,7 @@ class Artigos extends BaseController
 			$post = $this->request->getPost();
 
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
-			$gravar['texto_original'] = htmlspecialchars($post['titutexto_originallo'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
 			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
