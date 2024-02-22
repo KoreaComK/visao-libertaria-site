@@ -307,7 +307,7 @@ class Inicializandobancodados extends BaseController
 		('pauta_tamanho_minimo', '10'),
 		('site_quantidade_listagem', '12'),
 		('site_nome', '{\"ancap.su\":\"ANCAP.SU\",\"ancapsu.com\":\"ANCAP.SU\",\"safesrc.com\":\"Safe Source\",\"visaolibertaria.com\":\"Visão Libertária\",\"wrevolving.com\":\"Mundo Em Revolução\",\"default\":\"Visão Libertária\"}'),
-		('site_descricao', '{\"ancap.su\":\"ANCAP.SU\",\"ancapsu.com\":\"ANCAP.SU\",\"safesrc.com\":\"Safe Source\",\"visaolibertaria.com\":\"Visão Libertária\",\"wrevolving.com\":\"Mundo Em Revolução\",\"default\":\"Visão Libertária\"}');
+		('site_descricao', '{\"ancap.su\":\"ANCAP.SU\",\"ancapsu.com\":\"ANCAP.SU\",\"safesrc.com\":\"Safe Source\",\"visaolibertaria.com\":\"Visão Libertária\",\"wrevolving.com\":\"Mundo Em Revolução\",\"default\":\"Visão Libertária\"}'),
 		('texto_informacao_perfil', 'Leia nossas diretrizes para aceitar artigos no Visão Libertária, clicando aqui.\r\n\r\nVeja as diretrizes e cuidados para ser um revisor, clicando aqui.\r\n\r\nSaiba as configurações e definições para enviar seu arquivo de áudio, clicando aqui.\r\n\r\nEncontre todos os parâmetros e insumos para produzir os vídeos do canal, clicando aqui.'),
 		('pauta_bot_hash', 'ADICIONE A SUA HASH AQUI'),
 		('cron_artigos_desmarcar_status', '1'),
