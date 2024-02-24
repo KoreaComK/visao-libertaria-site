@@ -67,11 +67,20 @@ class PautasModel extends Model
 		return $query->getResult('array');
 	}
 
-	public function getPautas($reservado = false, $excluido = false)
+	public function getPautas($reservado = false, $excluido = false, $redatores = false)
 	{
 		$this->builder()
 			->select('pautas.*, colaboradores.apelido AS apelido')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
+		if ($redatores === true) {
+			$this->builder()->where('pautas.redator_colaboradores_id IS NOT NULL');
+		}
+		if ($redatores !== false && $redatores !== true) {
+			$this->builder()->where('pautas.redator_colaboradores_id',$redatores);
+		}
+		if ($redatores === false) {
+			$this->builder()->where('pautas.redator_colaboradores_id IS NULL');
+		}
 		if ($reservado === false) {
 			$this->builder()->where('pautas.reservado IS NULL');
 		}
@@ -89,7 +98,8 @@ class PautasModel extends Model
 			(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id and pautas_comentarios.excluido is null) as qtde_comentarios')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
 			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
-			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT');
+			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT')
+			->where('pautas.redator_colaboradores_id IS NULL');
 		$this->builder()->orderBy('pautas.criado', 'DESC');
 		if($pesquisa !== NULL) {
 			$this->builder()->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");

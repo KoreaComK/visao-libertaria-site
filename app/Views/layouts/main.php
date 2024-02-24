@@ -102,6 +102,9 @@
 										<?php if (isset($_SESSION) && in_array('1', $_SESSION['colaboradores']['permissoes'])) : ?>
 											<a href="<?= site_url('colaboradores/pautas/'); ?>" class="dropdown-item">Ver Pautas</a>
 										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('11', $_SESSION['colaboradores']['permissoes'])) : ?>
+											<a href="<?= site_url('colaboradores/pautas/redatores'); ?>" class="dropdown-item">Ver Pautas dos Redatores</a>
+										<?php endif; ?>
 									</div>
 								</li>
 							<?php endif; ?>

@@ -280,10 +280,12 @@ class Artigos extends BaseController
 			$pautaId = $this->request->getGet('pauta');
 			$pautasModel = new \App\Models\PautasModel();
 			$pauta = $pautasModel->find($pautaId);
-			$data['pauta'] = $pauta;
-			$data['artigo']['titulo'] = $pauta['titulo'];
-			$data['artigo']['texto_original'] = $pauta['texto'];
-			$data['artigo']['imagem'] = $pauta['imagem'];
+			if(!empty($pauta)) {
+				$data['pauta'] = $pauta;
+				$data['artigo']['titulo'] = $pauta['titulo'];
+				$data['artigo']['texto_original'] = $pauta['texto'];
+				$data['artigo']['imagem'] = $pauta['imagem'];
+			}
 		}
 
 		$widgetsSite = new \App\Libraries\WidgetsSite();

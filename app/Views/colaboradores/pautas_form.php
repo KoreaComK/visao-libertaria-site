@@ -36,6 +36,34 @@ use CodeIgniter\I18n\Time;
 					<button class="btn btn-danger btn-lg btn-block excluir_pauta" type="button">Excluir pauta</button>
 				</div>
 			<?php endif; ?>
+
+			<?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
+			<div class="mb-3 form-check">
+				<input class="form-check-input" type="checkbox" value="" id="enviarRedator" <?=(isset($post) && $post['redator_colaboradores_id']!==NULL)?('checked="true"'):(''); ?>>
+				<label class="form-check-label" for="enviarRedator">
+					Escolher Redator
+				</label>
+			</div>
+
+			<div class="mb-3 div-redatores  <?=(isset($post) && $post['redator_colaboradores_id']!==NULL)?(''):('d-none'); ?>">
+				<label for="username">Redatores</label>
+				<div class="input-group">
+					<select class="form-control" name="redatores" id="redatores">
+						<option value="">Escolha o Redator</option>
+						<?php
+							if(isset($redatores) && !empty($redatores)) {
+								foreach($redatores as $redator) {
+						?>
+									<option value="<?=$redator['id'];?>" <?=(isset($post) && $post['redator_colaboradores_id']==$redator['id'])?('selected="true"'):(''); ?>><?=$redator['apelido'];?></option>
+						<?php
+								}
+							}
+						?>
+					</select>
+				</div>
+			</div>
+
+			<?php endif; ?>
 		
 			<div class="mb-3">
 				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original</a><?php endif; ?>
@@ -61,7 +89,7 @@ use CodeIgniter\I18n\Time;
 			</div>
 
 			<div class="mb-3">
-				<label for="address">Texto <span class="text-muted">Máx. <?=$config['pauta_tamanho_maximo']; ?> palavras. Mín. <?=$config['pauta_tamanho_minimo']; ?> palavras.</span> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
+				<label for="address">Texto <span class="text-muted"><?php if(!in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>Máx. <?=$config['pauta_tamanho_maximo']; ?> palavras. Mín. <?=$config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif;?> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
 				<textarea class="form-control" name="texto" id="texto" required <?= (isset($readOnly))?('disabled'):('');?>><?=(isset($post))?($post['texto']):(''); ?></textarea>
 			</div>
 
@@ -131,8 +159,33 @@ use CodeIgniter\I18n\Time;
 
 	<?php if(!isset($readOnly)) : ?>
 
+		<?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
+			$("#enviarRedator").on("change", function(e) {
+				if(e.currentTarget.checked) {
+					$('.div-redatores').removeClass('d-none');
+				} else {
+					$('.div-redatores').addClass('d-none');
+				}
+			});
+		<?php endif; ?>
+
 	function getInformationLink(link) {
+		redatores = null;
+		redatores_checked = false;
+		if($('#redatores').val() !== undefined) {
+			redatores = $('#redatores').val();
+		}
+		if($('#enviarRedator').val() !== undefined && $('#enviarRedator').is(':checked')) {
+			redatores_checked = true;
+		}
 		$('#pautas_form').trigger("reset");
+		if(redatores !== null) {
+			$('#redatores').val(redatores);
+		}
+		if(redatores_checked === true) {
+			$("#enviarRedator").prop( "checked", true );
+		}
+
 		link = link.trim();
 		link = link.substring(0, 254);
 		$('#link').val(link);
@@ -359,11 +412,15 @@ use CodeIgniter\I18n\Time;
 		} else {
 			s = '';
 		}
-		if (number > <?=$config['pauta_tamanho_maximo']; ?> || number < <?=$config['pauta_tamanho_minimo']; ?>) {
-			$(".enviar_pauta").prop('disabled', true);
-		} else {
+		<?php if(!in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
+			if (number > <?=$config['pauta_tamanho_maximo']; ?> || number < <?=$config['pauta_tamanho_minimo']; ?>) {
+				$(".enviar_pauta").prop('disabled', true);
+			} else {
+				$(".enviar_pauta").prop('disabled', false);
+			}
+		<?php else: ?>
 			$(".enviar_pauta").prop('disabled', false);
-		}
+		<?php endif; ?>
 		$('#count_message').html(number + " palavra" + s)
 	}
 </script>

@@ -49,6 +49,7 @@ class Inicializandobancodados extends BaseController
 		$db->query('CREATE TABLE IF NOT EXISTS  `pautas` (
 		`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
 		`colaboradores_id` int,
+		`redator_colaboradores_id` int DEFAULT null,
 		`link` varchar(255),
 		`titulo` varchar(255),
 		`texto` TEXT,
@@ -209,6 +210,9 @@ class Inicializandobancodados extends BaseController
 			');
 		$db->query('
 			ALTER TABLE `pautas` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
+			');
+		$db->query('
+			ALTER TABLE `pautas` ADD FOREIGN KEY (`redator_colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');
 		$db->query('
 			ALTER TABLE `artigos` ADD FOREIGN KEY (`fase_producao_id`) REFERENCES `fase_producao` (`id`);

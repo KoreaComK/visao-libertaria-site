@@ -26,6 +26,32 @@ class Pautas extends BaseController
 		return view('colaboradores/pautas_list', $data);
 	}
 
+	public function redatores(): string
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('11');
+		
+		$data = array();
+		$data['titulo'] = 'Pautas Sugeridas para Redatores';
+		$pautasModel = new \App\Models\PautasModel();
+
+		$permissoes = $this->session->get('colaboradores')['permissoes'];
+		if(in_array('7',$permissoes)) { 
+			$pautas = $pautasModel->getPautas(false,false,true);
+		} else {
+			$pautas = $pautasModel->getPautas(false,false,$this->session->get('colaboradores')['id']);
+		}
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$data['pautasList'] = [
+			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+			'pager' => $pautas->pager
+		];
+		return view('colaboradores/pautas_list', $data);
+	}
+
 	public function cadastrar($idPautas = null)
 	{
 		$verifica = new verificaPermissao();
@@ -43,6 +69,13 @@ class Pautas extends BaseController
 		$data['titulo'] = 'Sugira uma pauta';
 
 		$pautasModel = new \App\Models\PautasModel();
+
+		$isAdmin = false;
+		$permissoes = $this->session->get('colaboradores');
+		$permissoes = $permissoes['permissoes'];
+		if(in_array('7',$permissoes)) { 
+			$isAdmin = true;
+		}
 
 		if ($this->request->isAJAX()) {
 			$post = service('request')->getPost();
@@ -65,8 +98,7 @@ class Pautas extends BaseController
 			}
 
 			$session = $this->session->get('colaboradores');
-			
-
+		
 			$time = Time::today();
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
@@ -88,7 +120,7 @@ class Pautas extends BaseController
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
 				if (is_array(@getimagesize($post['imagem']))) {
-					if($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
+					if(!$isAdmin && $gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
 						$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
 						return view('colaboradores/pautas_form', $data);
 					}
@@ -98,6 +130,9 @@ class Pautas extends BaseController
 					$dados['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
 					$dados['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 					$dados['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
+					if($isAdmin && isset($post['redatores']) && $post['redatores']!=="") {
+						$dados['redator_colaboradores_id'] = $post['redatores'];
+					}
 					if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
 						$dados['pauta_antiga'] = $post['pauta_antiga'];
 					}
@@ -126,6 +161,14 @@ class Pautas extends BaseController
 				$data['erros'] = $retorno->retorno(false, $string_erros, false);
 				$data['post'] = $post;
 			}
+		}
+
+		if($isAdmin) {
+			$colaboradoresModel = new \App\Models\ColaboradoresModel();
+			$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id')
+			->where('colaboradores_atribuicoes.atribuicoes_id','11');
+			$colaboradores = $colaboradoresModel->get()->getResultArray();
+			$data['redatores'] = $colaboradores;
 		}
 
 		if ($idPautas != null) {

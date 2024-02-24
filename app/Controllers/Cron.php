@@ -30,10 +30,24 @@ class Cron extends BaseController
 			$pautasModel->where("criado <= '".$time->toDateTimeString()."'");
 			$pautasModel->where('reservado',null);
 			$pautasModel->where('tag_fechamento',null);
+			$pautasModel->where('redator_colaboradores_id',null);
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
 			foreach($pautas as $pauta) {
 				$pautasModel->delete($pauta['id'],true);
+			}
+
+			/*EXCLUSÃO SOFT DO ARTIGO CRIADO ATRAVÉS DE PAUTA DE REDATOR*/
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where('redator_colaboradores_id IS NOT NULL');
+			$pautas = $pautasModel->get()->getResultArray();
+			foreach($pautas as $pauta) {
+				$artigosModel = new \App\Models\ArtigosModel();
+				$artigosModel->where("link",$pauta['link']);
+				$artigosModel->where("escrito_colaboradores_id",$pauta['redator_colaboradores_id']);
+				if($artigosModel->countAllResults() > 0) {
+					$pautasModel->delete($pauta['id']);
+				}
 			}
 		}
 
