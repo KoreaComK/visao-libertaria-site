@@ -27,12 +27,10 @@ class Cron extends BaseController
 			
 			$time = new Time('-'.$cronDataPautas);
 			$pautasModel = new \App\Models\PautasModel();
-			$pautasModel->where("pautas.criado <= '".$time->toDateTimeString()."'");
-			$pautasModel->where('pautas.reservado',null);
-			$pautasModel->where('pautas.tag_fechamento',null);
-			$pautasModel->where('pautas.redator_colaboradores_id',null);
-			$pautasModel->join('pautas_comentarios','pautas.id = pautas_comentarios.pautas_id','LEFT');
-			$pautasModel->select('pautas.*, pautas_comentarios.id as pautas_comentarios_id');
+			$pautasModel->where("criado <= '".$time->toDateTimeString()."'");
+			$pautasModel->where('reservado',null);
+			$pautasModel->where('tag_fechamento',null);
+			$pautasModel->where('redator_colaboradores_id',null);
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
 			foreach($pautas as $pauta) {
