@@ -33,15 +33,21 @@ class Cron extends BaseController
 			$pautasModel->where('redator_colaboradores_id',null);
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
-			foreach($pautas as $pauta) {
+			if(!empty($pautas)) {
+				$pautas_id = array();
+				foreach($pautas as $pauta) {
+					$pautas_id[] = $pauta['id'];
+				}
 				$pautasComentariosModel = new \App\Models\PautasComentariosModel();
-				$pautasComentariosModel->where('pautas_id',$pauta['id']);
+				$pautasComentariosModel->whereIn('pautas_id',$pautas_id);
 				$comentarios = $pautasModel->get()->getResultArray();
 				if(!empty($comentarios)) {
 					foreach($comentarios as $comentario) {
 						$pautasComentariosModel->delete($comentario['id'],true);		
 					}
 				}
+			}
+			foreach($pautas as $pauta) {
 				$pautasModel->delete($pauta['id'],true);
 			}
 
