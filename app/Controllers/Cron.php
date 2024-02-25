@@ -27,26 +27,14 @@ class Cron extends BaseController
 			
 			$time = new Time('-'.$cronDataPautas);
 			$pautasModel = new \App\Models\PautasModel();
-			$pautasModel->where("criado <= '".$time->toDateTimeString()."'");
-			$pautasModel->where('reservado',null);
-			$pautasModel->where('tag_fechamento',null);
-			$pautasModel->where('redator_colaboradores_id',null);
+			$pautasModel->where("pautas.criado <= '".$time->toDateTimeString()."'");
+			$pautasModel->where('pautas.reservado',null);
+			$pautasModel->where('pautas.tag_fechamento',null);
+			$pautasModel->where('pautas.redator_colaboradores_id',null);
+			$pautasModel->join('pautas_comentarios','pautas.id = pautas_comentarios.pautas_id','LEFT');
+			$pautasModel->select('pautas.*, pautas_comentarios.id as pautas_comentarios_id');
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
-			if(!empty($pautas)) {
-				$pautas_id = array();
-				foreach($pautas as $pauta) {
-					$pautas_id[] = $pauta['id'];
-				}
-				$pautasComentariosModel = new \App\Models\PautasComentariosModel();
-				$pautasComentariosModel->whereIn('pautas_id',$pautas_id);
-				$comentarios = $pautasModel->get()->getResultArray();
-				if(!empty($comentarios)) {
-					foreach($comentarios as $comentario) {
-						$pautasComentariosModel->delete($comentario['id'],true);		
-					}
-				}
-			}
 			foreach($pautas as $pauta) {
 				$pautasModel->delete($pauta['id'],true);
 			}
