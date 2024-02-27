@@ -297,6 +297,35 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
+<div class="modal fade bd-example-modal-lg" id="modal-colaboracoes-fechadas" tabindex="-1" role="dialog"
+	aria-labelledby="modal-perfilLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modal-perfilLabel">Colaborações já pagas</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Título</th>
+							<th scope="col">Atribuição</th>
+							<th scope="col">Pontos</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-modal-colaboracoes-fechadas">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <div class="modal fade bd-example-modal-lg" id="modal-pagamentos" tabindex="-1" role="dialog"
 	aria-labelledby="modal-perfilLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
@@ -329,7 +358,7 @@ use CodeIgniter\I18n\Time;
 										<?=substr($pagamento['hash_transacao'],0,5);?>...<?=substr($pagamento['hash_transacao'],-5,5);?>
 									</a>
 								</td>
-								<td><?=number_format($pagamento['pontuacao_total'], 0, ',', '.');?></td>
+								<td><a href="#" class="listar-colaboracoes-fechadas" id="<?= $pagamento['id']; ?>" data-toggle="modal" data-target="#modal-colaboracoes-fechadas" onclick="javascript:$('#modal-pagamentos').modal('toggle');"><?=number_format($pagamento['pontuacao_total'], 0, ',', '.');?></a></td>
 								<td><?=number_format(($pagamento['quantidade_bitcoin']*100000000)/$pagamento['pontuacao_total'], 0, ',', '.');?> sats</td>
 							</tr>
 							<?php endforeach; ?>
@@ -417,6 +446,19 @@ use CodeIgniter\I18n\Time;
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
+
+	$('.listar-colaboracoes-fechadas').on('click', function (e) {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>"+e.currentTarget.id,
+			method: "POST",
+			dataType: "html",
+			beforeSend: function() { $('#modal-loading').modal('show'); },
+			complete: function() { $('#modal-loading').modal('hide'); },
+			success: function (retorno) {
+				$('#tbody-modal-colaboracoes-fechadas').html(retorno);
+			}
+		});
+	});
 
 	$(document).ready(function () {
 		$('#colaboradores_perfil').on('submit', function (e) {

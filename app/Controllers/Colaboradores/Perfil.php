@@ -123,6 +123,63 @@ class Perfil extends BaseController
 		return view('colaboradores/perfil', $data);
 	}
 
+	public function fechadas($pagamentoId = NULL)
+	{
+		if($pagamentoId == null) {
+			return false;
+		}
+		$session = $this->session->get('colaboradores');
+
+		$pagamentoId = (int)$pagamentoId;
+		$pagamentosArtigosModel = new \App\Models\PagamentosArtigosModel();
+		$listaArtigos = $pagamentosArtigosModel->where('pagamentos_artigos.pagamentos_id',$pagamentoId)
+		->select('*, artigos.titulo AS titulo')
+		->join('artigos','artigos.id = pagamentos_artigos.artigos_id')
+		->join('pagamentos','pagamentos.id = pagamentos_artigos.pagamentos_id')
+		->where("(artigos.escrito_colaboradores_id = ".$session['id']." OR artigos.revisado_colaboradores_id = ".$session['id']." OR artigos.narrado_colaboradores_id = ".$session['id']." OR artigos.produzido_colaboradores_id = ".$session['id'].")")
+		->get()->getResultArray();
+		if(empty($listaArtigos)) {
+			return '<td colspan="4" class="text-center">Não houve colaborações suas no mês informado.</td>';
+		}
+		$html = '';
+		foreach($listaArtigos as $chave => $artigo) {
+			$total = 0;
+			$html .= '
+					<tr>
+						<th scope="row">
+							'.($chave + 1).'
+						</th>
+						<td><a
+								href="'.site_url("/site/artigo/".$artigo["url_friendly"]).'">'.$artigo["titulo"].'</a>
+						</td>
+						<td>';
+			if ($artigo['escrito_colaboradores_id'] == $session['id']) {
+				$total += $artigo['palavras_escritor'] * $artigo['multiplicador_escrito'] / 100 ;
+				$html.='<label class="badge badge-info">Escritor</label>';
+			}
+			if ($artigo['revisado_colaboradores_id'] == $session['id']) {
+				$total += $artigo['palavras_revisor'] * $artigo['multiplicador_revisado'] / 100 ;
+				$html.='<label class="badge badge-info">Revisor</label>';
+			}
+			if ($artigo['narrado_colaboradores_id'] == $session['id']) {
+				$total += $artigo['palavras_narrador'] * $artigo['multiplicador_narrado'] / 100 ;
+				$html.='<label class="badge badge-info">Narrador</label>';
+			}
+			if ($artigo['produzido_colaboradores_id'] == $session['id']) {
+				$total += $artigo['palavras_produtor'] * $artigo['multiplicador_produzido'] / 100 ;
+				$html.='<label class="badge badge-info">Produtor</label>';
+			}
+			$html.='
+						</td>
+						<td>
+							'.number_format($total, 0, ",", ".").'
+						</td>
+					</tr>
+			';
+		}
+		return $html;
+	}
+
 	private function widgetAtribuicoes($colaborador)
 	{
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
