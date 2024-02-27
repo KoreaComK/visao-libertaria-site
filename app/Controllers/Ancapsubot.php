@@ -41,7 +41,7 @@ class Ancapsubot extends BaseController
 
 					$colaboradoresModel = new \App\Models\ColaboradoresModel();
 					$pautasModel = new \App\Models\PautasModel();
-					$colaborador = $colaboradoresModel->where('twitter',$gerenciadorTextos->simplificaString($post['twitterHandle']))->get()->getResultArray();;
+					$colaborador = $colaboradoresModel->where('twitter',$gerenciadorTextos->simplificaString($post['twitterHandle']))->get()->getResultArray();
 					if(empty($colaborador)) {
 						return $this->fail('Erro. Usuário não encontrado no site.');
 					}
