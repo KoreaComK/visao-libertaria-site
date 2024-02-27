@@ -90,6 +90,42 @@ class Cron extends BaseController
 			}
 			unset($artigosModel);
 		}
+
+		/**/
+		$time = new Time('+3 days');
+		$cron_email_carteira = $configuracaoModel->find('cron_email_carteira')['config_valor'];
+		$cron_email_carteira = Time::createFromFormat('Y-m-d', $cron_email_carteira);
+		if($time->getMonth() != $time->today()->getMonth() && $cron_email_carteira->getMonth() != $time->getMonth()) {
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->select("escrito_colaboradores_id,revisado_colaboradores_id,narrado_colaboradores_id,produzido_colaboradores_id");
+			$artigosModel->where("fase_producao_id",6);
+			$artigos = $artigosModel->get()->getResultArray();
+			if(!empty($artigos)) {
+				$colaboradores = array();
+				foreach($artigos as $artigo) {
+					$colaboradores[] = $artigo['escrito_colaboradores_id'];
+					$colaboradores[] = $artigo['revisado_colaboradores_id'];
+					$colaboradores[] = $artigo['narrado_colaboradores_id'];
+					$colaboradores[] = $artigo['produzido_colaboradores_id'];
+				}
+				$colaboradores = array_unique($colaboradores);
+				$colaboradoresModel = new \App\Models\ColaboradoresModel();
+				$colaboradoresModel->whereIn('id',$colaboradores);
+				$colaboradoresModel->where("(carteira IS NULL OR carteira = '')");
+				$colaboradores = $colaboradoresModel->get()->getResultArray();
+				if(!empty($colaboradores)) {
+					$emails = array();
+					foreach($colaboradores as $colaborador) {
+						$emails[] = $colaborador['email'];
+					}
+					$emails = array();
+					$enviaEmail = new \App\Libraries\EnviaEmail();
+					$enviaEmail->enviaEmail(NULL, 'VISÃO LIBERTÁRIA - CARTEIRA NÃO CADASTRADA', $enviaEmail->getMensagemCarteiraVazia(), false, $emails);
+				}
+			}
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$configuracaoModel->update('cron_email_carteira', array('config_valor' => $time->toDateString()));
+		}
 				
 		return 'Cron Finalizado';
 	}
