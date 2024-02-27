@@ -4,12 +4,19 @@ namespace App\Libraries;
 
 class EnviaEmail
 {
-	public function enviaEmail($destinatario = null, $titulo = null, $mensagem = null, $copia = false)
+	public function enviaEmail($destinatario = null, $titulo = null, $mensagem = null, $copia = false, $copiaOculta = false)
 	{
 		$email = \Config\Services::email();
-		$email->setTo($destinatario);
+		if($destinatario === NULL) {
+			$email->setTo($email->SMTPUser);
+		} else {
+			$email->setTo($destinatario);
+		}
 		if($copia !== false) {
 			$email->setCC($copia);
+		}
+		if($copiaOculta !== false) {
+			$email->setBCC($copiaOculta);
 		}
 		$email->setFrom($email->SMTPUser, 'Visão Libertária');
 
@@ -50,4 +57,9 @@ class EnviaEmail
 		return $mensagem;
 	}
 
+	public function getMensagemCarteiraVazia()
+	{
+		$mensagem = "ATENÇÃO!!!!!. \r\nVocê contribuiu com algum artigo no Visão Libertária e não cadastrou sua carteira. Cadastre-a ou não receberá os satoshis da sua contribuição.";
+		return $mensagem;
+	}
 }
