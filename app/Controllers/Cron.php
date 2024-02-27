@@ -118,7 +118,6 @@ class Cron extends BaseController
 					foreach($colaboradores as $colaborador) {
 						$emails[] = $colaborador['email'];
 					}
-					$emails = array();
 					$enviaEmail = new \App\Libraries\EnviaEmail();
 					$enviaEmail->enviaEmail(NULL, 'VISÃO LIBERTÁRIA - CARTEIRA NÃO CADASTRADA', $enviaEmail->getMensagemCarteiraVazia(), false, $emails);
 				}
