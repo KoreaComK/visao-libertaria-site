@@ -4,6 +4,8 @@ namespace App\Controllers\Colaboradores;
 
 use App\Controllers\BaseController;
 
+use CodeIgniter\I18n\Time;
+
 use App\Libraries\VerificaPermissao;
 use App\Libraries\ArtigosHistoricos;
 use App\Libraries\ArtigosMarcacao;
@@ -764,10 +766,27 @@ class Artigos extends BaseController
 	{
 		if ($this->request->isAJAX()) {
 			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosHistoricosModel = new \App\Models\ArtigosHistoricosModel();
 			$retorno = new \App\Libraries\RetornoPadrao();
 			
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$config = array();
+			$config['artigo_tempo_bloqueio'] = $configuracaoModel->find('artigo_tempo_bloqueio')['config_valor'];
+			$time = new Time('-'.$config['artigo_tempo_bloqueio']);
+
 			$artigo = $artigosModel->find($idArtigo);
 			$idColaborador = $this->session->get('colaboradores')['id'];
+
+			$historico = $artigosHistoricosModel->where('artigos_id',$idArtigo)
+			->where('acao','desmarcou')
+			->where('colaboradores_id',$idColaborador)
+			->where("criado >= '".$time->toDateTimeString()."'")
+			->orderBy('criado','DESC')
+			->get()->getResultArray();
+
+			if($historico !== null && !empty($historico)) {
+				return $retorno->retorno(false, 'Você está impossibilitado de marcar este artigo até '.Time::createFromFormat('Y-m-d H:i:s', $historico[0]['criado'])->addHours(explode(' ',$config['artigo_tempo_bloqueio'])[0])->toLocalizedString('dd MMMM yyyy HH:mm:ss').'.', true);
+			}
 
 			if($artigo === null || empty($artigo)) {
 				return $retorno->retorno(false, 'Erro ao encontrar artigo.', true);
