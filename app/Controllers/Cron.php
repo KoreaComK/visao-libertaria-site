@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Config\App;
 use CodeIgniter\I18n\Time;
+use App\Libraries\ArtigosHistoricos;
 
 class Cron extends BaseController
 {
@@ -54,6 +55,7 @@ class Cron extends BaseController
 		/*PARTE RELACIONADA A DESMARCAÇÃO DOS ARTIGOS*/
 		$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
 		if($cronArtigos == '1') {
+			$artigosHistoricos = new ArtigosHistoricos;
 			/*Revisão*/
 			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_revisao')['config_valor'];
 			$time = new Time('-'.$cronArtigos);
@@ -62,6 +64,7 @@ class Cron extends BaseController
 			$artigosModel->where("fase_producao_id",2);
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
 				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
 			}
 			unset($artigosModel);
@@ -74,6 +77,7 @@ class Cron extends BaseController
 			$artigosModel->where("fase_producao_id",3);
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
 				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
 			}
 			unset($artigosModel);
@@ -86,6 +90,7 @@ class Cron extends BaseController
 			$artigosModel->where("fase_producao_id",4);
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
 				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
 			}
 			unset($artigosModel);
