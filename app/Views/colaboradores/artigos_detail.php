@@ -76,6 +76,7 @@ use CodeIgniter\I18n\Time;
 			<?= (isset($retorno)) ? ($retorno['mensagem']) : (''); ?></div>
 
 		<?php if ($artigo['marcado_colaboradores_id'] != $_SESSION['colaboradores']['id'] && !in_array($fase_producao, array(5, 1))) : ?>
+			<div class="mensagem-marcar p-3 mb-2 rounded text-white text-center col-12" style="display: none;"></div>
 			<div class="d-block mb-5 mt-5 text-left">
 				<form class="needs-validation w-100" id="form-marcar" novalidate="yes" method="post" enctype="multipart/form-data">
 					<div class="row">
@@ -359,9 +360,9 @@ use CodeIgniter\I18n\Time;
 						window.location.reload();
 					} else {
 						console.log(retorno);
-						$('.mensagem-salvar').show();
-						$('.mensagem-salvar').html(retorno.mensagem);
-						$('.mensagem-salvar').addClass('bg-danger');
+						$('.mensagem-marcar').show();
+						$('.mensagem-marcar').html(retorno.mensagem);
+						$('.mensagem-marcar').addClass('bg-danger');
 						$('#modalConfirmacao').modal('toggle');
 					}
 				}
