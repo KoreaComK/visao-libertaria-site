@@ -318,7 +318,8 @@ class Inicializandobancodados extends BaseController
 		('cron_artigos_desmarcar_data_revisao', '24 hours'),
 		('cron_artigos_desmarcar_data_narracao', '6 hours'),
 		('cron_artigos_desmarcar_data_producao', '12 hours'),
-		('cron_email_carteira', '')
+		('cron_email_carteira', ''),
+		('artigo_tempo_bloqueio', '48 hours')
 		;
 		");
 
