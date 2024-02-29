@@ -3,6 +3,7 @@
 namespace App\Libraries;
 
 use App\Models\ArtigosModel;
+use App\Libraries\ArtigosHistoricos;
 
 class ArtigosMarcacao
 {
@@ -10,6 +11,7 @@ class ArtigosMarcacao
 	public function marcarArtigo($idArtigo, $idColaboradores, $desmarcarArtigosMarcados = true)
 	{
 		$artigosModel = new ArtigosModel();
+		$artigosHistoricos = new ArtigosHistoricos;
 		$artigo = $artigosModel->find($idArtigo);
 		if ($artigo['marcado_colaboradores_id'] !== null && $artigo['marcado_colaboradores_id'] != $idColaboradores) {
 			return false;
@@ -18,6 +20,7 @@ class ArtigosMarcacao
 			$idArtigosLista = $this->buscaArtigosMarcadosUsuario($idColaboradores);
 			if ($idArtigosLista !== false) {
 				foreach ($idArtigosLista as $idArtigos) {
+					$artigosHistoricos->cadastraHistorico($idArtigos, 'desmarcou', $idColaboradores);
 					$dados = [
 						'marcado_colaboradores_id' => null,
 						'marcado' => null,
