@@ -6,23 +6,21 @@ Execute `composer install` na pasta raiz do site http://localhost/visao-libertar
 
 # Criando a base de dados do Visão Libertária
 
-Configurar o arquivo env, trocando o nome para .env
-
-Executar o criador de banco de dados e tabelas `http://localhost/visao-libertaria-site/Inicializandobancodados`
-
-Configurar o arquivo Email dentro de `app/Config/Email.php`
-
-Executar o comando no CLI para popular as tabelas
+- Configure o arquivo env, trocando o nome para .env
+- Executar o comando no CLI para criar as tabelas
+`> php spark migrate`
+- Execute o comando no CLI para popular as tabelas
 `> php spark db:seed Main`
+- Configure o arquivo Email dentro de `app/Config/Email.php`
 
 # Utilizando Docker
 
-Caso queira utilizar o Docker para rodar o projeto, siga os passos abaixo (não é necessário realizar os passos acima descritos):
+Caso queira utilizar o Docker para rodar o projeto, siga os passos abaixo (não é necessário realizar os passos descritos acima):
 
 - Instale e inicie o Docker em sua máquina.
 - Execute o comando `make up`. Este comando irá criar a imagem e iniciar os containers.
-- Acesse a url `http://localhost:8080/Inicializandobancodados` para criar as tabelas no banco de dados.
-- Acesse o container da aplicação com o comando `make bash-web`. Dentro do container execute o comando `php spark db:seed Main` para popular as tabelas.
+- Execute o comando `make migrate` para criar as tabelas no banco de dados.
+- Execute o comando `make seed` para popular as tabelas no banco de dados.
 - Configure o arquivo Email dentro de `app/Config/Email.php`.
 
-Agora é só acessar a url `http://localhost:8080`.
+Agora acesse a url `http://localhost:8080`.
