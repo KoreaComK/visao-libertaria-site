@@ -56,8 +56,6 @@ $app->initialize();
 $context = is_cli() ? 'php-cli' : 'web';
 $app->setContext($context);
 
-date_default_timezone_set('America/Sao_Paulo');
-
 /*
  *---------------------------------------------------------------
  * LAUNCH THE APPLICATION
