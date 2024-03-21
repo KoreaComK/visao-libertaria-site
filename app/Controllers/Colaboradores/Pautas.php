@@ -119,7 +119,7 @@ class Pautas extends BaseController
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
-				if (is_array(@getimagesize($post['imagem']))) {
+				// if (is_array(@getimagesize($post['imagem']))) {
 					if(!$isAdmin && $gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
 						$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
 						return view('colaboradores/pautas_form', $data);
@@ -148,10 +148,10 @@ class Pautas extends BaseController
 					} else {
 						$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
 					}
-				} else {
-					$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-					$data['post'] = $post;
-				}
+				// } else {
+				// 	$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
+				// 	$data['post'] = $post;
+				// }
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';

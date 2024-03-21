@@ -39,13 +39,13 @@ use CodeIgniter\I18n\Time;
 
 			<?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
 			<div class="mb-3 form-check">
-				<input class="form-check-input" type="checkbox" value="" id="enviarRedator" <?=(isset($post) && $post['redator_colaboradores_id']!==NULL)?('checked="true"'):(''); ?>>
+				<input class="form-check-input" type="checkbox" value="" id="enviarRedator" <?=(isset($post) && isset($post['redator_colaboradores_id']) && $post['redator_colaboradores_id']!==NULL)?('checked="true"'):(''); ?>>
 				<label class="form-check-label" for="enviarRedator">
 					Escolher Redator
 				</label>
 			</div>
 
-			<div class="mb-3 div-redatores  <?=(isset($post) && $post['redator_colaboradores_id']!==NULL)?(''):('d-none'); ?>">
+			<div class="mb-3 div-redatores  <?=(isset($post) && isset($post['redator_colaboradores_id']) && $post['redator_colaboradores_id']!==NULL)?(''):('d-none'); ?>">
 				<label for="username">Redatores</label>
 				<div class="input-group">
 					<select class="form-control" name="redatores" id="redatores">
@@ -54,7 +54,7 @@ use CodeIgniter\I18n\Time;
 							if(isset($redatores) && !empty($redatores)) {
 								foreach($redatores as $redator) {
 						?>
-									<option value="<?=$redator['id'];?>" <?=(isset($post) && $post['redator_colaboradores_id']==$redator['id'])?('selected="true"'):(''); ?>><?=$redator['apelido'];?></option>
+									<option value="<?=$redator['id'];?>" <?=(isset($post) && isset($post['redator_colaboradores_id']) && $post['redator_colaboradores_id']==$redator['id'])?('selected="true"'):(''); ?>><?=$redator['apelido'];?></option>
 						<?php
 								}
 							}
@@ -90,7 +90,7 @@ use CodeIgniter\I18n\Time;
 
 			<div class="mb-3">
 				<label for="address">Texto <span class="text-muted"><?php if(!in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>Máx. <?=$config['pauta_tamanho_maximo']; ?> palavras. Mín. <?=$config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif;?> (<span class="pull-right label label-default text-muted" id="count_message"></span>)</label>
-				<textarea class="form-control" name="texto" id="texto" required <?= (isset($readOnly))?('disabled'):('');?>><?=(isset($post))?($post['texto']):(''); ?></textarea>
+				<textarea class="form-control" name="texto" id="texto" <?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>rows="10"<?php endif;?> required <?= (isset($readOnly))?('disabled'):('');?>><?=(isset($post))?($post['texto']):((in_array('7',$_SESSION['colaboradores']['permissoes']))?("Importância:\n\n\nContraponto:\n\n\nVisão Libertária:"):('')); ?></textarea>
 			</div>
 
 			<div class="mb-3">
