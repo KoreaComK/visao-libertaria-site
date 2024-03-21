@@ -363,6 +363,9 @@ class Site extends BaseController
 
 					$this->session->set($estrutura_session);
 
+					$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
+					$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
+
 					if (isset($post['lembrar'])) {
 						set_cookie('hash', $this->secured_encrypt(md5($post['email'].hash('sha256', $post['senha']))), 60 * 60 * 24 * 7);
 					}
@@ -516,6 +519,9 @@ class Site extends BaseController
 				$permissoes[] = $atribuicao['atribuicoes_id'];
 			}
 			$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+			$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
+			$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
 
 			$this->session->set($estrutura_session);
 			return true;
