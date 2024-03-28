@@ -1,4 +1,4 @@
-.PHONY: up down bash-web bash-db build help restart
+.PHONY: up down bash-web bash-db build help restart migrate seed
 
 up:
 	docker-compose up -d
@@ -17,6 +17,12 @@ build:
 
 restart:
 	docker-compose restart
+
+migrate:
+	docker-compose exec -it web bash -c "php spark migrate"
+
+seed:
+	docker-compose exec -it web bash -c "php spark db:seed Main"
 
 help:
 	@echo "Available commands:"
