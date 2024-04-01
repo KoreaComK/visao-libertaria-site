@@ -63,4 +63,8 @@
 	</div>
 </div>
 
+<meta property="og:title" content="<?= $artigo['titulo'];?>" />
+<meta property="og:image" content="<?= $artigo['imagem'];?>"/>
+<meta property="og:description" content="<?= addslashes(substr($artigo['texto_revisado'],0,250)).'...';?>" />
+
 <?= $this->endSection(); ?>

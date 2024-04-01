@@ -197,8 +197,15 @@ class Pautas extends BaseController
 
 	public function detalhe($idPautas = null)
 	{
+		$session = \Config\Services::session();
+		$session->start();
+		if ($session->has('colaboradores') || $session->get('colaboradores')['id'] !== NULL) {
+			header("location: " . site_url('site/pauta/'.$idPautas));
+			die();
+		}
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
+		
 		$data = array();
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();

@@ -133,6 +133,30 @@ class Site extends BaseController
 		}
 	}
 
+	/*DETALHE DA PAUTA*/
+	public function pauta($idPauta = null)
+	{
+		if ($idPauta === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$data = array();
+
+		$pautasModel = new \App\Models\PautasModel();
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+
+		$pauta = $pautasModel->find($idPauta);
+
+		if ($pauta !== null) {
+			$data['pauta'] = $pauta;
+
+			$data['pauta']['colaborador'] = $colaboradoresModel->find($pauta['colaboradores_id']);
+			return view('pauta', $data);
+		} else {
+			return redirect()->to(base_url() . 'site');
+		}
+	}
+
 	/* CADASTRO DO USUÁRIO */
 	public function cadastrar()
 	{
