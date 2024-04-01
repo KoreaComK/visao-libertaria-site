@@ -102,11 +102,11 @@ class ValidaFormularios extends BaseController
 			],
 			'twitter' => [
 				'label' => 'Twitter',
-				'rules' => 'permit_empty|max_length[255]|is_unique[colaboradores.twitter]'
+				'rules' => 'permit_empty|max_length[255]|is_unique[colaboradores.twitter,id,' . $id . ']'
 			],
 			'carteira' => [
 				'label' => 'Carteira Bitcoin',
-				'rules' => 'permit_empty|max_length[255]|alpha_numeric'
+				'rules' => 'permit_empty|max_length[255]|alpha_numeric|is_unique[colaboradores.carteira,id,' . $id . ']'
 			]
 		]);
 		$validation->run($post);
