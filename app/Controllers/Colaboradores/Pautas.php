@@ -199,7 +199,7 @@ class Pautas extends BaseController
 	{
 		$session = \Config\Services::session();
 		$session->start();
-		if ($session->has('colaboradores') || $session->get('colaboradores')['id'] !== NULL) {
+		if (!$session->has('colaboradores') || $session->get('colaboradores')['id'] === NULL) {
 			header("location: " . site_url('site/pauta/'.$idPautas));
 			die();
 		}

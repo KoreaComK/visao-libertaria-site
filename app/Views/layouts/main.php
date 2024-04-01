@@ -15,7 +15,7 @@
 	<meta property="og:url" content="<?=current_url(true);?>" />
 	<meta name="theme-color" content="#F3C921">
 	
-	<?php if(strpos(current_url(true),'/site/artigo/') === false || strpos(current_url(true),'/site/pauta/') === false) : ?>
+	<?php if(strpos(current_url(true),'site/artigo/') === false && strpos(current_url(true),'site/pauta/') === false) : ?>
 
 		<meta property="og:title" content="<?=$_SESSION['site_config']['texto_nome'];?>" />
 		<meta property="og:image" content="<?= (file_exists('public/assets/favicon.ico'))?(site_url('public/assets/favicon.ico')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"/>
