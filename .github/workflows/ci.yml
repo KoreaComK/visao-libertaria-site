@@ -13,4 +13,4 @@ jobs:
       - name: Build and test
         run: |
           docker-compose up -d
-          docker-compose exec web bash -c "./vendor/bin/phpunit"
+          docker-compose exec -it web bash -c "./vendor/bin/phpunit"
