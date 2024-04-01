@@ -3,14 +3,16 @@ on:
   push:
     
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Build and test
-        run: |
-          docker-compose up -d
-          docker-compose exec -it web bash -c "./vendor/bin/phpunit"
+      - name: Build containers
+        run: docker-compose up -d
+
+      - name: Run tests
+        run: docker-compose exec -it web bash -c "./vendor/bin/phpunit"
+          
