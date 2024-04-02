@@ -208,9 +208,10 @@ class Inicializandobancodados extends BaseController
 			`acao` VARCHAR(255) NOT NULL,
 			`objeto` VARCHAR(255) NOT NULL,
 			`notificacao` VARCHAR(255) NOT NULL,
-			`id_objeto` VARCHAR(255) NOT NULL,
+			`id_objeto` VARCHAR(36) NOT NULL,
 			`colaboradores_id` INT NOT NULL,
-			`data_visualizado` DATETIME NULL DEFAULT NULL
+			`data_visualizado` DATETIME NULL DEFAULT NULL,
+			`criado` datetime DEFAULT now()
 			);
 			');
 

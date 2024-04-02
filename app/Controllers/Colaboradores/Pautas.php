@@ -5,10 +5,17 @@ namespace App\Controllers\Colaboradores;
 use App\Controllers\BaseController;
 
 use App\Libraries\VerificaPermissao;
+use App\Libraries\ColaboradoresNotificacoes;
 use CodeIgniter\I18n\Time;
 
 class Pautas extends BaseController
 {
+	protected $colaboradoresNotificacoesModel;
+	function __construct()
+	{
+		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
+	}
+
 	public function index(): string
 	{
 		$data = array();
@@ -400,7 +407,7 @@ class Pautas extends BaseController
 		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
 		if ($this->request->getMethod() == 'post') {
 			$retorno = new \App\Libraries\RetornoPadrao();
-			$post = $post = $this->request->getPost();
+			$post = $this->request->getPost();
 			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
@@ -409,6 +416,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->db->transStart();
 					$pautasComentariosModel->delete($comentario['id']);
 					$pautasComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'excluiu','pautas','o comentário na pauta',$idPauta,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -423,6 +431,7 @@ class Pautas extends BaseController
 				$pautasComentariosModel->db->transStart();
 				$save = $pautasComentariosModel->insert($comentario);
 				$pautasComentariosModel->db->transComplete();
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'comentou','pautas','na pauta',$idPauta,true);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
@@ -433,6 +442,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->db->transStart();
 					$pautasComentariosModel->save($comentario);
 					$pautasComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','pautas','o comentário na pauta',$idPauta,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -620,16 +630,20 @@ class Pautas extends BaseController
 	{
 		$pautasModel = new \App\Models\PautasModel();
 		$retorno = null;
+		$acao = false;
 		$pautasModel->db->transStart();
 		switch ($tipo) {
 			case 'update':
 				$retorno = $pautasModel->update($id, $dados);
+				$acao = 'alterou';
 				break;
 			case 'insert':
 				$retorno = $pautasModel->insert($dados);
+				$acao = 'cadastrou';
 				break;
 			case 'save':
 				$retorno = $pautasModel->save($dados);
+				$acao = 'alterou';
 				break;
 			case 'delete':
 				$retorno = $pautasModel->delete($id);
@@ -639,6 +653,13 @@ class Pautas extends BaseController
 				break;
 		}
 		$pautasModel->db->transComplete();
+
+		if($acao !== null) {
+			$sujeito = $this->session->get('colaboradores')['id'];
+			$idObjeto = ($id == null)?($retorno):($id);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($sujeito,$acao,'pautas','a pauta',$idObjeto,true);
+		}
+		
 		return $retorno;
 	}
 
