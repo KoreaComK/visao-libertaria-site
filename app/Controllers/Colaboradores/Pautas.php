@@ -180,7 +180,7 @@ class Pautas extends BaseController
 
 		if ($idPautas != null) {
 			$data['post'] = $pautasModel->find($idPautas);
-			if ($data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
+			if ($data['post'] == NULL || $data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
 				return redirect()->to(base_url() . 'colaboradores/pautas');
 			}
 		}
@@ -654,7 +654,7 @@ class Pautas extends BaseController
 		}
 		$pautasModel->db->transComplete();
 
-		if($acao !== null) {
+		if($acao !== false) {
 			$sujeito = $this->session->get('colaboradores')['id'];
 			$idObjeto = ($id == null)?($retorno):($id);
 			$this->colaboradoresNotificacoes->cadastraNotificacao($sujeito,$acao,'pautas','a pauta',$idObjeto,true);
