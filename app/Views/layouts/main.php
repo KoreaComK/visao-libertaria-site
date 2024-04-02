@@ -19,8 +19,17 @@
 	<meta property="twitter:domain" content="<?=site_url();?>">
 	<meta property="twitter:url" content="<?=current_url(true);?>">
 	
-	<?php if(strpos(current_url(true),'site/artigo/') === false && strpos(current_url(true),'site/pauta/') === false) : ?>
+	<?php if(isset($meta) && is_array($meta)) : ?>
 
+		<meta name="twitter:title" content="<?=$meta['title'];?>">
+		<meta name="twitter:image" content="<?=$meta['image'];?>">
+		<meta name="twitter:description" content="<?=$meta['description'];?>">
+
+		<meta property="og:title" content="<?=$meta['title'];?>" />
+		<meta property="og:image" content="<?=$meta['image'];?>"/>
+		<meta property="og:description" content="<?=$meta['description'];?>" />
+
+	<?php else: ?>
 		<meta name="twitter:title" content="<?=$_SESSION['site_config']['texto_nome'];?>">
 		<meta name="twitter:description" content="<?=$_SESSION['site_config']['texto_rodape'];?>">
 		<meta name="twitter:image" content="<?= (file_exists('public/assets/favicon.ico'))?(site_url('public/assets/favicon.ico')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
@@ -28,7 +37,6 @@
 		<meta property="og:title" content="<?=$_SESSION['site_config']['texto_nome'];?>" />
 		<meta property="og:image" content="<?= (file_exists('public/assets/favicon.ico'))?(site_url('public/assets/favicon.ico')):('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"/>
 		<meta property="og:description" content="<?=$_SESSION['site_config']['texto_rodape'];?>" />
-
 	<?php endif; ?>
 
 	<style type="text/css">

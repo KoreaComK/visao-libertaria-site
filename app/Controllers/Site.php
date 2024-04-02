@@ -127,6 +127,12 @@ class Site extends BaseController
 
 			//$data['artigo']['categorias'] = $artigosCategoriasModel->getCategoriasArtigo($data['artigo']['id']);
 			$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
+			
+			$data['meta'] = array();
+			$data['meta']['title'] = $data['artigo']['titulo'];
+			$data['meta']['image'] = $data['artigo']['imagem'];
+			$data['meta']['description'] = addslashes(substr($data['artigo']['texto_revisado'],0,250)).'...';
+			
 			return view('artigo', $data);
 		} else {
 			return redirect()->to(base_url() . 'site/artigos');
@@ -151,6 +157,12 @@ class Site extends BaseController
 			$data['pauta'] = $pauta;
 
 			$data['pauta']['colaborador'] = $colaboradoresModel->find($pauta['colaboradores_id']);
+
+			$data['meta'] = array();
+			$data['meta']['title'] = $data['pauta']['titulo'];
+			$data['meta']['image'] = $data['pauta']['imagem'];
+			$data['meta']['description'] = addslashes($data['pauta']['texto']);
+
 			return view('pauta', $data);
 		} else {
 			return redirect()->to(base_url() . 'site');
