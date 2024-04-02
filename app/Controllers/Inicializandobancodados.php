@@ -206,8 +206,9 @@ class Inicializandobancodados extends BaseController
 			`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
 			`sujeito_colaboradores_id` INT NOT NULL,
 			`acao` VARCHAR(255) NOT NULL,
+			`objeto` VARCHAR(255) NOT NULL,
 			`notificacao` VARCHAR(255) NOT NULL,
-			`url` VARCHAR(255) NOT NULL,
+			`id_objeto` VARCHAR(255) NOT NULL,
 			`colaboradores_id` INT NOT NULL,
 			`data_visualizado` DATETIME NULL DEFAULT NULL
 			);
