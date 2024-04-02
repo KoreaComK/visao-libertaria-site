@@ -17,7 +17,7 @@ final class CriaTabelaColaboradoresHistoricos extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => new RawSql('uuid()'),
+                'default' => 'uuid()',
             ],
             'colaboradores_id' => [
                 'type' => 'INT',
