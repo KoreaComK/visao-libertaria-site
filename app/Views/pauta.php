@@ -45,4 +45,8 @@ use CodeIgniter\I18n\Time;
 <meta property="og:image" content="<?= $pauta['imagem'];?>"/>
 <meta property="og:description" content="<?= $pauta['texto'];?>" />
 
+<meta property="twitter:title" content="<?= $pauta['titulo'];?>" />
+<meta property="twitter:description" content="<?= $pauta['imagem'];?>"/>
+<meta property="twitter:image" content="<?= $pauta['texto'];?>" />
+
 <?= $this->endSection(); ?>

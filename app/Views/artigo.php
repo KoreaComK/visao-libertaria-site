@@ -67,4 +67,8 @@
 <meta property="og:image" content="<?= $artigo['imagem'];?>"/>
 <meta property="og:description" content="<?= addslashes(substr($artigo['texto_revisado'],0,250)).'...';?>" />
 
+<meta property="twitter:title" content="<?= $artigo['titulo'];?>" />
+<meta property="twitter:description" content="<?= $artigo['imagem'];?>"/>
+<meta property="twitter:image" content="<?= addslashes(substr($artigo['texto_revisado'],0,250)).'...';?>" />
+
 <?= $this->endSection(); ?>
