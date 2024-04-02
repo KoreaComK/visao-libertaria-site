@@ -123,6 +123,12 @@ class Perfil extends BaseController
 		return view('colaboradores/perfil', $data);
 	}
 
+	public function notificacoes()
+	{
+		$data = array();
+		return view('colaboradores/notificacoes_list', $data);
+	}
+
 	public function fechadas($pagamentoId = NULL)
 	{
 		if($pagamentoId == null) {
