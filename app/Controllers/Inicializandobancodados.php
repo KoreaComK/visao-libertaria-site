@@ -202,6 +202,17 @@ class Inicializandobancodados extends BaseController
 			);
 			');
 
+		$db->query('CREATE TABLE IF NOT EXISTS `colaboradores_notificacoes` (
+			`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+			`sujeito_colaboradores_id` INT NOT NULL,
+			`acao` VARCHAR(255) NOT NULL,
+			`notificacao` VARCHAR(255) NOT NULL,
+			`url` VARCHAR(255) NOT NULL,
+			`colaboradores_id` INT NOT NULL,
+			`data_visualizado` DATETIME NULL DEFAULT NULL
+			);
+			');
+
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');
@@ -279,6 +290,9 @@ class Inicializandobancodados extends BaseController
 		$db->query('ALTER TABLE `artigos_historicos` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
 
 		$db->query('ALTER TABLE `colaboradores_historicos` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
+
+		$db->query('ALTER TABLE `colaboradores_notificacoes` ADD FOREIGN KEY (`sujeito_colaboradores_id`) REFERENCES `colaboradores` (`id`);');
+		$db->query('ALTER TABLE `colaboradores_notificacoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);');
 
 		$db->query("INSERT INTO `configuracao` (`config`, `config_valor`) VALUES
 		('artigo_regras_escrever', '			<h3>Atenção ao escrever artigos</h3>\r\n			<p>O estilo geral de artigos no Visão Libertária mudou. Note que artigos precisam seguir o tipo de artigo e\r\n				estilo do canal. Precisam ter uma visão libertária em algum ponto. Apenas notícia, não serve.</p>\r\n			<ul>\r\n				<li>Buscar escrever artigos lógicos, com contribuição, citando notícia ou fato, desenvolvimento, com visão\r\n					libertária, e conclusão.</li>\r\n				<li>Use corretores ortográficos para evitar erros de grafia e concordância.</li>\r\n				<li>Evite frases longas. Elas podem funcionar em livros, mas, para ser narrada, precisa ter, no máximo 30\r\n					palavras.</li>\r\n			</ul>\r\n			<p>Além disso, apesar de ter sido feito no passado, nosso estilo atual modou:</p>\r\n			<ul>\r\n				<li>Não incluir mugidos e imitações de caracteres cômicos.</li>\r\n				<li>Não usar apelidos de países. A primeira vez que citar um país no texto usar expressões como \"aquele país\r\n					que estatistas chamam de xxxx\" ou frases similares.</li>\r\n				<li>Evitar termos que possam ter interpretações erradas, como rato, macaco, porco, etc.</li>\r\n				<li>Termos como bovino gadoso, rei do gado, parasita público, mafioso, fraudemia, etc, bem como palavrões\r\n					leves ou pesados, devem ser usados com moderação. Nunca usados nos primeiros 30 segundos do texto, ou\r\n					seja, título, gancho, e nas primeiras 200 palavras.</li>\r\n				<li>Não usar nomes satíricos para políticos ou pessoas do público. Evitar usar nome de pessoas que não são\r\n					políticos ou pessoas muito conhecidas.</li>\r\n			</ul>'),
