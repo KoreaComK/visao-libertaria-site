@@ -381,13 +381,18 @@ class Site extends BaseController
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					}
 
+					$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+					$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id',$colaborador['id'])
+					->where('data_visualizado',null)->countAllResults();
+
 					$estrutura_session = [
 						'colaboradores' => [
 							'id' => $colaborador['id'],
 							'nome' => $colaborador['apelido'],
 							'email' => $colaborador['email'],
 							'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
-							'permissoes' => array()
+							'notificacoes' => $quantidadeNotificacoes,
+							'permissoes' => array(),
 						]
 					];
 

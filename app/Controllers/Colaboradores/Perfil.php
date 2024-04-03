@@ -4,6 +4,9 @@ namespace App\Controllers\Colaboradores;
 
 use App\Controllers\BaseController;
 use App\Libraries\VerificaPermissao;
+use App\Models\ColaboradoresNotificacoesModel;
+
+use CodeIgniter\I18n\Time;
 
 class Perfil extends BaseController
 {
@@ -125,7 +128,54 @@ class Perfil extends BaseController
 
 	public function notificacoes()
 	{
+		$session = $this->session->get('colaboradores');
 		$data = array();
+		$colaboradoresNotificacoesModel = new ColaboradoresNotificacoesModel();
+		$notificacoes = $colaboradoresNotificacoesModel
+		->select('colaboradores.apelido AS apelido, colaboradores.avatar AS avatar, colaboradores_notificacoes.*')
+		->join('colaboradores','colaboradores.id = colaboradores_notificacoes.sujeito_colaboradores_id')
+		->where('colaboradores_notificacoes.colaboradores_id',$session['id'])
+		->orderBy('colaboradores_notificacoes.criado','DESC')->get()->getResultArray();
+
+		$hoje = Time::now();
+
+		foreach($notificacoes as $i => $n) {
+			$criado = Time::parse($n['criado']);
+			$diferenca = $criado->difference($hoje);
+			if($diferenca->minutes < 1) {
+				$notificacoes[$i]['tempo'] = 'agora';
+			} elseif($diferenca->hours < 1) {
+				$s=($diferenca->minutes>1)?('s'):('');
+				$notificacoes[$i]['tempo'] = $diferenca->minutes.' minuto'.$s.' atrás';
+			} elseif($diferenca->days < 1) {
+				$s=($diferenca->hours>1)?('s'):('');
+				$notificacoes[$i]['tempo'] = $diferenca->hours.' hora'.$s.' atrás';
+			} elseif($diferenca->weeks < 1) {
+				$s=($diferenca->days>1)?('s'):('');
+				$notificacoes[$i]['tempo'] = $diferenca->days.' dia'.$s.' atrás';
+			} elseif($diferenca->months < 1) {
+				$s=($diferenca->weeks>1)?('s'):('');
+				$notificacoes[$i]['tempo'] = $diferenca->weeks.' semana'.$s.' atrás';
+			} elseif($diferenca->years < 1) {
+				$s=($diferenca->weeks>1)?('s'):('');
+				$notificacoes[$i]['tempo'] = $diferenca->weeks.' mese'.$s.' atrás';
+			}
+		}
+
+		$agora = $colaboradoresNotificacoesModel->getNow();
+
+		$colaboradoresNotificacoesModel
+    	->where('colaboradores_id',$session['id'])
+		->where('data_visualizado',NULL)
+    	->set(['data_visualizado' => $agora])
+    	->update();
+
+
+		if($notificacoes != NULL && !empty($notificacoes)) {
+			$data['notificacoes'] = $notificacoes;
+		} else {
+			$data['notificacoes'] = false;
+		}
 		return view('colaboradores/notificacoes_list', $data);
 	}
 

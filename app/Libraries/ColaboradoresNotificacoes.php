@@ -37,6 +37,15 @@ class ColaboradoresNotificacoes {
 		if(empty($colaboradores_id) || $colaboradores_id == null) {
 			return null;
 		}
+
+		if($objeto == 'pautas') {
+			$pauta = $this->pautasModel->find($idObjeto);
+			$notificacao.=' {link}'.$pauta['titulo'].'{/link}';
+		} elseif($objeto == 'artigos') {
+			$artigo = $artigo = $this->artigosModel->withDeleted()->find($idObjeto);
+			$notificacao.=' {link}'.$artigo['titulo'].'{/link}';
+		}
+
 		foreach($colaboradores_id as $cid) {
 			$dados = [
 				'id' => $this->colaboradoresNotificacoesModel->getNovaUUID(),

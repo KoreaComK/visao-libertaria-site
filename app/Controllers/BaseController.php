@@ -87,11 +87,15 @@ abstract class BaseController extends Controller
 						'nome' => null,
 						'email' => null,
 						'avatar' => null,
+						'notificacoes' => 0,
 						'permissoes' => array()
 					]
 				];
 			$this->session->set($estrutura_session);
 		}
+		
+		
+
 	}
 
 	/**
@@ -101,6 +105,19 @@ abstract class BaseController extends Controller
 	{
 		// Do Not Edit This Line
 		parent::initController($request, $response, $logger);
+
+		$this->session = \Config\Services::session();
+		$this->session->start();
+		if($this->session->has('colaboradores') && $this->session->get('colaboradores')['id'] !== NULL) {
+			$colaboradores = $this->session->get('colaboradores');
+			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+			$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id',$colaboradores['id'])
+			->where('data_visualizado',null)->countAllResults();
+			if(!isset($colaboradores['notificacoes']) || $colaboradores['notificacoes']!==$quantidadeNotificacoes) {
+				$colaboradores['notificacoes'] = $quantidadeNotificacoes;
+				$this->session->set(array('colaboradores'=>$colaboradores));
+			}
+		}
 
 		// Preload any models, libraries, etc, here.
 
