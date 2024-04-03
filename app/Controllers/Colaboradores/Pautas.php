@@ -10,7 +10,7 @@ use CodeIgniter\I18n\Time;
 
 class Pautas extends BaseController
 {
-	protected $colaboradoresNotificacoesModel;
+	protected $colaboradoresNotificacoes;
 	function __construct()
 	{
 		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
@@ -654,7 +654,7 @@ class Pautas extends BaseController
 		}
 		$pautasModel->db->transComplete();
 
-		if($acao !== false) {
+		if($acao !== false && ($id != null || !is_bool($retorno))) {
 			$sujeito = $this->session->get('colaboradores')['id'];
 			$idObjeto = ($id == null)?($retorno):($id);
 			$this->colaboradoresNotificacoes->cadastraNotificacao($sujeito,$acao,'pautas','a pauta',$idObjeto,true);
