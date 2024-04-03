@@ -75,24 +75,36 @@ class ColaboradoresNotificacoes {
 			}
 		}
 		if($objeto == 'artigos') {
-			$artigo = $this->artigosModel->find($idObjeto);
+			$artigo = $this->artigosModel->withDeleted()->find($idObjeto);
 			if($artigo['sugerido_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['sugerido_colaboradores_id'];
+				if(!in_array($artigo['sugerido_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['sugerido_colaboradores_id'];
+				}
 			}
 			if($artigo['escrito_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['escrito_colaboradores_id'];
+				if(!in_array($artigo['escrito_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['escrito_colaboradores_id'];
+				}
 			}
 			if($artigo['revisado_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['revisado_colaboradores_id'];
+				if(!in_array($artigo['revisado_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['revisado_colaboradores_id'];
+				}
 			}
 			if($artigo['narrado_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['narrado_colaboradores_id'];
+				if(!in_array($artigo['narrado_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['narrado_colaboradores_id'];
+				}
 			}
 			if($artigo['produzido_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['produzido_colaboradores_id'];
+				if(!in_array($artigo['produzido_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['produzido_colaboradores_id'];
+				}
 			}
 			if($artigo['marcado_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
-				$destinatarios[] = $artigo['marcado_colaboradores_id'];
+				if(!in_array($artigo['marcado_colaboradores_id'],$destinatarios)) {
+					$destinatarios[] = $artigo['marcado_colaboradores_id'];
+				}
 			}
 			if($comentario === true) {
 				$this->artigosComentariosModel->where("artigos_id",$idObjeto);
