@@ -26,10 +26,10 @@ use CodeIgniter\I18n\Time;
 										<!-- img -->
 										<div class="mr-3">
 											<img src="<?= ($n['avatar'] != NULL) ? ($n['avatar']) : (site_url('public/assets/avatar-default.png')); ?>"
-												alt="Image" class="avatar-sm rounded-circle" style="height:auto; width:4.5rem;">
+												alt="Image" class="avatar-sm rounded-circle" style="height:auto; width:3.5rem;">
 										</div>
 										<div class="ms-3">
-											<p class="mb-0 font-weight-medium col-12 col-md-12">
+											<p class="mb-0 font-weight-medium">
 												<?= ($n['sujeito_colaboradores_id'] == $_SESSION['colaboradores']['id']) ? ('Você ') : ($n['apelido']); ?>
 												<?= $n['acao']; ?>
 												<?php if ($n['objeto'] == 'pautas'): ?>
