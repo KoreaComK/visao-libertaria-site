@@ -253,13 +253,15 @@ class Perfil extends BaseController
 		$limites['limite_pautas_diario'] = (int)$configuracaoModel->find('limite_pautas_diario')['config_valor'];
 		$limites['limite_pautas_semanal'] = (int)$configuracaoModel->find('limite_pautas_semanal')['config_valor'];
 
+
+		
 		$time = new Time('-7 days');
 		$time = $time->toDateString();
-		$limites['limite_pautas_semanal_usadas'] = count($pautasModel->getPautasPorUsuario($time,$colaborador['id']));
+		$limites['limite_pautas_semanal_usadas'] = $pautasModel->getPautasPorUsuario($time,$colaborador['id'])[0]['contador'];
 
 		$time = Time::today();
 		$time = $time->toDateString();
-		$limites['limite_pautas_diario_usadas'] = count($pautasModel->getPautasPorUsuario($time,$colaborador['id']));
+		$limites['limite_pautas_diario_usadas'] = $pautasModel->getPautasPorUsuario($time,$colaborador['id'])[0]['contador'];
 		
 		return $limites;
 	}

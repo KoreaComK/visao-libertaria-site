@@ -112,7 +112,7 @@ use CodeIgniter\I18n\Time;
 												</div>
 												<div class="mt-3">
 													<span class="text1">
-													<?=($limites['limite_pautas_diario_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_diario_usadas'];?> envio <span class="text2">de <?=($limites['limite_pautas_diario']<10)?('0'):('');?><?=$limites['limite_pautas_diario'];?> pautas.</span></span> </div>
+													<?=($limites['limite_pautas_diario_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_diario_usadas'];?> envio<?=($limites['limite_pautas_semanal_usadas']>1)?('s'):('');?> <span class="text2">de <?=($limites['limite_pautas_diario']<10)?('0'):('');?><?=$limites['limite_pautas_diario'];?> pautas.</span></span> </div>
 											</div>
 										</div>
 									</div>
@@ -127,7 +127,7 @@ use CodeIgniter\I18n\Time;
 												</div>
 												<div class="mt-3">
 													<span class="text1">
-													<?=($limites['limite_pautas_semanal_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_semanal_usadas'];?> envio <span class="text2">de <?=($limites['limite_pautas_semanal']<10)?('0'):('');?><?=$limites['limite_pautas_semanal'];?> pautas.</span></span> </div>
+													<?=($limites['limite_pautas_semanal_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_semanal_usadas'];?> envio<?=($limites['limite_pautas_semanal_usadas']>1)?('s'):('');?> <span class="text2">de <?=($limites['limite_pautas_semanal']<10)?('0'):('');?><?=$limites['limite_pautas_semanal'];?> pautas.</span></span> </div>
 											</div>
 										</div>
 									</div>
