@@ -123,6 +123,8 @@ class Perfil extends BaseController
 
 		$data['lista_pautas'] = $this->widgetPautas($session);
 
+		$data['limites'] = $this->widgetLimites($session);
+
 		return view('colaboradores/perfil', $data);
 	}
 
@@ -241,6 +243,25 @@ class Perfil extends BaseController
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id']);
 		return $colaboradoresAtribuicoes;
+	}
+
+	private function widgetLimites($colaborador)
+	{
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$pautasModel = new \App\Models\PautasModel();
+		$limites = array();
+		$limites['limite_pautas_diario'] = (int)$configuracaoModel->find('limite_pautas_diario')['config_valor'];
+		$limites['limite_pautas_semanal'] = (int)$configuracaoModel->find('limite_pautas_semanal')['config_valor'];
+
+		$time = new Time('-7 days');
+		$time = $time->toDateString();
+		$limites['limite_pautas_semanal_usadas'] = count($pautasModel->getPautasPorUsuario($time,$colaborador['id']));
+
+		$time = Time::today();
+		$time = $time->toDateString();
+		$limites['limite_pautas_diario_usadas'] = count($pautasModel->getPautasPorUsuario($time,$colaborador['id']));
+		
+		return $limites;
 	}
 
 	private function widgetArtigosContribuicoes($colaborador, $data, $fases)

@@ -99,16 +99,39 @@ use CodeIgniter\I18n\Time;
 					<div class="col-sm-12 mb-3">
 						<div class="card">
 							<div class="card-body">
-								<h5 class="d-flex align-items-center mb-3">Informações úteis:</h5>
-								<p>Leia nossas diretrizes para aceitar artigos no Visão Libertária, <a href="#">clicando
-										aqui</a>.</p>
-								<p>Veja as diretrizes e cuidados para ser um revisor, <a href="#">clicando
-										aqui</a>.</p>
-								<p>Saiba as configurações e definições para enviar seu arquivo de áudio, <a
-										href="#">clicando
-										aqui</a>.</p>
-								<p>Encontre todos os parâmetros e insumos para produzir os vídeos do canal, <a
-										href="#">clicando aqui</a>.</p>
+								<h4 class="d-flex align-items-center mb-3">Informações úteis:</h5>
+								<div class="row">
+									<div class="col-md-6 col-lg-6 col-12">
+										<div class="card p-3 mb-3">
+											<div class="d-flex justify-content-between">
+												<h5> <span>Limite Diário de Pautas</span> </h5>
+											</div>
+											<div class="mt-2">
+												<div class="progress">
+													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_diario_usadas']/$limites['limite_pautas_diario'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+												</div>
+												<div class="mt-3">
+													<span class="text1">
+													<?=($limites['limite_pautas_diario_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_diario_usadas'];?> envio <span class="text2">de <?=($limites['limite_pautas_diario']<10)?('0'):('');?><?=$limites['limite_pautas_diario'];?> pautas.</span></span> </div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6 col-lg-6 col-12">
+										<div class="card p-3 mb-3">
+											<div class="d-flex justify-content-between">
+												<h5> <span>Limite Semanal de Pautas</span> </h5>
+											</div>
+											<div class="mt-2">
+												<div class="progress">
+													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_semanal_usadas']/$limites['limite_pautas_semanal'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+												</div>
+												<div class="mt-3">
+													<span class="text1">
+													<?=($limites['limite_pautas_semanal_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_semanal_usadas'];?> envio <span class="text2">de <?=($limites['limite_pautas_semanal']<10)?('0'):('');?><?=$limites['limite_pautas_semanal'];?> pautas.</span></span> </div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
