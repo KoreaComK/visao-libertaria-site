@@ -261,9 +261,9 @@ class Perfil extends BaseController
 
 		$lista_pautas = $pautasModel->select('criado')->where('colaboradores_id',$colaborador['id'])->where("criado >= '".$time."'")
 		->orderBy('criado',"ASC")->get()->getResultArray();
-		if($lista_pautas !== null || !empty($lista_pautas)) {
+		if($lista_pautas !== null && !empty($lista_pautas)) {
 			$time = Time::parse($lista_pautas[0]['criado']);
-			$time = $time->addDays(7);
+			$time = $time->addDays(8);
 		} else {
 			$time = Time::today();
 		}
