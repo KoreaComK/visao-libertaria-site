@@ -28,7 +28,7 @@ class ColaboradoresNotificacoes {
 		$this->colaboradoresNotificacoesModel = new ColaboradoresNotificacoesModel();
 	}
 
-	public function cadastraNotificacao($sujeito, $acao, $objeto, $notificacao, $idObjeto, $comentario = false)
+	public function cadastraNotificacao($sujeito, $acao, $objeto, $notificacao, $idObjeto, $comentario = false, $notificacaoAcaoPropria = false)
 	{
 		$colaboradores_id = $this->buscaDestinatariosNotificacoes($objeto, $idObjeto, $comentario);
 		if($colaboradores_id === false) {
@@ -47,17 +47,19 @@ class ColaboradoresNotificacoes {
 		}
 
 		foreach($colaboradores_id as $cid) {
-			$dados = [
-				'id' => $this->colaboradoresNotificacoesModel->getNovaUUID(),
-				'sujeito_colaboradores_id' => $sujeito,
-				'acao' => $acao,
-				'objeto' => $objeto,
-				'notificacao' => $notificacao,
-				'id_objeto' => $idObjeto,
-				'colaboradores_id' => $cid,
-				'criado' => $this->colaboradoresNotificacoesModel->getNow()
-			];
-			$this->colaboradoresNotificacoesModel->insert($dados);
+			if($cid != $sujeito || $notificacaoAcaoPropria === true) {
+				$dados = [
+					'id' => $this->colaboradoresNotificacoesModel->getNovaUUID(),
+					'sujeito_colaboradores_id' => $sujeito,
+					'acao' => $acao,
+					'objeto' => $objeto,
+					'notificacao' => $notificacao,
+					'id_objeto' => $idObjeto,
+					'colaboradores_id' => $cid,
+					'criado' => $this->colaboradoresNotificacoesModel->getNow()
+				];
+				$this->colaboradoresNotificacoesModel->insert($dados);
+			}
 		}
 		return true;
 	}
