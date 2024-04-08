@@ -107,6 +107,11 @@ use CodeIgniter\I18n\Time;
 												<h5> <span>Limite Diário de Pautas</span> </h5>
 											</div>
 											<div class="mt-2">
+												<?php if($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
+													<div class="mt-1 mb-1">	
+														Limites serão renovados em <?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+													</div>
+												<?php endif; ?>
 												<div class="progress">
 													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_diario_usadas']/$limites['limite_pautas_diario'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
 												</div>
@@ -122,6 +127,11 @@ use CodeIgniter\I18n\Time;
 												<h5> <span>Limite Semanal de Pautas</span> </h5>
 											</div>
 											<div class="mt-2">
+												<?php if($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
+													<div class="mt-1 mb-1">	
+														Limites serão renovados em <?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+													</div>
+												<?php endif; ?>
 												<div class="progress">
 													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_semanal_usadas']/$limites['limite_pautas_semanal'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
 												</div>
