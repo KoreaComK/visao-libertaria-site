@@ -89,7 +89,7 @@ class Pautas extends BaseController
 
 			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'], $idPautas);
 
-			if ($countPautas == 0) {
+			if ($isAdmin || $countPautas == 0) {
 				return $this->getInformacaoLink($post);
 			} else {
 				return $retorno->retorno(false, 'Pauta já cadastrada', true);
@@ -109,7 +109,7 @@ class Pautas extends BaseController
 			$time = Time::today();
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-			if ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_diario']) {
+			if (!$isAdmin && ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_diario'])) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
@@ -117,7 +117,7 @@ class Pautas extends BaseController
 			$time = new Time('-7 days');
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
-			if($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
+			if(!$isAdmin && ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_semanal'])) {
 				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
@@ -126,39 +126,37 @@ class Pautas extends BaseController
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
-				// if (is_array(@getimagesize($post['imagem']))) {
-					if(!$isAdmin && $gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
-						$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
-						return view('colaboradores/pautas_form', $data);
-					}
-					$dados = array();
-					$dados['colaboradores_id'] = $session['id'];
-					$dados['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
-					$dados['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
-					$dados['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
-					$dados['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
-					if($isAdmin && isset($post['redatores']) && $post['redatores']!=="") {
-						$dados['redator_colaboradores_id'] = $post['redatores'];
-					}
-					if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
-						$dados['pauta_antiga'] = $post['pauta_antiga'];
-					}
-					if ($idPautas != null) {
-						$pautas = $this->gravarPautas('update', $dados, $idPautas);
-					} else {
-						$dados['id'] = $pautasModel->getNovaUUID();
-						$pautas = $this->gravarPautas('insert', $dados);
-					}
-	
-					if ($pautas) {
-						return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
-					} else {
-						$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
-					}
-				// } else {
-				// 	$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-				// 	$data['post'] = $post;
-				// }
+				if (!is_array(@getimagesize($post['imagem']))) {
+					$post['imagem'] = base_url('public/assets/imagem-default.png');
+				}
+				if(!$isAdmin && ($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo'])) {
+					$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
+					return view('colaboradores/pautas_form', $data);
+				}
+				$dados = array();
+				$dados['colaboradores_id'] = $session['id'];
+				$dados['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
+				$dados['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
+				$dados['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
+				$dados['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
+				if($isAdmin && isset($post['redatores']) && $post['redatores']!=="") {
+					$dados['redator_colaboradores_id'] = $post['redatores'];
+				}
+				if(isset($post['pauta_antiga']) && $post['pauta_antiga']=='S') {
+					$dados['pauta_antiga'] = $post['pauta_antiga'];
+				}
+				if ($idPautas != null) {
+					$pautas = $this->gravarPautas('update', $dados, $idPautas);
+				} else {
+					$dados['id'] = $pautasModel->getNovaUUID();
+					$pautas = $this->gravarPautas('insert', $dados);
+				}
+
+				if ($pautas) {
+					return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
+				} else {
+					$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
+				}
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';

@@ -37,7 +37,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 			<?php endif; ?>
 
-			<?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
+			<?php if(in_array('7',$_SESSION['colaboradores']['permissoes']) && !isset($readOnly)): ?>
 			<div class="mb-3 form-check">
 				<input class="form-check-input" type="checkbox" value="" id="enviarRedator" <?=(isset($post) && isset($post['redator_colaboradores_id']) && $post['redator_colaboradores_id']!==NULL)?('checked="true"'):(''); ?>>
 				<label class="form-check-label" for="enviarRedator">
@@ -214,7 +214,9 @@ use CodeIgniter\I18n\Time;
 				$('.mensagem').removeClass('bg-danger');
 				if (retorno.status) {
 					$('#titulo').val(retorno.titulo);
-					$('#texto').val(retorno.texto);
+					<?php if(!in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
+						$('#texto').val(retorno.texto);
+					<?php endif; ?>
 					$('#imagem').val(retorno.imagem);
 					$('#preview_imagem').attr('src', retorno.imagem);
 					$('.preview_imagem_div').show();
@@ -231,7 +233,8 @@ use CodeIgniter\I18n\Time;
 					$('.mensagem').removeClass('bg-success');
 					$('.mensagem').addClass('bg-danger');
 					$(".enviar_pauta").prop('disabled', true);
-					$('#preview_imagem').attr('src', '');
+					$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
+					$('#preview_imagem').attr('src','<?= base_url('public/assets/imagem-default.png'); ?>');
 					$('.mensagem').addClass(retorno.classe);
 					$('.mensagem').html(retorno.mensagem);
 					$('.mensagem').show();
@@ -263,7 +266,8 @@ use CodeIgniter\I18n\Time;
 					$('.mensagem').removeClass('bg-success');
 					$('.mensagem').addClass('bg-danger');
 					$(".enviar_pauta").prop('disabled', true);
-					$('#preview_imagem').attr('src', '');
+					$('#preview_imagem').attr('src','<?= base_url('public/assets/imagem-default.png'); ?>');
+					$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
 					$('.mensagem').addClass(retorno.classe);
 					$('.mensagem').html(retorno.mensagem);
 					$('.mensagem').show();
