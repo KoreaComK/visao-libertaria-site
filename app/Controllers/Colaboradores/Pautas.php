@@ -5,10 +5,17 @@ namespace App\Controllers\Colaboradores;
 use App\Controllers\BaseController;
 
 use App\Libraries\VerificaPermissao;
+use App\Libraries\ColaboradoresNotificacoes;
 use CodeIgniter\I18n\Time;
 
 class Pautas extends BaseController
 {
+	protected $colaboradoresNotificacoesModel;
+	function __construct()
+	{
+		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
+	}
+
 	public function index(): string
 	{
 		$data = array();
@@ -102,7 +109,7 @@ class Pautas extends BaseController
 			$time = Time::today();
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-			if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
+			if ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_diario']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
@@ -110,7 +117,7 @@ class Pautas extends BaseController
 			$time = new Time('-7 days');
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
-			if($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
+			if($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
 				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);
 				return view('colaboradores/pautas_form', $data);
 			}
@@ -119,7 +126,7 @@ class Pautas extends BaseController
 			$validaFormularios = new \App\Libraries\ValidaFormularios();
 			$valida = $validaFormularios->validaFormularioPauta($post);
 			if (empty($valida->getErrors())) {
-				if (is_array(@getimagesize($post['imagem']))) {
+				// if (is_array(@getimagesize($post['imagem']))) {
 					if(!$isAdmin && $gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo']) {
 						$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
 						return view('colaboradores/pautas_form', $data);
@@ -148,10 +155,10 @@ class Pautas extends BaseController
 					} else {
 						$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
 					}
-				} else {
-					$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-					$data['post'] = $post;
-				}
+				// } else {
+				// 	$data['erros'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
+				// 	$data['post'] = $post;
+				// }
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';
@@ -173,7 +180,7 @@ class Pautas extends BaseController
 
 		if ($idPautas != null) {
 			$data['post'] = $pautasModel->find($idPautas);
-			if ($data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
+			if ($data['post'] == NULL || $data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
 				return redirect()->to(base_url() . 'colaboradores/pautas');
 			}
 		}
@@ -197,8 +204,15 @@ class Pautas extends BaseController
 
 	public function detalhe($idPautas = null)
 	{
+		$session = \Config\Services::session();
+		$session->start();
+		if (!$session->has('colaboradores') || $session->get('colaboradores')['id'] === NULL) {
+			header("location: " . site_url('site/pauta/'.$idPautas));
+			die();
+		}
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
+		
 		$data = array();
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
@@ -393,7 +407,7 @@ class Pautas extends BaseController
 		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
 		if ($this->request->getMethod() == 'post') {
 			$retorno = new \App\Libraries\RetornoPadrao();
-			$post = $post = $this->request->getPost();
+			$post = $this->request->getPost();
 			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
 				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
@@ -402,6 +416,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->db->transStart();
 					$pautasComentariosModel->delete($comentario['id']);
 					$pautasComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'excluiu','pautas','o comentário na pauta',$idPauta,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -416,6 +431,7 @@ class Pautas extends BaseController
 				$pautasComentariosModel->db->transStart();
 				$save = $pautasComentariosModel->insert($comentario);
 				$pautasComentariosModel->db->transComplete();
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'comentou','pautas','na pauta',$idPauta,true);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
@@ -426,6 +442,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->db->transStart();
 					$pautasComentariosModel->save($comentario);
 					$pautasComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','pautas','o comentário na pauta',$idPauta,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -613,16 +630,20 @@ class Pautas extends BaseController
 	{
 		$pautasModel = new \App\Models\PautasModel();
 		$retorno = null;
+		$acao = false;
 		$pautasModel->db->transStart();
 		switch ($tipo) {
 			case 'update':
 				$retorno = $pautasModel->update($id, $dados);
+				$acao = 'alterou';
 				break;
 			case 'insert':
 				$retorno = $pautasModel->insert($dados);
+				$acao = 'cadastrou';
 				break;
 			case 'save':
 				$retorno = $pautasModel->save($dados);
+				$acao = 'alterou';
 				break;
 			case 'delete':
 				$retorno = $pautasModel->delete($id);
@@ -632,6 +653,13 @@ class Pautas extends BaseController
 				break;
 		}
 		$pautasModel->db->transComplete();
+
+		if($acao !== false) {
+			$sujeito = $this->session->get('colaboradores')['id'];
+			$idObjeto = ($id == null)?($retorno):($id);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($sujeito,$acao,'pautas','a pauta',$idObjeto,true);
+		}
+		
 		return $retorno;
 	}
 

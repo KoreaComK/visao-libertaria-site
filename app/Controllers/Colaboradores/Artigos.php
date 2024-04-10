@@ -7,6 +7,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\I18n\Time;
 
 use App\Libraries\VerificaPermissao;
+use App\Libraries\ColaboradoresNotificacoes;
 use App\Libraries\ArtigosHistoricos;
 use App\Libraries\ArtigosMarcacao;
 
@@ -16,11 +17,13 @@ class Artigos extends BaseController
 	public $artigosHistoricos;
 	public $artigosMarcacao;
 	public $iniciaVariavel;
+	protected $colaboradoresNotificacoes;
 	function __construct()
 	{
 		$this->verificaPermissao = new verificaPermissao();
 		$this->artigosHistoricos = new ArtigosHistoricos;
 		$this->artigosMarcacao = new ArtigosMarcacao;
+		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
 		helper('url_friendly');
 		$this->iniciaVariavel = [
 			'titulo' => null,
@@ -454,6 +457,7 @@ class Artigos extends BaseController
 
 							//$retorno = $artigosModel->save($artigo);
 							$retorno = $this->gravarArtigos('save', $artigo);
+							$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'narrou','artigos','o artigo',$artigoId);
 							$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
 							$this->artigosMarcacao->desmarcarArtigo($artigoId);
 							if ($retorno === true) {
@@ -535,6 +539,7 @@ class Artigos extends BaseController
 
 					//$retorno = $artigosModel->save($artigo);
 					$retorno = $this->gravarArtigos('save', $artigo);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'produziu','artigos','o artigo',$artigoId,true);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'produziu', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -619,6 +624,7 @@ class Artigos extends BaseController
 
 					//$retorno = $artigosModel->save($artigo);
 					$retorno = $this->gravarArtigos('save', $artigo);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'publicou','artigos','o artigo',$artigoId,true);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'publicou', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -727,6 +733,7 @@ class Artigos extends BaseController
 					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->delete($comentario['id']);
 					$artigosComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'excluiu','artigos','o comentário do artigo',$idArtigo,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -741,6 +748,7 @@ class Artigos extends BaseController
 				$artigosComentariosModel->db->transStart();
 				$save = $artigosComentariosModel->insert($comentario);
 				$artigosComentariosModel->db->transComplete();
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'comentou','artigos','no artigo',$idArtigo,true);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
@@ -751,6 +759,7 @@ class Artigos extends BaseController
 					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->save($comentario);
 					$artigosComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','artigos','o comentário do artigo',$idArtigo,true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -794,6 +803,7 @@ class Artigos extends BaseController
 			$dado = $this->artigosMarcacao->marcarArtigo($artigo['id'],$idColaborador);
 			if($dado){
 				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'marcou', $idColaborador);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador,'marcou','artigos','o artigo',$idArtigo);
 				return $retorno->retorno(true, 'Artigo marcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'O artigo já está marcado por outro colaborador.', true);
@@ -822,6 +832,7 @@ class Artigos extends BaseController
 			$dado = $this->artigosMarcacao->desmarcarArtigo($artigo['id']);
 			if($dado){
 				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $idColaborador);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador,'desmarcou','artigos','o artigo',$artigo['id']);
 				return $retorno->retorno(true, 'Artigo desmarcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'Ocorreu um erro ao desmarcar o artigo.', true);
@@ -910,6 +921,7 @@ class Artigos extends BaseController
 		}
 		//$retorno = $artigosModel->save($artigo);
 		$retorno = $this->gravarArtigos('save', $artigo);
+		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'reverteu','artigos','o artigo',$idArtigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
 		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
 		return $retorno;
@@ -933,6 +945,7 @@ class Artigos extends BaseController
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'revisou','artigos','o artigo',$idArtigo);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'revisou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -972,6 +985,7 @@ class Artigos extends BaseController
 			}
 			//$artigo_id = $artigosModel->insert($gravar);
 			$artigo_id = $this->gravarArtigos('insert', $gravar);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($session['id'],'escreveu','artigos','o artigo',$artigo_id);
 			$this->artigosHistoricos->cadastraHistorico($artigo_id, 'escreveu', $this->session->get('colaboradores')['id']);
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// foreach ($post['categorias'] as $categoria) {
@@ -1003,6 +1017,7 @@ class Artigos extends BaseController
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','artigos','o artigo',$idArtigo,true);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'alterou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -1019,6 +1034,7 @@ class Artigos extends BaseController
 		if ($this->request->getGet('descartar') != NULL) {
 			$retorno = $this->artigoDescartar($idArtigo);
 			if ($retorno === true) {
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'descartou','artigos','o artigo',$idArtigo);
 				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '?status=true');
 			} else {
 				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '/' . $idArtigo . '?status=false');

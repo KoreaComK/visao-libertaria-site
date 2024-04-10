@@ -127,9 +127,45 @@ class Site extends BaseController
 
 			//$data['artigo']['categorias'] = $artigosCategoriasModel->getCategoriasArtigo($data['artigo']['id']);
 			$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
+			
+			$data['meta'] = array();
+			$data['meta']['title'] = $data['artigo']['titulo'];
+			$data['meta']['image'] = $data['artigo']['imagem'];
+			$data['meta']['description'] = addslashes(substr($data['artigo']['texto_revisado'],0,250)).'...';
+			
 			return view('artigo', $data);
 		} else {
 			return redirect()->to(base_url() . 'site/artigos');
+		}
+	}
+
+	/*DETALHE DA PAUTA*/
+	public function pauta($idPauta = null)
+	{
+		if ($idPauta === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$data = array();
+
+		$pautasModel = new \App\Models\PautasModel();
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+
+		$pauta = $pautasModel->find($idPauta);
+
+		if ($pauta !== null) {
+			$data['pauta'] = $pauta;
+
+			$data['pauta']['colaborador'] = $colaboradoresModel->find($pauta['colaboradores_id']);
+
+			$data['meta'] = array();
+			$data['meta']['title'] = $data['pauta']['titulo'];
+			$data['meta']['image'] = $data['pauta']['imagem'];
+			$data['meta']['description'] = addslashes($data['pauta']['texto']);
+
+			return view('pauta', $data);
+		} else {
+			return redirect()->to(base_url() . 'site');
 		}
 	}
 
@@ -345,13 +381,18 @@ class Site extends BaseController
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					}
 
+					$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+					$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id',$colaborador['id'])
+					->where('data_visualizado',null)->countAllResults();
+
 					$estrutura_session = [
 						'colaboradores' => [
 							'id' => $colaborador['id'],
 							'nome' => $colaborador['apelido'],
 							'email' => $colaborador['email'],
 							'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
-							'permissoes' => array()
+							'notificacoes' => $quantidadeNotificacoes,
+							'permissoes' => array(),
 						]
 					];
 
@@ -362,6 +403,9 @@ class Site extends BaseController
 					$estrutura_session['colaboradores']['permissoes'] = $permissoes;
 
 					$this->session->set($estrutura_session);
+
+					$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
+					$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
 
 					if (isset($post['lembrar'])) {
 						set_cookie('hash', $this->secured_encrypt(md5($post['email'].hash('sha256', $post['senha']))), 60 * 60 * 24 * 7);
@@ -516,6 +560,9 @@ class Site extends BaseController
 				$permissoes[] = $atribuicao['atribuicoes_id'];
 			}
 			$estrutura_session['colaboradores']['permissoes'] = $permissoes;
+
+			$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
+			$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
 
 			$this->session->set($estrutura_session);
 			return true;

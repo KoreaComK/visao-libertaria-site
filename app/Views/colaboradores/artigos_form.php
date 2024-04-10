@@ -55,8 +55,7 @@ use CodeIgniter\I18n\Time;
 			</div>
 
 			<div class="mb-3">
-				<label for="gancho">Gancho <span class="text-muted">Texto curto antes da vinheta. Máx. 100
-						palavras</span></label>
+				<label for="gancho">Gancho <span class="text-muted">Texto curto antes da vinheta. Máx. 255 caracteres.</span></label>
 				<input type="text" class="form-control" id="gancho" name="gancho" value="<?= str_replace('"',"'",$artigo['gancho']); ?>" placeholder="Gancho do artigo">
 			</div>
 

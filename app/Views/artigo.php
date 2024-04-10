@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main'); ?>
+<?= $this->extend('layouts/main',['meta'=>$meta]); ?>
 
 <?= $this->section('content'); ?>
 
