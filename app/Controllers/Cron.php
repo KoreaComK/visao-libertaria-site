@@ -156,6 +156,26 @@ class Cron extends BaseController
 				$colaboradoresNotificacoesModel->delete($notificacao['id'],true);
 			}
 		}
+
+		/*PARTE RELACIONADA A DESCARTE DOS ARTIGOS ABANDONADOS*/
+		$cronDescarteArtigosStatus = $configuracaoModel->find('cron_artigos_descartar_status')['config_valor'];
+		if($cronDescarteArtigosStatus == '1') {
+
+			$cronDataDescarteArtigos = $configuracaoModel->find('cron_artigos_descartar_data')['config_valor'];
+			
+			$time = new Time('-'.$cronDataDescarteArtigos);
+			unset($artigosModel);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("criado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("descartado",NULL);
+			$artigosModel->whereIn("fase_producao_id",array('1','2','3','4'));
+			$artigos = $artigosModel->get()->getResultArray();
+
+			foreach($artigos as $artigo) {
+				$artigosModel->update($artigo['id'],array('descartado_colaboradores_id'=>1));
+				$artigosModel->delete($artigo['id']);
+			}
+		}
 				
 		return 'Cron Finalizado';
 	}

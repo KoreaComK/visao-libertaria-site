@@ -87,6 +87,9 @@ class Admin extends BaseController
 				} elseif ($indice == 'cron_email_carteira_data_number' || $indice == 'cron_email_carteira_data_time') {
 					$indice = 'cron_email_carteira_data';
 					$gravar[$indice] = $post['cron_email_carteira_data_number'] . ' ' . $post['cron_email_carteira_data_time'];
+				} elseif ($indice == 'cron_artigos_descartar_data_number' || $indice == 'cron_artigos_descartar_data_time') {
+					$indice = 'cron_artigos_descartar_data';
+					$gravar[$indice] = $post['cron_artigos_descartar_data_number'] . ' ' . $post['cron_artigos_descartar_data_time'];
 				} else {
 					$gravar[$indice] = $dado;
 				}
