@@ -78,6 +78,15 @@ class Admin extends BaseController
 				} elseif ($indice == 'cron_artigos_desmarcar_data_producao_number' || $indice == 'cron_artigos_desmarcar_data_producao_time') {
 					$indice = 'cron_artigos_desmarcar_data_producao';
 					$gravar[$indice] = $post['cron_artigos_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_desmarcar_data_producao_time'];
+				} elseif ($indice == 'cron_notificacoes_data_visualizado_number' || $indice == 'cron_notificacoes_data_visualizado_time') {
+					$indice = 'cron_notificacoes_data_visualizado';
+					$gravar[$indice] = $post['cron_notificacoes_data_visualizado_number'] . ' ' . $post['cron_notificacoes_data_visualizado_time'];
+				} elseif ($indice == 'cron_notificacoes_data_cadastrado_number' || $indice == 'cron_notificacoes_data_cadastrado_time') {
+					$indice = 'cron_notificacoes_data_cadastrado';
+					$gravar[$indice] = $post['cron_notificacoes_data_cadastrado_number'] . ' ' . $post['cron_notificacoes_data_cadastrado_time'];
+				} elseif ($indice == 'cron_email_carteira_data_number' || $indice == 'cron_email_carteira_data_time') {
+					$indice = 'cron_email_carteira_data';
+					$gravar[$indice] = $post['cron_email_carteira_data_number'] . ' ' . $post['cron_email_carteira_data_time'];
 				} else {
 					$gravar[$indice] = $dado;
 				}

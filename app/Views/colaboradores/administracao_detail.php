@@ -160,6 +160,86 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
+							<div class="mb-3">
+								<h4>Notificações</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="titulo">Habilitar Exclusão das Notificações</label>
+								<select class="custom-select" id="cron_notificacoes_status_delete"
+									name="cron_notificacoes_status_delete">
+									<option value="1" <?= (isset($dados['cron_notificacoes_status_delete']) && $dados['cron_notificacoes_status_delete'] == '1') ? ('selected') : (''); ?>>Ativar
+									</option>
+									<option value="0" <?= (isset($dados['cron_notificacoes_status_delete']) && $dados['cron_notificacoes_status_delete'] == '0') ? ('selected') : (''); ?>>Inativar
+									</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="titulo">Data Limite Exclusão de Notificação Lida</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_notificacoes_data_visualizado_number"
+											placeholder="Data para exclusão" name="cron_notificacoes_data_visualizado_number"
+											required min="1"
+											value="<?= (isset($dados['cron_notificacoes_data_visualizado'])) ? (explode(' ', $dados['cron_notificacoes_data_visualizado'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4 mb-4">
+										<select class="custom-select" id="cron_notificacoes_data_visualizado_time"
+											name="cron_notificacoes_data_visualizado_time">
+											<option selected value="days" <?= (isset($dados['cron_notificacoes_data_visualizado']) && explode(' ', $dados['cron_notificacoes_data_visualizado'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+											<option value="weeks" <?= (isset($dados['cron_notificacoes_data_visualizado']) && explode(' ', $dados['cron_notificacoes_data_visualizado'])[1] == 'weeks') ? ('selected') : (''); ?>>semana(s)</option>
+											<option value="months" <?= (isset($dados['cron_notificacoes_data_visualizado']) && explode(' ', $dados['cron_notificacoes_data_visualizado'])[1] == 'months') ? ('selected') : (''); ?>>mes(es)</option>
+											<option value="years" <?= (isset($dados['cron_notificacoes_data_visualizado']) && explode(' ', $dados['cron_notificacoes_data_visualizado'])[1] == 'years') ? ('selected') : (''); ?>>ano(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="titulo">Data Limite Exclusão de Notificação Não Lida</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_notificacoes_data_cadastrado_number"
+											placeholder="Data para exclusão" name="cron_notificacoes_data_cadastrado_number"
+											required min="1"
+											value="<?= (isset($dados['cron_notificacoes_data_cadastrado'])) ? (explode(' ', $dados['cron_notificacoes_data_cadastrado'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4 mb-4">
+										<select class="custom-select" id="cron_notificacoes_data_cadastrado_time"
+											name="cron_notificacoes_data_cadastrado_time">
+											<option selected value="days" <?= (isset($dados['cron_notificacoes_data_cadastrado']) && explode(' ', $dados['cron_notificacoes_data_cadastrado'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+											<option value="weeks" <?= (isset($dados['cron_notificacoes_data_cadastrado']) && explode(' ', $dados['cron_notificacoes_data_cadastrado'])[1] == 'weeks') ? ('selected') : (''); ?>>semana(s)</option>
+											<option value="months" <?= (isset($dados['cron_notificacoes_data_cadastrado']) && explode(' ', $dados['cron_notificacoes_data_cadastrado'])[1] == 'months') ? ('selected') : (''); ?>>mes(es)</option>
+											<option value="years" <?= (isset($dados['cron_notificacoes_data_cadastrado']) && explode(' ', $dados['cron_notificacoes_data_cadastrado'])[1] == 'years') ? ('selected') : (''); ?>>ano(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<h4>Notificações Falta de Carteira para Colaboradores</h4>
+							</div>
+
+							<div class="mb-3">
+								<label for="titulo">Enviar e-mail quantos dias antes do último dia do mês</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_email_carteira_data_number"
+											placeholder="Data para exclusão" name="cron_email_carteira_data_number"
+											required min="1"
+											value="<?= (isset($dados['cron_email_carteira_data'])) ? (explode(' ', $dados['cron_email_carteira_data'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4 mb-4">
+										<select class="custom-select" id="cron_email_carteira_data_time"
+											name="cron_email_carteira_data_time">
+											<option selected value="days" <?= (isset($dados['cron_email_carteira_data']) && explode(' ', $dados['cron_email_carteira_data'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+											<option value="weeks" <?= (isset($dados['cron_email_carteira_data']) && explode(' ', $dados['cron_email_carteira_data'])[1] == 'weeks') ? ('selected') : (''); ?>>semana(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
 							<button class="btn btn-primary btn-block mb-3 salvar-config-cron" type="button">Salvar
 								alterações
 								do

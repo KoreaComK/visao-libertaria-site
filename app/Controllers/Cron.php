@@ -96,8 +96,9 @@ class Cron extends BaseController
 			unset($artigosModel);
 		}
 
-		/**/
-		$time = new Time('+3 days');
+		/*PARTE RELACIONADA A MANDAR E-MAIL PARA PESSOAS QUE CONTRIBUIRAM E NÃO POSSUEM ENDEREÇOS DE BITCOIN CADASTRADOS*/
+		$cronDiasEmailCarteira = $configuracaoModel->find('cron_email_carteira_data')['config_valor'];
+		$time = new Time('+'.$cronDiasEmailCarteira);
 		$cron_email_carteira = $configuracaoModel->find('cron_email_carteira')['config_valor'];
 		$cron_email_carteira = Time::createFromFormat('Y-m-d', $cron_email_carteira);
 		if($time->getMonth() != $time->today()->getMonth() && $cron_email_carteira->getMonth() != $time->getMonth()) {
@@ -129,6 +130,31 @@ class Cron extends BaseController
 			}
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$configuracaoModel->update('cron_email_carteira', array('config_valor' => $time->toDateString()));
+		}
+
+		/*PARTE RELACIONADA A LIMPEZA DAS NOTIFICAÇÕES*/
+		$cronNotificacoes = $configuracaoModel->find('cron_notificacoes_status_delete')['config_valor'];
+		if($cronNotificacoes == '1') {
+
+			/*EXCLUSÃO DAS PAUTAS VISUALIZADAS*/
+			$cronDataNotificacoesVisualizadas = $configuracaoModel->find('cron_notificacoes_data_visualizado')['config_valor'];
+			$time = new Time('-'.$cronDataNotificacoesVisualizadas);
+			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+			$colaboradoresNotificacoesModel->where("data_visualizado <= '".$time->toDateTimeString()."'");;
+			$notificacoes = $colaboradoresNotificacoesModel->get()->getResultArray();
+			foreach($notificacoes as $notificacao) {
+				$colaboradoresNotificacoesModel->delete($notificacao['id'],true);
+			}
+
+			/*EXCLUSÃO DAS PAUTAS NÃO VISUALIZADAS*/
+			$cronDataNotificacoesNaoVisualizadas = $configuracaoModel->find('cron_notificacoes_data_cadastrado')['config_valor'];
+			$time = new Time('-'.$cronDataNotificacoesNaoVisualizadas);
+			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+			$colaboradoresNotificacoesModel->where("criado <= '".$time->toDateTimeString()."'");;
+			$notificacoes = $colaboradoresNotificacoesModel->get()->getResultArray();
+			foreach($notificacoes as $notificacao) {
+				$colaboradoresNotificacoesModel->delete($notificacao['id'],true);
+			}
 		}
 				
 		return 'Cron Finalizado';
