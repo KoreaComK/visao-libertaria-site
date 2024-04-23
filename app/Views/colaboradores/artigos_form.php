@@ -28,6 +28,17 @@ use CodeIgniter\I18n\Time;
 
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation w-100" novalidate="yes" method="post">
+			<div class="mb-3">
+				<label for="tipo_artigo">Tipo de Artigo</label>
+				<div class="input-group">
+					<select class="form-control" name="tipo_artigo" id="tipo_artigo">
+						<option value="" <?=(isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo']=="")?('selected="true"'):(''); ?>>Escolha o tipo do artigo</option>
+						<option value="T" <?=(isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo']=="T")?('selected="true"'):(''); ?>>Teórico</option>
+						<option value="N" <?=(isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo']=="N")?('selected="true"'):(''); ?>>Notícia</option>
+					</select>
+				</div>
+			</div>
+		
 			<?php if (!empty($pauta)) : ?>
 				<div class="mb-3">
 					<label>

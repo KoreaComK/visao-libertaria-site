@@ -66,6 +66,7 @@ class Inicializandobancodados extends BaseController
 		`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
 		`url_friendly` varchar(255) NOT NULL,
 		`fase_producao_id` int NOT NULL,
+		`tipo_artigo` CHAR(1) NOT NULL DEFAULT "T",
 		`link` varchar(255) DEFAULT null,
 		`sugerido_colaboradores_id` int DEFAULT null,
 		`titulo` varchar(255) NOT NULL,

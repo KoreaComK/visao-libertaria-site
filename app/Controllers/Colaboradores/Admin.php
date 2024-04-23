@@ -69,15 +69,24 @@ class Admin extends BaseController
 				if ($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
 					$indice = 'cron_pautas_data_delete';
 					$gravar[$indice] = $post['cron_pautas_data_delete_number'] . ' ' . $post['cron_pautas_data_delete_time'];
-				} elseif ($indice == 'cron_artigos_desmarcar_data_revisao_number' || $indice == 'cron_artigos_desmarcar_data_revisao_number') {
-					$indice = 'cron_artigos_desmarcar_data_revisao';
-					$gravar[$indice] = $post['cron_artigos_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_desmarcar_data_revisao_time'];
-				} elseif ($indice == 'cron_artigos_desmarcar_data_narracao_number' || $indice == 'cron_artigos_desmarcar_data_narracao_time') {
-					$indice = 'cron_artigos_desmarcar_data_narracao';
-					$gravar[$indice] = $post['cron_artigos_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_desmarcar_data_narracao_time'];
-				} elseif ($indice == 'cron_artigos_desmarcar_data_producao_number' || $indice == 'cron_artigos_desmarcar_data_producao_time') {
-					$indice = 'cron_artigos_desmarcar_data_producao';
-					$gravar[$indice] = $post['cron_artigos_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_desmarcar_data_producao_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_revisao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_revisao_number') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_revisao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_revisao_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_narracao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_narracao_time') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_narracao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_narracao_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_producao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_producao_time') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_producao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_producao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_revisao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_revisao_number') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_revisao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_revisao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_narracao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_narracao_time') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_narracao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_narracao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_producao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_producao_time') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_producao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_producao_time'];
 				} elseif ($indice == 'cron_notificacoes_data_visualizado_number' || $indice == 'cron_notificacoes_data_visualizado_time') {
 					$indice = 'cron_notificacoes_data_visualizado';
 					$gravar[$indice] = $post['cron_notificacoes_data_visualizado_number'] . ' ' . $post['cron_notificacoes_data_visualizado_time'];

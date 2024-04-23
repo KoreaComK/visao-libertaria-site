@@ -172,6 +172,10 @@ class ValidaFormularios extends BaseController
 	{
 		$validation = \Config\Services::validation();
 		$validation->setRules([
+			'tipo_artigo' => [
+				'label' => 'Tipo do Artigo',
+				'rules' => 'required'
+			],
 			'titulo' => [
 				'label' => 'Título do Artigo',
 				'rules' => 'required|max_length[255]|min_length[10]'

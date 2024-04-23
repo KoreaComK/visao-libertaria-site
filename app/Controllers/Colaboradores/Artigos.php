@@ -933,6 +933,7 @@ class Artigos extends BaseController
 
 			$post = $this->request->getPost();
 
+			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
 			$gravar['texto_revisado'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
 			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
@@ -965,6 +966,7 @@ class Artigos extends BaseController
 			$post = $this->request->getPost();
 			$gravar = array();
 			$gravar['id'] = $artigosModel->getNovaUUID();
+			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
 			$gravar['url_friendly'] = url_friendly(htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8'));
 			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
@@ -1002,6 +1004,7 @@ class Artigos extends BaseController
 			$artigosModel = new \App\Models\ArtigosModel();
 			$post = $this->request->getPost();
 
+			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
 			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
 			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');

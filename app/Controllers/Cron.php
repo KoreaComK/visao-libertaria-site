@@ -57,11 +57,12 @@ class Cron extends BaseController
 		if($cronArtigos == '1') {
 			$artigosHistoricos = new ArtigosHistoricos;
 			/*Revisão*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_revisao')['config_valor'];
+			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor'];
 			$time = new Time('-'.$cronArtigos);
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
 			$artigosModel->where("fase_producao_id",2);
+			$artigosModel->where("tipo_artigo",'T');
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
 				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
@@ -70,11 +71,12 @@ class Cron extends BaseController
 			unset($artigosModel);
 			
 			/*Narração*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_narracao')['config_valor'];
+			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor'];
 			$time = new Time('-'.$cronArtigos);
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
 			$artigosModel->where("fase_producao_id",3);
+			$artigosModel->where("tipo_artigo",'T');
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
 				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
@@ -83,11 +85,54 @@ class Cron extends BaseController
 			unset($artigosModel);
 
 			/*Produção*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_data_producao')['config_valor'];
+			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor'];
 			$time = new Time('-'.$cronArtigos);
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
 			$artigosModel->where("fase_producao_id",4);
+			$artigosModel->where("tipo_artigo",'T');
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+
+			/*Revisão*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_revisao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",2);
+			$artigosModel->where("tipo_artigo",'N');
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+			
+			/*Narração*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_narracao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",3);
+			$artigosModel->where("tipo_artigo",'N');
+			$artigos = $artigosModel->get()->getResultArray();
+			foreach($artigos as $artigo) {
+				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
+				$artigosModel->update($artigo['id'],array('marcado'=>NULL, 'marcado_colaboradores_id'=>NULL));
+			}
+			unset($artigosModel);
+
+			/*Produção*/
+			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_producao')['config_valor'];
+			$time = new Time('-'.$cronArtigos);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("marcado <= '".$time->toDateTimeString()."'");
+			$artigosModel->where("fase_producao_id",4);
+			$artigosModel->where("tipo_artigo",'N');
 			$artigos = $artigosModel->get()->getResultArray();
 			foreach($artigos as $artigo) {
 				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);

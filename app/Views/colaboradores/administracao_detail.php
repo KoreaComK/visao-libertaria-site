@@ -104,57 +104,114 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3">
-								<label for="cron_artigos_desmarcar_data_revisao_number">Tempo limite para desmarcação da revisão</label>
+								<label for="cron_artigos_teoria_desmarcar_data_revisao_number">Tempo limite para desmarcação da revisão (Teórico)</label>
 								<div class="form-row">
 									<div class="col-md-8 mb-2">
-										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_revisao_number"
-											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_revisao_number"
+										<input type="number" class="form-control" id="cron_artigos_teoria_desmarcar_data_revisao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_teoria_desmarcar_data_revisao_number"
 											required min="1"
-											value="<?= (isset($dados['cron_artigos_desmarcar_data_revisao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[0]) : (''); ?>">
+											value="<?= (isset($dados['cron_artigos_teoria_desmarcar_data_revisao'])) ? (explode(' ', $dados['cron_artigos_teoria_desmarcar_data_revisao'])[0]) : (''); ?>">
 									</div>
 									<div class="col-md-4">
-										<select class="custom-select" id="cron_artigos_desmarcar_data_revisao_time"
-											name="cron_artigos_desmarcar_data_revisao_time">
-											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
-											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_desmarcar_data_revisao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										<select class="custom-select" id="cron_artigos_teoria_desmarcar_data_revisao_time"
+											name="cron_artigos_teoria_desmarcar_data_revisao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_revisao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_revisao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
 										</select>
 									</div>
 								</div>
 							</div>
 
 							<div class="mb-3">
-								<label for="cron_artigos_desmarcar_data_narracao_number">Tempo limite para desmarcação da narração</label>
+								<label for="cron_artigos_teoria_desmarcar_data_narracao_number">Tempo limite para desmarcação da narração (Teórico)</label>
 								<div class="form-row">
 									<div class="col-md-8 mb-2">
-										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_narracao_number"
-											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_narracao_number"
+										<input type="number" class="form-control" id="cron_artigos_teoria_desmarcar_data_narracao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_teoria_desmarcar_data_narracao_number"
 											required min="1"
-											value="<?= (isset($dados['cron_artigos_desmarcar_data_narracao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[0]) : (''); ?>">
+											value="<?= (isset($dados['cron_artigos_teoria_desmarcar_data_narracao'])) ? (explode(' ', $dados['cron_artigos_teoria_desmarcar_data_narracao'])[0]) : (''); ?>">
 									</div>
 									<div class="col-md-4">
-										<select class="custom-select" id="cron_artigos_desmarcar_data_narracao_time"
-											name="cron_artigos_desmarcar_data_narracao_time">
-											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
-											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_desmarcar_data_narracao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										<select class="custom-select" id="cron_artigos_teoria_desmarcar_data_narracao_time"
+											name="cron_artigos_teoria_desmarcar_data_narracao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_narracao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_narracao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
 										</select>
 									</div>
 								</div>
 							</div>
 
 							<div class="mb-3">
-								<label for="cron_artigos_desmarcar_data_producao_number">Tempo limite para desmarcação da produção</label>
+								<label for="cron_artigos_teoria_desmarcar_data_producao">Tempo limite para desmarcação da produção (Teórico)</label>
 								<div class="form-row">
 									<div class="col-md-8 mb-2">
-										<input type="number" class="form-control" id="cron_artigos_desmarcar_data_producao_number"
-											placeholder="Tempo para desmarcação" name="cron_artigos_desmarcar_data_producao_number"
+										<input type="number" class="form-control" id="cron_artigos_teoria_desmarcar_data_producao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_teoria_desmarcar_data_producao_number"
 											required min="1"
-											value="<?= (isset($dados['cron_artigos_desmarcar_data_producao'])) ? (explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[0]) : (''); ?>">
+											value="<?= (isset($dados['cron_artigos_teoria_desmarcar_data_producao'])) ? (explode(' ', $dados['cron_artigos_teoria_desmarcar_data_producao'])[0]) : (''); ?>">
 									</div>
 									<div class="col-md-4">
-										<select class="custom-select" id="cron_artigos_desmarcar_data_producao_time"
-											name="cron_artigos_desmarcar_data_producao_time">
-											<option value="hours" <?= (isset($dados['cron_artigos_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
-											<option value="days" <?= (isset($dados['cron_artigos_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_desmarcar_data_producao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										<select class="custom-select" id="cron_artigos_teoria_desmarcar_data_producao_time"
+											name="cron_artigos_teoria_desmarcar_data_producao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_producao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_teoria_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_teoria_desmarcar_data_producao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_noticia_desmarcar_data_revisao">Tempo limite para desmarcação da revisão (Notícia)</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_noticia_desmarcar_data_revisao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_noticia_desmarcar_data_revisao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_noticia_desmarcar_data_revisao'])) ? (explode(' ', $dados['cron_artigos_noticia_desmarcar_data_revisao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_noticia_desmarcar_data_revisao_time"
+											name="cron_artigos_noticia_desmarcar_data_revisao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_revisao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_revisao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_revisao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_noticia_desmarcar_data_narracao_number">Tempo limite para desmarcação da narração (Notícia)</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_noticia_desmarcar_data_narracao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_noticia_desmarcar_data_narracao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_noticia_desmarcar_data_narracao'])) ? (explode(' ', $dados['cron_artigos_noticia_desmarcar_data_narracao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_noticia_desmarcar_data_narracao_time"
+											name="cron_artigos_noticia_desmarcar_data_narracao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_narracao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_narracao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_narracao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="cron_artigos_noticia_desmarcar_data_producao_number">Tempo limite para desmarcação da produção (Notícia)</label>
+								<div class="form-row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control" id="cron_artigos_noticia_desmarcar_data_producao_number"
+											placeholder="Tempo para desmarcação" name="cron_artigos_noticia_desmarcar_data_producao_number"
+											required min="1"
+											value="<?= (isset($dados['cron_artigos_noticia_desmarcar_data_producao'])) ? (explode(' ', $dados['cron_artigos_noticia_desmarcar_data_producao'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="custom-select" id="cron_artigos_noticia_desmarcar_data_producao_time"
+											name="cron_artigos_noticia_desmarcar_data_producao_time">
+											<option value="hours" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_producao'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['cron_artigos_noticia_desmarcar_data_producao']) && explode(' ', $dados['cron_artigos_noticia_desmarcar_data_producao'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
 										</select>
 									</div>
 								</div>

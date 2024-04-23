@@ -19,6 +19,9 @@
 					src="<?= $artigo['imagem']; ?>" />
 				<p class="media-body pb-3 mb-0 small lh-125  border-gray">
 					<strong class="d-block">
+						<small class="badge badge-<?= ($artigo['tipo_artigo']=='T')?('primary'):('danger'); ?> m-1 p-1">
+						<?= ($artigo['tipo_artigo']=='T')?('Teoria'):('Notícia'); ?>
+						</small>
 						<?= date_format(new DateTime($artigo['criado']), 'd') . ' ' . month_helper(date_format(new DateTime($artigo['criado']), 'F'), 3) . ' ' . date_format(new DateTime($artigo['criado']), 'Y'); ?>
 						-
 						<?= $artigo['titulo']; ?>
