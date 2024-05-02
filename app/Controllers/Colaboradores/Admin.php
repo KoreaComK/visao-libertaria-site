@@ -303,6 +303,10 @@ class Admin extends BaseController
 		$multiplicadores['revisado'] = (float) $post['multiplicador_revisado'] / 100;
 		$multiplicadores['narrado'] = (float) $post['multiplicador_narrado'] / 100;
 		$multiplicadores['produzido'] = (float) $post['multiplicador_produzido'] / 100;
+		$multiplicadores['escrito_noticia'] = (float) $post['multiplicador_escrito_noticia'] / 100;
+		$multiplicadores['revisado_noticia'] = (float) $post['multiplicador_revisado_noticia'] / 100;
+		$multiplicadores['narrado_noticia'] = (float) $post['multiplicador_narrado_noticia'] / 100;
+		$multiplicadores['produzido_noticia'] = (float) $post['multiplicador_produzido_noticia'] / 100;
 		$repasse_bitcoin = (float) str_replace(",",".",$post['quantidade_bitcoin']);
 
 		$artigosModel = new \App\Models\ArtigosModel();
@@ -357,10 +361,19 @@ class Admin extends BaseController
 		}
 
 		foreach ($data['artigos'] as $artigo) {
-			$usuarios[$artigo['escrito_colaboradores_id']]['pontos_escrita'] += (float) $artigo['palavras_escritor'] * $multiplicadores['escrito'];
-			$usuarios[$artigo['revisado_colaboradores_id']]['pontos_revisao'] += (float) $artigo['palavras_revisor'] * $multiplicadores['revisado'];
-			$usuarios[$artigo['narrado_colaboradores_id']]['pontos_narracao'] += (float) $artigo['palavras_narrador'] * $multiplicadores['narrado'];
-			$usuarios[$artigo['produzido_colaboradores_id']]['pontos_producao'] += (float) $artigo['palavras_produtor'] * $multiplicadores['produzido'];
+			if($artigo['tipo_artigo'] == 'N') {
+				$usuarios[$artigo['escrito_colaboradores_id']]['pontos_escrita'] += (float) $artigo['palavras_escritor'] * $multiplicadores['escrito_noticia'];
+				$usuarios[$artigo['revisado_colaboradores_id']]['pontos_revisao'] += (float) $artigo['palavras_revisor'] * $multiplicadores['revisado_noticia'];
+				$usuarios[$artigo['narrado_colaboradores_id']]['pontos_narracao'] += (float) $artigo['palavras_narrador'] * $multiplicadores['narrado_noticia'];
+				$usuarios[$artigo['produzido_colaboradores_id']]['pontos_producao'] += (float) $artigo['palavras_produtor'] * $multiplicadores['produzido_noticia'];
+			}
+			if($artigo['tipo_artigo'] == 'T') {
+				$usuarios[$artigo['escrito_colaboradores_id']]['pontos_escrita'] += (float) $artigo['palavras_escritor'] * $multiplicadores['escrito'];
+				$usuarios[$artigo['revisado_colaboradores_id']]['pontos_revisao'] += (float) $artigo['palavras_revisor'] * $multiplicadores['revisado'];
+				$usuarios[$artigo['narrado_colaboradores_id']]['pontos_narracao'] += (float) $artigo['palavras_narrador'] * $multiplicadores['narrado'];
+				$usuarios[$artigo['produzido_colaboradores_id']]['pontos_producao'] += (float) $artigo['palavras_produtor'] * $multiplicadores['produzido'];
+			}
+			
 		}
 
 		foreach ($usuarios as $i => $u) {
@@ -405,6 +418,11 @@ class Admin extends BaseController
 		$gravar['multiplicador_revisado'] = $post['multiplicador_revisado'];
 		$gravar['multiplicador_narrado'] = $post['multiplicador_narrado'];
 		$gravar['multiplicador_produzido'] = $post['multiplicador_produzido'];
+		$gravar['multiplicador_escrito_noticia'] = $post['multiplicador_escrito_noticia'];
+		$gravar['multiplicador_revisado_noticia'] = $post['multiplicador_revisado_noticia'];
+		$gravar['multiplicador_narrado_noticia'] = $post['multiplicador_narrado_noticia'];
+		$gravar['multiplicador_produzido_noticia'] = $post['multiplicador_produzido_noticia'];
+		
 		$gravar['hash_transacao'] = $post['hash_transacao'];
 		//$pagamentosModel->db->transStart();
 		$idPagamentos = $pagamentosModel->insert($gravar);
@@ -425,7 +443,12 @@ class Admin extends BaseController
 			$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_escritor'];
 			if($colaborador['carteira']!=NULL) {
-				$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
+				if($artigo['tipo_artigo'] == 'T') {
+					$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
+				}
+				if($artigo['tipo_artigo'] == 'N') {
+					$pontos = $gravar['multiplicador_escrito_noticia'] * $artigo['palavras_escritor'] / 100;
+				}
 				$pontuacaoTotalPagamento+=$pontos;	
 			}
 			$colaboradoresModel->save($colaborador);
@@ -433,7 +456,12 @@ class Admin extends BaseController
 			$colaborador = $colaboradoresModel->find($artigo['revisado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_revisor'];
 			if($colaborador['carteira']!=NULL) {
-				$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
+				if($artigo['tipo_artigo'] == 'T') {
+					$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
+				}
+				if($artigo['tipo_artigo'] == 'N') {
+					$pontos = $gravar['multiplicador_revisado_noticia'] * $artigo['palavras_escritor'] / 100;
+				}
 				$pontuacaoTotalPagamento+=$pontos;
 			}
 			$colaboradoresModel->save($colaborador);
@@ -441,7 +469,12 @@ class Admin extends BaseController
 			$colaborador = $colaboradoresModel->find($artigo['narrado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_narrador'];
 			if($colaborador['carteira']!=NULL) {
-				$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
+				if($artigo['tipo_artigo'] == 'T') {
+					$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
+				}
+				if($artigo['tipo_artigo'] == 'N') {
+					$pontos = $gravar['multiplicador_narrado_noticia'] * $artigo['palavras_escritor'] / 100;
+				}
 				$pontuacaoTotalPagamento+=$pontos;
 			}
 			$colaboradoresModel->save($colaborador);
@@ -449,7 +482,13 @@ class Admin extends BaseController
 			$colaborador = $colaboradoresModel->find($artigo['produzido_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_produtor'];
 			if($colaborador['carteira']!=NULL) {
-				$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
+				if($artigo['tipo_artigo'] == 'T') {
+					$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
+				}
+				if($artigo['tipo_artigo'] == 'N') {
+					$pontos = $gravar['multiplicador_produzido_noticia'] * $artigo['palavras_escritor'] / 100;
+				}
+				
 				$pontuacaoTotalPagamento+=$pontos;
 			}
 			$colaboradoresModel->save($colaborador);
