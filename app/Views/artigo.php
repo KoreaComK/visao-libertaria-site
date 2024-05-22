@@ -34,19 +34,19 @@
 						</div>
 						<div class="mb-3">
 							<?php if ($artigo['colaboradores']['sugerido'] !== null) : ?>
-							<div class="badge badge-secondary m-1 p-1">Sugerido: <?=$artigo['colaboradores']['sugerido']; ?></div>
+							<div class="badge bg-secondary m-1 p-1">Sugerido: <?=$artigo['colaboradores']['sugerido']; ?></div>
 							<?php endif; ?>
 							<?php if ($artigo['colaboradores']['escrito'] !== null) : ?>
-							<div class="badge badge-secondary m-1 p-1">Escritor: <?=$artigo['colaboradores']['escrito']; ?></div>
+							<div class="badge bg-secondary m-1 p-1">Escritor: <?=$artigo['colaboradores']['escrito']; ?></div>
 							<?php endif; ?>
 							<?php if ($artigo['colaboradores']['revisado'] !== null) : ?>
-							<div class="badge badge-danger m-1 p-1">Revisor: <?=$artigo['colaboradores']['revisado']; ?></div>
+							<div class="badge bg-danger m-1 p-1">Revisor: <?=$artigo['colaboradores']['revisado']; ?></div>
 							<?php endif; ?>
 							<?php if ($artigo['colaboradores']['narrado'] !== null) : ?>
-							<div class="badge badge-warning m-1 p-1">Narrador: <?=$artigo['colaboradores']['narrado']; ?></div>
+							<div class="badge bg-warning m-1 p-1">Narrador: <?=$artigo['colaboradores']['narrado']; ?></div>
 							<?php endif; ?>
 							<?php if ($artigo['colaboradores']['produzido'] !== null) : ?>
-							<div class="badge badge-success m-1 p-1">Produtor: <?=$artigo['colaboradores']['produzido']; ?></div>
+							<div class="badge bg-success m-1 p-1">Produtor: <?=$artigo['colaboradores']['produzido']; ?></div>
 							<?php endif; ?>
 						</div>
 						<div>

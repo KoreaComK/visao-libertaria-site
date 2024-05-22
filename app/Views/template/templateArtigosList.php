@@ -58,36 +58,36 @@ use CodeIgniter\I18n\Time;
 
 				<?php if ($artigo['marcado_colaboradores_id'] == null || $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 					<?php if (($artigo['fase_producao_id'] == '1' || $artigo['fase_producao_id'] == '2') && $artigo['escrito_colaboradores_id'] == $usuario && $artigo['descartado'] == NULL): ?>
-						<small class="d-block text-right mt-3"><a
+						<small class="d-block text-end mt-3"><a
 								href="<?= site_url('colaboradores/artigos/cadastrar/' . $artigo['id']); ?>">Alterar
 								artigo</a></small>
 					<?php endif; ?>
 					<?php if ($artigo['fase_producao_id'] == '2' && in_array('3', $permissoes) && $artigo['escrito_colaboradores_id'] != $usuario && $artigo['descartado'] == NULL): ?>
-						<small class="d-block text-right mt-3"><a
+						<small class="d-block text-end mt-3"><a
 								href="<?= site_url('colaboradores/artigos/previa/' . $artigo['id']); ?>">Ver detalhe do
 								artigo</a></small>
 					<?php endif; ?>
 					<?php if ($artigo['fase_producao_id'] == '3' && in_array('4', $permissoes) && $artigo['descartado'] == NULL): ?>
-						<small class="d-block text-right mt-3"><a
+						<small class="d-block text-end mt-3"><a
 								href="<?= site_url('colaboradores/artigos/narrar/' . $artigo['id']); ?>">Narrar artigo</a></small>
 					<?php endif; ?>
 					<?php if ($artigo['fase_producao_id'] == '4' && in_array('5', $permissoes) && $artigo['descartado'] == NULL): ?>
-						<small class="d-block text-right mt-3"><a
+						<small class="d-block text-end mt-3"><a
 								href="<?= site_url('colaboradores/artigos/produzir/' . $artigo['id']); ?>">Produzir
 								artigo</a></small>
 					<?php endif; ?>
 					<?php if ($artigo['fase_producao_id'] == '5' && in_array('6', $permissoes) && $artigo['descartado'] == NULL): ?>
-						<small class="d-block text-right mt-3"><a
+						<small class="d-block text-end mt-3"><a
 								href="<?= site_url('colaboradores/artigos/publicar/' . $artigo['id']); ?>">Publicar
 								artigo</a></small>
 					<?php endif; ?>
 				<?php elseif ($artigo['marcado_colaboradores_id'] != $_SESSION['colaboradores']['id']): ?>
-					<small class="d-block text-right mt-3">Artigo marcado por
+					<small class="d-block text-end mt-3">Artigo marcado por
 						<?= $artigo['marcado']; ?>
 					</small>
 				<?php endif; ?>
 				<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id'] || ($artigo['marcado_colaboradores_id'] !== NULL && in_array('7', $permissoes))): ?>
-					<small class="d-block text-right mt-3"><a href="#" class="desmarcar"
+					<small class="d-block text-end mt-3"><a href="#" class="desmarcar"
 							data-information="<?= $artigo['id']; ?>">Desmarcar artigo</a></small>
 				<?php endif; ?>
 			</p>
@@ -110,8 +110,8 @@ use CodeIgniter\I18n\Time;
 				url: e.target.href,
 				type: 'get',
 				dataType: 'html',
-				beforeSend: function () { $('#modal-loading').modal('show'); },
-				complete: function () { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (data) {
 					$('.artigos-list').html(data);
 				}
@@ -130,8 +130,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status) {
 					location.reload();

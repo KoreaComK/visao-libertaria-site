@@ -8,7 +8,6 @@
 			<?= $titulo; ?>
 		</h3>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<div class="d-flex mt-3 justify-content-center">
 		<a class="btn btn-primary" href="<?= site_url('colaboradores/admin/financeiro/pagar'); ?>"> Fazer
 			Pagamento</a>

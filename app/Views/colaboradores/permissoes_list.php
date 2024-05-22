@@ -19,22 +19,22 @@ use CodeIgniter\I18n\Time;
 		<?= (isset($_GET['status']) && $_GET['status'] == 'true') ? ('Ação salva com sucesso.') : ('Ocorreu um erro ao realizar sua ação.'); ?></div>
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<h5>Pesquisa de colaborador</h5>
-		<form class="needs-validation w-100" novalidate="yes" method="get" id="pesquisa-permissoes">
-			<div class="form-row">
+		<form class="container" method="get" name="pesquisa-permissoes" id="pesquisa-permissoes">
+			<div class="row">
 				<div class="col-md-3">
 					<div class="control-group mb-2">
-						<input type="text" class="form-control form-control-sm" id="apelido" placeholder="Apelido" />
+						<input type="text" class="form-control form-control-sm" name="apelido" id="apelido" placeholder="Apelido" />
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class="control-group">
-						<input type="text" class="form-control form-control-sm" id="email" placeholder="E-mail" />
+						<input type="text" class="form-control form-control-sm" name="email" id="email" placeholder="E-mail" />
 					</div>
 				</div>
 
 				<div class="col-md-2">
 					<div class="control-group">
-						<select class="custom-select custom-select-sm" id="atribuicao">
+						<select class="form-select form-select-sm" name="status" id="atribuicao">
 							<option value="" selected>Escolha a atribuição</option>
 							<?php foreach ($atribuicoes as $atribuicao): ?>
 								<label class="atribuicoes btn btn-secondary btn-sm vl-bg-c">
@@ -48,7 +48,7 @@ use CodeIgniter\I18n\Time;
 
 				<div class="col-md-2">
 					<div class="control-group">
-						<select class="custom-select custom-select-sm" id="status">
+						<select class="form-select form-select-sm" name="status" id="status">
 							<option selected value="A">Ativo</option>
 							<option value="I">Inativo</option>
 						</select>
@@ -71,7 +71,8 @@ use CodeIgniter\I18n\Time;
 </div>
 
 <script>
-	$('.btn-submeter').on('click', function (e) {
+
+	$('.btn-submeter').on('click', function() {
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/admin/permissoesList'); ?>",
 			type: 'get',
@@ -82,8 +83,8 @@ use CodeIgniter\I18n\Time;
 				atribuicao: $('#atribuicao').val(),
 				status: $('#status').val(),
 			},
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.permissoes-list').html(data);
 			}

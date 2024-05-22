@@ -19,18 +19,49 @@ class Pautas extends BaseController
 	public function index(): string
 	{
 		$data = array();
-		$data['titulo'] = 'Pautas Sugeridas';
+		$data['titulo'] = 'Pautas Cadastradas';
 		$pautasModel = new \App\Models\PautasModel();
 		$pautas = $pautasModel->getPautas();
+
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$data['config']['pauta_tamanho_maximo'] = $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'];
+		$data['config']['pauta_tamanho_minimo'] = $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'];
+		$data['config']['limite_pautas_diario'] = $configuracaoModel->find('limite_pautas_diario')['config_valor'];
+		$data['config']['limite_pautas_semanal'] = $configuracaoModel->find('limite_pautas_semanal')['config_valor'];
+
+		
 		$data['pautasList'] = [
 			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
 			'pager' => $pautas->pager
 		];
 		return view('colaboradores/pautas_list', $data);
+	}
+
+	public function pautasListColaboradores()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->getPautas();
+		if ($this->request->getMethod() == 'get') {
+			$data['pautasList'] = [
+				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+				'pager' => $pautas->pager
+			];
+		}
+		return view('template/templatePautasListColaboradores', $data);
 	}
 
 	public function redatores(): string
@@ -59,6 +90,37 @@ class Pautas extends BaseController
 		return view('colaboradores/pautas_list', $data);
 	}
 
+	public function verificaPautaCadastrada() {
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+
+		$pautasModel = new \App\Models\PautasModel();
+
+		$isAdmin = false;
+		$permissoes = $this->session->get('colaboradores');
+		$permissoes = $permissoes['permissoes'];
+		if(in_array('7',$permissoes)) { 
+			$isAdmin = true;
+		}
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if ($this->request->isAJAX()) {
+			$post = service('request')->getPost();
+
+			if(isset($post['link_pauta'])) {
+				$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta']);
+			
+				if ($isAdmin || $countPautas == 0) {
+					return $this->getInformacaoLink($post);
+				} else {
+					return $retorno->retorno(false, 'Pauta já cadastrada', true);
+				}
+			}
+		}
+		return $retorno->retorno(false, 'Não foi informado nenhum link', true);
+	}
+
 	public function cadastrar($idPautas = null)
 	{
 		$verifica = new verificaPermissao();
@@ -85,23 +147,17 @@ class Pautas extends BaseController
 		}
 
 		if ($this->request->isAJAX()) {
-			$post = service('request')->getPost();
 
-			$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'], $idPautas);
-
-			if ($isAdmin || $countPautas == 0) {
-				return $this->getInformacaoLink($post);
-			} else {
-				return $retorno->retorno(false, 'Pauta já cadastrada', true);
-			}
-		}
-
-		if ($this->request->getMethod() == 'post') {
 			$pautasModel = new \App\Models\PautasModel();
 
 			$post = service('request')->getPost();
 			if($idPautas !== null) {
-				$post['link'] = $pautasModel->find($idPautas)['link'];
+				$pautas = $pautasModel->find($idPautas);
+				if($pautas['colaboradores_id'] !== $this->session->get('colaboradores')['id']) {
+					return $retorno->retorno(false, 'Você só pode alterar pautas que são suas e não de outros colaboradores.', true);
+				}
+				$post['link'] = $pautas['link'];
+				$post['pauta_antiga'] = $pautas['pauta_antiga'];
 			}
 
 			$session = $this->session->get('colaboradores');
@@ -110,16 +166,14 @@ class Pautas extends BaseController
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
 			if (!$isAdmin && ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_diario'])) {
-				$data['erros'] = $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', false);
-				return view('colaboradores/pautas_form', $data);
+				return $retorno->retorno(false, 'O limite diário de pautas foi atingido. Tente novamente amanhã.', true);
 			}
 
 			$time = new Time('-7 days');
 			$time = $time->toDateString();
 			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time,$session['id'])[0]['contador'];
 			if(!$isAdmin && ($idPautas == null && $quantidade_pautas >= $data['config']['limite_pautas_semanal'])) {
-				$data['erros'] = $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', false);
-				return view('colaboradores/pautas_form', $data);
+				return $retorno->retorno(false, 'O limite semanal de pautas foi atingido. Tente novamente outro dia.', true);
 			}
 
 			$gerenciadorTextos = new \App\Libraries\GerenciadorTextos();
@@ -130,8 +184,7 @@ class Pautas extends BaseController
 					$post['imagem'] = base_url('public/assets/imagem-default.png');
 				}
 				if(!$isAdmin && ($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo'])) {
-					$data['erros'] = $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', false);
-					return view('colaboradores/pautas_form', $data);
+					return  $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', true);
 				}
 				$dados = array();
 				$dados['colaboradores_id'] = $session['id'];
@@ -153,9 +206,9 @@ class Pautas extends BaseController
 				}
 
 				if ($pautas) {
-					return redirect()->to(base_url() . 'colaboradores/pautas?status=true');
+					return $retorno->retorno(true, 'Pauta cadastrada com sucesso', true);
 				} else {
-					$data['erros'] = $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', false);
+					return $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', true);
 				}
 			} else {
 				$erros = $valida->getErrors();
@@ -163,8 +216,7 @@ class Pautas extends BaseController
 				foreach ($erros as $erro) {
 					$string_erros .= $erro . "<br/>";
 				}
-				$data['erros'] = $retorno->retorno(false, $string_erros, false);
-				$data['post'] = $post;
+				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
 
@@ -199,7 +251,6 @@ class Pautas extends BaseController
 
 	}
 
-
 	public function detalhe($idPautas = null)
 	{
 		$session = \Config\Services::session();
@@ -211,6 +262,7 @@ class Pautas extends BaseController
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
 		
+		$retorno = new \App\Libraries\RetornoPadrao();
 		$data = array();
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
@@ -226,14 +278,14 @@ class Pautas extends BaseController
 
 		if ($idPautas != null) {
 			$data['post'] = $pautasModel->withDeleted()->find($idPautas);
+			$data['post']['status'] = true;
 			if ($data['post'] == null || empty($data['post'])) {
-				return redirect()->to(base_url() . 'colaboradores/pautas');
+				return $retorno->retorno(false, 'Não encontramos a pauta informada.', true);
 			}
 		} else {
-			return redirect()->to(base_url() . 'colaboradores/pautas');
+			return $retorno->retorno(false, 'Não foi informado nenhuma pauta.', true);
 		}
-		$data['readOnly'] = true;
-		return view('colaboradores/pautas_form', $data);
+		return json_encode($data['post']);
 	}
 
 	public function excluir($idPauta = null)
@@ -254,7 +306,7 @@ class Pautas extends BaseController
 			}
 			return $retorno->retorno(false, 'Atenção! Pauta não encontrada para o seu usuário.', true);
 		} else {
-			return redirect()->to(base_url() . 'colaboradores/pautas');
+			return $retorno->retorno(false, 'Atenção! Pauta não encontrada.', true);
 		}
 	}
 
@@ -415,7 +467,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->delete($comentario['id']);
 					$pautasComentariosModel->db->transComplete();
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'excluiu','pautas','o comentário na pauta',$idPauta,true);
-					return $retorno->retorno(true, '', true);
+					return $retorno->retorno(true, 'Comentário excluído com sucesso', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
 			}
@@ -430,7 +482,7 @@ class Pautas extends BaseController
 				$save = $pautasComentariosModel->insert($comentario);
 				$pautasComentariosModel->db->transComplete();
 				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'comentou','pautas','na pauta',$idPauta,true);
-				return $retorno->retorno(true, '', true);
+				return $retorno->retorno(true, 'Comentário feito com sucesso.', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
@@ -441,7 +493,7 @@ class Pautas extends BaseController
 					$pautasComentariosModel->save($comentario);
 					$pautasComentariosModel->db->transComplete();
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','pautas','o comentário na pauta',$idPauta,true);
-					return $retorno->retorno(true, '', true);
+					return $retorno->retorno(true, 'Comentário alterado com sucesso.', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
 			}
@@ -609,6 +661,17 @@ class Pautas extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$dataMaximaPauta = (int)$configuracaoModel->find('pauta_dias_antigo')['config_valor'];
+
+			$a = explode('://',$img);
+			if($a > 1) {
+				$b = explode('/',$a[1]);
+				foreach($b as $k => $c) {
+					$b[$k] = rawurlencode($c);
+				}
+				$b = implode('/',$b);
+				$a[1] = $b;
+			}
+			$img = implode('://',$a);
 
 			$retorno = [
 				'status' => true,

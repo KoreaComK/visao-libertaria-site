@@ -56,7 +56,7 @@ use CodeIgniter\I18n\Time;
 							class="btn btn-warning btn-sm btn-cancelar btn-cancelar-<?= $pauta['id']; ?> <?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>">Cancelar
 							Reserva</button>
 						<div class="<?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>" id="div_tag_<?= $pauta['id']; ?>">
-							<label class="badge badge-primary badge-<?= $pauta['id']; ?>">
+							<label class="badge bg-primary badge-<?= $pauta['id']; ?>">
 								<?= $pauta['tag_fechamento']; ?>
 							</label>
 						</div>
@@ -84,8 +84,8 @@ use CodeIgniter\I18n\Time;
 				url: e.target.href,
 				type: 'get',
 				dataType: 'html',
-				beforeSend: function () { $('#modal-loading').modal('show'); },
-				complete: function () { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (data) {
 					$('.pautas-list').html(data);
 				}
@@ -108,8 +108,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status) {
 					$('#pauta_' + id_pauta).toggle();
@@ -145,8 +145,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function () { $('#modal-loading').modal('show'); },
-				complete: function () { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 
 					$('.badge-' + id_pauta).html(retorno.mensagem);
@@ -173,8 +173,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				$('.badge-' + id_pauta).html('');
 				$('#div_tag_' + id_pauta).collapse();

@@ -8,10 +8,9 @@
 			<?= $titulo; ?>
 		</h3>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<h5>Pesquisa de pautas</h5>
 	<form class="w-100" method="get" id="pesquisa-permissoes">
-		<div class="form-row">
+		<div class="row">
 			<div class="col-md-9">
 				<div class="control-group">
 					<input type="text" class="form-control form-control-sm" id="pesquisa"
@@ -77,21 +76,17 @@
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status == true) {
-					$('.mensagem').addClass('bg-success');
-					$('.mensagem').removeClass('bg-danger');
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 					setTimeout(function () {
 						location.reload();
 					}, 3000);
 				} else {
-					$('.mensagem').removeClass('bg-success');
-					$('.mensagem').addClass('bg-danger');
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
-				$('.mensagem').html(retorno.mensagem);
-				$('.mensagem').show();
 				$('#modal-fechar').modal('toggle');
 			}
 		});
@@ -106,8 +101,8 @@
 			data: {
 				pesquisa: $('#pesquisa').val()
 			},
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.pautas-list').html(data);
 			}

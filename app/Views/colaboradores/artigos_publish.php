@@ -212,8 +212,8 @@ use CodeIgniter\I18n\Time;
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
 				method: "GET",
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					$('.div-list-comentarios').html(retorno);
 				}
@@ -231,8 +231,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if(retorno.status == true) {
 						$('.text-descricao').html(retorno.descricao);
@@ -267,8 +267,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()
@@ -296,8 +296,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						window.location.reload();
@@ -325,8 +325,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()

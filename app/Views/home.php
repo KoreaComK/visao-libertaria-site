@@ -14,12 +14,12 @@ use CodeIgniter\I18n\Time;
 		<div class="row">
 			<div class="col-lg-8">
 				<?php if (isset($banner) && is_array($banner) && $config['home_banner_mostrar'] == '1') : ?>
-					<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-						<ol class="carousel-indicators">
+					<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+						<div class="carousel-indicators">
 							<?php foreach ($banner as $chave => $b) : ?>
-								<li data-target="#<?= $chave; ?>" data-slide-to="<?= $chave; ?>" class="<?= ($chave == 0) ? ('active') : (''); ?>"></li>
+								<button data-bs-target="#<?= $chave; ?>" data-bs-slide-to="<?= $chave; ?>" class="<?= ($chave == 0) ? ('active') : (''); ?>"></>
 							<?php endforeach; ?>
-						</ol>
+						</div>
 						<div class="carousel-inner">
 							<?php foreach ($banner as $chave => $artigo) : ?>
 								<div class="carousel-item <?= ($chave == 0) ? ('active') : (''); ?>">
@@ -36,14 +36,14 @@ use CodeIgniter\I18n\Time;
 								</div>
 							<?php endforeach; ?>
 						</div>
-						<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+						<button class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
 							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="sr-only">Previous</span>
-						</a>
-						<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+							<span class="sr-only"></span>
+						</button>
+						<button class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
 							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="sr-only">Next</span>
-						</a>
+							<span class="sr-only"></span>
+						</button>
 					</div>
 				<?php endif; ?>
 			</div>

@@ -107,8 +107,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status) {
 					$('.mensagem').removeClass('bg-danger');
@@ -132,8 +132,8 @@ use CodeIgniter\I18n\Time;
 			data: {
 				apelido: '<?= $colaboradores['id']; ?>',
 			},
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.historicos-list').html(data);
 			}

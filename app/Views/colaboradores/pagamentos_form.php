@@ -30,7 +30,7 @@
 			</div>
 
 			<label for="">Multiplicadores (%) dos Artigos</label>
-			<div class="form-row">
+			<div class="row">
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_escrito">Escrito</label>
@@ -70,7 +70,7 @@
 			</div>
 
 			<label class="mt-3">Multiplicadores (%) das Notícias</label>
-			<div class="form-row">
+			<div class="row">
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_escrito_noticia">Escrito</label>
@@ -157,8 +157,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -178,8 +178,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -197,8 +197,8 @@
 				data: form,
 				cache: false,
 				dataType: "JSON",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					console.log(retorno);
 					if (retorno.status) {

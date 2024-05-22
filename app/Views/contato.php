@@ -18,7 +18,6 @@
 		</div>
 		<div class="col-md-7">
 			<div class="contact-form bg-light mb-3" style="padding: 30px;">
-				<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 				<form class="form-signin col-12" id="contato" method="post">
 					<div class="form-label-group mb-3">
 						<input type="email" id="email" name="email" class="form-control" value="<?= $email; ?>"
@@ -32,10 +31,12 @@
 						<textarea id="mensagem" name="mensagem" class="form-control" rows="5"
 							placeholder="Digite sua mensagem aqui."></textarea>
 					</div>
-					<div class="d-flex justify-content-center">
+					<div class="d-grid justify-content-center">
 						<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
 					</div>
-					<button class="btn btn-lg btn-primary btn-block btn-submeter" type="submit">Acessar</button>
+					<div class="d-grid gap-2">
+						<button class="btn btn-lg btn-primary btn-block btn-submeter" type="submit">Acessar</button>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -45,27 +46,20 @@
 <script>
 	$('.btn-submeter').on('click', function (e) {
 		e.preventDefault();
-		$('.mensagem').html('');
 		$.ajax({
 			type: 'POST',
 			async: false,
 			url: '<?= base_url() . 'site/contato'; ?>',
 			data: $('#contato').serialize(),
 			dataType: 'json',
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
-				$('.mensagem').removeClass('bg-danger');
-				$('.mensagem').removeClass('bg-success');
 				if (retorno.status == true) {
-					$('.mensagem').addClass('bg-success');
-					$('.mensagem').removeClass('bg-danger');
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 				} else {
-					$('.mensagem').removeClass('bg-success');
-					$('.mensagem').addClass('bg-danger');
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
-				$('.mensagem').html(retorno.mensagem);
-				$('.mensagem').show();
 			}
 		});
 	});

@@ -9,7 +9,6 @@
 			<?= $titulo; ?>
 		</h3>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<h5>Pesquisa de artigos</h5>
 	<form class="w-100" method="get" id="pesquisa" name="pesquisa">
 		<div class="form-row">
@@ -90,8 +89,8 @@
 				colaborador: $('#colaborador').val(),
 				atribuicao: $('#atribuicao').val(),
 			},
-			beforeSend: function () { $('#modal-loading').modal('show'); },
-			complete: function () { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.artigos-list').html(data);
 			}

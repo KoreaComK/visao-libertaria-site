@@ -52,8 +52,8 @@ use CodeIgniter\I18n\Time;
 			url: e.target.href,
 			type: 'get',
 			dataType: 'html',
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.permissoes-list').html(data);
 			}

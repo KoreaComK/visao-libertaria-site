@@ -4,16 +4,21 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-		integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous"> -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+	<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-3.7.0.min.js"
 		integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
-		crossorigin="anonymous"></script>
+
 	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
 	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
 
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="<?= current_url(true); ?>" />
@@ -104,178 +109,202 @@
 	</title>
 	<link rel="icon" type="image/x-icon"
 		href="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
+
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
 </head>
 
-<?php
-$banner = 'https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj';
-if (file_exists('public/assets/banner.png')) {
-	$banner = base_url('public/assets/banner.png');
-}
-?>
-<div class="container-fluid" style="background-image:url(<?= $banner; ?>); height: 16.5vw; background-size: 100%;">
-</div>
-<div class="container-fluid mb-3 vl-bg-c">
-	<nav class="navbar navbar-expand-lg navbar-light bg-light vl-bg-c">
-		<div class="container">
-			<button class="navbar-toggler collapsed" type="button" data-toggle="collapse"
-				data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+<body>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
+	<script>
+		let toast = {
+			title: "",
+			message: "",
+			status: TOAST_STATUS.SUCCESS,
+			timeout: 3000
+		}
+		Toast.setTheme(TOAST_THEME.LIGHT);
+		Toast.enableTimers(TOAST_TIMERS.DISABLED);
+		Toast.setMaxCount(10);
+		Toast.enableQueue(true);
+		function popMessage(titulo, mensagem, status) {
+			toast.message = mensagem;
+			toast.title = titulo;
+			toast.status = status;
+			Toast.create(toast);
+		}
+	</script>
 
-			<div class="navbar-collapse collapse" id="navbarsExample07" style="">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active">
-						<a class="nav-link" href="<?= site_url('site'); ?>">Principal</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos Publicados</a>
-					</li>
-					<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-						<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-									aria-expanded="false">Pautas</a>
-								<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
-									<?php if (isset($_SESSION) && in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/pautas/cadastrar'); ?>" class="dropdown-item">Sugerir
-											Pauta</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/pautas/'); ?>" class="dropdown-item">Ver Pautas</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('11', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/pautas/redatores'); ?>" class="dropdown-item">Ver
-											Pautas dos Redatores</a>
-									<?php endif; ?>
-								</div>
-							</li>
-						<?php endif; ?>
-						<?php if (in_array('2', $_SESSION['colaboradores']['permissoes']) || in_array('3', $_SESSION['colaboradores']['permissoes']) || in_array('4', $_SESSION['colaboradores']['permissoes']) || in_array('5', $_SESSION['colaboradores']['permissoes']) || in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-									aria-expanded="false">Artigos</a>
-								<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
-									<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="dropdown-item">Escrever
-											Artigo</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos'); ?>" class="dropdown-item">Ver Todos
-											Artigos</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('3', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos/revisar'); ?>"
-											class="dropdown-item">Revisar</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('4', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos/narrar'); ?>" class="dropdown-item">Narrar</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('5', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos/produzir'); ?>"
-											class="dropdown-item">Produzir</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/artigos/publicar'); ?>"
-											class="dropdown-item">Publicar</a>
-									<?php endif; ?>
-								</div>
-							</li>
-						<?php endif; ?>
-						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-									aria-expanded="false">Administração</a>
-								<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
-									<?php if (isset($_SESSION) && in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/admin/administracao'); ?>"
-											class="dropdown-item">Configuração do Site</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/admin/financeiro'); ?>"
-											class="dropdown-item">Financeiro</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('9', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/admin/permissoes'); ?>" class="dropdown-item">Recursos
-											Humanos</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/pautas/fechar'); ?>" class="dropdown-item">Fechar
-											Pauta</a>
-									<?php endif; ?>
-									<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-										<a href="<?= site_url('colaboradores/pautas/fechadas'); ?>" class="dropdown-item">Listar
-											Pautas Fechadas</a>
-									<?php endif; ?>
-								</div>
-							</li>
-						<?php endif; ?>
-					<?php endif; ?>
-				</ul>
-				<div class="form-inline my-2 my-md-0">
-					<?php if (!isset($_SESSION) || $_SESSION['colaboradores']['id'] === null): ?>
-						<a href="<?= site_url('site/cadastrar'); ?>" class="nav-item nav-link">Cadastrar</a>
-						<a href="<?= site_url('site/login'); ?>" class="nav-item nav-link">Login</a>
-					<?php endif; ?>
-					<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
-						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-list-4"
-							aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-							<span class="navbar-toggler-icon"></span>
-						</button>
-						<div class="collapse navbar-collapse" id="navbar-list-4">
-							<ul class="navbar-nav">
-								<li class="nav-item dropdown">
-									<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-										data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<img id="avatar_menu" src="<?= $_SESSION['colaboradores']['avatar']; ?>" width="30"
-											height="30" class="rounded-circle">
-										<span class="apelido_colaborador">
-											<?= $_SESSION['colaboradores']['nome']; ?>
-										</span>
-									</a>
-									<div class="dropdown-menu vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
-										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item" href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
-											Notificações</a>
-										<a class="dropdown-item" href="<?= site_url('colaboradores/perfil'); ?>">Meu
-											Perfil</a>
-										<a class="dropdown-item" href="<?= site_url('site/logout'); ?>">Sair</a>
-									</div>
-								</li>
-							</ul>
-						</div>
-						<div class="collapse navbar-collapse" id="navbar-list-5">
-							<ul class="navbar-nav d-flex flex-row me-1">
-								<li class="nav-item me-3 me-lg-0">
-									<div>
-										<a class="link-white me-3 text-reset" href="<?= site_url('colaboradores/perfil/notificacoes'); ?>" id="navbarDropdownMenuLink"
-											role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
-												<?php if(isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] > 0)): ?>
-													<path
-														d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
-												<?php else: ?>
-													<path
-													d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
-												<?php endif; ?>
-											</svg>
-											<span class="badge badge-pill badge-danger"
-												style="float:right;margin-bottom:-10px;"><?= (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] == 0))?('0'):($_SESSION['colaboradores']['notificacoes']); ?></span>
-										</a>
-									</div>
-								</li>
-							</ul>
-						</div>
-					<?php endif; ?>
-				</div>
+	<div class="modal bg-light" style="opacity: 0.4; z-index:7000;" id="modal-loading" tabindex="-1"
+		aria-labelledby="modal-loadingLabel" aria-hidden="true">
+		<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Loading...</span>
 			</div>
 		</div>
-	</nav>
-</div>
+	</div>
 
+	<?php
+	$banner = 'https://yt3.googleusercontent.com/qd_fOR_7fiOlxePKpWniaJSMla9Bv1jRV0wxufCxhVWHJ657Bzmh3yaK1PTi9BydS-2wTnlGCg=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj';
+	if (file_exists('public/assets/banner.png')) {
+		$banner = base_url('public/assets/banner.png');
+	}
+	?>
+	<div class="container-fluid" style="background-image:url(<?= $banner; ?>); height: 16.5vw; background-size: 100%;">
+	</div>
 
+	<div class="container-fluid mb-3 vl-bg-c">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light vl-bg-c">
+			<div class="container">
+				<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-bs-toggle="collapse"
+					data-bs-target="#menuPrincipal" data-target="#menuPrincipal" aria-controls="menuPrincipal"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
 
-<body>
+				<div class="collapse navbar-collapse" id="menuPrincipal" style="">
+					<ul class="navbar-nav">
+						<li class="nav-item active">
+							<a class="nav-link" href="<?= site_url('site'); ?>">Principal</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos Publicados</a>
+						</li>
+						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
+							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+										aria-expanded="false">Pautas</a>
+									<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
+										<?php if (isset($_SESSION) && in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/pautas/'); ?>" class="dropdown-item">Ver Pautas</a>
+										<?php endif; ?>
+									</div>
+								</li>
+							<?php endif; ?>
+							<?php if (in_array('2', $_SESSION['colaboradores']['permissoes']) || in_array('3', $_SESSION['colaboradores']['permissoes']) || in_array('4', $_SESSION['colaboradores']['permissoes']) || in_array('5', $_SESSION['colaboradores']['permissoes']) || in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+										aria-expanded="false">Artigos</a>
+									<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
+										<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
+												class="dropdown-item">Escrever
+												Artigo</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos'); ?>" class="dropdown-item">Ver Todos
+												Artigos</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('3', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos/revisar'); ?>"
+												class="dropdown-item">Revisar</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('4', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos/narrar'); ?>"
+												class="dropdown-item">Narrar</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('5', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos/produzir'); ?>"
+												class="dropdown-item">Produzir</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/artigos/publicar'); ?>"
+												class="dropdown-item">Publicar</a>
+										<?php endif; ?>
+									</div>
+								</li>
+							<?php endif; ?>
+							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+										aria-expanded="false">Administração</a>
+									<div class="dropdown-menu vl-bg-c" aria-labelledby="dropdown07">
+										<?php if (isset($_SESSION) && in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/admin/administracao'); ?>"
+												class="dropdown-item">Configuração do Site</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/admin/financeiro'); ?>"
+												class="dropdown-item">Financeiro</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('9', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/admin/permissoes'); ?>"
+												class="dropdown-item">Recursos
+												Humanos</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/pautas/fechar'); ?>" class="dropdown-item">Fechar
+												Pauta</a>
+										<?php endif; ?>
+										<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+											<a href="<?= site_url('colaboradores/pautas/fechadas'); ?>" class="dropdown-item">Listar
+												Pautas Fechadas</a>
+										<?php endif; ?>
+									</div>
+								</li>
+							<?php endif; ?>
+						<?php endif; ?>
+					</ul>
+					<div class="navbar-nav align-items-center ms-auto">
+						<?php if (!isset($_SESSION) || $_SESSION['colaboradores']['id'] === null): ?>
+							<a href="<?= site_url('site/cadastrar'); ?>" class="nav-item nav-link">Cadastrar</a>
+							<a href="<?= site_url('site/login'); ?>" class="nav-item nav-link">Login</a>
+						<?php endif; ?>
+						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
+							<button class="navbar-toggler" type="button" data-toggle="collapse" data-bs-toggle="collapse"
+								data-bs-target="#navbar-list-4" aria-controls="navbarNav" aria-expanded="false"
+								aria-label="Toggle navigation">
+								<span class="navbar-toggler-icon"></span>
+							</button>
+							<div class="collapse navbar-collapse" id="navbar-list-4">
+								<ul class="navbar-nav">
+									<li class="nav-item dropdown">
+										<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+											role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false">
+											<img id="avatar_menu" src="<?= $_SESSION['colaboradores']['avatar']; ?>"
+												width="30" height="30" class="rounded-circle">
+											<span class="apelido_colaborador">
+												<?= $_SESSION['colaboradores']['nome']; ?>
+											</span>
+										</a>
+										<div class="dropdown-menu vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
+											<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item"
+												href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
+												Notificações</a>
+											<a class="dropdown-item" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+												Perfil</a>
+											<a class="dropdown-item" href="<?= site_url('site/logout'); ?>">Sair</a>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class="collapse navbar-collapse" id="navbar-list-5">
+								<ul class="navbar-nav d-flex flex-row me-1">
+									<li class="nav-item me-3 me-lg-0">
+										<div>
+											<a class="link-white me-3 text-reset"
+												href="<?= site_url('colaboradores/perfil/notificacoes'); ?>"
+												id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown"
+												aria-expanded="false">
+												<i class="bi bi-bell" style="font-size:25px;" <?php if (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] > 0)): ?> class="bi bi-bell"
+													<?php else: ?> class="bi bi-fill" <?php endif; ?>></i>
+												<span class="badge badge-counter badge-danger bg-danger"
+													style="float:right; margin-top:0px; margin-left:-20px;"><?= (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] == 0)) ? ('0') : ($_SESSION['colaboradores']['notificacoes']); ?></span>
+											</a>
+										</div>
+									</li>
+								</ul>
+							</div>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</div>
+
 	<?= $this->renderSection('content'); ?>
 
 	<div class="container-fluid bg-light pt-5 px-sm-3 px-md-5 vl-bg-c">
@@ -355,20 +384,9 @@ if (file_exists('public/assets/banner.png')) {
 		</p>
 	</div>
 
-
-	<div class="modal loading" id="modal-loading" tabindex="-1" aria-hidden="true">
-		<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center justify-content-center">
-			<div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
-				<span class="sr-only ">Loading...</span>
-			</div>
-		</div>
-	</div>
-
 </body>
 
-
 <script type="text/javascript">
-	$('.carousel').carousel();
 
 	$(document).ready(function () {
 		bsCustomFileInput.init()

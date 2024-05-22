@@ -26,7 +26,7 @@ use CodeIgniter\I18n\Time;
 	<?php endif; ?>
 	</div>
 
-	<div class="d-flex justify-content-center mb-5 text-left">
+	<div class="mb-5 text-left">
 		<form class="needs-validation w-100" novalidate="yes" method="post">
 			<div class="mb-3">
 				<label for="tipo_artigo">Tipo de Artigo</label>
@@ -293,8 +293,8 @@ use CodeIgniter\I18n\Time;
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
 				method: "GET",
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					$('.div-list-comentarios').html(retorno);
 				}
@@ -321,8 +321,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()
@@ -353,8 +353,8 @@ use CodeIgniter\I18n\Time;
 					contentType: false,
 					cache: false,
 					dataType: "json",
-					beforeSend: function() { $('#modal-loading').modal('show'); },
-					complete: function() { $('#modal-loading').modal('hide'); },
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
 					success: function(retorno) {
 						if (retorno.status) {
 							getComentarios()
