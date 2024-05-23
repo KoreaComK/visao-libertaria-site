@@ -366,8 +366,6 @@ use CodeIgniter\I18n\Time;
 						$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
 					}
 				} else {
-					$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
-					$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
 			}
