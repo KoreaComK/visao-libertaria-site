@@ -70,7 +70,7 @@ use CodeIgniter\I18n\Time;
 					</div>
 
 					<div class="text-center preview_imagem_div mb-3">
-						<image class="img-thumbnail" src="" data-toggle="tooltip" data-placement="top"
+						<image class="img-thumbnail img-preview-modal" src="" data-toggle="tooltip" data-placement="top"
 							id="preview_imagem" title="Preview da Imagem da Pauta" style="max-height: 200px;" />
 					</div>
 				</form>
@@ -174,7 +174,7 @@ use CodeIgniter\I18n\Time;
 			});
 		} else {
 			$('#pautas_form').trigger('reset');
-			$('.img-thumbnail').attr('src', '');
+			$('.img-preview-modal').attr('src', '');
 			$('.btn-excluir').hide();
 		}
 	});
@@ -252,7 +252,7 @@ use CodeIgniter\I18n\Time;
 	$('.btn-reset').on('click', function () {
 		$('#link').attr('disabled', false);
 		$('#pautas_form').trigger('reset');
-		$('.img-thumbnail').attr('src', '');
+		$('.img-preview-modal').attr('src', '');
 		$('.preview_imagem_div').hide();
 	})
 
