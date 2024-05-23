@@ -582,7 +582,7 @@ class Pautas extends BaseController
 		}
 		foreach ($xp->query("//meta[@property='og:image']") as $el) {
 			$l2 = parse_url($el->getAttribute("content"));
-			if ($l2['scheme']) {
+			if (isset($l2['scheme'])) {
 				$img = $el->getAttribute("content");
 			}
 		}
