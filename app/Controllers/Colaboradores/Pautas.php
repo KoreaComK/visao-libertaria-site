@@ -663,7 +663,7 @@ class Pautas extends BaseController
 			$dataMaximaPauta = (int)$configuracaoModel->find('pauta_dias_antigo')['config_valor'];
 
 			$a = explode('://',$img);
-			if($a > 1) {
+			if(count($a) > 1) {
 				$b = explode('/',$a[1]);
 				foreach($b as $k => $c) {
 					$b[$k] = rawurlencode($c);
