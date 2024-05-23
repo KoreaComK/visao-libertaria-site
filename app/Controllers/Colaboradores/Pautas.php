@@ -673,6 +673,10 @@ class Pautas extends BaseController
 			}
 			$img = implode('://',$a);
 
+			if (!is_array(@getimagesize($img))) {
+				$img = null;	
+			}
+
 			$retorno = [
 				'status' => true,
 				'titulo' => html_entity_decode($titulo),
