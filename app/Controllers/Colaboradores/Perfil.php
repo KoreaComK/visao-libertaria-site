@@ -213,19 +213,19 @@ class Perfil extends BaseController
 						<td>';
 			if ($artigo['escrito_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_escritor'] * $artigo['multiplicador_escrito'] / 100 ;
-				$html.='<label class="badge badge-info">Escritor</label>';
+				$html.='<label class="badge bg-info m-1">Escritor</label>';
 			}
 			if ($artigo['revisado_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_revisor'] * $artigo['multiplicador_revisado'] / 100 ;
-				$html.='<label class="badge badge-info">Revisor</label>';
+				$html.='<label class="badge bg-info m-1">Revisor</label>';
 			}
 			if ($artigo['narrado_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_narrador'] * $artigo['multiplicador_narrado'] / 100 ;
-				$html.='<label class="badge badge-info">Narrador</label>';
+				$html.='<label class="badge bg-info m-1">Narrador</label>';
 			}
 			if ($artigo['produzido_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_produtor'] * $artigo['multiplicador_produzido'] / 100 ;
-				$html.='<label class="badge badge-info">Produtor</label>';
+				$html.='<label class="badge bg-info m-1">Produtor</label>';
 			}
 			$html.='
 						</td>

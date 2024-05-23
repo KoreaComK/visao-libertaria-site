@@ -26,7 +26,7 @@ use CodeIgniter\I18n\Time;
 							<span><?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?></span>
 						</div>
 						<div class="mb-3">
-							<div class="badge badge-secondary m-1 p-1">Sugerido: <?=$pauta['colaborador']['apelido']; ?></div>
+							<div class="badge bg-secondary m-1 p-1">Sugerido: <?=$pauta['colaborador']['apelido']; ?></div>
 						</div>
 						<div>
 							<h3 class="mb-3"><?= $pauta['titulo'];?></h3>

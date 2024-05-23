@@ -14,7 +14,7 @@ use CodeIgniter\I18n\Time;
 		</h3>
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
-	<div class="d-flex justify-content-center mb-5 text-left">
+	<div class="d-flex justify-content-center mb-5 text-start">
 		<form class="needs-validation w-50" novalidate="yes" method="post" id="pautas_form">
 			<div class="mb-1">
 				<label class="mb-0"><small>Apelido</small></label>
@@ -41,21 +41,21 @@ use CodeIgniter\I18n\Time;
 				<label class="mb-0"><small>Email confirmado em</small></label>
 				<div class="input-group">
 					<input type="text" class="form-control form-control-sm" disabled
-						value="<?= Time::createFromFormat('Y-m-d H:i:s', $colaboradores['confirmado_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>">
+						value="<?= ($colaboradores['confirmado_data']!==NULL)?(Time::createFromFormat('Y-m-d H:i:s', $colaboradores['confirmado_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss')):(''); ?>">
 				</div>
 			</div>
 			<div class="mb-1">
 				<label class="mb-0"><small>Criado em</small></label>
 				<div class="input-group">
 					<input type="text" class="form-control form-control-sm" disabled
-						value="<?= Time::createFromFormat('Y-m-d H:i:s', $colaboradores['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>">
+						value="<?= ($colaboradores['confirmado_data']!==NULL)?Time::createFromFormat('Y-m-d H:i:s', $colaboradores['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'):(''); ?>">
 				</div>
 			</div>
 			<div class="mb-1">
 				<label class="mb-0"><small>Última Atualização</small></label>
 				<div class="input-group">
 					<input type="text" class="form-control form-control-sm" disabled
-						value="<?= Time::createFromFormat('Y-m-d H:i:s', $colaboradores['atualizado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>">
+						value="<?= ($colaboradores['confirmado_data']!==NULL)?Time::createFromFormat('Y-m-d H:i:s', $colaboradores['atualizado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'):(''); ?>">
 				</div>
 			</div>
 			<?php if ($colaboradores['excluido'] != NULL): ?>
@@ -63,7 +63,7 @@ use CodeIgniter\I18n\Time;
 					<label class="mb-0"><small>Excluído em</small></label>
 					<div class="input-group">
 						<input type="text" class="form-control form-control-sm" disabled
-							value="<?= Time::createFromFormat('Y-m-d H:i:s', $colaboradores['excluido'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>">
+							value="<?= ($colaboradores['confirmado_data']!==NULL)?Time::createFromFormat('Y-m-d H:i:s', $colaboradores['excluido'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'):(''); ?>">
 					</div>
 				</div>
 			<?php endif; ?>
@@ -71,13 +71,9 @@ use CodeIgniter\I18n\Time;
 				<label class="mb-0"><small>Atribuições</small></label>
 				<div class="d-flex flex-wrap m-n1">
 					<?php foreach ($atribuicoes as $atribuicao): ?>
-						<div class="btn-group-toggle p-1" data-toggle="buttons">
-							<label class="atribuicoes btn btn-secondary btn-sm vl-bg-c">
-								<input value="<?= $atribuicao['id']; ?>" name="atribuicoes[<?= $atribuicao['id']; ?>]"
-									type="checkbox" <?= in_array($atribuicao['id'], $colaboradores_atribuicoes) ? ('checked') : (''); ?>>
-								<?= $atribuicao['nome']; ?>
-							</label>
-						</div>
+							<input class="btn-check" id="<?= $atribuicao['id']; ?>" value="<?= $atribuicao['id']; ?>" name="atribuicoes[<?= $atribuicao['id']; ?>]"
+									type="checkbox" <?= in_array($atribuicao['id'], $colaboradores_atribuicoes) ? ('checked') : (''); ?> autocomplete="off">
+							<label class="atribuicoes m-1 btn btn-sm btn-outline-secondary" for="<?= $atribuicao['id']; ?>"><?= $atribuicao['nome']; ?></label>
 					<?php endforeach; ?>
 				</div>
 			</div>

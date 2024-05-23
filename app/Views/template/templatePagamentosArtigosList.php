@@ -41,7 +41,7 @@ use CodeIgniter\I18n\Time;
 						<?= $artigo['produzido']; ?>
 					</td>
 					<td>
-						<?= $artigo['total_pontuacao']; ?>
+						<?= number_format($artigo['total_pontuacao'], 1, ',', '.'); ?>
 						<?php $total += $artigo['total_pontuacao']; ?>
 					</td>
 				</tr>

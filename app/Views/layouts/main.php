@@ -291,7 +291,7 @@
 												aria-expanded="false">
 												<i class="bi bi-bell" style="font-size:25px;" <?php if (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] > 0)): ?> class="bi bi-bell"
 													<?php else: ?> class="bi bi-fill" <?php endif; ?>></i>
-												<span class="badge badge-counter badge-danger bg-danger"
+												<span class="badge badge-counter bg-danger"
 													style="float:right; margin-top:0px; margin-left:-20px;"><?= (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] == 0)) ? ('0') : ($_SESSION['colaboradores']['notificacoes']); ?></span>
 											</a>
 										</div>

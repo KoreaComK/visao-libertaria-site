@@ -318,19 +318,19 @@ use CodeIgniter\I18n\Time;
 									<td>
 										<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_escritor']; ?>
-											<label class="badge badge-info">Escritor</label>
+											<label class="badge bg-info m-1">Escritor</label>
 										<?php endif; ?>
 										<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_revisor']; ?>
-											<label class="badge badge-info">Revisor</label>
+											<label class="badge bg-info m-1">Revisor</label>
 										<?php endif; ?>
 										<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_narrador']; ?>
-											<label class="badge badge-info">Narrador</label>
+											<label class="badge bg-info m-1">Narrador</label>
 										<?php endif; ?>
 										<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_produtor']; ?>
-											<label class="badge badge-info">Produtor</label>
+											<label class="badge bg-info m-1">Produtor</label>
 										<?php endif; ?>
 									</td>
 									<td>

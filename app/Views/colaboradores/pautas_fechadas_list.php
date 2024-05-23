@@ -19,7 +19,7 @@
 						<strong class="d-block">
 							<?= $pauta['titulo']; ?>
 						</strong>
-						<small><a href="<?= site_url('colaboradores/pautas/fechadas/'.$pauta['id']); ?>"> Ler todas as pautas.</a></small>
+						<small><a href="<?= site_url('colaboradores/pautas/fechadas/'.$pauta['id']); ?>"> Ler todas as pautas</a></small>
 					</p>
 				</div>
 			</div>

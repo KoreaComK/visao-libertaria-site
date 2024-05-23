@@ -6,39 +6,46 @@ use CodeIgniter\I18n\Time;
 <?php if ($pautasList['pautas'] !== NULL && !empty($pautasList['pautas'])): ?>
 	<?php foreach ($pautasList['pautas'] as $pauta): ?>
 		<div class="media text-muted pt-3 border-bottom row " id="pauta_<?= $pauta['id']; ?>">
-			<div class="col-12">
-				<image class="mr-2 rounded img-thumbnail float-left" for="btn-check-outlined"
-					style="max-height: 140px; max-width:250px;" src="<?= $pauta['imagem']; ?>" />
-				<p class="media-body pb-3 mb-0 lh-125  border-gray">
-					<?php if($pauta['nome_pauta_fechada'] != NULL): ?>
-						<strong class="text-danger d-block">
-							Pauta fechada - <?= $pauta['nome_pauta_fechada']; ?>
-						</strong>
-					<?php endif; ?>
-					<strong class="d-block">
-						<?php if ($pauta['pauta_antiga'] == 'S'): ?>
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" alt="Pauta Antiga" fill="currentColor"
-								class="bi bi-patch-exclamation-fill text-danger" viewBox="0 0 16 16">
-								<path
-									d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-							</svg>
+			<div class="col-12 row">
+				<div class="col-2">
+					<image class="mr-2 rounded img-thumbnail float-left" for="btn-check-outlined" style="max-width:inherit;"
+						src="<?= $pauta['imagem']; ?>" />
+				</div>
+				<div class="col-10">
+					<p class="media-body pb-3 mb-0 lh-125  border-gray">
+						<?php if ($pauta['nome_pauta_fechada'] != NULL): ?>
+							<strong class="text-danger d-block">
+								Pauta fechada - <?= $pauta['nome_pauta_fechada']; ?>
+							</strong>
 						<?php endif; ?>
-						<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> -
-						<?= $pauta['titulo']; ?>
-					</strong>
-					<?= $pauta['texto']; ?> - <a href="<?=site_url('colaboradores/pautas/detalhe/'.$pauta['id']); ?>" target="_blank"><?=($pauta['qtde_comentarios']>0)?($pauta['qtde_comentarios']):('Nenhum'); ?><?=($pauta['qtde_comentarios']>1)?(' comentários'):(' comentário'); ?></a><br />
-					<a href="<?= $pauta['link']; ?>" target="_blank">Ler notícia original.</a><br />
-					<small class="badge badge-primary m-1 p-1">Sugerido:
-						<?= $pauta['apelido']; ?>
-					</small>
+						<strong class="d-block">
+							<?php if ($pauta['pauta_antiga'] == 'S'): ?>
+								<i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 18px;"></i>
+							<?php endif; ?>
+							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> -
+							<?= $pauta['titulo']; ?>
+						</strong>
+						<?= $pauta['texto']; ?><br/>
+						<small class="badge bg-primary m-1 p-1">Sugerido:
+							<?= $pauta['apelido']; ?>
+						</small>
+					<div class="d-flex">
+						<a data-bs-toggle="modal" data-bs-target="#modalComentariosPauta" class="btn btn-outline-success m-1"
+						data-bs-texto="<?= $pauta['texto']; ?>" data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
+							href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>"
+							target="_blank"><?= ($pauta['qtde_comentarios'] > 0) ? ($pauta['qtde_comentarios']) : ('Nenhum'); ?><?= ($pauta['qtde_comentarios'] > 1) ? (' comentários') : (' comentário'); ?></a>
+						<a class="btn btn-outline-info m-1" href="<?= $pauta['link']; ?>" target="_blank">Ler notícia
+							original</a>
+					</div>
+				</div>
 			</div>
-			<?php if($pauta['nome_pauta_fechada'] == NULL): ?>
-				<div class="col-12 row text-center mb-3">
-					<small class="col-9 mt-3">
+			<?php if ($pauta['nome_pauta_fechada'] == NULL): ?>
+				<div class="col-12 row justify-content-between mb-3">
+					<small class="col-2 mt-3 text-center">
 						<button type="button" data-information="<?= $pauta['id']; ?>"
 							class="btn btn-danger btn-sm descartar">Descartar</button>
 					</small>
-					<small class="col-3 mt-3">
+					<small class="col-6 col-md-4 mt-3 text-center">
 						<button type="button" data-information="<?= $pauta['id']; ?>"
 							class="btn btn-success btn-sm reservar <?= ($pauta['reservado'] != null) ? ('collapse') : (''); ?>"
 							id="btn-reservar-<?= $pauta['id']; ?>">Reservar</button>
@@ -55,7 +62,7 @@ use CodeIgniter\I18n\Time;
 						<button type="button" data-information="<?= $pauta['id']; ?>"
 							class="btn btn-warning btn-sm btn-cancelar btn-cancelar-<?= $pauta['id']; ?> <?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>">Cancelar
 							Reserva</button>
-						<div class="<?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>" id="div_tag_<?= $pauta['id']; ?>">
+						<div class="text-center <?= ($pauta['reservado'] == null) ? ('collapse') : (''); ?>" id="div_tag_<?= $pauta['id']; ?>">
 							<label class="badge bg-primary badge-<?= $pauta['id']; ?>">
 								<?= $pauta['tag_fechamento']; ?>
 							</label>
