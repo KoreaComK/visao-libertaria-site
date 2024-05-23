@@ -107,7 +107,7 @@ class Pautas extends BaseController
 
 		if ($this->request->isAJAX()) {
 			$post = service('request')->getPost();
-
+			
 			if(isset($post['link_pauta'])) {
 				$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta']);
 			
@@ -186,6 +186,12 @@ class Pautas extends BaseController
 				if(!$isAdmin && ($gerenciadorTextos->contaPalavras($post['texto']) > $data['config']['pauta_tamanho_maximo'] || $gerenciadorTextos->contaPalavras($post['texto']) < $data['config']['pauta_tamanho_minimo'])) {
 					return  $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', true);
 				}
+				
+				$countPautas = $pautasModel->isPautaCadastrada($post['link']);
+				if ($countPautas != 0) {
+					return $retorno->retorno(false, 'Pauta já cadastrada', true);
+				}
+
 				$dados = array();
 				$dados['colaboradores_id'] = $session['id'];
 				$dados['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
@@ -674,7 +680,7 @@ class Pautas extends BaseController
 			$img = implode('://',$a);
 
 			if (!is_array(@getimagesize($img))) {
-				$img = "";	
+				$img = "";
 			}
 
 			$retorno = [
