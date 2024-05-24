@@ -50,7 +50,46 @@
 		<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
 	<?php endif; ?>
 
+	<!-- Font Awesome -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+	<!-- MDB -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
+
 	<style type="text/css">
+		.btn-link {
+
+		background: linear-gradient(to right, currentColor 0%, currentColor 100%);
+		background-position-x: 0%;
+		background-position-y: 0%;
+		background-repeat: repeat;
+		background-size: auto;
+		background-size: 0px 6%;
+		background-repeat: no-repeat;
+		background-position: left 100%;
+		-webkit-transition-duration: 0.5s;
+		transition-duration: 0.5s;
+		font-weight: inherit;
+		padding: 0;
+		}
+		.btn-link:hover {
+		background-size: 100% 6%;
+		}
+		.card-title {
+			line-height: 1.5;
+		}
+
+		.pointer+.pointer:before{
+			content: "\2022";
+			color: inherit;
+			padding-left: .35rem;
+			padding-right: .25rem;
+			opacity: 0.8;
+		}
+
+
+
 		.vl-bg-c,
 		.btn-outline-secondary,
 		.btn-primary {
@@ -110,8 +149,10 @@
 	<link rel="icon" type="image/x-icon"
 		href="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
 
+
 	<link rel="stylesheet"
 		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
+		
 </head>
 
 <body>

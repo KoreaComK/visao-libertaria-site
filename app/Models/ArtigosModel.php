@@ -41,7 +41,8 @@ class ArtigosModel extends Model
 
 	public function getArtigosHome($limit = 21){
 		$this->whereIn('artigos.fase_producao_id', array(6,7));
-		$this->orderBy('artigos.criado', 'DESC');
+		$this->orderBy('artigos.publicado', 'DESC');
+		$this->join('colaboradores','artigos.escrito_colaboradores_id = colaboradores.id');
 		$this->limit($limit);
 		return $this->get()->getResultArray();
 	}
