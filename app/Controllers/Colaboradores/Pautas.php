@@ -679,7 +679,7 @@ class Pautas extends BaseController
 			}
 			$img = implode('://',$a);
 
-			if (!is_array(@getimagesize($img))) {
+			if (empty($img) || !is_array(@getimagesize($img))) {
 				$img = "";
 			}
 
