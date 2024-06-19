@@ -9,61 +9,34 @@ use CodeIgniter\I18n\Time;
 <?= $this->section('content'); ?>
 
 <style>
-	.multiple-card-slider .carousel-inner {
-		padding: 1em;
+	.main-carousel .carousel-cell {
+		width: 28%;
+		height: auto;
+		margin-right: 0.75rem;
+		counter-increment: carousel-cell;
 	}
 
-	.multiple-card-slider .card {
-		margin: 0 0.5em;
-		box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
-		border: none;
-	}
-
-	.multiple-card-slider .carousel-control-prev,
-	.multiple-card-slider .carousel-control-next {
-		background-color: #e1e1e1;
-		width: 3em;
-		height: 3em;
-		border-radius: 50%;
-		top: 50%;
-		transform: translateY(-50%);
-	}
-
-	.carousel-control-prev-icon,
-	.carousel-control-next-icon {
-		height: 2.5rem;
-	}
-
-	@media (min-width: 768px) {
-
-		.multiple-card-slider .carousel-item {
-			margin-right: 0;
-			display: block;
-			backface-visibility: visible;
-		}
-
-		.multiple-card-slider .carousel-item-50 {
-			flex: 0 0 calc(100% / 2);
-		}
-
-		.multiple-card-slider .carousel-item-25 {
-			flex: 0 0 calc(100% / 4);
-		}
-
-		.multiple-card-slider .carousel-inner {
-			display: flex;
-		}
+	.main-carousel-videos .carousel-cell {
+		width: 40%;
+		height: auto;
+		margin-right: 0.75rem;
+		counter-increment: carousel-cell;
 	}
 
 	@media (max-width: 768px) {
-		.div-slider {
-			display: none;
+		.main-carousel .carousel-cell {
+			width: 50%;
 		}
-		
-	}
+
+		.main-carousel-videos .carousel-cell {
+			width: 100%;
+		}
+
+}
 </style>
 
-
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
 
 <div class="container-fluid py-3">
@@ -237,135 +210,106 @@ use CodeIgniter\I18n\Time;
 				</div>
 			</div> -->
 
-			<section class="col-lg-12 div-slider">
+			<section class="col-lg-12">
 
-				<div class="multiple-card-slider">
-					<div id="carouselExampleControls2" class="carousel" data-bs-ride="false">
-						<div class="carousel-inner">
-							<?php foreach ($banner as $chave => $b): ?>
-								<?php if ($chave > 3): ?>
-									<div class="carousel-item carousel-item-25 <?= ($chave == 3) ? ('active') : (''); ?>">
-										<div class="card bg-image hover-zoom">
-											<!-- Card Image -->
-											<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
-												style="height: inherit;">
-											<!-- Card Image overlay -->
-											<div class="card-img-overlay d-flex flex-column p-3 p-sm-4">
-												<!-- <div>
+				<div class="main-carousel mb-4 mt-4">
+					<?php foreach ($banner as $chave => $b): ?>
+						<?php if ($chave > 3): ?>
+							<div class="carousel-cell mb-3">
+								<div class="card bg-image hover-zoom round-5">
+									<!-- Card Image -->
+									<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
+										style="height: inherit;">
+									<!-- Card Image overlay -->
+									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4">
+										<!-- <div>
 													<a href="#" class="badge bg-dark mb-2"><i
 															class="fas fa-circle me-2 small fw-bold"></i>Travel</a>
 												</div> -->
-												<div class="w-100 mt-auto">
-													<!-- Card title -->
-													<h4 class="text-white"><a
+										<div class="w-100 mt-auto">
+											<!-- Card title -->
+											<h4 class="text-white"><a
+													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+													class="text-white btn-link"><?= $b['titulo']; ?></a>
+											</h4>
+											<!-- Card info -->
+											<ul
+												class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
+												<li class="nav-item">
+													<div class="text-white">Por <a
 															href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-															class="text-white btn-link"><?= $b['titulo']; ?></a>
-													</h4>
-													<!-- Card info -->
-													<ul
-														class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
-														<li class="nav-item">
-															<div class="text-white">por <a
-																	href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-																	class="text-white btn-link"><?= $b['apelido']; ?></a>
-															</div>
-														</li>
-														<li class="nav-item">
-															<?= Time::createFromFormat('Y-m-d H:i:s', $b['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
-														</li>
-													</ul>
-												</div>
-											</div>
+															class="text-white btn-link"><?= $b['apelido']; ?></a>
+													</div>
+												</li>
+												<li class="nav-item">
+													<?= Time::createFromFormat('Y-m-d H:i:s', $b['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+												</li>
+											</ul>
 										</div>
 									</div>
-								<?php endif; ?>
-							<?php endforeach; ?>
-						</div>
-						<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-							data-bs-slide="prev">
-							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Previous</span>
-						</button>
-						<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-							data-bs-slide="next">
-							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Next</span>
-						</button>
-					</div>
+								</div>
+							</div>
+						<?php endif; ?>
+					<?php endforeach; ?>
 				</div>
 
 			</section>
 
-			<section class="col-lg-12 div-slider">
+			<section class="col-lg-12">
 
 				<div class="m-4">
 					<h2 class="m-0"><i class="bi bi-hourglass-top me-2"></i>Últimos vídeos do Visão Libertária</h2>
 					<p>Os vídeos mais recentes pra você se manter informado.</p>
 				</div>
 
-				<div class="multiple-card-slider">
-					<div id="carouselExampleControls" class="carousel" data-bs-ride="false">
-						<div class="carousel-inner">
-							<?php for ($max = 0; $max < 5; $max++): ?>
-								<div class="carousel-item carousel-item-50 active">
-									<div class="card mb-3 shadow-0">
-										<!-- Card img -->
-										<div class="position-relative bg-image hover-overlay shadow-1-strong rounded"
-											data-mdb-ripple-init data-mdb-ripple-color="light">
-											<img class="card-img" alt="Card image" style="height:auto;"
-												src="<?= $artigos[$max]['imagem']; ?>">
-											<a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>">
-												<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
-											</a>
-											<!-- <div class="card-img-overlay d-flex align-items-start flex-column p-3">
+				<div class="main-carousel-videos mb-4 mt-4">
+					<?php for ($max = 0; $max < 5; $max++): ?>
+						<div class="carousel-cell">
+							<div class="card mb-3 shadow-0">
+								<!-- Card img -->
+								<div class="position-relative bg-image hover-overlay shadow-1-strong rounded"
+									data-mdb-ripple-init data-mdb-ripple-color="light">
+									<img class="card-img" alt="Card image" style="height:auto;"
+										src="<?= $artigos[$max]['imagem']; ?>">
+									<a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>">
+										<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
+									</a>
+									<!-- <div class="card-img-overlay d-flex align-items-start flex-column p-3">
 												<div class="w-100 mt-auto">
 													<a href="#" class="badge text-bg-warning mb-2"><i
 															class="fas fa-circle me-2 small fw-bold"></i>Technology</a>
 												</div>
 											</div> -->
-										</div>
-										<div class="card-body px-3 pt-3">
-											<h4 class="card-title"><a
-													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-													class="btn-link text-reset fw-bold"><?= $artigos[$max]['titulo']; ?></a>
-											</h4>
-											<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
-											<!-- Card info -->
-											<ul class="nav nav-divider align-items-center">
-												<li class="nav-item pointer">
-													<div class="d-flex align-items-center position-relative">
-														<?php if ($artigos[$max]['avatar'] != NULL && $artigos[$max]['avatar'] != ""): ?>
-															<div class="avatar avatar-xs">
-																<img class="avatar-img rounded-circle"
-																	src="<?= $artigos[$max]['avatar']; ?>" style="width:45px;"
-																	alt="avatar">
-															</div>
-														<?php endif; ?>
-														<span class="ms-3">por <a
-																href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-																class="stretched-link text-reset btn-link"><?= $artigos[$max]['apelido']; ?></a></span>
-													</div>
-												</li>
-												<li class="nav-item pointer">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $artigos[$max]['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
-												</li>
-											</ul>
-										</div>
-									</div>
 								</div>
-							<?php endfor; ?>
+								<div class="card-body px-3 pt-3">
+									<h4 class="card-title"><a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+											class="btn-link text-reset fw-bold"><?= $artigos[$max]['titulo']; ?></a>
+									</h4>
+									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
+									<!-- Card info -->
+									<ul class="nav nav-divider align-items-center">
+										<li class="nav-item pointer">
+											<div class="d-flex align-items-center position-relative">
+												<?php if ($artigos[$max]['avatar'] != NULL && $artigos[$max]['avatar'] != ""): ?>
+													<div class="avatar avatar-xs">
+														<img class="avatar-img rounded-circle"
+															src="<?= $artigos[$max]['avatar']; ?>" style="width:45px;"
+															alt="avatar">
+													</div>
+												<?php endif; ?>
+												<span class="ms-3">por <a
+														href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+														class="stretched-link text-reset btn-link"><?= $artigos[$max]['apelido']; ?></a></span>
+											</div>
+										</li>
+										<li class="nav-item pointer">
+											<?= Time::createFromFormat('Y-m-d H:i:s', $artigos[$max]['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+										</li>
+									</ul>
+								</div>
+							</div>
 						</div>
-						<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-							data-bs-slide="prev">
-							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Previous</span>
-						</button>
-						<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-							data-bs-slide="next">
-							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Next</span>
-						</button>
-					</div>
+					<?php endfor; ?>
 				</div>
 			</section>
 
@@ -481,50 +425,22 @@ use CodeIgniter\I18n\Time;
 
 
 <script type="text/javascript">
-	$('.multiple-card-slider .carousel').each(function (e) {
-		var currentCarouselId = '#' + $(this).attr('id');
-		const multipleItemCarousel = document.querySelector(currentCarouselId);
-		const carousel = new bootstrap.Carousel(multipleItemCarousel, {
-			interval: false
-		})
-		var carouselWidth = $(currentCarouselId + ' .carousel-inner')[0].scrollWidth;
-		var cardWidth = $(currentCarouselId + ' .carousel-item').width();
-		var scrollPosition = 0;
-		var tamanho = 0;
-		var tempo = 0;
+	$('.main-carousel').flickity({
+		// options
+		cellAlign: 'left',
+		contain: true,
+		freeScroll: true,
+		wrapAround: true,
+		groupCells: true
+	});
 
-		if ($(currentCarouselId + ' .carousel-item').hasClass('carousel-item-50')) {
-			tamanho = 2;
-			tempo = 3000;
-		}
-		if ($(currentCarouselId + ' .carousel-item').hasClass('carousel-item-25')) {
-			tamanho = 4;
-			tempo = 5000;
-		}
-
-		var intervalId = window.setInterval(function () {
-			$(currentCarouselId + ' .carousel-control-next').trigger('click');
-		}, tempo);
-
-		$(currentCarouselId + ' .carousel-control-next').on('click', function (e) {
-			if (scrollPosition < (carouselWidth - (cardWidth * (tamanho + 1)))) {
-				scrollPosition = scrollPosition + cardWidth;
-				$(currentCarouselId + ' .carousel-inner').animate({ scrollLeft: scrollPosition }, 350);
-			} else {
-				scrollPosition = 0;
-				$(currentCarouselId + ' .carousel-inner').animate({ scrollLeft: scrollPosition }, 350);
-			}
-		});
-		$(currentCarouselId + ' .carousel-control-prev').on('click', function () {
-			if (scrollPosition >= cardWidth) {
-				scrollPosition = scrollPosition - cardWidth;
-				$(currentCarouselId + ' .carousel-inner').animate({ scrollLeft: scrollPosition }, 350);
-			} else {
-				scrollPosition = carouselWidth - (cardWidth * tamanho);
-				$(currentCarouselId + ' .carousel-inner').animate({ scrollLeft: scrollPosition }, 350);
-			}
-		});
-
+	$('.main-carousel-videos').flickity({
+		// options
+		cellAlign: 'left',
+		contain: true,
+		freeScroll: true,
+		wrapAround: true,
+		groupCells: true
 	});
 </script>
 <?= $this->endSection(); ?>

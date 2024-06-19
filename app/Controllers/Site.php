@@ -81,6 +81,7 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
 
@@ -117,6 +118,7 @@ class Site extends BaseController
 		$data = array();
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		//$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 
 		$artigosModel->where('url_friendly', $url_friendly);
@@ -126,13 +128,34 @@ class Site extends BaseController
 			$data['artigo'] = $query->getRowArray();
 
 			//$data['artigo']['categorias'] = $artigosCategoriasModel->getCategoriasArtigo($data['artigo']['id']);
-			$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
-			
+			//$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
+			$data['artigo']['colaboradores'] = array();
+			$data['artigo']['colaboradores']['sugerido'] = $colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id']);
+			$data['artigo']['colaboradores']['escrito'] = $colaboradoresModel->find($data['artigo']['escrito_colaboradores_id']);
+			$data['artigo']['colaboradores']['revisado'] = $colaboradoresModel->find($data['artigo']['revisado_colaboradores_id']);
+			$data['artigo']['colaboradores']['narrado'] = $colaboradoresModel->find($data['artigo']['narrado_colaboradores_id']);
+			$data['artigo']['colaboradores']['produzido'] = $colaboradoresModel->find($data['artigo']['produzido_colaboradores_id']);
+
 			$data['meta'] = array();
 			$data['meta']['title'] = $data['artigo']['titulo'];
 			$data['meta']['image'] = $data['artigo']['imagem'];
 			$data['meta']['description'] = addslashes(substr($data['artigo']['texto_revisado'],0,250)).'...';
 			
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->whereIn('fase_producao_id', array(6, 7));
+			$artigosModel->where('publicado > ',$data['artigo']['publicado']);
+			$artigosModel->orderBy('publicado', 'ASC');
+			$artigosModel->limit(1);
+			$data['artigo']['proximo'] = $artigosModel->get()->getResultArray();
+			unset($artigosModel);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->whereIn('fase_producao_id', array(6, 7));
+			$artigosModel->where('publicado < ',$data['artigo']['publicado']);
+			$artigosModel->orderBy('publicado', 'DESC');
+			$artigosModel->limit(1);
+			$data['artigo']['anterior'] = $artigosModel->get()->getResultArray();
+
+
 			return view('artigo', $data);
 		} else {
 			return redirect()->to(base_url() . 'site/artigos');

@@ -20,7 +20,7 @@
 
 				<?php if ($pager->hasNextPage()) : ?>
 					<li class="page-item">
-						<a class="page-link vl-bg-c" href="<?= $pager->getNextPage() ?>" aria-label="Próximo">
+						<a class="page-link vl-bg-c next_page" href="<?= $pager->getNextPage() ?>" aria-label="Próximo">
 							Próximo
 						</a>
 					</li>
