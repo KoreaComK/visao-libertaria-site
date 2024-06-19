@@ -7,20 +7,45 @@ use CodeIgniter\I18n\Time;
 
 <?= $this->section('content'); ?>
 
+
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+	integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"
+	async></script>
+
+<script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
+
+
 <div class="container w-auto">
-	<div class="m-2 text-center">
+	<section class="pt-4 pb-4">
+		<div class="container">
+			<div class="row">
+				<div class="col-12 p-0">
+					<div class="bg-dark p-4 text-center rounded-4">
+						<h1 class="text-white"> Pautas/Notícias importantes dos últimos dias </h1>
+						<nav class="d-flex justify-content-center" aria-label="breadcrumb">
+							<ol class="breadcrumb breadcrumb-dark m-0">
+								<li class="breadcrumb-item "><a href="<?= site_url(); ?>" class="text-white"><i
+											class="bi bi-house me-1"></i>
+										Home</a></li>
+								<li class="breadcrumb-item active text-secondary">
+									Pautas/Notícias importantes dos últimos dias
+								</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="mb-4 text-center">
 		<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
 			data-bs-titulo-modal="Cadastre uma pauta">
 			Sugerir pauta
 		</button>
 	</div>
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">
-			<?= $titulo; ?>
-		</h3>
-	</div>
-	<div class="pautas-list p-3 row"></div>
+	<div class="pautas-list row"></div>
 </div>
+
 
 <div class="modal fade" id="modalSugerirPauta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -360,7 +385,7 @@ use CodeIgniter\I18n\Time;
 						$('#pauta_antiga').val('S');
 						popMessage('ATENÇÃO!', retorno.mensagem, TOAST_STATUS.INFO);
 					}
-					if(retorno.imagem == "") {
+					if (retorno.imagem == "") {
 						$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
 						$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
 					}

@@ -202,18 +202,12 @@
 				<div class="d-md-flex justify-content-between align-items-center my-2">
 					<!-- Top bar left -->
 					<ul class="nav">
-						<?php if (!isset($_SESSION) || $_SESSION['colaboradores']['id'] === null): ?>
-							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('site/cadastrar'); ?>">Cadastre-se</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="<?= site_url('site/login'); ?>">Acessar</a>
-							</li>
-						<?php endif; ?>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do colaborador</a>
+								<a class="nav-link ps-0" href="<?= site_url('site'); ?>">Voltar ao site</a>
 							</li>
+						<?php endif; ?>
+						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('admin/dashboard'); ?>">Administração</a>
 							</li>
@@ -259,16 +253,16 @@
 				<div class="collapse navbar-collapse" id="menuPrincipal">
 					<ul class="navbar-nav h6">
 						<li class="nav-item active">
-							<a class="nav-link" href="<?= site_url('site'); ?>">Home</a>
+							<a class="nav-link" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Dashboard</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos dos colaboradores</a>
+							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos</a>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
 							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
 									<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
-										aria-expanded="false">Pautas/Notícias</a>
+										aria-expanded="false">Pautas</a>
 								</li>
 							<?php endif; ?>
 							<!--
@@ -334,8 +328,8 @@
 									</div>
 								</li>
 							<?php endif; ?>
-										-->
 						<?php endif; ?>
+										-->
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
@@ -386,112 +380,16 @@
 
 	<?= $this->renderSection('content'); ?>
 
-	<footer class="pb-0">
+	<footer class="mb-3">
 		<div class="container">
-			<hr>
-			<!-- Widgets START -->
-			<div class="row pt-5">
-				<!-- Footer Widget -->
-				<div class="col-md-6 col-lg-4 mb-4">
-					<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
-						src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
-					<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
-					<p class="mt-2 lh-sm fw-light"><?= $_SESSION['site_config']['texto_rodape']; ?></p>
-				</div>
-
-				<!-- Footer Widget -->
-				<div class="col-md-6 col-lg-3 mb-4">
-					<h5 class="mb-4">Navegação</h5>
-					<div class="row">
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/artigos'); ?>">Artigos</a>
-								</li>
-							</ul>
-						</div>
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-
-				<!-- 
-				<div class="col-sm-6 col-lg-3 mb-4">
-					<h5 class="mb-4">Browse by Tag</h5>
-					<ul class="list-inline">
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Travel</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Business</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Tech</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Gadgets</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Lifestyle</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Vaccine</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Marketing</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Sports</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Covid-19</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Politics</a></li>
-					</ul>
-				</div> -->
-
-				<!-- Footer Widget -->
-				<div class="col-sm-12 col-lg-5 mb-4">
-					<h5 class="mb-4">Nossas redes sociais</h5>
-					<div class="row">
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item text-uppercase">Ancapsu</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@ancap_su"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								<li class="nav-item"><a class="" href="https://www.instagram.com/ancap.su"><i
-											class="fab fa-instagram-square fa-fw me-2 text-youtube"></i>Instagram</a>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/ancapsu"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-								<li class="nav-item text-uppercase mt-2">Safe source</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@safesrc"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								<li class="nav-item"><a class="" href="https://twitter.com/safesrc1"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-							</ul>
-						</div>
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item text-uppercase">VISÃO LIBERTÁRIA</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@Visao_Libertaria"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/visaolibertaria"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-								<li class="nav-item">&nbsp;</li>
-								<li class="nav-item text-uppercase mt-2">mundo em revolução</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@wrevolving"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/MundoEmRevo"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-							</ul>
-						</div>
+			<div class="row align-items-center justify-content-between">
+				<div class="col-lg-6">
+					<div class="text-center text-lg-start">Desenvolvido por <a class="text-reset btn-link font-light"
+							href="https://github.com/KoreaComK/">KoreacomK</a> e a
+						comunidade.
 					</div>
 				</div>
 			</div>
-			<!-- Widgets END -->
-		</div>
-		<div class="container container-fluid py-2 px-sm-3 px-md-5">
-			<p class="m-0 text-center">
-				Desenvolvido por
-				<a class="text-reset btn-link font-light" href="https://github.com/KoreaComK/">KoreacomK</a> e a
-				comunidade.
-			</p>
 		</div>
 	</footer>
 </body>

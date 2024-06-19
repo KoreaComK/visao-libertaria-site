@@ -55,7 +55,7 @@ use CodeIgniter\I18n\Time;
 								<ol class="breadcrumb breadcrumb-dark m-0">
 									<li class="breadcrumb-item "><a href="<?= site_url(); ?>" class="text-white"><i
 												class="bi bi-house me-1"></i>
-											Página inicial</a></li>
+											Home</a></li>
 									<li class="breadcrumb-item active text-secondary">
 										<?= ($nomeCategoriaAtual !== null) ? ($nomeCategoriaAtual) : ('Artigos Publicados'); ?>
 									</li>
@@ -114,6 +114,7 @@ use CodeIgniter\I18n\Time;
 	var $grid = $('.list-artigos').masonry({
 		// Masonry options...
 		itemSelector: '.card',
+		horizontalOrder: true
 	});
 
 	var msnry = $grid.data('masonry');

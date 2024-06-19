@@ -41,6 +41,17 @@ class Artigos extends BaseController
 			'historico' => null
 		];
 	}
+	public function dashboard()
+	{
+		$data = array();
+		$data['titulo'] = 'Listagem de Todos os Artigos';
+
+		//Se usuário tem acesso a escritor
+		$this->verificaPermissao->PermiteAcesso('1');
+		
+		return view('colaboradores/colaborador_dashboard', $data);
+	}
+
 	public function index($idColaborador = NULL)
 	{
 		$data = array();

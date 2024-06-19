@@ -9,9 +9,6 @@
 			<?= $titulo; ?>
 		</h3>
 	</div>
-	<div
-		class="mensagem p-3 mb-2 rounded text-white text-center <?= (!isset($_GET['status'])) ? ('collapse') : (''); ?> <?= (isset($_GET['status']) && $_GET['status'] == 'true') ? ('bg-success') : ('bg-danger'); ?> col-12">
-		<?= (isset($_GET['status']) && $_GET['status'] == 'true') ? ('Ação salva com sucesso.') : ('Ocorreu um erro ao realizar sua ação.'); ?></div>
 	<div class="my-3 p-3 bg-white rounded box-shadow">
 		<?php foreach ($artigosList['artigos'] as $artigo): ?>
 			<div class="media text-muted pt-3 border-bottom mb-3 pb-3">
