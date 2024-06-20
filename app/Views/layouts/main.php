@@ -72,6 +72,10 @@
 			background-color: var(--mdb-picker-header-bg);
 		}
 
+		[data-mdb-theme=dark] .vl-bg-c {
+			background-color: #d3a901 !important;
+		}
+
 		[data-mdb-theme=dark] .text-dark {
 			color: var(--mdb-surface-inverted-color) !important;
 		}
@@ -137,6 +141,16 @@
 
 		a {
 			color: #4b515c;
+		}
+
+		.scrolled-down {
+			transform: translateY(-100%);
+			transition: all 0.6s ease-in-out;
+		}
+
+		.scrolled-up {
+			transform: translateY(0);
+			transition: all 0.6s ease-in-out;
 		}
 
 
@@ -212,7 +226,8 @@
 						<?php endif; ?>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do colaborador</a>
+								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do
+									colaborador</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('admin/dashboard'); ?>">Administração</a>
@@ -236,18 +251,16 @@
 						<!-- Dark mode options END -->
 					</div>
 				</div>
-				<!-- Divider -->
-				<div class="border-bottom border-2 opacity-1"></div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg shadow-0">
+		<nav class="navbar navbar-expand-lg vl-bg-c shadow-0" id="barra-navegacao">
 			<div class="container">
 				<div>
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('site'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
 							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"
 							alt="MDB Logo" loading="lazy">
-						<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
+						<span class="lead fw-bold"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					</a>
 				</div>
 				<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-bs-toggle="collapse"
@@ -268,7 +281,7 @@
 							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
 									<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
-										aria-expanded="false">Pautas/Notícias</a>
+										aria-expanded="false">Pautas e Notícias</a>
 								</li>
 							<?php endif; ?>
 							<!--
@@ -350,13 +363,13 @@
 											<?= $_SESSION['colaboradores']['nome']; ?>
 										</span>
 									</a>
-									<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+									<div class="dropdown-menu rounded-3 vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
 										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>
-										<a class="dropdown-item" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+										<a class="dropdown-item rounded-top-3" href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
-										<a class="dropdown-item" href="<?= site_url('site/logout'); ?>">Sair</a>
+										<a class="dropdown-item rounded-bottom-3" href="<?= site_url('site/logout'); ?>">Sair</a>
 									</div>
 								</li>
 							</ul>
@@ -533,6 +546,47 @@
 		$('.dark-button').show();
 		$('body').attr('data-mdb-theme', '');
 		localStorage.setItem('dark-mode', 'light');
+	});
+
+	$(document).ready(function () {
+
+		el_autohide = $('#barra-navegacao');
+
+		if (el_autohide) {
+			var last_scroll_top = 0;
+			window.addEventListener('scroll', function () {
+				if(screen.availWidth > 992) {
+
+					if (window.scrollY > 50) {
+						el_autohide.addClass('fixed-top');
+						// add padding top to show content behind navbar
+						navbar_height = document.querySelector('.navbar').offsetHeight;
+						document.body.style.paddingTop = navbar_height + 'px';
+					} else {
+						el_autohide.removeClass('fixed-top');
+						// remove padding top from body
+						document.body.style.paddingTop = '0';
+					}
+
+					if (window.scrollY > 500) {
+						let scroll_top = window.scrollY;
+						if (scroll_top < last_scroll_top) {
+							el_autohide.removeClass('scrolled-down');
+							el_autohide.addClass('scrolled-up');
+						}
+						else {
+							el_autohide.removeClass('scrolled-up');
+							el_autohide.addClass('scrolled-down');
+						}
+						last_scroll_top = scroll_top;
+					}
+				} else {
+					el_autohide.removeClass('fixed-top');
+					el_autohide.removeClass('scrolled-up');
+					el_autohide.removeClass('scrolled-down');
+				}
+			});
+		}
 	});
 </script>
 

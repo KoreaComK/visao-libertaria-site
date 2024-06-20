@@ -21,14 +21,14 @@ use CodeIgniter\I18n\Time;
 			<div class="row">
 				<div class="col-12 p-0">
 					<div class="bg-dark p-4 text-center rounded-4">
-						<h1 class="text-white"> Pautas/Notícias importantes dos últimos dias </h1>
+						<h1 class="text-white"> Pautas e Notícias importantes dos últimos dias </h1>
 						<nav class="d-flex justify-content-center" aria-label="breadcrumb">
 							<ol class="breadcrumb breadcrumb-dark m-0">
 								<li class="breadcrumb-item "><a href="<?= site_url(); ?>" class="text-white"><i
 											class="bi bi-house me-1"></i>
 										Home</a></li>
 								<li class="breadcrumb-item active text-secondary">
-									Pautas/Notícias importantes dos últimos dias
+									Pautas e Notícias importantes dos últimos dias
 								</li>
 							</ol>
 						</nav>
