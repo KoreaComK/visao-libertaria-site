@@ -126,6 +126,10 @@
 			color: #181818;
 		}
 
+		.vl-bg-c-opaco {
+			background-color:rgba(244,203,41,0.4)
+		}
+
 		.btn-primary {
 			border-color: #f3c921 !important;
 		}

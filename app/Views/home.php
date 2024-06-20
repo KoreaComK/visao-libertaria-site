@@ -16,11 +16,36 @@ use CodeIgniter\I18n\Time;
 		counter-increment: carousel-cell;
 	}
 
+	.avisos-carousel .carousel-cell {
+		width: 100%;
+		height: auto;
+		margin-right: 3rem;
+	}
+
 	.main-carousel-videos .carousel-cell {
 		width: 40%;
 		height: auto;
 		margin-right: 0.75rem;
 		counter-increment: carousel-cell;
+	}
+
+	.avisos-carousel>.flickity-prev-next-button.previous {
+		right: 50px;
+		left: inherit;
+	}
+
+	.avisos-carousel .flickity-page-dots {
+		display: none;
+	}
+
+	.avisos-carousel .flickity-button {
+		background: transparent;
+		width: 25px;
+		height: 25px;
+	}
+
+	.avisos-carousel .card {
+		background: transparent;
 	}
 
 	@media (max-width: 768px) {
@@ -32,16 +57,41 @@ use CodeIgniter\I18n\Time;
 			width: 100%;
 		}
 
-}
+	}
 </style>
 
 <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
+<!-- Title -->
+
+
 
 <div class="container-fluid py-3">
 	<div class="container">
 		<div class="row">
+			<section class="col-lg-12">
+				<div class="container vl-bg-c-opaco p-2 rounded-3 position-relative mt-1 mb-3">
+					<span class="badge vl-bg-c p-2 px-3 position-absolute top-50 start-0 translate-middle badge"
+						style="z-index:1; margin-left: 2.8rem;">Avisos:</span>
+					<div class="avisos-carousel mb-0 mt-0 data-flickity" style="margin-left: 3.8rem;">
+						<div class="carousel-cell card shadow-0" id="tns1-item0">
+							<div class="card-body pt-1 pb-1">
+								<a href="#" class="">The most
+									common business debate isn't as black and white
+									as you might think</a>
+							</div>
+						</div>
+						<div class="carousel-cell card shadow-0" id="tns1-item0">
+							<div class="card-body pt-1 pb-1">
+								<a href="#" class="">The most
+									common business debate isn't as black and white
+									as you might think</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 			<div class="col-lg-12">
 				<div class="row g-4">
 					<!-- Left big card -->
@@ -433,6 +483,18 @@ use CodeIgniter\I18n\Time;
 		wrapAround: true,
 		groupCells: true
 	});
+
+	$('.avisos-carousel').flickity({
+		// options
+		cellAlign: 'left',
+		contain: true,
+		freeScroll: true,
+		wrapAround: true,
+		groupCells: true,
+		autoPlay: true,
+		draggable: false
+	});
+
 
 	$('.main-carousel-videos').flickity({
 		// options

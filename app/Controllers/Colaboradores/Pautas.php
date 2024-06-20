@@ -188,7 +188,7 @@ class Pautas extends BaseController
 				}
 				
 				$countPautas = $pautasModel->isPautaCadastrada($post['link']);
-				if ($countPautas != 0) {
+				if ($countPautas != 0 && $idPautas == NULL) {
 					return $retorno->retorno(false, 'Pauta já cadastrada', true);
 				}
 
