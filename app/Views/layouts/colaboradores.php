@@ -27,28 +27,14 @@
 	<meta name="twitter:card" content="summary_large_image">
 	<meta property="twitter:domain" content="<?= site_url(); ?>">
 	<meta property="twitter:url" content="<?= current_url(true); ?>">
-
-	<?php if (isset($meta) && is_array($meta)): ?>
-
-		<meta name="twitter:title" content="<?= $meta['title']; ?>">
-		<meta name="twitter:image" content="<?= $meta['image']; ?>">
-		<meta name="twitter:description" content="<?= $meta['description']; ?>">
-
-		<meta property="og:title" content="<?= $meta['title']; ?>" />
-		<meta property="og:image" content="<?= $meta['image']; ?>" />
-		<meta property="og:description" content="<?= $meta['description']; ?>" />
-
-	<?php else: ?>
-		<meta name="twitter:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>">
-		<meta name="twitter:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>">
-		<meta name="twitter:image"
-			content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
-
-		<meta property="og:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>" />
-		<meta property="og:image"
-			content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
-		<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
-	<?php endif; ?>
+	<meta name="twitter:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>">
+	<meta name="twitter:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>">
+	<meta name="twitter:image"
+		content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
+	<meta property="og:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>" />
+	<meta property="og:image"
+		content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
+	<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
 
 	<!-- Font Awesome -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -251,18 +237,40 @@
 				</button>
 
 				<div class="collapse navbar-collapse" id="menuPrincipal">
-					<ul class="navbar-nav h6">
+					<ul class="navbar-nav d-flex justify-content-center">
 						<li class="nav-item active">
-							<a class="nav-link" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Dashboard</a>
+							<a class="nav-link" href="<?= site_url('colaboradores/artigos/dashboard'); ?>"><i
+									class="fas fa-globe"></i> Dashboard</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos</a>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#"><i
+									class="fas fa-pen" id="menuArtigosColaboradores"></i>
+								Artigos</a>
+							<ul class="dropdown-menu" aria-labelledby="menuArtigosColaboradores">
+								<li> <a class="dropdown-item"
+										href="<?= site_url('colaboradores/artigos/cadastrar'); ?>">Escrever Artigos</a>
+								</li>
+								<li> <a class="dropdown-item"
+										href="<?= site_url('colaboradores/pautas/fechar'); ?>">Meus Artigos</a>
+								</li>
+								<li> <a class="dropdown-item"
+										href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Colaborar com
+										Artigos</a>
+								</li>
+							</ul>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
 							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
-									<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
-										aria-expanded="false">Pautas</a>
+									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
+											class="fas fa-bullhorn"></i> Pautas</a>
+									<ul class="dropdown-menu" aria-labelledby="menuPautasColaboradores">
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar Pautas</a> </li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
+										</li>
+									</ul>
 								</li>
 							<?php endif; ?>
 							<!--
@@ -380,15 +388,11 @@
 
 	<?= $this->renderSection('content'); ?>
 
-	<footer class="mb-3">
+	<footer class="mb-3 mt-5">
 		<div class="container">
-			<div class="row align-items-center justify-content-between">
-				<div class="col-lg-6">
-					<div class="text-center text-lg-start">Desenvolvido por <a class="text-reset btn-link font-light"
-							href="https://github.com/KoreaComK/">KoreacomK</a> e a
-						comunidade.
-					</div>
-				</div>
+			<div class="text-center">Desenvolvido por <a class="text-reset btn-link font-light"
+					href="https://github.com/KoreaComK/">KoreacomK</a> e a
+				comunidade.
 			</div>
 		</div>
 	</footer>

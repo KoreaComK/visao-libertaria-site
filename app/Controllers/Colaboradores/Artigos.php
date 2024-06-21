@@ -48,7 +48,7 @@ class Artigos extends BaseController
 
 		//Se usuário tem acesso a escritor
 		$this->verificaPermissao->PermiteAcesso('1');
-		
+
 		return view('colaboradores/colaborador_dashboard', $data);
 	}
 
@@ -75,9 +75,9 @@ class Artigos extends BaseController
 			'pager' => $artigos->pager
 		];
 
-		if($idColaborador != NULL) {
-			$idColaborador = (int)$idColaborador;
-			if($idColaborador != 0) {
+		if ($idColaborador != NULL) {
+			$idColaborador = (int) $idColaborador;
+			if ($idColaborador != 0) {
 				$colaboradoresModel = new \App\Models\ColaboradoresModel();
 				$data['colaborador'] = $colaboradoresModel->find($idColaborador);
 			}
@@ -87,7 +87,6 @@ class Artigos extends BaseController
 
 	public function artigosList()
 	{
-
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
@@ -194,7 +193,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
@@ -202,7 +201,7 @@ class Artigos extends BaseController
 			return view('colaboradores/artigos_list', $data);
 		} else {
 
-			$artigo = $artigosModel->where('id',$artigoId)->get()->getResultArray()[0];
+			$artigo = $artigosModel->where('id', $artigoId)->get()->getResultArray()[0];
 			$colaboradores = $artigosModel->getColaboradoresArtigo($artigoId)[0];
 			foreach ($colaboradores as $indice => $dado) {
 				$artigo['colaboradores'][$indice] = $dado;
@@ -211,7 +210,7 @@ class Artigos extends BaseController
 			//$data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
 			$data['artigo'] = $artigo;
 			$data['texto'] = $this->criaTextoDinamizado($artigo);
-			
+
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 			return view('colaboradores/artigos_detail', $data);
 		}
@@ -223,7 +222,41 @@ class Artigos extends BaseController
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data = $this->iniciaVariavel;
 		$data['fase_producao'] = '1';
-		$data['titulo'] = 'Artigo';
+		$data['titulo'] = 'Novo artigo';
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+
+		//QUANDO O CADASTRO FOR BASEADO EM ALGUMA PAUTA
+		//PRÉ ESCREVER O CONTEÚDO COM A PAUTA
+		if ($id_artigo == null && $this->request->getMethod() == 'get' && $this->request->getGet('pauta') !== null) {
+			$pautaId = $this->request->getGet('pauta');
+			$pautasModel = new \App\Models\PautasModel();
+			$pauta = $pautasModel->find($pautaId);
+			if (!empty($pauta)) {
+				$data['pauta'] = $pauta;
+				$data['artigo']['titulo'] = $pauta['titulo'];
+				$data['artigo']['texto_original'] = $pauta['texto'];
+			}
+		}
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
+		$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
+		$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
+		$data['config'] = $config;
+
+		$data['historico'] = $this->artigosHistoricos->buscaHistorico($id_artigo);
+		return view('colaboradores/colaborador_artigos_form', $data);
+	}
+
+	public function gravar($id_artigo)
+	{
+
+		$this->verificaPermissao->PermiteAcesso('2');
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$data = $this->iniciaVariavel;
+		$data['fase_producao'] = '1';
+		$data['titulo'] = 'Novo artigo';
 		$validaFormularios = new \App\Libraries\ValidaFormularios();
 
 		// ALTERAÇÃO DO ARTIGO
@@ -253,7 +286,7 @@ class Artigos extends BaseController
 						$artigoId = $this->alterarArtigo($id_artigo);
 						if ($artigoId != false) {
 							$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
-						}	
+						}
 					} else {
 						$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
 					}
@@ -272,13 +305,35 @@ class Artigos extends BaseController
 			$post = $this->request->getPost();
 			$valida = $validaFormularios->validaFormularioArtigo($post, ($this->request->getGet('pauta')) ? (true) : (false));
 			if (empty($valida->getErrors())) {
-				if (is_array(@getimagesize($post['imagem']))) {
-					$artigoId = $this->cadastrarArtigo();
-					return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/' . $artigoId . '?status=true');
-				} else {
-					$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-					$data['artigo'] = $post;
+
+				$imagem = $this->request->getFile('imagem');
+				if ($imagem->getName() != '') {
+					$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
+					if ($imagem->move('public/assets/artigo', $nome_arquivo, true)) {
+						$artigo['arquivo_audio'] = base_url('public/assets/artigo/' . $nome_arquivo);
+
+						$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+
+						$artigo['palavras_narrador'] = $artigo['palavras_revisor'];
+						$faseProducaoModel = new \App\Models\FaseProducaoModel();
+						$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
+						$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
+
+						//$retorno = $artigosModel->save($artigo);
+						$retorno = $this->gravarArtigos('save', $artigo);
+						$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
+						$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
+						$this->artigosMarcacao->desmarcarArtigo($artigoId);
+						if ($retorno === true) {
+							return redirect()->to(base_url() . 'colaboradores/artigos/narrar?status=true');
+						} else {
+							return redirect()->to(base_url() . 'colaboradores/artigos/narrar/' . $artigoId . '?status=false');
+						}
+					}
 				}
+
+				$artigoId = $this->cadastrarArtigo();
+				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/' . $artigoId . '?status=true');
 			} else {
 				$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
 				if ($this->request->getGet('pauta') !== null) {
@@ -289,36 +344,6 @@ class Artigos extends BaseController
 				// $data['categorias_artigo'] = isset($post['categorias']) ? ($post['categorias']) : (array());
 			}
 		}
-
-		//QUANDO O CADASTRO FOR BASEADO EM ALGUMA PAUTA
-		//PRÉ ESCREVER O CONTEÚDO COM A PAUTA
-		if ($id_artigo == null && $this->request->getMethod() == 'get' && $this->request->getGet('pauta') !== null) {
-			$pautaId = $this->request->getGet('pauta');
-			$pautasModel = new \App\Models\PautasModel();
-			$pauta = $pautasModel->find($pautaId);
-			if(!empty($pauta)) {
-				$data['pauta'] = $pauta;
-				$data['artigo']['titulo'] = $pauta['titulo'];
-				$data['artigo']['texto_original'] = $pauta['texto'];
-				$data['artigo']['imagem'] = $pauta['imagem'];
-			}
-		}
-
-		$widgetsSite = new \App\Libraries\WidgetsSite();
-		// $data['categorias'] = $widgetsSite->widgetCategorias();
-		if ($this->request->getGet('status') !== null && $valida == null) {
-			$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
-		}
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['artigo_tamanho_maximo'] = (int)$configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
-		$config['artigo_tamanho_minimo'] = (int)$configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-		$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
-		$data['config'] = $config;
-		
-		$data['historico'] = $this->artigosHistoricos->buscaHistorico($id_artigo);
-		return view('colaboradores/artigos_form', $data);
 	}
 
 	public function revisar($artigoId = NULL)
@@ -339,7 +364,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
@@ -382,7 +407,7 @@ class Artigos extends BaseController
 				$data['artigo']['id'] = $artigoId;
 				$valida = $validaFormularios->validaFormularioArtigo($this->request->getPost(), false);
 				if (empty($valida->getErrors())) {
-					
+
 					if (is_array(@getimagesize($data['artigo']['imagem']))) {
 						$status_alteracao = $this->revisarArtigo($artigoId);
 						if ($status_alteracao) {
@@ -394,12 +419,12 @@ class Artigos extends BaseController
 					} else {
 						$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
 					}
-					
+
 				} else {
 					$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
 				}
 			} else {
-				if($data['artigo']['fase_producao_id'] == 2 && $data['artigo']['texto_revisado'] != NULL) {
+				if ($data['artigo']['fase_producao_id'] == 2 && $data['artigo']['texto_revisado'] != NULL) {
 					$data['artigo']['texto_original'] = $data['artigo']['texto_revisado'];
 				}
 			}
@@ -409,13 +434,13 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['artigo_tamanho_maximo'] = (int)$configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
-			$config['artigo_tamanho_minimo'] = (int)$configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
+			$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
+			$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
 			$config['artigo_regras_revisar'] = $configuracaoModel->find('artigo_regras_revisar')['config_valor'];
 			$data['config'] = $config;
 
 			$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
-			return view('colaboradores/artigos_form', $data);
+			return view('colaboradores/colaborador_artigos_form', $data);
 		}
 	}
 
@@ -435,7 +460,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
@@ -468,7 +493,7 @@ class Artigos extends BaseController
 
 							//$retorno = $artigosModel->save($artigo);
 							$retorno = $this->gravarArtigos('save', $artigo);
-							$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'narrou','artigos','o artigo',$artigoId);
+							$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
 							$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
 							$this->artigosMarcacao->desmarcarArtigo($artigoId);
 							if ($retorno === true) {
@@ -519,7 +544,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
@@ -550,7 +575,7 @@ class Artigos extends BaseController
 
 					//$retorno = $artigosModel->save($artigo);
 					$retorno = $this->gravarArtigos('save', $artigo);
-					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'produziu','artigos','o artigo',$artigoId,true);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'produziu', 'artigos', 'o artigo', $artigoId, true);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'produziu', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -599,7 +624,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 			$data['artigosList'] = [
 				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
 				'pager' => $artigos->pager
@@ -624,8 +649,8 @@ class Artigos extends BaseController
 					$artigo['publicado'] = $artigosModel->getNow();
 
 					//SE A QUANTIDADE DE PALAVRAS DO REVISOR FOR MENOR DO QUE A QUANTIDADE DO ESCRITOR, ABAIXA A QUANTIDADE DO ESCRITOR.
-					if ($artigo['palavras_escritor'] > str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$artigo['texto_revisado']))) {
-						$artigo['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$artigo['texto_revisado']));
+					if ($artigo['palavras_escritor'] > str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']))) {
+						$artigo['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
 					}
 
 					$faseProducaoModel = new \App\Models\FaseProducaoModel();
@@ -635,7 +660,7 @@ class Artigos extends BaseController
 
 					//$retorno = $artigosModel->save($artigo);
 					$retorno = $this->gravarArtigos('save', $artigo);
-					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'publicou','artigos','o artigo',$artigoId,true);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'publicou', 'artigos', 'o artigo', $artigoId, true);
 					$this->artigosMarcacao->desmarcarArtigo($artigoId);
 					$this->artigosHistoricos->cadastraHistorico($artigoId, 'publicou', $this->session->get('colaboradores')['id']);
 					if ($retorno === true) {
@@ -668,26 +693,26 @@ class Artigos extends BaseController
 	public function geraDescricaoVideo($idArtigo = null)
 	{
 		$this->verificaPermissao->PermiteAcesso('6');
-		
+
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$artigosModel = new \App\Models\ArtigosModel();
 
-		if($idArtigo == null) {
+		if ($idArtigo == null) {
 			return $retorno->retorno(false, 'Artigo não informado, atualize a página', true);
 		}
 
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
-			if(!isset($post['tags'])) {
+			if (!isset($post['tags'])) {
 				return $retorno->retorno(false, 'Tags não foram fornecidas.', true);
 			}
 			$configuracao = $configuracaoModel->find('descricao_padrao_youtube');
 			$artigo = $artigosModel->find($idArtigo);
 			$descricaoVideo = '';
-			$descricaoVideo = str_replace('{referencias}',$artigo['referencias'],$configuracao['config_valor']);
-			$descricaoVideo = str_replace('{tags}',$post['tags'],$descricaoVideo);
-			return json_encode(['status'=> true, 'descricao' => $descricaoVideo]);
+			$descricaoVideo = str_replace('{referencias}', $artigo['referencias'], $configuracao['config_valor']);
+			$descricaoVideo = str_replace('{tags}', $post['tags'], $descricaoVideo);
+			return json_encode(['status' => true, 'descricao' => $descricaoVideo]);
 		}
 	}
 
@@ -744,7 +769,7 @@ class Artigos extends BaseController
 					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->delete($comentario['id']);
 					$artigosComentariosModel->db->transComplete();
-					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'excluiu','artigos','o comentário do artigo',$idArtigo,true);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'excluiu', 'artigos', 'o comentário do artigo', $idArtigo, true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -759,7 +784,7 @@ class Artigos extends BaseController
 				$artigosComentariosModel->db->transStart();
 				$save = $artigosComentariosModel->insert($comentario);
 				$artigosComentariosModel->db->transComplete();
-				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'comentou','artigos','no artigo',$idArtigo,true);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'comentou', 'artigos', 'no artigo', $idArtigo, true);
 				return $retorno->retorno(true, '', true);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
@@ -770,7 +795,7 @@ class Artigos extends BaseController
 					$artigosComentariosModel->db->transStart();
 					$artigosComentariosModel->save($comentario);
 					$artigosComentariosModel->db->transComplete();
-					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','artigos','o comentário do artigo',$idArtigo,true);
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o comentário do artigo', $idArtigo, true);
 					return $retorno->retorno(true, '', true);
 				}
 				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
@@ -788,33 +813,33 @@ class Artigos extends BaseController
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosHistoricosModel = new \App\Models\ArtigosHistoricosModel();
 			$retorno = new \App\Libraries\RetornoPadrao();
-			
+
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$config = array();
 			$config['artigo_tempo_bloqueio'] = $configuracaoModel->find('artigo_tempo_bloqueio')['config_valor'];
-			$time = new Time('-'.$config['artigo_tempo_bloqueio']);
+			$time = new Time('-' . $config['artigo_tempo_bloqueio']);
 
 			$artigo = $artigosModel->find($idArtigo);
 			$idColaborador = $this->session->get('colaboradores')['id'];
 
-			$historico = $artigosHistoricosModel->where('artigos_id',$idArtigo)
-			->where('acao','desmarcou')
-			->where('colaboradores_id',$idColaborador)
-			->where("criado >= '".$time->toDateTimeString()."'")
-			->orderBy('criado','DESC')
-			->get()->getResultArray();
+			$historico = $artigosHistoricosModel->where('artigos_id', $idArtigo)
+				->where('acao', 'desmarcou')
+				->where('colaboradores_id', $idColaborador)
+				->where("criado >= '" . $time->toDateTimeString() . "'")
+				->orderBy('criado', 'DESC')
+				->get()->getResultArray();
 
-			if($historico !== null && !empty($historico)) {
-				return $retorno->retorno(false, 'Você está impossibilitado de marcar este artigo até '.Time::createFromFormat('Y-m-d H:i:s', $historico[0]['criado'])->addHours(explode(' ',$config['artigo_tempo_bloqueio'])[0])->toLocalizedString('dd MMMM yyyy HH:mm:ss').'.', true);
+			if ($historico !== null && !empty($historico)) {
+				return $retorno->retorno(false, 'Você está impossibilitado de marcar este artigo até ' . Time::createFromFormat('Y-m-d H:i:s', $historico[0]['criado'])->addHours(explode(' ', $config['artigo_tempo_bloqueio'])[0])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '.', true);
 			}
 
-			if($artigo === null || empty($artigo)) {
+			if ($artigo === null || empty($artigo)) {
 				return $retorno->retorno(false, 'Erro ao encontrar artigo.', true);
 			}
-			$dado = $this->artigosMarcacao->marcarArtigo($artigo['id'],$idColaborador);
-			if($dado){
+			$dado = $this->artigosMarcacao->marcarArtigo($artigo['id'], $idColaborador);
+			if ($dado) {
 				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'marcou', $idColaborador);
-				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador,'marcou','artigos','o artigo',$idArtigo);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador, 'marcou', 'artigos', 'o artigo', $idArtigo);
 				return $retorno->retorno(true, 'Artigo marcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'O artigo já está marcado por outro colaborador.', true);
@@ -829,21 +854,21 @@ class Artigos extends BaseController
 		if ($this->request->isAJAX()) {
 			$artigosModel = new \App\Models\ArtigosModel();
 			$retorno = new \App\Libraries\RetornoPadrao();
-			
+
 			$artigo = $artigosModel->find($idArtigo);
 			$idColaborador = $this->session->get('colaboradores')['id'];
 			$permissoes = $this->session->get('colaboradores')['permissoes'];
 
-			if($artigo === null || empty($artigo)) {
+			if ($artigo === null || empty($artigo)) {
 				return $retorno->retorno(false, 'Erro ao encontrar artigo.', true);
 			}
-			if($artigo['marcado_colaboradores_id'] != $idColaborador && !in_array('7',$permissoes)) {
+			if ($artigo['marcado_colaboradores_id'] != $idColaborador && !in_array('7', $permissoes)) {
 				return $retorno->retorno(false, 'O artigo não está marcado por você.', true);
 			}
 			$dado = $this->artigosMarcacao->desmarcarArtigo($artigo['id']);
-			if($dado){
+			if ($dado) {
 				$this->artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $idColaborador);
-				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador,'desmarcou','artigos','o artigo',$artigo['id']);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($idColaborador, 'desmarcou', 'artigos', 'o artigo', $artigo['id']);
 				return $retorno->retorno(true, 'Artigo desmarcado com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'Ocorreu um erro ao desmarcar o artigo.', true);
@@ -932,7 +957,7 @@ class Artigos extends BaseController
 		}
 		//$retorno = $artigosModel->save($artigo);
 		$retorno = $this->gravarArtigos('save', $artigo);
-		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'reverteu','artigos','o artigo',$idArtigo);
+		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'reverteu', 'artigos', 'o artigo', $idArtigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
 		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
 		return $retorno;
@@ -950,14 +975,14 @@ class Artigos extends BaseController
 			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
+			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
 			$gravar['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$gravar['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
-			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'revisou','artigos','o artigo',$idArtigo);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'revisou', 'artigos', 'o artigo', $idArtigo);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'revisou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -985,7 +1010,7 @@ class Artigos extends BaseController
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['escrito_colaboradores_id'] = $session['id'];
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
+			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
 			$gravar['fase_producao_id'] = 2;
 
 			if ($this->request->getGet('pauta') !== null) {
@@ -998,7 +1023,7 @@ class Artigos extends BaseController
 			}
 			//$artigo_id = $artigosModel->insert($gravar);
 			$artigo_id = $this->gravarArtigos('insert', $gravar);
-			$this->colaboradoresNotificacoes->cadastraNotificacao($session['id'],'escreveu','artigos','o artigo',$artigo_id);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($session['id'], 'escreveu', 'artigos', 'o artigo', $artigo_id);
 			$this->artigosHistoricos->cadastraHistorico($artigo_id, 'escreveu', $this->session->get('colaboradores')['id']);
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// foreach ($post['categorias'] as $categoria) {
@@ -1021,17 +1046,17 @@ class Artigos extends BaseController
 			$gravar['imagem'] = htmlspecialchars($post['imagem'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç|Ç)/"),explode(" ","a A e E i I o O u U n N c"),$post['texto_original']));
+			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
 			$gravar['link'] = htmlspecialchars($post['link'], ENT_QUOTES, 'UTF-8');
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$artigoGravado = $artigosModel->find($idArtigo);
-			if($artigoGravado['fase_producao_id'] == '1') {
+			if ($artigoGravado['fase_producao_id'] == '1') {
 				$gravar['fase_producao_id'] = 2;
 			}
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
-			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'alterou','artigos','o artigo',$idArtigo,true);
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o artigo', $idArtigo, true);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'alterou', $this->session->get('colaboradores')['id']);
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
@@ -1048,7 +1073,7 @@ class Artigos extends BaseController
 		if ($this->request->getGet('descartar') != NULL) {
 			$retorno = $this->artigoDescartar($idArtigo);
 			if ($retorno === true) {
-				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'],'descartou','artigos','o artigo',$idArtigo);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'descartou', 'artigos', 'o artigo', $idArtigo);
 				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '?status=true');
 			} else {
 				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '/' . $idArtigo . '?status=false');
@@ -1099,29 +1124,29 @@ class Artigos extends BaseController
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['artigo_visualizacao_narracao'] = $configuracaoModel->find('artigo_visualizacao_narracao')['config_valor'];
-		$config['artigo_visualizacao_narracao'] = explode("\n",$config['artigo_visualizacao_narracao']);
+		$config['artigo_visualizacao_narracao'] = explode("\n", $config['artigo_visualizacao_narracao']);
 
 		$colaboradores = "";
-		$colaboradores .= ($artigo['colaboradores']['sugerido'] !== null) ? ('sugerido por ' . $artigo['colaboradores']['sugerido'].' ') : ('');
-		$colaboradores .= ($artigo['colaboradores']['escrito'] !== null) ? ('escrito por ' . $artigo['colaboradores']['escrito'].' ') : ('');
-		$colaboradores .= ($artigo['colaboradores']['revisado'] !== null) ? ('revisado por ' . $artigo['colaboradores']['revisado'].' ') : ('');
-		$colaboradores .= ($artigo['colaboradores']['narrado'] !== null) ? ('narrado por ' . $artigo['colaboradores']['narrado'].' ') : ('');
-		$colaboradores .= ($artigo['colaboradores']['produzido'] !== null) ? ('produzido por ' . $artigo['colaboradores']['produzido'].' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['sugerido'] !== null) ? ('sugerido por ' . $artigo['colaboradores']['sugerido'] . ' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['escrito'] !== null) ? ('escrito por ' . $artigo['colaboradores']['escrito'] . ' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['revisado'] !== null) ? ('revisado por ' . $artigo['colaboradores']['revisado'] . ' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['narrado'] !== null) ? ('narrado por ' . $artigo['colaboradores']['narrado'] . ' ') : ('');
+		$colaboradores .= ($artigo['colaboradores']['produzido'] !== null) ? ('produzido por ' . $artigo['colaboradores']['produzido'] . ' ') : ('');
 
-		foreach($config['artigo_visualizacao_narracao'] as $indice => $linha){
+		foreach ($config['artigo_visualizacao_narracao'] as $indice => $linha) {
 			$alterado = null;
-			$alterado = str_replace("{gancho}",$artigo['gancho'],$linha);
-			if($artigo['texto_revisado'] !== NULL) {
-				$alterado = str_replace("{texto}",$artigo['texto_revisado'],$alterado);
+			$alterado = str_replace("{gancho}", $artigo['gancho'], $linha);
+			if ($artigo['texto_revisado'] !== NULL) {
+				$alterado = str_replace("{texto}", $artigo['texto_revisado'], $alterado);
 			} else {
-				$alterado = str_replace("{texto}",$artigo['texto_original'],$alterado);
+				$alterado = str_replace("{texto}", $artigo['texto_original'], $alterado);
 			}
 
-			$alterado = str_replace("{colaboradores}",$colaboradores,$alterado);
+			$alterado = str_replace("{colaboradores}", $colaboradores, $alterado);
 			$config['artigo_visualizacao_narracao'][$indice] = $alterado;
 		}
 
-		$config['artigo_visualizacao_narracao'] = '<p>'.implode('</p><p>',$config['artigo_visualizacao_narracao']).'</p>';
+		$config['artigo_visualizacao_narracao'] = '<p>' . implode('</p><p>', $config['artigo_visualizacao_narracao']) . '</p>';
 		$config['artigo_visualizacao_narracao'] = str_replace("\n", "<br/>", $config['artigo_visualizacao_narracao']);
 		return $config['artigo_visualizacao_narracao'];
 	}
