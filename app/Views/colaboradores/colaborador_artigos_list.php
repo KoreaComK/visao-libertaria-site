@@ -99,8 +99,8 @@
 							<div class="col-md-8">
 								<form class="rounded position-relative" data-np-autofill-form-type="other"
 									data-np-checked="1" data-np-watching="1">
-									<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa" name="text-pesquisa"
-										placeholder="Pesquisar" aria-label="Pesquisar">
+									<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa"
+										name="text-pesquisa" placeholder="Pesquisar" aria-label="Pesquisar">
 									<button
 										class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-producao"
 										type="submit"><i class="fas fa-magnifying-glass"></i></button>
@@ -111,7 +111,8 @@
 							<div class="col-md-3">
 								<!-- Short by filter -->
 								<form>
-									<select class="form-select z-index-9 bg-transparent select-pesquisa" id="select-pesquisa" name="select-pesquisa">
+									<select class="form-select z-index-9 bg-transparent select-pesquisa"
+										id="select-pesquisa" name="select-pesquisa">
 										<option value="">Escolha a fase</option>
 										<option value="1">Escrevendo</option>
 										<option value="2">Revisando</option>
@@ -134,7 +135,7 @@
 										<th scope="col" class="border-0 rounded-start"></th>
 										<th scope="col" class="border-0">Título</th>
 										<th scope="col" class="border-0">Atualizado em</th>
-										<th scope="col" class="border-0">Categoria</th>
+										<th scope="col" class="border-0">Tipo do artigo</th>
 										<th scope="col" class="border-0">Status</th>
 										<th scope="col" class="border-0 rounded-end"></th>
 									</tr>
@@ -171,7 +172,8 @@
 							<div class="col-md-12">
 								<form class="rounded position-relative" data-np-autofill-form-type="other"
 									data-np-checked="1" data-np-watching="1">
-									<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa-publicado" name="text-pesquisa-publicado"
+									<input class="form-control pe-5 bg-transparent" type="search"
+										id="text-pesquisa-publicado" name="text-pesquisa-publicado"
 										placeholder="Pesquisar" aria-label="Pesquisar">
 									<button
 										class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-publicado"
@@ -182,25 +184,8 @@
 						<!-- Search and select END -->
 
 						<!-- Post list table START -->
-						<div class="table-responsive border-0">
-							<table class="table align-middle p-4 mb-0 table-hover table-shrink">
-								<!-- Table head -->
-								<thead class="table-dark">
-									<tr>
-										</th>
-										<th scope="col" class="border-0 rounded-start"></th>
-										<th scope="col" class="border-0">Título</th>
-										<th scope="col" class="border-0">Publicado em</th>
-										<th scope="col" class="border-0">Categoria</th>
-										<th scope="col" class="border-0">Status</th>
-										<th scope="col" class="border-0 rounded-end"></th>
-									</tr>
-								</thead>
+						<div class="table-responsive border-0 tabela-publicado">
 
-								<!-- Table body START -->
-								<tbody class="border-top-0 tabela-publicado"></tbody>
-								<!-- Table body END -->
-							</table>
 						</div>
 						<!-- Post list table END -->
 
@@ -216,25 +201,29 @@
 
 
 <script>
-	$('.btn-pesquisar-producao').on('click', function (e) {
-		refreshListProducao();
-	});
-	$('.select-pesquisa').on('change', function (e) {
-		refreshListProducao();
-	});
-	$('.btn-pesquisar-publicado').on('click', function (e) {
-		refreshListPublicado();
-	});
 
 	$(document).ready(function () {
-		$( ".btn-pesquisar-producao" ).trigger( "click" );
-		$( ".btn-pesquisar-publicado" ).trigger( "click" );
-	})
+		$('.btn-pesquisar-producao').on('click', function (e) {
+			refreshListProducao();
+		});
+		$('.select-pesquisa').on('change', function (e) {
+			refreshListProducao();
+		});
+		$('.btn-pesquisar-publicado').on('click', function (e) {
+			refreshListPublicado(false);
+		});
+
+		$(document).ready(function () {
+			$(".btn-pesquisar-producao").trigger("click");
+			$(".btn-pesquisar-publicado").trigger("click");
+		})
+
+	});
 
 	function refreshListProducao() {
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>",
-			type: 'POST',
+			type: 'get',
 			dataType: 'html',
 			data: {
 				titulo: $('#text-pesquisa').val(),
@@ -249,10 +238,13 @@
 		});
 	}
 
-	function refreshListPublicado() {
+	function refreshListPublicado(url) {
+		if(url == false) {
+			url = '<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>';
+		}
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>",
-			type: 'POST',
+			url: url,
+			type: 'get',
 			dataType: 'html',
 			data: {
 				titulo: $('#text-pesquisa-publicado').val(),

@@ -70,6 +70,10 @@
 			color: var(--mdb-surface-inverted-color) !important;
 		}
 
+		[data-mdb-theme=dark] .btn-light {
+			background-color: var(--mdb-btn-disabled-color);
+		}
+
 		.btn-link {
 			background: linear-gradient(to right, currentColor 0%, currentColor 100%);
 			background-position-x: 0%;
@@ -241,8 +245,8 @@
 									class="fas fa-globe"></i> Dashboard</a>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#"><i
-									class="fas fa-pen" id="menuArtigosColaboradores"></i>
+							<a class="nav-link dropdown-toggle" href="#"><i class="fas fa-pen"
+									id="menuArtigosColaboradores"></i>
 								Artigos</a>
 							<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
 								<li> <a class="dropdown-item"
@@ -354,9 +358,11 @@
 										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item rounded-top"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>
-										<a class="dropdown-item rounded-top" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+										<a class="dropdown-item rounded-top"
+											href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
-										<a class="dropdown-item rounded-bottom" href="<?= site_url('site/logout'); ?>">Sair</a>
+										<a class="dropdown-item rounded-bottom"
+											href="<?= site_url('site/logout'); ?>">Sair</a>
 									</div>
 								</li>
 							</ul>
@@ -394,6 +400,25 @@
 			</div>
 		</div>
 	</footer>
+
+	<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"
+		id="mi-modal">
+		<div class="modal-dialog modal-md modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">ATENÇÃO!</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="conteudo-modal"></p>
+				</div>
+				<div class="modal-footer d-flex justify-content-between">
+					<button type="button" class="btn btn-default" id="modal-btn-no">Não</button>
+					<button type="button" class="btn btn-primary" id="modal-btn-si">Sim</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 
 <script type="text/javascript">
