@@ -52,7 +52,7 @@ use CodeIgniter\I18n\Time;
 						<div class="row">
 							<div class="col-12">
 								<div class="mb-3">
-									<label class="form-label" for="tipo_artigo">Tipo de Artigo</label>
+									<label class="form-label" for="tipo_artigo">Tipo de artigo</label>
 									<div class="input-group">
 										<select class="form-control" name="tipo_artigo" id="tipo_artigo">
 											<option value="" <?= (isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo'] == "") ? ('selected="true"') : (''); ?>>Escolha o
@@ -73,6 +73,8 @@ use CodeIgniter\I18n\Time;
 								<?php if (!empty($pauta)): ?>
 									<div class="mb-3">
 										<label class="form-label">
+											<input type="text" class="form-control d-none" id="link" name="link"
+												value="<?= (isset($pauta['link'])) ? ($pauta['link']) : (''); ?>">
 											<a class="btn btn-sm btn-primary" href="<?= $pauta['link']; ?>"
 												target="_blank">Acessar a notícia</a>
 											<?= $pauta['titulo']; ?>
@@ -107,7 +109,7 @@ use CodeIgniter\I18n\Time;
 							<div class="col-12">
 								<!-- Post name -->
 								<div class="mb-3">
-									<label class="form-label" for="titulo">Título do artigo</label>
+									<label class="form-label" for="titulo">Título</label>
 									<input type="text" class="form-control" id="titulo" name="titulo"
 										placeholder="Título do artigo"
 										value="<?= str_replace('"', "'", $artigo['titulo']); ?>">
@@ -136,39 +138,56 @@ use CodeIgniter\I18n\Time;
 										class="d-none"><?= $artigo['texto_original']; ?></textarea>
 									<div class="col-md-12 d-flex justify-content-between">
 										<small class="ps-1">
-											<span class="text-muted">Artigo deve ter entre
+											<span class="">Artigo deve ter entre
 												<?= $config['artigo_tamanho_minimo']; ?> e
 												<?= $config['artigo_tamanho_maximo']; ?> palavras.</span>
 										</small>
-										<small class="pe-1"> <span class="pull-right label label-default text-muted"
+										<small class="pe-1"> <span class="pull-right label label-default"
 												id="count_message"></span></small>
 									</div>
 								</div>
 							</div>
-							<div class="col-12 mt-4">
-								<div class="mb-3">
-									<!-- Image -->
-									<div class="row align-items-center mb-2">
-										<div class="col-4 col-md-2">
-											<div class="position-relative">
-												<img class="img-fluid" id="preview" />
+
+							<?php if (!$cadastro): ?>
+								<div class="col-12 mt-4">
+									<div class="mb-3">
+										<!-- Image -->
+										<div class="row align-items-center mb-2">
+											<div class="col-4 col-md-2">
+												<div class="position-relative">
+													<img class="img-fluid" id="preview" />
+												</div>
 											</div>
-										</div>
-										<div class="col-sm-8 col-md-10 position-relative">
-											<h6 class="my-2">Imagem de capa</h6>
-											<label class="w-100" style="cursor:pointer;">
-												<span>
-													<input class="form-control stretched-link" type="file" name="imagem"
-														id="imagem" accept="image/gif, image/jpeg, image/png">
-												</span>
-											</label>
-											<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
-												tamanhos de
-												1.280 x 720. Tamanhos diferentes da proporção 16:9 serão cortadas.</p>
+											<div class="col-sm-8 col-md-10 position-relative">
+												<h6 class="my-2">Imagem de capa</h6>
+												<label class="w-100" style="cursor:pointer;">
+													<span>
+														<input class="form-control stretched-link" type="file" name="imagem"
+															id="imagem" accept="image/gif, image/jpeg, image/png">
+													</span>
+												</label>
+												<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
+													tamanhos de
+													1.280 x 720. Tamanhos diferentes da proporção 16:9 serão cortadas.</p>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div><!--
+							<?php endif; ?>
+
+							<!-- Short description -->
+							<div class="col-12">
+								<div class="mb-3" for="referencias">
+									<label class="form-label">Referências </label>
+									<textarea class="form-control" rows="3"
+										placeholder="Referências para embasar seu texto" id="referencias"
+										name="referencias"><?= str_replace('"', "'", $artigo['referencias']); ?></textarea>
+									<small>Todos os links utilizados para dar embasamento para escrever o artigo, menos
+										a pauta.</small>
+								</div>
+							</div>
+
+							<!--
 						<div class="col-lg-7">
 							
 							<div class="mb-3">
@@ -205,9 +224,8 @@ use CodeIgniter\I18n\Time;
 
 							<?php if ($fase_producao == '1'): ?>
 								<div class="d-flex justify-content-center">
-									<button class="btn btn-primary btn-lg btn-block mb-3 w-50" id="enviar_artigo"
-										type="button">Enviar
-										Artigo</button>
+									<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
+										type="button">Salvar artigo</button>
 								</div>
 							<?php endif; ?>
 						</div>
@@ -235,15 +253,15 @@ use CodeIgniter\I18n\Time;
 		$('#texto_original').html(quill.getText(0, quill.getLength()));
 		contapalavras();
 	});
-	<?php if($artigo['texto_original']!== null): ?>
+	<?php if ($artigo['texto_original'] !== null): ?>
 		quill.setContents([
-			{ insert: '<?=$artigo['texto_original'];?>' },
+			{ insert: '<?= $artigo['texto_original']; ?>' },
 		])
 	<?php endif; ?>
 </script>
 
 <script type="text/javascript">
-	
+
 	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
 		contapalavras();
@@ -265,17 +283,10 @@ use CodeIgniter\I18n\Time;
 		$('#count_message').html(number + " palavra" + s)
 	}
 
-	imagem.onchange = evt => {
-		const [file] = imagem.files
-		if (file) {
-			preview.src = URL.createObjectURL(file)
-		}
-	}
-
 	$('#enviar_artigo').on('click', function () {
 		form = new FormData(artigo_form);
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/gravar'); ?>",
+			url: "<?= site_url('colaboradores/artigos/salvar'); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -287,14 +298,23 @@ use CodeIgniter\I18n\Time;
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					refreshList();
-					$(".btn-reset").trigger("click");
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
 			}
 		});
 	})
+
+	<?php if (!$cadastro): ?>
+
+		imagem.onchange = evt => {
+			const [file] = imagem.files
+			if (file) {
+				preview.src = URL.createObjectURL(file)
+			}
+		}
+
+	<?php endif; ?>
 
 </script>
 

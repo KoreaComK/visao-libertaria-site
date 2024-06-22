@@ -168,6 +168,46 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioArtigoSalvar($post, $pauta = false)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'tipo_artigo' => [
+				'label' => 'Tipo do Artigo',
+				'rules' => 'required'
+			],
+			'titulo' => [
+				'label' => 'Título do Artigo',
+				'rules' => 'required|max_length[255]|min_length[10]'
+			],
+			'texto_original' => [
+				'label' => 'Texto do Artigo',
+				'rules' => 'required'
+			],
+			// 'categorias' => [
+			// 	'label' => 'Categorias',
+			// 	'rules' => 'required',
+			// 	'errors' => [
+			// 		'required' => 'O campo {field} é obrigatório.',
+			// 	],
+			// ]
+		]);
+		if ($pauta === false) {
+			$validation->setRule(
+				'link',
+				'Link da Notícia',
+				'required|max_length[255]|valid_url_strict',
+				[
+					'required' => 'O campo {field} é obrigatório.',
+					'max_length' => 'O campo {field} é muito grande. O máximo é {param} caracteres',
+					'valid_url_strict' => 'O campo {field} precisa ser uma URL válida.',
+				]
+			);
+		}
+		$validation->run($post);
+		return $validation;
+	}
+
 	public function validaFormularioArtigo($post, $pauta = false)
 	{
 		$validation = \Config\Services::validation();
@@ -191,11 +231,7 @@ class ValidaFormularios extends BaseController
 			'referencias' => [
 				'label' => 'Referências',
 				'rules' => 'required'
-			],
-			'imagem' => [
-				'label' => 'Link da Imagem',
-				'rules' => 'required|max_length[255]|valid_url_strict'
-			],
+			]
 			// 'categorias' => [
 			// 	'label' => 'Categorias',
 			// 	'rules' => 'required',
@@ -217,6 +253,19 @@ class ValidaFormularios extends BaseController
 			);
 		}
 		$validation->run($post);
+		return $validation;
+	}
+
+	public function validaFormularioArtigoImagem()
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'imagem' => [
+				'label' => 'Imagem',
+				'rules' => 'uploaded[imagem]|ext_in[imagem,JPG,PNG,JPEG]|max_size[imagem,5120]'
+			],
+		]);
+		$validation->run();
 		return $validation;
 	}
 

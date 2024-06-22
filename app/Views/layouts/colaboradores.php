@@ -216,11 +216,9 @@
 						<!-- Dark mode options END -->
 					</div>
 				</div>
-				<!-- Divider -->
-				<div class="border-bottom border-2 opacity-1"></div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg shadow-0">
+		<nav class="navbar navbar-expand-lg shadow-0 vl-bg-c">
 			<div class="container">
 				<div>
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('site'); ?>">
@@ -246,16 +244,16 @@
 							<a class="nav-link dropdown-toggle" href="#"><i
 									class="fas fa-pen" id="menuArtigosColaboradores"></i>
 								Artigos</a>
-							<ul class="dropdown-menu" aria-labelledby="menuArtigosColaboradores">
+							<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
 								<li> <a class="dropdown-item"
-										href="<?= site_url('colaboradores/artigos/cadastrar'); ?>">Escrever Artigos</a>
+										href="<?= site_url('colaboradores/artigos/cadastrar'); ?>">Escrever novo</a>
 								</li>
 								<li> <a class="dropdown-item"
-										href="<?= site_url('colaboradores/pautas/fechar'); ?>">Meus Artigos</a>
+										href="<?= site_url('colaboradores/artigos/meusArtigos'); ?>">Meus artigos</a>
 								</li>
 								<li> <a class="dropdown-item"
 										href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Colaborar com
-										Artigos</a>
+										artigos</a>
 								</li>
 							</ul>
 						</li>
@@ -264,9 +262,9 @@
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
 											class="fas fa-bullhorn"></i> Pautas</a>
-									<ul class="dropdown-menu" aria-labelledby="menuPautasColaboradores">
+									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuPautasColaboradores">
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar Pautas</a> </li>
+												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
 										</li>
@@ -352,13 +350,13 @@
 											<?= $_SESSION['colaboradores']['nome']; ?>
 										</span>
 									</a>
-									<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item"
+									<div class="dropdown-menu vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
+										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item rounded-top"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>
-										<a class="dropdown-item" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+										<a class="dropdown-item rounded-top" href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
-										<a class="dropdown-item" href="<?= site_url('site/logout'); ?>">Sair</a>
+										<a class="dropdown-item rounded-bottom" href="<?= site_url('site/logout'); ?>">Sair</a>
 									</div>
 								</li>
 							</ul>
