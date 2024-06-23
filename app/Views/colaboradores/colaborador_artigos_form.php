@@ -79,6 +79,7 @@ use CodeIgniter\I18n\Time;
 												target="_blank">Acessar a notícia</a>
 											<?= $pauta['titulo']; ?>
 										</label>
+										<small class="d-block text-danger aviso-pauta"></small>
 									</div>
 								<?php else: ?>
 									<div class="mb-3">
@@ -89,6 +90,7 @@ use CodeIgniter\I18n\Time;
 												placeholder="Link da notícia para pauta" name="link"
 												value="<?= (isset($artigo['link'])) ? ($artigo['link']) : (''); ?>">
 										</div>
+										<small class="d-block text-danger aviso-pauta"></small>
 									</div>
 								<?php endif; ?>
 							</div>
@@ -253,6 +255,28 @@ use CodeIgniter\I18n\Time;
 		$('#count_message').html(number + " palavra" + s)
 	}
 
+	function verificaPautaEscrita() {
+		form = new FormData(artigo_form);
+		$.ajax({
+			url: "<?= site_url('colaboradores/artigos/verificaPautaEscrita'.(($artigo['id']==NULL)?(''):('/'.$artigo['id']))); ?>",
+			method: "POST",
+			data: form,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (retorno) {
+				if (retorno.status === false) {
+					$('.aviso-pauta').html(retorno.mensagem);
+				} else {
+					$('.aviso-pauta').html('');
+				}
+			}
+		});
+	}
+
 	const Font = Quill.import('formats/font');
 	Font.whitelist = ['roboto'];
 	Quill.register(Font, true);
@@ -277,7 +301,12 @@ use CodeIgniter\I18n\Time;
 	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
 		contapalavras();
+		verificaPautaEscrita();
 	})
+
+	$('#link').on('change', function (e) {
+		verificaPautaEscrita();
+	});
 
 
 	$('#enviar_artigo').on('click', function () {

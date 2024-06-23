@@ -125,75 +125,6 @@ class Artigos extends BaseController
 		} else {
 			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
 		}
-
-
-
-
-
-		$id_artigo = null;
-
-		if ($id_artigo != null) {
-
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigo = $artigosModel->find($id_artigo);
-			$valida = null;
-			$post = $this->request->getPost();
-			//$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-			//$artigosCategorias = $artigosCategoriasModel->getCategoriasArtigo($id_artigo);
-			// $data['categorias_artigo'] = array();
-			// foreach ($artigosCategorias as $ac) {
-			// 	$data['categorias_artigo'][] = $ac['id'];
-			// }
-
-			if ($artigo == null || !in_array($artigo['fase_producao_id'], array('1', '2')) || $artigo['escrito_colaboradores_id'] != $this->session->get('colaboradores')['id']) {
-				return redirect()->to(base_url() . 'colaboradores/artigos/');
-			}
-
-			//Altera artigo
-			if ($id_artigo != null && $this->request->getMethod() == 'post') {
-				$valida = $validaFormularios->validaFormularioArtigo($post, false);
-				if (empty($valida->getErrors())) {
-					if (is_array(@getimagesize($post['imagem']))) {
-						$artigoId = $this->alterarArtigo($id_artigo);
-						if ($artigoId != false) {
-							$data['retorno'] = $retorno->retorno(true, 'Artigo salvo com sucesso', false);
-						}
-					} else {
-						$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-					}
-				} else {
-					$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
-				}
-				$data['artigo'] = $post;
-				//$data['categorias_artigo'] = isset($post['categorias']) ? ($post['categorias']) : (array());
-			} else {
-				$data['artigo'] = $artigosModel->find($id_artigo);
-			}
-		}
-
-		// CADASTRO DO ARTIGO
-		if ($id_artigo == null && $this->request->getMethod() == 'post') {
-			$post = $this->request->getPost();
-			$valida = $validaFormularios->validaFormularioArtigo($post, ($this->request->getGet('pauta')) ? (true) : (false));
-			if (empty($valida->getErrors())) {
-				if (is_array(@getimagesize($post['imagem']))) {
-					$artigoId = $this->cadastrarArtigo();
-					return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/' . $artigoId . '?status=true');
-				} else {
-					$data['retorno'] = $retorno->retorno(false, 'O link informado não é uma imagem.', false);
-					$data['artigo'] = $post;
-				}
-			} else {
-				$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
-				if ($this->request->getGet('pauta') !== null) {
-					$pautasModel = new \App\Models\PautasModel();
-					$data['pauta'] = $pautasModel->find($this->request->getGet('pauta'));
-				}
-				$data['artigo'] = $post;
-				// $data['categorias_artigo'] = isset($post['categorias']) ? ($post['categorias']) : (array());
-			}
-		}
-
 	}
 
 	public function meusArtigos()
@@ -407,6 +338,34 @@ class Artigos extends BaseController
 		}
 	}
 
+	public function verificaPautaEscrita($artigoId = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('2');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$data = array();
+
+		$post = $this->request->getPost();
+		if (empty($post) || !isset($post['link'])) {
+			return false;
+		}
+		if($post['link'] !== NULL && $post['link'] !=="") {
+			$artigosModel->like('link',$post['link']);
+			$artigosModel->where('descartado',NULL);
+			if($artigoId !== NULL) {
+				$artigosModel->whereNotIn('id',$artigoId);
+			}
+			$artigos = $artigosModel->get()->getResultArray();
+			$contador = count($artigos);
+			if($contador > 0) {
+				return $retorno->retorno(false, 'ATENÇÃO! Já existe artigo sobre esta pauta.', true);
+			} else {
+				return $retorno->retorno(true, '', true);
+			}
+		}
+
+	}
 
 
 
