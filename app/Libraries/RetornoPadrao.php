@@ -7,11 +7,12 @@ use App\Controllers\BaseController;
 class RetornoPadrao extends BaseController
 {
 
-	public function retorno($status = false, $mensagem = NULL, $json = false)
+	public function retorno($status = false, $mensagem = NULL, $json = false, $parametros = false)
 	{
 		$retorno = array();
 		$retorno['status'] = $status;
 		$retorno['mensagem'] = $mensagem;
+		$retorno['parametros'] = $parametros;
 		if ($json) {
 			return json_encode($retorno);
 		} else {

@@ -27,7 +27,7 @@
 					<?php if ($artigo['fase_producao_id'] == '1'): ?>
 						<a class="btn btn-light btn-round mb-0 btn-tooltip btn-descartar" data-artigo-id="<?= $artigo['id']; ?>"
 							data-toggle="tooltip" data-placement="top" title="Descartar artigo"><i class="fas fa-trash-can"></i></a>
-						<a href="<?=site_url('colaboradores/artigos/atualizar/').$artigo['id'];?>" class="btn btn-light btn-round mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+						<a href="<?=site_url('colaboradores/artigos/cadastrar/').$artigo['id'];?>" class="btn btn-light btn-round mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
 							title="Continuar escrevendo"><i class="fas fa-pencil"></i></a>
 					<?php endif; ?>
 				</div>
@@ -53,27 +53,6 @@
 		$('.conteudo-modal').html('Deseja realmente descartar este artigo?');
 		artigoId = $(e.currentTarget).attr('data-artigo-id');
 		$("#mi-modal").modal('show');
-	});
-
-	$("#modal-btn-si").on("click", function () {
-		$("#mi-modal").modal('hide');
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/descartar/'); ?>" + artigoId,
-			type: 'get',
-			dataType: 'json',
-			data: {
-			},
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					$(".btn-pesquisar-producao").trigger("click");
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
 	});
 
 	$("#modal-btn-no").on("click", function () {

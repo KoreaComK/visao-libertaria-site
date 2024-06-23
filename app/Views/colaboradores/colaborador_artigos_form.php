@@ -155,15 +155,14 @@ use CodeIgniter\I18n\Time;
 										<div class="row align-items-center mb-2">
 											<div class="col-4 col-md-2">
 												<div class="position-relative">
-													<img class="img-fluid" id="preview" />
+													<img class="img-fluid" id="preview" src="<?= $artigo['imagem']; ?>"/>
 												</div>
 											</div>
 											<div class="col-sm-8 col-md-10 position-relative">
 												<h6 class="my-2">Imagem de capa</h6>
 												<label class="w-100" style="cursor:pointer;">
 													<span>
-														<input class="form-control stretched-link" type="file" name="imagem"
-															id="imagem" accept="image/gif, image/jpeg, image/png">
+														<input class="form-control stretched-link" type="file" name="imagem"  id="imagem" accept="image/gif, image/jpeg, image/png">
 													</span>
 												</label>
 												<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
@@ -238,6 +237,22 @@ use CodeIgniter\I18n\Time;
 </div>
 
 <script type="text/javascript">
+	function contapalavras() {
+		var texto = $("#texto_original").val().replaceAll('\n', " ");
+		texto = texto.replace(/[0-9]/gi, "");
+		var matches = texto.split(" ");
+		number = matches.filter(function (word) {
+			return word.length > 0;
+		}).length;
+		var s = "";
+		if (number > 1) {
+			s = 's'
+		} else {
+			s = '';
+		}
+		$('#count_message').html(number + " palavra" + s)
+	}
+
 	const Font = Quill.import('formats/font');
 	Font.whitelist = ['roboto'];
 	Quill.register(Font, true);
@@ -255,38 +270,20 @@ use CodeIgniter\I18n\Time;
 	});
 	<?php if ($artigo['texto_original'] !== null): ?>
 		quill.setContents([
-			{ insert: '<?= $artigo['texto_original']; ?>' },
+			{ insert: "<?= preg_replace('/\s\s+/', '\n', $artigo['texto_original']); ?>" },
 		])
 	<?php endif; ?>
-</script>
-
-<script type="text/javascript">
 
 	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
 		contapalavras();
 	})
 
-	function contapalavras() {
-		var texto = $("#texto_original").val().replaceAll('\n', " ");
-		texto = texto.replace(/[0-9]/gi, "");
-		var matches = texto.split(" ");
-		number = matches.filter(function (word) {
-			return word.length > 0;
-		}).length;
-		var s = "";
-		if (number > 1) {
-			s = 's'
-		} else {
-			s = '';
-		}
-		$('#count_message').html(number + " palavra" + s)
-	}
 
 	$('#enviar_artigo').on('click', function () {
 		form = new FormData(artigo_form);
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/salvar'); ?>",
+			url: "<?= site_url('colaboradores/artigos/salvar').(($artigo['id']==NULL)?(''):('/'.$artigo['id'])); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -298,6 +295,13 @@ use CodeIgniter\I18n\Time;
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+
+					<?php if ($cadastro): ?>
+						setTimeout(function () {
+							window.location.href = "<?= site_url('colaboradores/artigos/cadastrar/'); ?>"+retorno.parametros['artigoId'];
+						}, 2000);
+					<?php endif; ?>
+
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
@@ -310,7 +314,27 @@ use CodeIgniter\I18n\Time;
 		imagem.onchange = evt => {
 			const [file] = imagem.files
 			if (file) {
-				preview.src = URL.createObjectURL(file)
+				preview.src = URL.createObjectURL(file);
+				form = new FormData(artigo_form);
+				$.ajax({
+					url: "<?= site_url('colaboradores/artigos/salvarImagem/') . $artigo['id']; ?>",
+					method: "POST",
+					data: form,
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide(); },
+					success: function (retorno) {
+						console.log(retorno);
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
 			}
 		}
 

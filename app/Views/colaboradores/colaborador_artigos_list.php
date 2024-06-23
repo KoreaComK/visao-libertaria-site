@@ -212,12 +212,8 @@
 		$('.btn-pesquisar-publicado').on('click', function (e) {
 			refreshListPublicado(false);
 		});
-
-		$(document).ready(function () {
-			$(".btn-pesquisar-producao").trigger("click");
-			$(".btn-pesquisar-publicado").trigger("click");
-		})
-
+		$(".btn-pesquisar-producao").trigger("click");
+		$(".btn-pesquisar-publicado").trigger("click");
 	});
 
 	function refreshListProducao() {
@@ -239,7 +235,7 @@
 	}
 
 	function refreshListPublicado(url) {
-		if(url == false) {
+		if (url == false) {
 			url = '<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>';
 		}
 		$.ajax({
@@ -257,6 +253,32 @@
 			}
 		});
 	}
+
+	$(document).ready(function () {
+
+		$("#modal-btn-si").on("click", function () {
+			$("#mi-modal").modal('hide');
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/artigos/descartar/'); ?>" + artigoId,
+				type: 'get',
+				dataType: 'json',
+				data: {
+				},
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						$(".btn-pesquisar-producao").trigger("click");
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+					artigoId = null;
+				}
+			});
+			return false;
+		});
+	});
 
 	$("form").on("submit", function (e) {
 		e.preventDefault();
