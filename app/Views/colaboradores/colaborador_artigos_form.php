@@ -25,22 +25,23 @@ use CodeIgniter\I18n\Time;
 			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
 		</div>
 	</div>
-	<div class="mb-5">
-		<?php if ($fase_producao == '1'): ?>
-			<?= $config['artigo_regras_escrever']; ?>
-		<?php endif; ?>
-		<?php if ($fase_producao == '2'): ?>
-			<?= $config['artigo_regras_revisar']; ?>
-		<?php endif; ?>
-		<?php if ($fase_producao == '3'): ?>
-			<?= $config['artigo_regras_narrar']; ?>
-		<?php endif; ?>
-		<?php if ($fase_producao == '4'): ?>
-			<?= $config['artigo_regras_produzir']; ?>
-		<?php endif; ?>
-	</div>
-
 	<div class="row">
+		<div class="col-12">
+			<div class="mb-5">
+				<?php if ($fase_producao == '1'): ?>
+					<?= $config['artigo_regras_escrever']; ?>
+				<?php endif; ?>
+				<?php if ($fase_producao == '2'): ?>
+					<?= $config['artigo_regras_revisar']; ?>
+				<?php endif; ?>
+				<?php if ($fase_producao == '3'): ?>
+					<?= $config['artigo_regras_narrar']; ?>
+				<?php endif; ?>
+				<?php if ($fase_producao == '4'): ?>
+					<?= $config['artigo_regras_produzir']; ?>
+				<?php endif; ?>
+			</div>
+		</div>
 		<div class="col-12">
 			<!-- Chart START -->
 			<div class="card border">
@@ -157,14 +158,15 @@ use CodeIgniter\I18n\Time;
 										<div class="row align-items-center mb-2">
 											<div class="col-4 col-md-2">
 												<div class="position-relative">
-													<img class="img-fluid" id="preview" src="<?= $artigo['imagem']; ?>"/>
+													<img class="img-fluid" id="preview" src="<?= $artigo['imagem']; ?>" />
 												</div>
 											</div>
 											<div class="col-sm-8 col-md-10 position-relative">
 												<h6 class="my-2">Imagem de capa</h6>
 												<label class="w-100" style="cursor:pointer;">
 													<span>
-														<input class="form-control stretched-link" type="file" name="imagem"  id="imagem" accept="image/gif, image/jpeg, image/png">
+														<input class="form-control stretched-link" type="file" name="imagem"
+															id="imagem" accept="image/gif, image/jpeg, image/png">
 													</span>
 												</label>
 												<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
@@ -233,7 +235,38 @@ use CodeIgniter\I18n\Time;
 					</form>
 				</div>
 			</div>
-			<!-- Chart END -->
+			<?php if (!$cadastro): ?>
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Submeter para revisão</h5>
+						<p class="card-text">Ao submeter para revisão aceito os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito1">
+							<label class="form-check-label" for="aceito1">
+								Aceito o texto ser alterado parcial ou completamente para atender o padrão do Visão
+								Libertária.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito2">
+							<label class="form-check-label" for="aceito2">
+								Entendo que não poderei mais descartar o texto após enviá-lo para a revisão.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito3">
+							<label class="form-check-label" for="aceito3">
+								Caso o texto esteja muito fora do padrão do projeto ele poderá ser descartado a qualquer
+								momento.
+							</label>
+						</div>
+						<div class="text-end">
+							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
+								revisão</button>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>
@@ -258,7 +291,7 @@ use CodeIgniter\I18n\Time;
 	function verificaPautaEscrita() {
 		form = new FormData(artigo_form);
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/verificaPautaEscrita'.(($artigo['id']==NULL)?(''):('/'.$artigo['id']))); ?>",
+			url: "<?= site_url('colaboradores/artigos/verificaPautaEscrita' . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id']))); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -308,11 +341,10 @@ use CodeIgniter\I18n\Time;
 		verificaPautaEscrita();
 	});
 
-
 	$('#enviar_artigo').on('click', function () {
 		form = new FormData(artigo_form);
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/salvar').(($artigo['id']==NULL)?(''):('/'.$artigo['id'])); ?>",
+			url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -327,7 +359,7 @@ use CodeIgniter\I18n\Time;
 
 					<?php if ($cadastro): ?>
 						setTimeout(function () {
-							window.location.href = "<?= site_url('colaboradores/artigos/cadastrar/'); ?>"+retorno.parametros['artigoId'];
+							window.location.href = "<?= site_url('colaboradores/artigos/cadastrar/'); ?>" + retorno.parametros['artigoId'];
 						}, 2000);
 					<?php endif; ?>
 
@@ -339,6 +371,50 @@ use CodeIgniter\I18n\Time;
 	})
 
 	<?php if (!$cadastro): ?>
+
+		$('#aceito1').on('change', function (e) {
+			submeterRevisao();
+		});
+		$('#aceito2').on('change', function (e) {
+			submeterRevisao();
+		});
+		$('#aceito3').on('change', function (e) {
+			submeterRevisao();
+		});
+
+		function submeterRevisao() {
+			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
+				$('.submeter-revisao').removeAttr('disabled');
+			} else {
+				$('.submeter-revisao').attr('disabled', '');
+			}
+		}
+
+		$('.submeter-revisao').on('click', function () {
+			$.ajax({
+				url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
+				method: "POST",
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						$('.submeter-revisao').attr('disabled', '');
+
+						setTimeout(function () {
+							window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
+						}, 1500);
+
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				}
+			});
+		});
 
 		imagem.onchange = evt => {
 			const [file] = imagem.files
