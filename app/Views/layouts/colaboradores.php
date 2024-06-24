@@ -66,6 +66,10 @@
 			background-color: var(--mdb-divider-color) !important;
 		}
 
+		[data-mdb-theme=dark] .vl-bg-c {
+			background-color: #d3a901 !important;
+		}
+
 		[data-mdb-theme=dark] a {
 			color: var(--mdb-surface-inverted-color) !important;
 		}

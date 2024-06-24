@@ -39,6 +39,10 @@ class ArtigosModel extends Model
 	// protected $beforeDelete   = [];
 	protected $afterDelete    = ['cadastraHistoricoUsuarioExcluir'];
 
+	public function getContadorPostados(){
+		return $this->db->query('SELECT * from artigos WHERE artigos.fase_producao_id IN (6,7) AND descartado IS NULL')->getNumRows();
+	}
+
 	public function getArtigosHome($limit = 21){
 		$this->whereIn('artigos.fase_producao_id', array(6,7));
 		$this->orderBy('artigos.publicado', 'DESC');
