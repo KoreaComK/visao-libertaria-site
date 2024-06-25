@@ -231,8 +231,7 @@
 				<div>
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('site'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
-							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"
-							alt="MDB Logo" loading="lazy">
+							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" loading="lazy">
 						<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					</a>
 				</div>
@@ -259,14 +258,16 @@
 								<li> <a class="dropdown-item"
 										href="<?= site_url('colaboradores/artigos/meusArtigos'); ?>">Meus artigos</a>
 								</li>
-								<li> <a class="dropdown-item"
-										href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Colaborar com
-										artigos</a>
-								</li>
+								<?php if (in_array('3', $_SESSION['colaboradores']['permissoes']) || in_array('4', $_SESSION['colaboradores']['permissoes']) || in_array('5', $_SESSION['colaboradores']['permissoes']) || in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
+									<li> <a class="dropdown-item"
+											href="<?= site_url('colaboradores/artigos/artigosColaborar'); ?>">Colaborar com
+											artigos</a>
+									</li>
+								<?php endif; ?>
 							</ul>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
+							<?php if (in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
 											class="fas fa-bullhorn"></i> Pautas</a>
