@@ -9,7 +9,8 @@
 				<div class="d-flex flex-wrap gap-3">
 					<?php if (in_array('3', $permissoes)): ?>
 						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2">
+							<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2"
+								<?= ($primeira == '2') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="revisar">
 								<div class="icon-xl fs-1 rounded-3 text-primary text-center">
 									<i class="fas fa-pen-to-square"></i>
@@ -22,7 +23,8 @@
 					<?php endif; ?>
 					<?php if (in_array('4', $permissoes)): ?>
 						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="narrar" value="3">
+							<input type="radio" class="btn-check radio" name="fase_producao" id="narrar" value="3"
+								<?= ($primeira == '3') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="narrar">
 								<div class="icon-xl fs-1 rounded-3 text-info text-center">
 									<i class="fas fa-microphone"></i>
@@ -35,10 +37,11 @@
 					<?php endif; ?>
 					<?php if (in_array('5', $permissoes)): ?>
 						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="produzir" value="4">
+							<input type="radio" class="btn-check radio" name="fase_producao" id="produzir" value="4"
+								<?= ($primeira == '4') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="produzir">
 								<div class="icon-xl fs-1 rounded-3 text-secondary text-center">
-									<i class="fas fa-laptop-code"></i>
+									<i class="fas fa-video"></i>
 								</div>
 								<span class="mb-0 text-secondary">Produzir
 									<?= ($resumo['produzir'] < 10) ? ('0' . $resumo['produzir']) : ($resumo['produzir']); ?>
@@ -48,7 +51,8 @@
 					<?php endif; ?>
 					<?php if (in_array('6', $permissoes)): ?>
 						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="publicar" value="5">
+							<input type="radio" class="btn-check radio" name="fase_producao" id="publicar" value="5"
+								<?= ($primeira == '5') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="publicar">
 								<div class="icon-xl fs-1 rounded-3 text-danger text-center">
 									<i class="fab fa-youtube"></i>
@@ -105,7 +109,40 @@
 	<!-- Counter END -->
 
 </div>
-</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalPrevia" aria-hidden="true" id="modalPrevia">
+	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Prévia do artigo</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="col-lg-12">
+					<h1 class="display-2 text-black" id="modal-artigo-titulo"></h1>
+					<p class="lead" id="modal-artigo-gancho"></p>
+					<div class="position-relative mb-3">
+						<div class="bg-image hover-zoom rounded-6">
+							<img class="w-100 img-fluid" height="auto" style="max-height:22rem;" src=""
+								id="modal-artigo-imagem"></img>
+							<div class="mask" style="background-color: rgba(0, 0, 0, 0.6);"></div>
+						</div>
+						<div class="pt-3 pb-3">
+							<div>
+								<p id="modal-artigo-texto"></p>
+								<h4 class="mb-3">Referências:</h4>
+								<p id="modal-artigo-referencias"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer d-flex justify-content-between">
+				<button type="button" class="btn btn-default" data-bs-dismiss="modal"
+					id="modal-btn-close">Fechar</button>
+				<button type="button" class="btn btn-primary" id="modal-btn-marcar">Marcar artigo</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -130,9 +167,68 @@
 			});
 		}
 	}
+	function showPrevia(artigoId) {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/artigos/buscaArtigoJSON/'); ?>" + artigoId,
+			type: 'post',
+			dataType: 'json',
+			data: {
+				artigo: artigoId
+			},
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (dados) {
+				if (dados.status) {
+					$('#modal-artigo-titulo').html(dados.parametros.titulo);
+					$('#modal-artigo-gancho').html(dados.parametros.gancho);
+					$('#modal-artigo-imagem').attr('src', dados.parametros.imagem);
+					$('#modal-artigo-texto').html(dados.parametros.texto);
+					$('#modal-artigo-referencias').html(dados.parametros.referencias);
+					$('#modal-btn-marcar').attr('data-vl-artigo',artigoId);
+				} else {
+					popMessage('ATENÇÃO', dados.mensagem, TOAST_STATUS.DANGER);
+				}
+			}
+		});
+
+	}
+
+	$("#modal-btn-marcar").on("click", function (e) {
+		console.log($(e.currentTarget).attr('data-vl-artigo'));
+		$('.conteudo-modal').html('Deseja marcar este artigo?');
+		artigoId = $(e.currentTarget).attr('data-vl-artigo');
+		$("#mi-modal").modal('show');
+	});
+
+	$(document).ready(function () {
+
+		$("#modal-btn-si").on("click", function () {
+			$("#mi-modal").modal('toggle');
+			$("#modalPrevia").modal('toggle');
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/artigos/marcar/'); ?>" + artigoId,
+				type: 'get',
+				dataType: 'json',
+				data: {
+				},
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						$(".btn-pesquisar").trigger("click");
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+					artigoId = null;
+				}
+			});
+			return false;
+		});
+	});
 
 	$('.btn-pesquisar').on('click', function (e) {
-		refreshListPublicado(false,$("input[name='fase_producao']:checked").val());
+		refreshListPublicado(false, $("input[name='fase_producao']:checked").val());
 	});
 
 	$('.radio').on('click', function (e) {
@@ -144,7 +240,7 @@
 	});
 
 	$(document).ready(function () {
-		refreshListPublicado(false, false);
+		refreshListPublicado(false, <?= $primeira; ?>);
 	});
 </script>
 

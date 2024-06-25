@@ -42,7 +42,7 @@
 					<td>
 						<div class="d-flex gap-2">
 							<a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
-								class="btn btn-light btn-round mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
 								title="Ir para o artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
 						</div>
 					</td>

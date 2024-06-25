@@ -25,9 +25,9 @@
 			<td>
 				<div class="d-flex gap-2">
 					<?php if ($artigo['fase_producao_id'] == '1'): ?>
-						<a class="btn btn-light btn-round mb-0 btn-tooltip btn-descartar" data-artigo-id="<?= $artigo['id']; ?>"
+						<a class="btn btn-light btn-floating mb-0 btn-tooltip btn-descartar" data-artigo-id="<?= $artigo['id']; ?>"
 							data-toggle="tooltip" data-placement="top" title="Descartar artigo"><i class="fas fa-trash-can"></i></a>
-						<a href="<?=site_url('colaboradores/artigos/cadastrar/').$artigo['id'];?>" class="btn btn-light btn-round mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+						<a href="<?=site_url('colaboradores/artigos/cadastrar/').$artigo['id'];?>" class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
 							title="Continuar escrevendo"><i class="fas fa-pencil"></i></a>
 					<?php endif; ?>
 				</div>

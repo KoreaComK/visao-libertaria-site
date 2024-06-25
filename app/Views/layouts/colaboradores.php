@@ -418,7 +418,7 @@
 					<p class="conteudo-modal"></p>
 				</div>
 				<div class="modal-footer d-flex justify-content-between">
-					<button type="button" class="btn btn-default" id="modal-btn-no">Não</button>
+					<button type="button" class="btn btn-default" data-bs-dismiss="modal" id="modal-btn-no">Não</button>
 					<button type="button" class="btn btn-primary" id="modal-btn-si">Sim</button>
 				</div>
 			</div>

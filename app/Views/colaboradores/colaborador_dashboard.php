@@ -64,7 +64,7 @@
 				<div class="card card-body border p-3">
 					<!-- Icon -->
 					<div class="icon-xl fs-1 bg-secondary bg-opacity-10 rounded-3 text-secondary text-center">
-						<i class="fas fa-laptop-code"></i>
+						<i class="fas fa-video"></i>
 					</div>
 					<!-- Content -->
 					<div class="text-center">

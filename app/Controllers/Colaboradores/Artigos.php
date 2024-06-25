@@ -517,6 +517,7 @@ class Artigos extends BaseController
 		$data['resumo']['publicar'] = 0;
 
 		$fase_permitida = array();
+		$data['primeira'] = NULL;
 		if ($this->verificaPermissao->PermiteAcesso('3') === true) {
 			$fase_permitida[] = '2';
 		}
@@ -533,6 +534,7 @@ class Artigos extends BaseController
 		if (empty($fase_permitida)) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/dashboard');
 		}
+		$data['primeira'] = $fase_permitida[0];
 
 		$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
 
@@ -631,6 +633,31 @@ class Artigos extends BaseController
 		];
 
 		return view('template/templateColaboradoresArtigoscColaborarList', $data);
+	}
+
+	public function buscaArtigoJSON($artigoId = NULL)
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$data = array();
+
+		if($artigoId===NULL) {
+			return $retorno->retorno(false, 'Artigo não informado.', true);
+		}
+		$artigo = $artigosModel->find($artigoId);
+		if(empty($artigo) || $artigoId === NULL) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+
+		$retornar = array();
+		$retornar['titulo'] = $artigo['titulo'];
+		$retornar['imagem'] = $artigo['imagem'];
+		$retornar['texto'] = ($artigo['fase_producao_id']=='2')?($artigo['texto_original']):($artigo['texto_revisado']);
+		$retornar['texto'] = '<p>'.str_replace("\n", "</p><p>", $retornar['texto']).'</p>';
+		$retornar['gancho'] = $artigo['gancho'];
+		$retornar['referencias'] = $artigo['referencias'];
+		return $retorno->retorno(true, 'Artigo encontrado.', true, $retornar);
 	}
 
 

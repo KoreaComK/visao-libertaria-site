@@ -6,7 +6,7 @@
 			</th>
 			<th scope="col" class="border-0 rounded-start"></th>
 			<th scope="col" class="border-0">Título</th>
-			<th scope="col" class="border-0">Publicado em</th>
+			<th scope="col" class="border-0">Última atualização</th>
 			<th scope="col" class="border-0">Tipo</th>
 			<th scope="col" class="border-0">Status</th>
 			<th scope="col" class="border-0 rounded-end"></th>
@@ -27,7 +27,7 @@
 						<h6 class="mb-0"><a href="#"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<!-- Table data -->
-					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMMM yyyy'); ?>
 					</td>
 					<!-- Table data -->
 					<td>
@@ -41,9 +41,9 @@
 					<!-- Table data -->
 					<td>
 						<div class="d-flex gap-2">
-							<a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
-								class="btn btn-light btn-round mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
-								title="Ler artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
+							<a data-bs-toggle="modal" data-bs-target="#modalPrevia" data-vl-artigo="<?=$artigo['id']?>"
+								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+								title="Prévia do artigo"><i class="fas fa-glasses"></i></a>
 						</div>
 					</td>
 				</tr>
@@ -67,6 +67,10 @@
 <script>
 	$(function () {
 		$('.btn-tooltip').tooltip();
+	});
+
+	$('.btn-tooltip').on('click',function(e) {
+		showPrevia($(e.currentTarget).attr('data-vl-artigo'));
 	});
 
 	$(document).ready(function () {

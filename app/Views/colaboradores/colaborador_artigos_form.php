@@ -432,7 +432,6 @@ use CodeIgniter\I18n\Time;
 					beforeSend: function () { $('#modal-loading').show(); },
 					complete: function () { $('#modal-loading').hide(); },
 					success: function (retorno) {
-						console.log(retorno);
 						if (retorno.status) {
 							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 						} else {
