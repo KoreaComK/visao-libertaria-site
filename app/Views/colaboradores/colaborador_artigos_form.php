@@ -225,17 +225,15 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div> -->
 
-							<?php if ($fase_producao == '1'): ?>
-								<div class="d-flex justify-content-center">
-									<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
-										type="button">Salvar artigo</button>
-								</div>
-							<?php endif; ?>
+							<div class="d-flex justify-content-center">
+								<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
+									type="button">Salvar artigo</button>
+							</div>
 						</div>
 					</form>
 				</div>
 			</div>
-			<?php if (!$cadastro): ?>
+			<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
 				<div class="card border mt-4">
 					<div class="card-body">
 						<h5 class="card-title">Submeter para revisão</h5>
@@ -263,6 +261,43 @@ use CodeIgniter\I18n\Time;
 						<div class="text-end">
 							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
 								revisão</button>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+			<?php if (!$cadastro && $artigo['fase_producao_id'] == '2'): ?>
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Submeter para narração</h5>
+						<p class="card-text">Ao submeter para narração aceito os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito1">
+							<label class="form-check-label" for="aceito1">
+								Foi revisado com atenção, tendo portanto uma visão libertária nítida, não se mostrando
+								apoiadora de nenhum
+								político ou do estado, sendo totalmente aderente as ideias do projeto.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito2">
+							<label class="form-check-label" for="aceito2">
+								Garanto que o texto não possui erros grosseiros de português, está bem escrito e com boa
+								fluência para narração.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito3">
+							<label class="form-check-label" for="aceito3">
+								Usei a ferramenta <a class="btn-link" href="https://www.duplichecker.com/"
+									target="_blank">Dupli Checker</a> e <a class="btn-link" href="https://www.zerogpt.com/"
+									target="_blank">ZeroGPT</a>
+								e em conjunto com a revisão não foram encontrados nenhum indício de plágio ou que o texto
+								seja de IA.
+							</label>
+						</div>
+						<div class="text-end">
+							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
+								narração</button>
 						</div>
 					</div>
 				</div>
@@ -344,7 +379,11 @@ use CodeIgniter\I18n\Time;
 	$('#enviar_artigo').on('click', function () {
 		form = new FormData(artigo_form);
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+			<?php if ($artigo['fase_producao_id'] == '1'): ?>
+						url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+						url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+			<?php endif; ?>
 			method: "POST",
 			data: form,
 			processData: false,
@@ -372,23 +411,45 @@ use CodeIgniter\I18n\Time;
 
 	<?php if (!$cadastro): ?>
 
-		$('#aceito1').on('change', function (e) {
-			submeterRevisao();
-		});
-		$('#aceito2').on('change', function (e) {
-			submeterRevisao();
-		});
-		$('#aceito3').on('change', function (e) {
-			submeterRevisao();
-		});
+		<?php if ($artigo['fase_producao_id'] == '1'): ?>
 
-		function submeterRevisao() {
-			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
-				$('.submeter-revisao').removeAttr('disabled');
-			} else {
-				$('.submeter-revisao').attr('disabled', '');
+			$('#aceito1').on('change', function (e) {
+				submeterRevisao();
+			});
+			$('#aceito2').on('change', function (e) {
+				submeterRevisao();
+			});
+			$('#aceito3').on('change', function (e) {
+				submeterRevisao();
+			});
+
+			function submeterRevisao() {
+				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
+					$('.submeter-revisao').removeAttr('disabled');
+				} else {
+					$('.submeter-revisao').attr('disabled', '');
+				}
 			}
-		}
+
+		<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+			$('#aceito1').on('change', function (e) {
+				submeterRevisao();
+			});
+			$('#aceito2').on('change', function (e) {
+				submeterRevisao();
+			});
+			$('#aceito3').on('change', function (e) {
+				submeterRevisao();
+			});
+
+			function submeterRevisao() {
+				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
+					$('.submeter-revisao').removeAttr('disabled');
+				} else {
+					$('.submeter-revisao').attr('disabled', '');
+				}
+			}
+		<?php endif; ?>
 
 		$('.submeter-revisao').on('click', function () {
 			$.ajax({
@@ -406,7 +467,11 @@ use CodeIgniter\I18n\Time;
 						$('.submeter-revisao').attr('disabled', '');
 
 						setTimeout(function () {
-							window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
+							<?php if ($artigo['fase_producao_id'] == '1'): ?>
+								window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
+							<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+								window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+							<?php endif; ?>
 						}, 1500);
 
 					} else {

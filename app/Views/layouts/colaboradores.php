@@ -229,7 +229,7 @@
 		<nav class="navbar navbar-expand-lg shadow-0 vl-bg-c">
 			<div class="container">
 				<div>
-					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('site'); ?>">
+					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
 							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" loading="lazy">
 						<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>

@@ -20,7 +20,7 @@
 				<tr>
 					<!-- Table data -->
 					<td>
-						<img src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
+						<img class="rounded-3" src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
 					</td>
 					<!-- Table data -->
 					<td>

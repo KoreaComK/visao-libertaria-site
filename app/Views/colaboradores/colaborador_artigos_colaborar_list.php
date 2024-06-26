@@ -10,56 +10,48 @@
 					<?php if (in_array('3', $permissoes)): ?>
 						<div class="flex-fill">
 							<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2"
-								<?= ($primeira == '2') ? ('checked') : (''); ?>>
+								<?= ($primeira['id'] == '2') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="revisar">
 								<div class="icon-xl fs-1 rounded-3 text-primary text-center">
 									<i class="fas fa-pen-to-square"></i>
 								</div>
-								<span class="mb-0 text-primary">Revisar
-									<?= ($resumo['revisar'] < 10) ? ('0' . $resumo['revisar']) : ($resumo['revisar']); ?>
-								</span>
+								<span class="mb-0 text-primary">Revisar</span>
 							</label>
 						</div>
 					<?php endif; ?>
 					<?php if (in_array('4', $permissoes)): ?>
 						<div class="flex-fill">
 							<input type="radio" class="btn-check radio" name="fase_producao" id="narrar" value="3"
-								<?= ($primeira == '3') ? ('checked') : (''); ?>>
+								<?= ($primeira['id'] == '3') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="narrar">
 								<div class="icon-xl fs-1 rounded-3 text-info text-center">
 									<i class="fas fa-microphone"></i>
 								</div>
-								<span class="mb-0 text-info">Narrar
-									<?= ($resumo['narrar'] < 10) ? ('0' . $resumo['narrar']) : ($resumo['narrar']); ?>
-								</span>
+								<span class="mb-0 text-info">Narrar</span>
 							</label>
 						</div>
 					<?php endif; ?>
 					<?php if (in_array('5', $permissoes)): ?>
 						<div class="flex-fill">
 							<input type="radio" class="btn-check radio" name="fase_producao" id="produzir" value="4"
-								<?= ($primeira == '4') ? ('checked') : (''); ?>>
+								<?= ($primeira['id'] == '4') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="produzir">
 								<div class="icon-xl fs-1 rounded-3 text-secondary text-center">
 									<i class="fas fa-video"></i>
 								</div>
-								<span class="mb-0 text-secondary">Produzir
-									<?= ($resumo['produzir'] < 10) ? ('0' . $resumo['produzir']) : ($resumo['produzir']); ?>
-								</span>
+								<span class="mb-0 text-secondary">Produzir</span>
 							</label>
 						</div>
 					<?php endif; ?>
 					<?php if (in_array('6', $permissoes)): ?>
 						<div class="flex-fill">
 							<input type="radio" class="btn-check radio" name="fase_producao" id="publicar" value="5"
-								<?= ($primeira == '5') ? ('checked') : (''); ?>>
+								<?= ($primeira['id'] == '5') ? ('checked') : (''); ?>>
 							<label class="btn btn-outline-light w-100" for="publicar">
 								<div class="icon-xl fs-1 rounded-3 text-danger text-center">
 									<i class="fab fa-youtube"></i>
 								</div>
-								<span class="mb-0 text-danger">Publicar
-									<?= ($resumo['publicar'] < 10) ? ('0' . $resumo['publicar']) : ($resumo['publicar']); ?>
-								</span>
+								<span class="mb-0 text-danger">Publicar</span>
 							</label>
 						</div>
 					<?php endif; ?>
@@ -73,7 +65,8 @@
 
 			<div class="card-header bg-transparent border-bottom p-3">
 				<div class="d-sm-flex justify-content-between align-items-center">
-					<h5 class="mb-2 mb-sm-0">Artigos que precisam de colaboração</h5>
+					<h5 class="mb-2 mb-sm-0">Artigos para <span class="fase-producao-nome"
+							style="text-transform: lowercase;"></span></h5>
 				</div>
 			</div>
 			<!-- Card body START -->
@@ -139,7 +132,6 @@
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="btn btn-default" data-bs-dismiss="modal"
 					id="modal-btn-close">Fechar</button>
-				<button type="button" class="btn btn-primary" id="modal-btn-marcar">Marcar artigo</button>
 			</div>
 		</div>
 	</div>
@@ -184,7 +176,7 @@
 					$('#modal-artigo-imagem').attr('src', dados.parametros.imagem);
 					$('#modal-artigo-texto').html(dados.parametros.texto);
 					$('#modal-artigo-referencias').html(dados.parametros.referencias);
-					$('#modal-btn-marcar').attr('data-vl-artigo',artigoId);
+					$('#modal-btn-marcar').attr('data-vl-artigo', artigoId);
 				} else {
 					popMessage('ATENÇÃO', dados.mensagem, TOAST_STATUS.DANGER);
 				}
@@ -194,36 +186,65 @@
 	}
 
 	$("#modal-btn-marcar").on("click", function (e) {
-		console.log($(e.currentTarget).attr('data-vl-artigo'));
 		$('.conteudo-modal').html('Deseja marcar este artigo?');
 		artigoId = $(e.currentTarget).attr('data-vl-artigo');
-		$("#mi-modal").modal('show');
+		$("#mi-modal").modal('toggle');
+		$("#modal-btn-si").addClass('modal-btn-confirma-marcar');
+		document.getElementById('mi-modal').addEventListener('hide.bs.modal', function (event) {
+			$("#modal-btn-si").removeClass('modal-btn-confirma-marcar');
+		});
+
 	});
 
 	$(document).ready(function () {
+		$("#modal-btn-si").on("click", function () {
+			if ($('#modal-btn-si').hasClass('modal-btn-confirma-marcar')) {
+				$("#mi-modal").modal('toggle');
+				$.ajax({
+					url: "<?php echo base_url('colaboradores/artigos/marcar/'); ?>" + artigoId,
+					type: 'get',
+					dataType: 'json',
+					data: {
+					},
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$(".btn-pesquisar").trigger("click");
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+						artigoId = null;
+					}
+				});
+				return false;
+			}
+		});
 
 		$("#modal-btn-si").on("click", function () {
-			$("#mi-modal").modal('toggle');
-			$("#modalPrevia").modal('toggle');
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/marcar/'); ?>" + artigoId,
-				type: 'get',
-				dataType: 'json',
-				data: {
-				},
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$(".btn-pesquisar").trigger("click");
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+			if ($('#modal-btn-si').hasClass('modal-btn-confirma-desmarcar')) {
+				$("#mi-modal").modal('toggle');
+				$.ajax({
+					url: "<?php echo base_url('colaboradores/artigos/desmarcar/'); ?>" + artigoId,
+					type: 'get',
+					dataType: 'json',
+					data: {
+					},
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$(".btn-pesquisar").trigger("click");
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+						artigoId = null;
 					}
-					artigoId = null;
-				}
-			});
-			return false;
+				});
+				return false;
+			}
 		});
 	});
 
@@ -240,8 +261,9 @@
 	});
 
 	$(document).ready(function () {
-		refreshListPublicado(false, <?= $primeira; ?>);
+		refreshListPublicado(false, <?= $primeira['id']; ?>);
 	});
+
 </script>
 
 <?= $this->endSection(); ?>

@@ -17,7 +17,7 @@
 							<!-- Content -->
 							<div class="ms-0">
 								<h3 class="mb-0">
-									<?= ($resumo['escritos'] < 10) ? ('0' . $resumo['escritos']) : ($resumo['escritos']); ?>
+									<?= (($resumo['escritos'] < 10) ? ('0') : ('')) . $resumo['escritos']; ?>
 								</h3>
 								<h6 class="mb-0">Escritos</h6>
 							</div>
@@ -34,7 +34,7 @@
 							<!-- Content -->
 							<div class="ms-0">
 								<h3 class="mb-0">
-									<?= ($resumo['publicados'] < 10) ? ('0' . $resumo['publicados']) : ($resumo['publicados']); ?>
+									<?= (($resumo['publicados'] < 10) ? ('0') : ('')) . $resumo['publicados']; ?>
 								</h3>
 								<h6 class="mb-0">Publicados</h6>
 							</div>
@@ -50,7 +50,9 @@
 							</div>
 							<!-- Content -->
 							<div class="ms-0">
-								<h3 class="mb-0"><?= number_format($resumo['palavras_totais'], 0, ',', '.'); ?></h3>
+								<h3 class="mb-0">
+									<?= (($resumo['palavras_totais'] < 10) ? ('0') : ('')) . number_format($resumo['palavras_totais'], 0, ',', '.'); ?>
+								</h3>
 								<h6 class="mb-0">Palavras totais</h6>
 							</div>
 						</div>
