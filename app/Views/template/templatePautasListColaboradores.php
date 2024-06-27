@@ -49,16 +49,18 @@ use CodeIgniter\I18n\Time;
 	</div>
 <?php endforeach; ?>
 
-<div class="d-block mt-3 d-none">
+
+<div class="d-none">
 	<?php if ($pautasList['pager']): ?>
 		<?= $pautasList['pager']->simpleLinks('pautas', 'default_template') ?>
 	<?php endif; ?>
-</div>
+	</div>
 
 <script>
 	$(document).ready(function () {
 		var $grid = $('.pautas-list').masonry({
 			// Masonry options...
+			stagger: 100,
 			itemSelector: '.card',
 			horizontalOrder: true
 		});

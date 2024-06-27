@@ -462,9 +462,13 @@ class Artigos extends BaseController
 			if(!$isPermissao) {
 				return $retorno->retorno(false, 'Você não tem permissão para enviar para narração.', true);
 			}
+			
+			if ($colaborador != $artigo['marcado_colaboradores_id']) {
+				return $retorno->retorno(false, 'Apenas quem marcou o artigo pode submetê-lo para narração.', true);
+			}
 
 			if ($colaborador != $artigo['revisado_colaboradores_id']) {
-				return $retorno->retorno(false, 'Apenas o revisor pode submeter o artigo para narração.', true);
+				return $retorno->retorno(false, 'Você não revisou o artigo. Revise e salve o artigo.', true);
 			}
 
 			$valida = $validaFormularios->validaFormularioArtigo($artigo, true);
@@ -486,6 +490,54 @@ class Artigos extends BaseController
 				}
 			} else {
 				return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+			}
+		}
+
+		// DE NARRAÇÃO PARA PRODUÇÃO
+		if ($artigo['fase_producao_id'] == '3') {
+			$isPermissao = $this->verificaPermissao->PermiteAcesso('4');
+			if (!$isPermissao) {
+				return $retorno->retorno(false, 'Você não tem permissão para enviar para narração.', true);
+			}
+
+			if ($colaborador != $artigo['marcado_colaboradores_id']) {
+				return $retorno->retorno(false, 'Apenas quem marcou o artigo pode submetê-lo para narração.', true);
+			}
+
+			if ($artigo['arquivo_audio'] === NULL) {
+				return $retorno->retorno(false, 'Você não narrou o artigo. Envie o arquivo antes de submetê-lo para produção.', true);
+			}
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$isGravado = $this->artigoProximo($artigoId);
+			if ($isGravado === true) {
+				return $retorno->retorno(true, 'O artigo foi submetido para produção com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao submeter para produção.', true);
+			}
+		}
+
+		// DE PRODUÇÃO PARA PUBLICAÇÃO
+		if ($artigo['fase_producao_id'] == '4') {
+			$isPermissao = $this->verificaPermissao->PermiteAcesso('5');
+			if (!$isPermissao) {
+				return $retorno->retorno(false, 'Você não tem permissão para enviar para publicação.', true);
+			}
+
+			if ($colaborador != $artigo['marcado_colaboradores_id']) {
+				return $retorno->retorno(false, 'Apenas quem marcou o artigo pode submetê-lo para publicação.', true);
+			}
+
+			if ($artigo['link_produzido'] === NULL) {
+				return $retorno->retorno(false, 'Você não produziu o artigo. Envie o link do vídeo antes de submetê-lo para publicação.', true);
+			}
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$isGravado = $this->artigoProximo($artigoId);
+			if ($isGravado === true) {
+				return $retorno->retorno(true, 'O artigo foi submetido para publicação com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao submeter para publicação.', true);
 			}
 		}
 	}
@@ -806,8 +858,42 @@ class Artigos extends BaseController
 		}
 	}
 
+	public function produzir($artigoId = NULL) {
+		$this->verificaPermissao->PermiteAcesso('5');
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$post = $this->request->getPost();
+		
+		$valida = $validaFormularios->validaFormularioProducao($post);
+		if (empty($valida->getErrors())) {
+			if ($artigoId !== NULL) {
+				$enviar = array();
+				$enviar['link_produzido'] = $post['video_link'];
+				$enviar['link_shorts'] = $post['shorts_link'];
+				$retornoGravado = $this->gravarArtigos('update',$enviar,$artigoId);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Artigo salvo com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o artigo.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+	}
+
 	public function detalhamento($artigoId = null)
 	{
+		$this->verificaPermissao->PermiteAcesso('4');
 		if ($artigoId === null) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
 		}
@@ -859,6 +945,58 @@ class Artigos extends BaseController
 
 		return view('colaboradores/colaborador_artigos_detalhes', $data);
 
+	}
+
+	public function salvarAudio($artigoId = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('4');
+		$artigosModel = new \App\Models\ArtigosModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+		if ($artigoId == NULL) {
+			return $retorno->retorno(false, 'Artigo não informado.', true);
+		} else {
+			$artigo = $artigosModel->find($artigoId);
+			if ($artigo === NULL || empty($artigo)) {
+				return $retorno->retorno(false, 'Artigo não encontrado.', true);
+			}
+			$permitido = false;
+			$colaborador_permissoes = $this->session->get('colaboradores')['permissoes'];
+			$colaborador = $this->session->get('colaboradores')['id'];
+			if (in_array('7', $colaborador_permissoes)) {
+				$permitido = true;
+			}
+			if ($artigo['fase_producao_id'] == '3' && in_array('4', $colaborador_permissoes)) {
+				$permitido = true;
+			}
+			if ($permitido) {
+				if ($this->request->getMethod() == 'post') {
+					$validaFormularios = new \App\Libraries\ValidaFormularios();
+					$imagem = $this->request->getFile('audio');
+					$valida = $validaFormularios->validaFormularioArtigoNarracaoFile();
+					if (empty($valida->getErrors())) {
+						if ($imagem->getName() != '') {
+							$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
+							if ($imagem->move('public/assets/audio', $nome_arquivo, true)) {
+								$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
+								$isAtualizado = $this->gravarArtigos('update', $artigo, $artigoId);
+								$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
+								$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
+								if ($isAtualizado === true) {
+									return $retorno->retorno(true, 'Arquivo de áudio atualizado.', true, array('audio'=>$artigo['arquivo_audio']));
+								} else {
+									return $retorno->retorno(false, 'Ocorreu um erro ao atualizar o áudio.', true);
+								}
+							}
+						}
+					} else {
+						return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+					}
+				} else {
+					return $retorno->retorno(false, 'Áudio não enviado.', true);
+				}
+			}
+			return $retorno->retorno(false, 'Áudio não gravado. Você não tem permissão para enviar áudio para este artigo.', true);
+		}
 	}
 
 

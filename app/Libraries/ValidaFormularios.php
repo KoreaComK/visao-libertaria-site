@@ -321,7 +321,7 @@ class ValidaFormularios extends BaseController
 			],
 			'shorts_link' => [
 				'label' => 'Link do Shorts',
-				'rules' => 'permit_empty|max_length[255]|valid_url_strict'
+				'rules' => 'required|permit_empty|max_length[255]|valid_url_strict'
 			]
 		]);
 		$validation->run($post);

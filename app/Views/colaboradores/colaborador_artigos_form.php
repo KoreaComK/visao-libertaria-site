@@ -380,9 +380,9 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(artigo_form);
 		$.ajax({
 			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-						url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+							url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-						url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+							url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php endif; ?>
 			method: "POST",
 			data: form,

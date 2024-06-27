@@ -69,8 +69,8 @@
 									</div>
 								<?php elseif ($fase_producao_id == '4'): //producao ?>
 									<div class="d-flex gap-2 ms-2">
-										<a data-bs-toggle="modal" data-bs-target="#mi-modal" data-vl-artigo="<?= $artigo['id'] ?>"
-											class="btn btn-light btn-floating mb-0 btn-tooltip btn-desmarcar" data-toggle="tooltip"
+										<a href="<?= site_url('colaboradores/artigos/detalhamento/') . $artigo['id']; ?>"
+											class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip"
 											data-placement="top" title="Produzir"><i class="fas fa-video"></i></a>
 									</div>
 								<?php endif; ?>
