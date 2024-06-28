@@ -27,28 +27,14 @@
 	<meta name="twitter:card" content="summary_large_image">
 	<meta property="twitter:domain" content="<?= site_url(); ?>">
 	<meta property="twitter:url" content="<?= current_url(true); ?>">
-
-	<?php if (isset($meta) && is_array($meta)): ?>
-
-		<meta name="twitter:title" content="<?= $meta['title']; ?>">
-		<meta name="twitter:image" content="<?= $meta['image']; ?>">
-		<meta name="twitter:description" content="<?= $meta['description']; ?>">
-
-		<meta property="og:title" content="<?= $meta['title']; ?>" />
-		<meta property="og:image" content="<?= $meta['image']; ?>" />
-		<meta property="og:description" content="<?= $meta['description']; ?>" />
-
-	<?php else: ?>
-		<meta name="twitter:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>">
-		<meta name="twitter:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>">
-		<meta name="twitter:image"
-			content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
-
-		<meta property="og:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>" />
-		<meta property="og:image"
-			content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
-		<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
-	<?php endif; ?>
+	<meta name="twitter:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>">
+	<meta name="twitter:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>">
+	<meta name="twitter:image"
+		content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
+	<meta property="og:title" content="<?= $_SESSION['site_config']['texto_nome']; ?>" />
+	<meta property="og:image"
+		content="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
+	<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
 
 	<!-- Font Awesome -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -72,10 +58,6 @@
 			background-color: var(--mdb-picker-header-bg);
 		}
 
-		[data-mdb-theme=dark] .vl-bg-c {
-			background-color: #d3a901 !important;
-		}
-
 		[data-mdb-theme=dark] .text-dark {
 			color: var(--mdb-surface-inverted-color) !important;
 		}
@@ -84,8 +66,16 @@
 			background-color: var(--mdb-divider-color) !important;
 		}
 
+		[data-mdb-theme=dark] .vl-bg-c {
+			background-color: #d3a901 !important;
+		}
+
 		[data-mdb-theme=dark] a {
 			color: var(--mdb-surface-inverted-color) !important;
+		}
+
+		[data-mdb-theme=dark] .btn-light {
+			background-color: var(--mdb-btn-disabled-color);
 		}
 
 		.btn-link {
@@ -126,10 +116,6 @@
 			color: #181818;
 		}
 
-		.vl-bg-c-opaco {
-			background-color:rgba(244,203,41,0.4)
-		}
-
 		.btn-primary {
 			border-color: #f3c921 !important;
 		}
@@ -145,16 +131,6 @@
 
 		a {
 			color: #4b515c;
-		}
-
-		.scrolled-down {
-			transform: translateY(-100%);
-			transition: all 0.6s ease-in-out;
-		}
-
-		.scrolled-up {
-			transform: translateY(0);
-			transition: all 0.6s ease-in-out;
 		}
 
 
@@ -220,24 +196,16 @@
 				<div class="d-md-flex justify-content-between align-items-center my-2">
 					<!-- Top bar left -->
 					<ul class="nav">
-						<?php if (!isset($_SESSION) || $_SESSION['colaboradores']['id'] === null): ?>
-							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('site/cadastrar'); ?>">Cadastre-se</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="<?= site_url('site/login'); ?>">Acessar</a>
-							</li>
-						<?php endif; ?>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do
 									colaborador</a>
-							</li>
-							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+							</li>	
+						<?php endif; ?>
+						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
+								<a class="nav-link ps-0" href="<?= site_url('site'); ?>">Voltar ao site</a>
 							</li>
-							<?php endif; ?>
 						<?php endif; ?>
 					</ul>
 					<!-- Top bar right -->
@@ -259,13 +227,13 @@
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg vl-bg-c shadow-0" id="barra-navegacao">
+		<nav class="navbar navbar-expand-lg shadow-0 vl-bg-c">
 			<div class="container">
 				<div>
-					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('site'); ?>">
+					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
 							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"
-							alt="MDB Logo" loading="lazy">
+							loading="lazy">
 						<span class="lead fw-bold"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					</a>
 				</div>
@@ -276,18 +244,44 @@
 				</button>
 
 				<div class="collapse navbar-collapse" id="menuPrincipal">
-					<ul class="navbar-nav h6">
+					<ul class="navbar-nav d-flex justify-content-center">
 						<li class="nav-item active">
-							<a class="nav-link" href="<?= site_url('site'); ?>">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos dos colaboradores</a>
+							<a class="nav-link" href="<?= site_url('colaboradores/admin/dashboard'); ?>"><i
+									class="fas fa-globe"></i> Dashboard</a>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
+							<?php if (in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
-									<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
-										aria-expanded="false">Pautas e Notícias</a>
+									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
+											class="fas fa-bullhorn"></i> Pautas</a>
+									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuPautasColaboradores">
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
+										</li>
+									</ul>
+								</li>
+							<?php endif; ?>
+							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item">
+									<a class="nav-link" href="<?= site_url('colaboradores/admin/administracao'); ?>"><i
+											class="fas fa-wrench"></i>
+										Configurações</a>
+								</li>
+							<?php endif; ?>
+							<?php if (in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item">
+									<a class="nav-link" href="<?= site_url('colaboradores/admin/financeiro'); ?>"><i
+											class="fab fa-bitcoin"></i>
+										Financeiro</a>
+								</li>
+							<?php endif; ?>
+							<?php if (in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
+								<li class="nav-item">
+									<a class="nav-link" href="<?= site_url('colaboradores/admin/permissoes'); ?>"><i
+											class="fas fa-user-group"></i>
+										Colaboradores</a>
 								</li>
 							<?php endif; ?>
 						<?php endif; ?>
@@ -305,13 +299,15 @@
 											<?= $_SESSION['colaboradores']['nome']; ?>
 										</span>
 									</a>
-									<div class="dropdown-menu rounded-3 vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
-										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item"
+									<div class="dropdown-menu vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
+										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item rounded-top"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>
-										<a class="dropdown-item rounded-top-3" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+										<a class="dropdown-item rounded-top"
+											href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
-										<a class="dropdown-item rounded-bottom-3" href="<?= site_url('site/logout'); ?>">Sair</a>
+										<a class="dropdown-item rounded-bottom"
+											href="<?= site_url('site/logout'); ?>">Sair</a>
 									</div>
 								</li>
 							</ul>
@@ -341,114 +337,33 @@
 
 	<?= $this->renderSection('content'); ?>
 
-	<footer class="pb-0">
+	<footer class="mb-3 mt-5">
 		<div class="container">
-			<hr>
-			<!-- Widgets START -->
-			<div class="row pt-5">
-				<!-- Footer Widget -->
-				<div class="col-md-6 col-lg-4 mb-4">
-					<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
-						src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
-					<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
-					<p class="mt-2 lh-sm fw-light"><?= $_SESSION['site_config']['texto_rodape']; ?></p>
-				</div>
-
-				<!-- Footer Widget -->
-				<div class="col-md-6 col-lg-3 mb-4">
-					<h5 class="mb-4">Navegação</h5>
-					<div class="row">
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/artigos'); ?>">Artigos</a>
-								</li>
-							</ul>
-						</div>
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-
-				<!-- 
-				<div class="col-sm-6 col-lg-3 mb-4">
-					<h5 class="mb-4">Browse by Tag</h5>
-					<ul class="list-inline">
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Travel</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Business</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Tech</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Gadgets</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Lifestyle</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Vaccine</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Marketing</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Sports</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Covid-19</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Politics</a></li>
-					</ul>
-				</div> -->
-
-				<!-- Footer Widget -->
-				<div class="col-sm-12 col-lg-5 mb-4">
-					<h5 class="mb-4">Nossas redes sociais</h5>
-					<div class="row">
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item text-uppercase">Ancapsu</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@ancap_su"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								<li class="nav-item"><a class="" href="https://www.instagram.com/ancap.su"><i
-											class="fab fa-instagram-square fa-fw me-2 text-youtube"></i>Instagram</a>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/ancapsu"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-								<li class="nav-item text-uppercase mt-2">Safe source</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@safesrc"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								<li class="nav-item"><a class="" href="https://twitter.com/safesrc1"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-							</ul>
-						</div>
-						<div class="col-6">
-							<ul class="nav flex-column">
-								<li class="nav-item text-uppercase">VISÃO LIBERTÁRIA</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@Visao_Libertaria"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/visaolibertaria"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-								<li class="nav-item">&nbsp;</li>
-								<li class="nav-item text-uppercase mt-2">mundo em revolução</li>
-								<li class="nav-item"><a class="" href="https://www.youtube.com/@wrevolving"><i
-											class="fab fa-youtube-square fa-fw me-2"
-											style="color:#ff0000;"></i>YouTube</a></li>
-								</li>
-								<li class="nav-item"><a class="" href="https://twitter.com/MundoEmRevo"><i
-											style="color: #40bff5;"
-											class="fab fa-twitter-square fa-fw me-2 text-youtube"></i>Twitter</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Widgets END -->
-		</div>
-		<div class="container container-fluid py-2 px-sm-3 px-md-5">
-			<p class="m-0 text-center">
-				Desenvolvido por
-				<a class="text-reset btn-link font-light" href="https://github.com/KoreaComK/">KoreacomK</a> e a
+			<div class="text-center">Desenvolvido por <a class="text-reset btn-link font-light"
+					href="https://github.com/KoreaComK/">KoreacomK</a> e a
 				comunidade.
-			</p>
+			</div>
 		</div>
 	</footer>
+
+	<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"
+		id="mi-modal">
+		<div class="modal-dialog modal-md modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">ATENÇÃO!</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="conteudo-modal"></p>
+				</div>
+				<div class="modal-footer d-flex justify-content-between">
+					<button type="button" class="btn btn-default" data-bs-dismiss="modal" id="modal-btn-no">Não</button>
+					<button type="button" class="btn btn-primary" id="modal-btn-si">Sim</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 
 <script type="text/javascript">
@@ -488,47 +403,6 @@
 		$('.dark-button').show();
 		$('body').attr('data-mdb-theme', '');
 		localStorage.setItem('dark-mode', 'light');
-	});
-
-	$(document).ready(function () {
-
-		el_autohide = $('#barra-navegacao');
-
-		if (el_autohide) {
-			var last_scroll_top = 0;
-			window.addEventListener('scroll', function () {
-				if(screen.availWidth > 992) {
-
-					if (window.scrollY > 50) {
-						el_autohide.addClass('fixed-top');
-						// add padding top to show content behind navbar
-						navbar_height = document.querySelector('.navbar').offsetHeight;
-						document.body.style.paddingTop = navbar_height + 'px';
-					} else {
-						el_autohide.removeClass('fixed-top');
-						// remove padding top from body
-						document.body.style.paddingTop = '0';
-					}
-
-					if (window.scrollY > 500) {
-						let scroll_top = window.scrollY;
-						if (scroll_top < last_scroll_top) {
-							el_autohide.removeClass('scrolled-down');
-							el_autohide.addClass('scrolled-up');
-						}
-						else {
-							el_autohide.removeClass('scrolled-up');
-							el_autohide.addClass('scrolled-down');
-						}
-						last_scroll_top = scroll_top;
-					}
-				} else {
-					el_autohide.removeClass('fixed-top');
-					el_autohide.removeClass('scrolled-up');
-					el_autohide.removeClass('scrolled-down');
-				}
-			});
-		}
 	});
 </script>
 

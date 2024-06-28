@@ -75,17 +75,20 @@
 									</div>
 								<?php endif; ?>
 							<?php else: ?>
-								<?php if ($colaborador != $artigo['escrito_colaboradores_id'] && $fase_producao_id != '5'): ?>
-									<div class="d-flex gap-2 ms-2">
-										<a data-bs-toggle="modal" data-bs-target="#mi-modal" data-vl-artigo="<?= $artigo['id'] ?>"
-											class="btn btn-light btn-floating mb-0 btn-tooltip btn-marcar" data-toggle="tooltip"
-											data-placement="top" title="Marcar artigo"><i class="fas fa-bookmark"></i></a>
-									</div>
+
+								<?php if (($colaborador != $artigo['escrito_colaboradores_id']) || ($colaborador == $artigo['escrito_colaboradores_id'] && $fase_producao_id != '2')): ?>
+									<?php if ($fase_producao_id != '5'): ?>
+										<div class="d-flex gap-2 ms-2">
+											<a data-bs-toggle="modal" data-bs-target="#mi-modal" data-vl-artigo="<?= $artigo['id'] ?>"
+												class="btn btn-light btn-floating mb-0 btn-tooltip btn-marcar" data-toggle="tooltip"
+												data-placement="top" title="Marcar artigo"><i class="fas fa-bookmark"></i></a>
+										</div>
+									<?php endif; ?>
 								<?php endif; ?>
 								<?php if ($fase_producao_id == '5'): //publicação ?>
 									<div class="d-flex gap-2 ms-2">
-										<a data-bs-toggle="modal" data-bs-target="#mi-modal" data-vl-artigo="<?= $artigo['id'] ?>"
-											class="btn btn-light btn-floating mb-0 btn-tooltip btn-desmarcar" data-toggle="tooltip"
+										<a href="<?= site_url('colaboradores/artigos/detalhamento/') . $artigo['id']; ?>"
+											class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip"
 											data-placement="top" title="Publicar"><i class="fab fa-youtube"></i></a>
 									</div>
 								<?php endif; ?>

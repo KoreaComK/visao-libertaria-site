@@ -16,6 +16,10 @@ class Admin extends BaseController
 		helper('url_friendly,data');
 	}
 
+	public function dashboard(){
+		return redirect()->to(base_url() . 'colaboradores/admin/administracao');
+	}
+
 	public function administracao()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');

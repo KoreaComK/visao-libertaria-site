@@ -191,7 +191,7 @@
 	</div>
 
 	<header>
-		<div class="navbar-top d-none d-lg-block small">
+		<div class="navbar-top d-lg-block navbar-expand-lg small">
 			<div class="container">
 				<div class="d-md-flex justify-content-between align-items-center my-2">
 					<!-- Top bar left -->
@@ -203,7 +203,7 @@
 						<?php endif; ?>
 						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('admin/dashboard'); ?>">Administração</a>
+								<a class="nav-link ps-0" href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
 							</li>
 						<?php endif; ?>
 					</ul>
@@ -232,7 +232,7 @@
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
 							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" loading="lazy">
-						<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
+						<span class="lead fw-bold"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					</a>
 				</div>
 				<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-bs-toggle="collapse"
@@ -265,86 +265,7 @@
 									</li>
 								<?php endif; ?>
 							</ul>
-						</li>
-						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-							<?php if (in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item dropdown">
-									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
-											class="fas fa-bullhorn"></i> Pautas</a>
-									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuPautasColaboradores">
-										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
-										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
-										</li>
-									</ul>
-								</li>
-							<?php endif; ?>
-							<!--
-							<?php if (in_array('2', $_SESSION['colaboradores']['permissoes']) || in_array('3', $_SESSION['colaboradores']['permissoes']) || in_array('4', $_SESSION['colaboradores']['permissoes']) || in_array('5', $_SESSION['colaboradores']['permissoes']) || in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item dropdown">
-									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-										aria-expanded="false">Artigos</a>
-									<div class="dropdown-menu" aria-labelledby="dropdown07">
-										<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
-												class="dropdown-item">Escrever
-												Artigo</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('2', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos'); ?>" class="dropdown-item">Ver Todos
-												Artigos</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('3', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos/revisar'); ?>"
-												class="dropdown-item">Revisar</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('4', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos/narrar'); ?>"
-												class="dropdown-item">Narrar</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('5', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos/produzir'); ?>"
-												class="dropdown-item">Produzir</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('6', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/artigos/publicar'); ?>"
-												class="dropdown-item">Publicar</a>
-										<?php endif; ?>
-									</div>
-								</li>
-							<?php endif; ?>
-							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item dropdown">
-									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-										aria-expanded="false">Administração</a>
-									<div class="dropdown-menu" aria-labelledby="dropdown07">
-										<?php if (isset($_SESSION) && in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/admin/administracao'); ?>"
-												class="dropdown-item">Configuração do Site</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/admin/financeiro'); ?>"
-												class="dropdown-item">Financeiro</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('9', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/admin/permissoes'); ?>"
-												class="dropdown-item">Recursos
-												Humanos</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/pautas/fechar'); ?>" class="dropdown-item">Fechar
-												Pauta</a>
-										<?php endif; ?>
-										<?php if (isset($_SESSION) && in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-											<a href="<?= site_url('colaboradores/pautas/fechadas'); ?>" class="dropdown-item">Listar
-												Pautas Fechadas</a>
-										<?php endif; ?>
-									</div>
-								</li>
-							<?php endif; ?>
-						<?php endif; ?>
-										-->
+						</li>						
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>

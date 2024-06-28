@@ -105,7 +105,11 @@ class Site extends BaseController
 			'pager' => $artigosModel->pager
 		];
 
-		return view('artigos', $data);
+		if($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
+			return view('template/templatePautasListColaboradores', $data);	
+		} else {
+			return view('artigos', $data);
+		}
 	}
 
 	/*DETALHE DO ARTIGO*/

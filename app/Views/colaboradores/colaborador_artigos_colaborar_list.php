@@ -76,15 +76,27 @@
 				<div class="row g-3 align-items-center justify-content-between mb-3" data-np-autofill-form-type="other"
 					data-np-checked="1" data-np-watching="1">
 					<!-- Search -->
-					<div class="col-md-12">
-						<form class="rounded position-relative" data-np-autofill-form-type="other" data-np-checked="1"
-							data-np-watching="1">
+					<div class="col-md-8">
+						<form class="rounded position-relative">
 							<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa"
 								name="text-pesquisa" placeholder="Pesquisar" aria-label="Pesquisar">
 							<button
 								class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar"
 								type="submit"><i class="fas fa-magnifying-glass"></i></button>
 						</form>
+					</div>
+
+					<!-- Select option -->
+					<div class="col-md-3">
+						<!-- Short by filter -->
+
+						<select class="form-select z-index-9 bg-transparent select-pesquisa" id="select-tipo"
+							name="select-tipo">
+							<option value="">Escolha o Tipo</option>
+							<option value="T">Teórico</option>
+							<option value="N">Notícia</option>
+						</select>
+
 					</div>
 				</div>
 				<!-- Search and select END -->
@@ -138,6 +150,7 @@
 </div>
 
 <script>
+
 	function refreshListPublicado(url, fase_producao) {
 		if (url == false) {
 			url = '<?php echo base_url('colaboradores/artigos/artigosColaborarList'); ?>';
@@ -149,7 +162,8 @@
 				dataType: 'html',
 				data: {
 					fase_producao_id: fase_producao,
-					texto: $('#text-pesquisa').val()
+					texto: $('#text-pesquisa').val(),
+					tipo: $('#select-tipo').val()
 				},
 				beforeSend: function () { $('#modal-loading').show(); },
 				complete: function () { $('#modal-loading').hide() },
@@ -249,6 +263,10 @@
 	});
 
 	$('.btn-pesquisar').on('click', function (e) {
+		refreshListPublicado(false, $("input[name='fase_producao']:checked").val());
+	});
+
+	$('.select-pesquisa').on('change', function (e) {
 		refreshListPublicado(false, $("input[name='fase_producao']:checked").val());
 	});
 

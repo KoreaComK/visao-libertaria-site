@@ -3,7 +3,7 @@
 use CodeIgniter\I18n\Time;
 
 ?>
-<?= $this->extend('layouts/main'); ?>
+<?= $this->extend('layouts/administradores'); ?>
 
 <?= $this->section('content'); ?>
 <?php helper('month_helper'); ?>

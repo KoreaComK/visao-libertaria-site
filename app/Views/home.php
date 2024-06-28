@@ -38,6 +38,14 @@ use CodeIgniter\I18n\Time;
 		display: none;
 	}
 
+	.banner .flickity-viewport {
+		min-height: 13rem;
+	}
+
+	.banner-bigger .flickity-viewport .bg-image  {
+		min-height: 18rem;
+	}
+
 	.avisos-carousel .flickity-button {
 		background: transparent;
 		width: 25px;
@@ -260,7 +268,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 			</div> -->
 
-			<section class="col-lg-12">
+			<section class="col-lg-12 banner">
 
 				<div class="main-carousel mb-4 mt-4">
 					<?php foreach ($banner as $chave => $b): ?>
@@ -305,7 +313,7 @@ use CodeIgniter\I18n\Time;
 
 			</section>
 
-			<section class="col-lg-12">
+			<section class="col-lg-12 banner-bigger">
 
 				<div class="m-4">
 					<h2 class="m-0"><i class="bi bi-hourglass-top me-2"></i>Últimos vídeos do Visão Libertária</h2>

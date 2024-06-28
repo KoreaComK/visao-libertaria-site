@@ -110,7 +110,7 @@ class Artigos extends BaseController
 			$artigo = $artigosModel->find($artigoId);
 
 			$colaborador = $this->session->get('colaboradores')['id'];
-			if ($artigo === NULL || empty($artigo) || ($artigo['fase_producao_id'] == '1' && $colaborador!=$artigo['escrito_colaboradores_id']) || ($artigo['fase_producao_id'] == '2' && $colaborador==$artigo['escrito_colaboradores_id'])) {
+			if ($artigo === NULL || empty($artigo) || ($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) || ($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id'])) {
 				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/');
 			}
 			$data['artigo'] = $artigo;
@@ -120,19 +120,42 @@ class Artigos extends BaseController
 		$config = array();
 		$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 		$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-		
+
 
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 		$data['cadastro'] = ($artigoId === NULL) ? (true) : (false);
-		
-		$data['fase_producao'] = (!isset($artigo) || $artigo['fase_producao_id']=='1')?('1'):('2');
-		if($data['fase_producao'] == '1') {
+
+		$data['artigo']['fase_producao_id'] = (!isset($artigo) || $artigo['fase_producao_id'] == '1') ? ('1') : ('2');
+		if ($data['artigo']['fase_producao_id'] == '1') {
 			$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
 		} else {
 			$config['artigo_regras_revisar'] = $configuracaoModel->find('artigo_regras_revisar')['config_valor'];
 		}
 		$data['config'] = $config;
 		return view('colaboradores/colaborador_artigos_form', $data);
+	}
+
+	public function historicos($artigoId = NULL)
+	{
+		if ($artigoId === NULL) {
+			return '';
+		}
+
+		$historico = $this->artigosHistoricos->buscaHistorico($artigoId);
+		$html = '';
+		foreach ($historico as $h) {
+			$html .= '
+				<li class="list-group-item p-1 border-0">
+					<small>
+						' . $h['apelido'] . ' ' . $h['acao'] .
+				'<span class="badge badge-pill badge-secondary fw-light">'
+				. Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') .
+				'</span>
+					</small>
+				</li>
+			';
+		}
+		return $html;
 	}
 
 	public function salvar($artigoId = NULL)
@@ -395,7 +418,7 @@ class Artigos extends BaseController
 			$artigosModel->like('link', $post['link']);
 			$artigosModel->where('descartado', NULL);
 			if ($artigoId !== NULL) {
-				$artigosModel->whereNotIn('id', $artigoId);
+				$artigosModel->whereNotIn('id', array($artigoId));
 			}
 			$artigos = $artigosModel->get()->getResultArray();
 			$contador = count($artigos);
@@ -459,10 +482,10 @@ class Artigos extends BaseController
 		// DE REVISÃO PARA NARRAÇÃO
 		if ($artigo['fase_producao_id'] == '2') {
 			$isPermissao = $this->verificaPermissao->PermiteAcesso('3');
-			if(!$isPermissao) {
+			if (!$isPermissao) {
 				return $retorno->retorno(false, 'Você não tem permissão para enviar para narração.', true);
 			}
-			
+
 			if ($colaborador != $artigo['marcado_colaboradores_id']) {
 				return $retorno->retorno(false, 'Apenas quem marcou o artigo pode submetê-lo para narração.', true);
 			}
@@ -540,6 +563,26 @@ class Artigos extends BaseController
 				return $retorno->retorno(false, 'Ocorreu um erro ao submeter para publicação.', true);
 			}
 		}
+
+		// DE PUBLICAÇÃO PARA PAGAMENTO
+		if ($artigo['fase_producao_id'] == '5') {
+			$isPermissao = $this->verificaPermissao->PermiteAcesso('6');
+			if (!$isPermissao) {
+				return $retorno->retorno(false, 'Você não tem permissão para enviar para pagamento.', true);
+			}
+
+			if ($artigo['link_produzido'] === NULL) {
+				return $retorno->retorno(false, 'Você não publicou o artigo. Envie o link do vídeo antes de submetê-lo para pagamento.', true);
+			}
+
+			$configuracaoModel = new \App\Models\ConfiguracaoModel();
+			$isGravado = $this->artigoProximo($artigoId);
+			if ($isGravado === true) {
+				return $retorno->retorno(true, 'O artigo foi submetido para pagamento com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao submeter para pagamento.', true);
+			}
+		}
 	}
 
 	public function artigosList()
@@ -612,16 +655,16 @@ class Artigos extends BaseController
 
 		$fase_permitida = array();
 		$data['primeira'] = NULL;
-		if ($this->verificaPermissao->PermiteAcesso('3') === true) {
+		if ($this->verificaPermissao->PermiteAcesso('3', null, true) === true) {
 			$fase_permitida[] = '2';
 		}
-		if ($this->verificaPermissao->PermiteAcesso('4') === true) {
+		if ($this->verificaPermissao->PermiteAcesso('4', null, true) === true) {
 			$fase_permitida[] = '3';
 		}
-		if ($this->verificaPermissao->PermiteAcesso('5') === true) {
+		if ($this->verificaPermissao->PermiteAcesso('5', null, true) === true) {
 			$fase_permitida[] = '4';
 		}
-		if ($this->verificaPermissao->PermiteAcesso('6') === true) {
+		if ($this->verificaPermissao->PermiteAcesso('6', null, true) === true) {
 			$fase_permitida[] = '5';
 		}
 
@@ -702,6 +745,10 @@ class Artigos extends BaseController
 		if (isset($get['texto']) && $get['texto'] != '') {
 			$artigosModel->like('artigos.titulo', $get['texto']);
 		}
+
+		if (isset($get['tipo']) && $get['tipo'] != '') {
+			$artigosModel->like('artigos.tipo_artigo', $get['tipo']);
+		}
 		$artigosModel->where('artigos.fase_producao_id', (int) $faseProducaoId);
 
 		$artigosModel->orderBy('artigos.atualizado', 'ASC');
@@ -723,7 +770,7 @@ class Artigos extends BaseController
 			'pager' => $artigosModel->pager
 		];
 
-		return view('template/templateColaboradoresArtigoscColaborarList', $data);
+		return view('template/templateColaboradoresArtigosColaborarList', $data);
 	}
 
 	public function buscaArtigoJSON($artigoId = NULL)
@@ -822,7 +869,8 @@ class Artigos extends BaseController
 		}
 	}
 
-	public function revisar($artigoId = NULL) {
+	public function revisar($artigoId = NULL)
+	{
 		$this->verificaPermissao->PermiteAcesso('3');
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$validaFormularios = new \App\Libraries\ValidaFormularios();
@@ -836,13 +884,13 @@ class Artigos extends BaseController
 		}
 
 		$post = $this->request->getPost();
-		
+
 		$artigosModel = new \App\Models\ArtigosModel();
-		
+
 		$artigo = $artigosModel->find($artigoId);
 		$post['imagem'] = $artigo['imagem'];
 		unset($artigo);
-		
+
 		$valida = $validaFormularios->validaFormularioArtigo($post);
 		if (empty($valida->getErrors())) {
 			if ($artigoId !== NULL) {
@@ -858,7 +906,8 @@ class Artigos extends BaseController
 		}
 	}
 
-	public function produzir($artigoId = NULL) {
+	public function produzir($artigoId = NULL)
+	{
 		$this->verificaPermissao->PermiteAcesso('5');
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$validaFormularios = new \App\Libraries\ValidaFormularios();
@@ -872,14 +921,15 @@ class Artigos extends BaseController
 		}
 
 		$post = $this->request->getPost();
-		
+
 		$valida = $validaFormularios->validaFormularioProducao($post);
 		if (empty($valida->getErrors())) {
 			if ($artigoId !== NULL) {
 				$enviar = array();
 				$enviar['link_produzido'] = $post['video_link'];
 				$enviar['link_shorts'] = $post['shorts_link'];
-				$retornoGravado = $this->gravarArtigos('update',$enviar,$artigoId);
+				$enviar['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+				$retornoGravado = $this->gravarArtigos('update', $enviar, $artigoId);
 			}
 			if ($retornoGravado != false) {
 				return $retorno->retorno(true, 'Artigo salvo com sucesso.', true);
@@ -914,7 +964,7 @@ class Artigos extends BaseController
 		if (in_array('7', $colaborador_permissoes)) {
 			$permitido = true;
 		}
-		
+
 		if ($permitido === false && in_array($artigo['fase_producao_id'], array(3, 4, 5))) {
 			if ($artigo['fase_producao_id'] == '3' && in_array('4', $colaborador_permissoes)) {
 				$permitido = true;
@@ -935,13 +985,15 @@ class Artigos extends BaseController
 
 		$data['artigo'] = $artigo;
 		$data['artigo']['colaboradores'] = array();
-		$data['artigo']['colaboradores']['sugerido'] = ($artigo['sugerido_colaboradores_id']!==NULL)?($colaboradoresModel->find($artigo['sugerido_colaboradores_id'])):(NULL);
-		$data['artigo']['colaboradores']['escrito'] = ($artigo['escrito_colaboradores_id']!==NULL)?($colaboradoresModel->find($artigo['escrito_colaboradores_id'])):(NULL);
-		$data['artigo']['colaboradores']['revisado'] = ($artigo['revisado_colaboradores_id']!==NULL)?($colaboradoresModel->find($artigo['revisado_colaboradores_id'])):(NULL);
-		$data['artigo']['colaboradores']['narrado'] = ($artigo['narrado_colaboradores_id']!==NULL)?($colaboradoresModel->find($artigo['narrado_colaboradores_id'])):(NULL);
-		$data['artigo']['colaboradores']['produzido'] = ($artigo['produzido_colaboradores_id']!==NULL)?($colaboradoresModel->find($artigo['produzido_colaboradores_id'])):(NULL);
+		$data['artigo']['colaboradores']['sugerido'] = ($artigo['sugerido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($artigo['sugerido_colaboradores_id'])) : (NULL);
+		$data['artigo']['colaboradores']['escrito'] = ($artigo['escrito_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($artigo['escrito_colaboradores_id'])) : (NULL);
+		$data['artigo']['colaboradores']['revisado'] = ($artigo['revisado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($artigo['revisado_colaboradores_id'])) : (NULL);
+		$data['artigo']['colaboradores']['narrado'] = ($artigo['narrado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($artigo['narrado_colaboradores_id'])) : (NULL);
+		$data['artigo']['colaboradores']['produzido'] = ($artigo['produzido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($artigo['produzido_colaboradores_id'])) : (NULL);
 
 		$data['artigo']['texto_producao'] = $this->criaTextoDinamizado($data['artigo']);
+
+		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 
 		return view('colaboradores/colaborador_artigos_detalhes', $data);
 
@@ -978,11 +1030,12 @@ class Artigos extends BaseController
 							$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
 							if ($imagem->move('public/assets/audio', $nome_arquivo, true)) {
 								$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
+								$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 								$isAtualizado = $this->gravarArtigos('update', $artigo, $artigoId);
 								$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
 								$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
 								if ($isAtualizado === true) {
-									return $retorno->retorno(true, 'Arquivo de áudio atualizado.', true, array('audio'=>$artigo['arquivo_audio']));
+									return $retorno->retorno(true, 'Arquivo de áudio atualizado.', true, array('audio' => $artigo['arquivo_audio']));
 								} else {
 									return $retorno->retorno(false, 'Ocorreu um erro ao atualizar o áudio.', true);
 								}
@@ -999,355 +1052,122 @@ class Artigos extends BaseController
 		}
 	}
 
+	public function geraDescricaoVideo($idArtigo = null)
+	{
+		$this->verificaPermissao->PermiteAcesso('6');
 
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$artigosModel = new \App\Models\ArtigosModel();
 
+		if ($idArtigo == null) {
+			return $retorno->retorno(false, 'Artigo não informado, atualize a página', true);
+		}
 
+		if ($this->request->isAJAX()) {
+			$post = $this->request->getPost();
+			if (!isset($post['tags'])) {
+				return $retorno->retorno(false, 'Tags não foram fornecidas.', true);
+			}
+			$configuracao = $configuracaoModel->find('descricao_padrao_youtube');
+			$artigo = $artigosModel->find($idArtigo);
+			$descricaoVideo = '';
+			$descricaoVideo = str_replace('{referencias}', $artigo['referencias'], $configuracao['config_valor']);
+			$descricaoVideo = str_replace('{tags}', $post['tags'], $descricaoVideo);
+			return json_encode(['status' => true, 'descricao' => $descricaoVideo]);
+		}
+	}
 
+	public function publicar($artigoId = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('6');
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
 
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
 
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
 
+		$post = $this->request->getPost();
 
+		$valida = $validaFormularios->validaFormularioPublicacao($post);
+		if (empty($valida->getErrors())) {
+			if ($artigoId !== NULL) {
+				$enviar = array();
+				$enviar['link_video_youtube'] = $post['link_video_youtube'];
+				$enviar['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+				$artigosModel = new \App\Models\ArtigosModel();
+				$enviar['publicado'] = $artigosModel->getNow();
+				$retornoGravado = $this->gravarArtigos('update', $enviar, $artigoId);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'publicou', 'artigos', 'o artigo', $artigoId);
+				$this->artigosHistoricos->cadastraHistorico($artigoId, 'publicou', $this->session->get('colaboradores')['id']);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Artigo salvo com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o artigo.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-								public function narrar($artigoId = NULL)
-								{
-									$this->verificaPermissao->PermiteAcesso('4');
-									$artigosModel = new \App\Models\ArtigosModel();
-
-									$data = $this->iniciaVariavel;
-									$data['fase_producao'] = '3';
-									$data['titulo'] = 'Artigos Esperando Narração';
-
-									if ($artigoId == NULL) {
-										$artigos = $artigosModel->getArtigos(3);
-										$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
-										$data['usuario'] = $this->session->get('colaboradores')['id'];
-
-										$configuracaoModel = new \App\Models\ConfiguracaoModel();
-										$config = array();
-										$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-										$data['artigosList'] = [
-											'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
-											'pager' => $artigos->pager
-										];
-										return view('colaboradores/artigos_list', $data);
-									} else {
-										if ($this->request->getMethod() == 'get') {
-											$this->descartar($artigoId, 'narrar');
-											$this->reverterFase($artigoId, 'narrar');
-										}
-
-										if ($this->request->getMethod() == 'post') {
-											$artigo = $artigosModel->find($artigoId);
-											$audio = $this->request->getFile('audio');
-											$validaFormularios = new \App\Libraries\ValidaFormularios();
-											$retorno = new \App\Libraries\RetornoPadrao();
-											$valida = $validaFormularios->validaFormularioArtigoNarracaoFile();
-											if (empty($valida->getErrors())) {
-												if ($audio->getName() != '') {
-													$nome_arquivo = $artigo['id'] . '.' . $audio->guessExtension();
-													if ($audio->move('public/assets/audio', $nome_arquivo, true)) {
-														$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
-
-														$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-
-														$artigo['palavras_narrador'] = $artigo['palavras_revisor'];
-														$faseProducaoModel = new \App\Models\FaseProducaoModel();
-														$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
-														$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
-
-														//$retorno = $artigosModel->save($artigo);
-														$retorno = $this->gravarArtigos('save', $artigo);
-														$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
-														$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
-														$this->artigosMarcacao->desmarcarArtigo($artigoId);
-														if ($retorno === true) {
-															return redirect()->to(base_url() . 'colaboradores/artigos/narrar?status=true');
-														} else {
-															return redirect()->to(base_url() . 'colaboradores/artigos/narrar/' . $artigoId . '?status=false');
-														}
-													}
-												}
-											} else {
-												$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
-											}
-										}
-
-										$artigo = $artigosModel->find($artigoId);
-										if ($artigo == null || $artigo['fase_producao_id'] != 3) {
-											return redirect()->to(base_url() . 'colaboradores/artigos/narrar');
-										}
-										$colaboradores = $artigosModel->getColaboradoresArtigo($artigoId)[0];
-										foreach ($colaboradores as $indice => $dado) {
-											$artigo['colaboradores'][$indice] = $dado;
-										}
-										// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-										// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
-										$data['artigo'] = $artigo;
-										$data['texto'] = $this->criaTextoDinamizado($artigo);
-										$configuracaoModel = new \App\Models\ConfiguracaoModel();
-										$config['artigo_regras_narrar'] = $configuracaoModel->find('artigo_regras_narrar')['config_valor'];
-
-										$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
-										return view('colaboradores/artigos_detail', $data);
-									}
-								}
-
-								public function produzir($artigoId = null)
-								{
-									$this->verificaPermissao->PermiteAcesso('5');
-									$artigosModel = new \App\Models\ArtigosModel();
-
-									$data = $this->iniciaVariavel;
-									$data['fase_producao'] = '4';
-									$data['titulo'] = 'Artigos Esperando Produção';
-
-									if ($artigoId == NULL) {
-										$artigos = $artigosModel->getArtigos(4);
-										$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
-										$data['usuario'] = $this->session->get('colaboradores')['id'];
-
-										$configuracaoModel = new \App\Models\ConfiguracaoModel();
-										$config = array();
-										$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-										$data['artigosList'] = [
-											'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
-											'pager' => $artigos->pager
-										];
-										return view('colaboradores/artigos_list', $data);
-									} else {
-
-										if ($this->request->getMethod() == 'get') {
-											$this->descartar($artigoId, 'produzir');
-											$this->reverterFase($artigoId, 'produzir');
-										}
-
-										if ($this->request->getMethod() == 'post') {
-											$artigo = $artigosModel->find($artigoId);
-											$post = $this->request->getPost();
-											$validaFormularios = new \App\Libraries\ValidaFormularios();
-											$retorno = new \App\Libraries\RetornoPadrao();
-											$valida = $validaFormularios->validaFormularioProducao($post);
-											if (empty($valida->getErrors())) {
-												$artigo['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-												$artigo['palavras_produtor'] = $artigo['palavras_revisor'];
-												$artigo['link_produzido'] = $post['video_link'];
-												$artigo['link_shorts'] = $post['shorts_link'];
-												$faseProducaoModel = new \App\Models\FaseProducaoModel();
-
-												$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
-												$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
-
-												//$retorno = $artigosModel->save($artigo);
-												$retorno = $this->gravarArtigos('save', $artigo);
-												$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'produziu', 'artigos', 'o artigo', $artigoId, true);
-												$this->artigosMarcacao->desmarcarArtigo($artigoId);
-												$this->artigosHistoricos->cadastraHistorico($artigoId, 'produziu', $this->session->get('colaboradores')['id']);
-												if ($retorno === true) {
-													return redirect()->to(base_url() . 'colaboradores/artigos/produzir?status=true');
-												} else {
-													return redirect()->to(base_url() . 'colaboradores/artigos/produzir/' . $artigoId . '?status=false');
-												}
-											} else {
-												$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
-											}
-										}
-
-										$artigo = $artigosModel->find($artigoId);
-										if ($artigo == null || $artigo['fase_producao_id'] != 4) {
-											return redirect()->to(base_url() . 'colaboradores/artigos/produzir');
-										}
-										$colaboradores = $artigosModel->getColaboradoresArtigo($artigoId)[0];
-										foreach ($colaboradores as $indice => $dado) {
-											$artigo['colaboradores'][$indice] = $dado;
-										}
-										// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-										// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
-										$data['artigo'] = $artigo;
-										$data['texto'] = $this->criaTextoDinamizado($artigo);
-										$configuracaoModel = new \App\Models\ConfiguracaoModel();
-										$config['artigo_regras_narrar'] = $configuracaoModel->find('artigo_regras_narrar')['config_valor'];
-
-										$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
-										return view('colaboradores/artigos_detail', $data);
-									}
-								}
-
-								public function publicar($artigoId = null)
-								{
-									$this->verificaPermissao->PermiteAcesso('6');
-									$artigosModel = new \App\Models\ArtigosModel();
-
-									$data = $this->iniciaVariavel;
-									$data['fase_producao'] = '5';
-									$data['titulo'] = 'Artigos Esperando Publicação';
-
-									if ($artigoId == NULL) {
-										$artigos = $artigosModel->getArtigos(5);
-										$data['permissoes'] = $this->session->get('colaboradores')['permissoes'];
-										$data['usuario'] = $this->session->get('colaboradores')['id'];
-
-										$configuracaoModel = new \App\Models\ConfiguracaoModel();
-										$config = array();
-										$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-										$data['artigosList'] = [
-											'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
-											'pager' => $artigos->pager
-										];
-										return view('colaboradores/artigos_list', $data);
-									} else {
-
-										if ($this->request->getMethod() == 'get') {
-											$this->descartar($artigoId, 'publicar');
-											$this->reverterFase($artigoId, 'publicar');
-										}
-
-										if ($this->request->getMethod() == 'post') {
-											$artigo = $artigosModel->find($artigoId);
-											$post = $this->request->getPost();
-											$validaFormularios = new \App\Libraries\ValidaFormularios();
-											$retorno = new \App\Libraries\RetornoPadrao();
-											$valida = $validaFormularios->validaFormularioPublicacao($post);
-											if (empty($valida->getErrors())) {
-												$artigo['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-												$artigo['link_video_youtube'] = $post['link_video_youtube'];
-												$artigo['publicado'] = $artigosModel->getNow();
-
-												//SE A QUANTIDADE DE PALAVRAS DO REVISOR FOR MENOR DO QUE A QUANTIDADE DO ESCRITOR, ABAIXA A QUANTIDADE DO ESCRITOR.
-												if ($artigo['palavras_escritor'] > str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']))) {
-													$artigo['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
-												}
-
-												$faseProducaoModel = new \App\Models\FaseProducaoModel();
-
-												$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
-												$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
-
-												//$retorno = $artigosModel->save($artigo);
-												$retorno = $this->gravarArtigos('save', $artigo);
-												$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'publicou', 'artigos', 'o artigo', $artigoId, true);
-												$this->artigosMarcacao->desmarcarArtigo($artigoId);
-												$this->artigosHistoricos->cadastraHistorico($artigoId, 'publicou', $this->session->get('colaboradores')['id']);
-												if ($retorno === true) {
-													return redirect()->to(base_url() . 'colaboradores/artigos/publicar?status=true');
-												} else {
-													return redirect()->to(base_url() . 'colaboradores/artigos/publicar/' . $artigoId . '?status=false');
-												}
-											} else {
-												$data['retorno'] = $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), false);
-											}
-										}
-
-										$artigo = $artigosModel->find($artigoId);
-										if ($artigo == null || $artigo['fase_producao_id'] != 5) {
-											return redirect()->to(base_url() . 'colaboradores/artigos/publicar');
-										}
-										$colaboradores = $artigosModel->getColaboradoresArtigo($artigoId)[0];
-										foreach ($colaboradores as $indice => $dado) {
-											$artigo['colaboradores'][$indice] = $dado;
-										}
-										// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-										// $data['categorias_artigo'] = $artigosCategoriasModel->getCategoriasArtigo($artigoId);
-										$data['artigo'] = $artigo;
-
-										$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
-										return view('colaboradores/artigos_publish', $data);
-									}
-								}
-
-								public function geraDescricaoVideo($idArtigo = null)
-								{
-									$this->verificaPermissao->PermiteAcesso('6');
-
-									$retorno = new \App\Libraries\RetornoPadrao();
-									$configuracaoModel = new \App\Models\ConfiguracaoModel();
-									$artigosModel = new \App\Models\ArtigosModel();
-
-									if ($idArtigo == null) {
-										return $retorno->retorno(false, 'Artigo não informado, atualize a página', true);
-									}
-
-									if ($this->request->isAJAX()) {
-										$post = $this->request->getPost();
-										if (!isset($post['tags'])) {
-											return $retorno->retorno(false, 'Tags não foram fornecidas.', true);
-										}
-										$configuracao = $configuracaoModel->find('descricao_padrao_youtube');
-										$artigo = $artigosModel->find($idArtigo);
-										$descricaoVideo = '';
-										$descricaoVideo = str_replace('{referencias}', $artigo['referencias'], $configuracao['config_valor']);
-										$descricaoVideo = str_replace('{tags}', $post['tags'], $descricaoVideo);
-										return json_encode(['status' => true, 'descricao' => $descricaoVideo]);
-									}
-								}
-
-								public function comentarios($idArtigo)
-								{
-									$artigosComentariosModel = new \App\Models\ArtigosComentariosModel();
-									if ($this->request->getMethod() == 'post') {
-										$retorno = new \App\Libraries\RetornoPadrao();
-										$post = $post = $this->request->getPost();
-										if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
-											$comentario = $artigosComentariosModel->find($post['id_comentario']);
-											if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
-												$comentario['atualizado'] = $artigosComentariosModel->getNow();
-												$artigosComentariosModel->save($comentario);
-												$artigosComentariosModel->db->transStart();
-												$artigosComentariosModel->delete($comentario['id']);
-												$artigosComentariosModel->db->transComplete();
-												$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'excluiu', 'artigos', 'o comentário do artigo', $idArtigo, true);
-												return $retorno->retorno(true, '', true);
-											}
-											return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
-										}
-										if (isset($post['metodo']) && $post['metodo'] == 'inserir' && trim($post['comentario']) !== '') {
-											$comentario = [
-												'id' => $artigosComentariosModel->getNovaUUID(),
-												'colaboradores_id' => $this->session->get('colaboradores')['id'],
-												'artigos_id' => $idArtigo,
-												'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8')
-											];
-											$artigosComentariosModel->db->transStart();
-											$save = $artigosComentariosModel->insert($comentario);
-											$artigosComentariosModel->db->transComplete();
-											$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'comentou', 'artigos', 'no artigo', $idArtigo, true);
-											return $retorno->retorno(true, '', true);
-										}
-										if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
-											$comentario = $artigosComentariosModel->find($post['id_comentario']);
-											if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
-												$comentario['atualizado'] = $artigosComentariosModel->getNow();
-												$comentario['comentario'] = htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8');
-												$artigosComentariosModel->db->transStart();
-												$artigosComentariosModel->save($comentario);
-												$artigosComentariosModel->db->transComplete();
-												$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o comentário do artigo', $idArtigo, true);
-												return $retorno->retorno(true, '', true);
-											}
-											return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
-										}
-										return $retorno->retorno(false, 'Erro ao salvar comentário', true);
-									} else {
-										$comentarios = $artigosComentariosModel->getComentarios($idArtigo);
-										return view('template/templateComentarios', array('comentarios' => $comentarios, 'colaborador' => $this->session->get('colaboradores')['id']));
-									}
-								}
-
-							*/
+	public function comentarios($idArtigo)
+	{
+		$artigosComentariosModel = new \App\Models\ArtigosComentariosModel();
+		if ($this->request->getMethod() == 'post') {
+			$retorno = new \App\Libraries\RetornoPadrao();
+			$post = $post = $this->request->getPost();
+			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
+				$comentario = $artigosComentariosModel->find($post['id_comentario']);
+				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
+					$comentario['atualizado'] = $artigosComentariosModel->getNow();
+					$artigosComentariosModel->save($comentario);
+					$artigosComentariosModel->db->transStart();
+					$artigosComentariosModel->delete($comentario['id']);
+					$artigosComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'excluiu', 'artigos', 'o comentário do artigo', $idArtigo, true);
+					return $retorno->retorno(true, 'Comentário excluído com sucesso.', true);
+				}
+				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+			}
+			if (isset($post['metodo']) && $post['metodo'] == 'inserir' && trim($post['comentario']) !== '') {
+				$comentario = [
+					'id' => $artigosComentariosModel->getNovaUUID(),
+					'colaboradores_id' => $this->session->get('colaboradores')['id'],
+					'artigos_id' => $idArtigo,
+					'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8')
+				];
+				$artigosComentariosModel->db->transStart();
+				$save = $artigosComentariosModel->insert($comentario);
+				$artigosComentariosModel->db->transComplete();
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'comentou', 'artigos', 'no artigo', $idArtigo, true);
+				return $retorno->retorno(true, 'Comentário inserido com sucesso.', true);
+			}
+			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
+				$comentario = $artigosComentariosModel->find($post['id_comentario']);
+				if ($comentario !== null && $comentario['colaboradores_id'] == $this->session->get('colaboradores')['id']) {
+					$comentario['atualizado'] = $artigosComentariosModel->getNow();
+					$comentario['comentario'] = htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8');
+					$artigosComentariosModel->db->transStart();
+					$artigosComentariosModel->save($comentario);
+					$artigosComentariosModel->db->transComplete();
+					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o comentário do artigo', $idArtigo, true);
+					return $retorno->retorno(true, 'Comentário atualizado com sucesso.', true);
+				}
+				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+			}
+			return $retorno->retorno(false, 'Erro ao salvar comentário', true);
+		} else {
+			$comentarios = $artigosComentariosModel->getComentarios($idArtigo);
+			return view('template/templateComentarios', array('comentarios' => $comentarios, 'colaborador' => $this->session->get('colaboradores')['id']));
+		}
+	}
+	
 	/*FUNÇÕES PRIVADAS DO CONTROLLER*/
 
 	private function getCorFaseProducao($faseProducaoId)

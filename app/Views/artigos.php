@@ -14,6 +14,16 @@ use CodeIgniter\I18n\Time;
 
 <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
 
+<style>
+	.list-artigos .bg-image {
+		height: 10rem;
+	}
+
+	.page-load-status {
+		display: none;
+	}
+</style>
+
 <!-- <div class="container">
 	<div class="">
 		<div class="bg-light py-2 px-4 mb-3">
@@ -72,7 +82,7 @@ use CodeIgniter\I18n\Time;
 
 				<div class="card shadow-0 col-sm-6 col-lg-3">
 					<div class="bg-image hover-zoom rounded-3">
-						<img class="w-100" src="<?= $artigo['imagem']; ?>" style="object-fit: cover;">
+						<img class="w-100 object-fit-cover" src="<?= $artigo['imagem']; ?>">
 					</div>
 					<div class="card-body p-2">
 						<h5 class="card-title fw-bold"><a class="btn-link text-black h5"
@@ -80,19 +90,19 @@ use CodeIgniter\I18n\Time;
 								<?= $artigo['titulo']; ?></a>
 						</h5>
 						<div>
-								<small>
-									<ul class="nav nav-divider">
-										<li class="nav-item pointer">
-											<div class="d-flex text-muted">
-												<span class="">Por <a href="#"
-														class="text-muted btn-link"><?= $artigo['apelido']; ?></a></span>
-											</div>
-										</li>
-										<li class="nav-item pointer text-muted">
-											<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
-										</li>
-									</ul>
-								</small>
+							<small>
+								<ul class="nav nav-divider">
+									<li class="nav-item pointer">
+										<div class="d-flex text-muted">
+											<span class="">Por <a href="#"
+													class="text-muted btn-link"><?= $artigo['apelido']; ?></a></span>
+										</div>
+									</li>
+									<li class="nav-item pointer text-muted">
+										<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+									</li>
+								</ul>
+							</small>
 							<p class="">
 								<?= substr($artigo['texto_revisado'], 0, strpos($artigo['texto_revisado'], "\n")); ?>
 							</p>
@@ -107,24 +117,37 @@ use CodeIgniter\I18n\Time;
 				<?= $artigosList['pager']->simpleLinks('artigos', 'default_template') ?>
 			<?php endif; ?>
 		</div>
+
+		<div class="page-load-status">
+			<div class="infinite-scroll-request d-flex justify-content-center mt-5 mb-5">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+			<p class="infinite-scroll-last">End of content</p>
+			<p class="infinite-scroll-error">No more pages to load</p>
+		</div>
 	</div>
 </div>
 
 <script>
-	var $grid = $('.list-artigos').masonry({
-		// Masonry options...
-		itemSelector: '.card',
-		horizontalOrder: true
-	});
+	$(document).ready(function () {
+		var $grid = $('.list-artigos').masonry({
+			// Masonry options...
+			itemSelector: '.card',
+			horizontalOrder: true
+		});
 
-	var msnry = $grid.data('masonry');
+		var msnry = $grid.data('masonry');
 
-	$grid.infiniteScroll({
-		// Infinite Scroll options...
-		path: '.next_page',
-		append: '.card',
-		history: false,
-		outlayer: msnry,
+		$grid.infiniteScroll({
+			// Infinite Scroll options...
+			path: '.next_page',
+			append: '.card',
+			history: false,
+			outlayer: msnry,
+			status: '.page-load-status'
+		});
 	});
 </script>
 

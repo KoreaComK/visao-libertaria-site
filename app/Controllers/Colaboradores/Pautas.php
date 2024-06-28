@@ -40,7 +40,12 @@ class Pautas extends BaseController
 			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
 			'pager' => $pautas->pager
 		];
-		return view('colaboradores/pautas_list', $data);
+
+		if($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
+			return view('template/templatePautasListColaboradores', $data);	
+		} else {
+			return view('colaboradores/pautas_list', $data);
+		}
 	}
 
 	public function pautasListColaboradores()

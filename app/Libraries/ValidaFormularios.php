@@ -157,7 +157,7 @@ class ValidaFormularios extends BaseController
 			],
 			'texto' => [
 				'label' => 'Texto da pauta',
-				'rules' => 'required|min_length[10]'
+				'rules' => 'required|min_length[10]|max_length[600]'
 			],
 			'imagem' => [
 				'label' => 'Link da Imagem',

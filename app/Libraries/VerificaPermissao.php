@@ -5,7 +5,7 @@ namespace App\Libraries;
 class VerificaPermissao
 {
 
-	public function PermiteAcesso($codigoPermissao = null, $url = null)
+	public function PermiteAcesso($codigoPermissao = null, $url = null, $isValidar = false)
 	{
 		$url = ($url === null) ? (base_url() . 'site/logout?url='.current_url()) : ($url);
 		if ($codigoPermissao == null) {
@@ -27,6 +27,9 @@ class VerificaPermissao
 				if (in_array((string) $codigoPermissao, $permissoes)) {
 					return true;
 				}
+			}
+			if($isValidar) {
+				return false;
 			}
 			header("location: " . $url);
 			die();

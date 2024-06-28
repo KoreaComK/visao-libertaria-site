@@ -27,7 +27,7 @@
 						<h6 class="mb-0"><a href="#"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<!-- Table data -->
-					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy'); ?>
+					<td><?= ($artigo['data_publicado']!=NULL)?(Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')):(''); ?>
 					</td>
 					<!-- Table data -->
 					<td>

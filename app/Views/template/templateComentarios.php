@@ -9,7 +9,7 @@ use CodeIgniter\I18n\Time;
 		<div class="card-body <?= (count($comentarios) == $chave + 1) ? ('') : ('border-bottom'); ?> ml-1 mr-1 mb-1"
 			id="<?= $comentario['id']; ?>">
 			<div class="row">
-				<div class='col-2'>
+				<div class="col-2" style="width: 5rem; height: auto;">
 					<img src="<?= ($comentario['avatar'] != NULL) ? ($comentario['avatar']) : (site_url('public/assets/avatar-default.png')); ?>"
 						class="rounded float-left mr-3" style="height:auto; max-width:inherit;">
 				</div>

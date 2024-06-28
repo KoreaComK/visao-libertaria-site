@@ -233,6 +233,71 @@ use CodeIgniter\I18n\Time;
 					</form>
 				</div>
 			</div>
+
+			<?php if ($historico !== NULL && !empty($historico)): ?>
+				<div class="col-12 mb-3 mt-3">
+					<!-- Chart START -->
+					<div class="card border">
+						<div class="card-body">
+							<h6>Histórico do artigo:</h6>
+							<ul class="list-group fw-light lista-historico">
+								<?php foreach ($historico as $h): ?>
+									<li class="list-group-item p-1 border-0">
+										<small>
+											<?= $h['apelido']; ?>
+											<?= $h['acao']; ?>
+											<span class="badge badge-pill badge-secondary fw-light">
+												<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+											</span>
+										</small>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+				<div class="col-12 mb-3 mt-3">
+					<!-- Chart START -->
+					<div class="card border">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-12 text-center">
+									<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="btn-comentarios"
+										type="button">Atualizar
+										Comentários</button>
+								</div>
+								<div class="mensagem-comentario p-3 mb-2 rounded text-white text-center col-12"
+									style="display: none;">
+								</div>
+								<div class="mensagem-salvar p-3 mb-2 rounded text-white text-center col-12"
+									style="display: none;">
+								</div>
+								<div class="col-12 d-flex justify-content-center">
+
+									<div class="col-12 div-comentarios">
+										<div class="col-12">
+											<div class="mb-3">
+												<input type="hidden" id="id_comentario" name="id_comentario" />
+												<textarea id="comentario" name="comentario" class="form-control" rows="5"
+													placeholder="Digite seu comentário aqui"></textarea>
+											</div>
+											<div class="mb-3 text-center">
+												<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+													id="enviar-comentario" type="button">Enviar comentário</button>
+											</div>
+										</div>
+										<div class="card m-3 div-list-comentarios"></div>
+									</div>
+								</diV>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
 			<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
 				<div class="card border mt-4">
 					<div class="card-body">
@@ -380,9 +445,9 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(artigo_form);
 		$.ajax({
 			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-							url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+												url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-							url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+												url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php endif; ?>
 			method: "POST",
 			data: form,
@@ -400,6 +465,8 @@ use CodeIgniter\I18n\Time;
 						setTimeout(function () {
 							window.location.href = "<?= site_url('colaboradores/artigos/cadastrar/'); ?>" + retorno.parametros['artigoId'];
 						}, 2000);
+					<?php else: ?>
+						atualizaHistorico();
 					<?php endif; ?>
 
 				} else {
@@ -481,6 +548,23 @@ use CodeIgniter\I18n\Time;
 			});
 		});
 
+		function atualizaHistorico() {
+			$.ajax({
+				url: "<?= site_url('colaboradores/artigos/historicos/') . $artigo['id']; ?>",
+				method: "GET",
+				data: form,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "html",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					$('.lista-historico').html(retorno);
+				}
+			});
+		}
+
 		imagem.onchange = evt => {
 			const [file] = imagem.files
 			if (file) {
@@ -505,6 +589,84 @@ use CodeIgniter\I18n\Time;
 					}
 				});
 			}
+		}
+
+		$("#btn-comentarios").on("click", function () {
+			getComentarios();
+		});
+		$('#btn-comentarios').trigger('click');
+
+		function getComentarios() {
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+				method: "GET",
+				dataType: "html",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					$('.div-list-comentarios').html(retorno);
+				}
+			});
+		}
+
+		$("#enviar-comentario").on("click", function () {
+			form = new FormData();
+			form.append('comentario', $('#comentario').val());
+			if ($('#id_comentario').val() == '') {
+				form.append('metodo', 'inserir');
+			} else {
+				form.append('metodo', 'alterar');
+				form.append('id_comentario', $('#id_comentario').val());
+			}
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+				method: "POST",
+				data: form,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						getComentarios()
+						$('#comentario').val('');
+						$('#id_comentario').val('');
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				}
+			});
+		});
+
+		function excluirComentario(id_comentario) {
+			form = new FormData();
+			form.append('id_comentario', id_comentario);
+			form.append('metodo', 'excluir');
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+				method: "POST",
+				data: form,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						getComentarios()
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				}
+			});
 		}
 
 	<?php endif; ?>
