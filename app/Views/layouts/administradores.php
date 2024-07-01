@@ -200,7 +200,7 @@
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do
 									colaborador</a>
-							</li>	
+							</li>
 						<?php endif; ?>
 						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 							<li class="nav-item">
@@ -264,10 +264,26 @@
 								</li>
 							<?php endif; ?>
 							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item">
-									<a class="nav-link" href="<?= site_url('colaboradores/admin/administracao'); ?>"><i
-											class="fas fa-wrench"></i>
-										Configurações</a>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" id="menuAdministracaoConfiguracao"><i
+											class="fas fa-wrench"></i> Configurações</a>
+									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuAdministracaoConfiguracao">
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/admin/configuracoes'); ?>">Configurações gerais</a> </li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Carregar layout</a>
+										</li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Nome e descrição dos sites</a>
+										</li>
+										
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Regras para colaborar</a>
+										</li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Páginas estáticas</a>
+										</li>
+									</ul>
 								</li>
 							<?php endif; ?>
 							<?php if (in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>

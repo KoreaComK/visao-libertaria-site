@@ -130,8 +130,8 @@
 				if (retorno.status == true) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 					setTimeout(function () {
-						location.reload();
-					}, 3000);
+						document.location.href = '<?php echo base_url('colaboradores/pautas/fechadas'); ?>';
+					}, 2000);
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
