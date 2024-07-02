@@ -86,9 +86,9 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<h5 class="card-header-title">Período para exclusão</h5>
+							<h5 class="card-header-title cron_pautas_status_delete">Período para exclusão</h5>
 
-							<div class="mb-3">
+							<div class="mb-3 cron_pautas_status_delete">
 								<label for="titulo"><small>Data limite para exclusão</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -109,7 +109,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<hr>
+							<hr class="cron_pautas_status_delete">
 							<h5 class="card-header-title">Limites de envio</h5>
 
 							<div class="mb-3">
@@ -230,13 +230,13 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<hr>
+							<hr class="cron_artigos_desmarcar_status">
 
-							<h5 class="card-header-title">Tempo limite para desmarcar</h5>
+							<h5 class="card-header-title cron_artigos_desmarcar_status">Tempo limite para desmarcar</h5>
 
-							<h6 class="card-header-title">Artigos teóricos</h6>
+							<h6 class="card-header-title cron_artigos_desmarcar_status">Artigos teóricos</h6>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label
 									for="cron_artigos_teoria_desmarcar_data_revisao_number"><small>Revisão</small></label>
 								<div class="row">
@@ -260,7 +260,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label
 									for="cron_artigos_teoria_desmarcar_data_narracao_number"><small>Narração</small></label>
 								<div class="row">
@@ -284,7 +284,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label for="cron_artigos_teoria_desmarcar_data_producao"><small>Produção</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -307,9 +307,9 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<h6 class="card-header-title">Artigos de notícia</h6>
+							<h6 class="card-header-title cron_artigos_desmarcar_status">Artigos de notícia</h6>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label for="cron_artigos_noticia_desmarcar_data_revisao"><small>Revisão</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -332,7 +332,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label
 									for="cron_artigos_noticia_desmarcar_data_narracao_number"><small>Narração</small></label>
 								<div class="row">
@@ -356,7 +356,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="">
+							<div class="cron_artigos_desmarcar_status">
 								<label
 									for="cron_artigos_noticia_desmarcar_data_producao_number"><small>Produção</small></label>
 								<div class="row">
@@ -380,11 +380,11 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<hr>
+							<hr class="cron_artigos_descartar_status">
 
-							<h5 class="card-header-title">Tempo limite para descarte</h5>
+							<h5 class="card-header-title cron_artigos_descartar_status">Tempo limite para descarte</h5>
 
-							<div class="">
+							<div class="cron_artigos_descartar_status">
 								<label for="titulo"><small>Artigos</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -454,9 +454,9 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 							<div class="d-sm-flex justify-content-end">
-									<button type="button"
-										class="btn btn-sm btn-primary me-2 mb-0 salvar-config-listagem">Salvar</button>
-								</div>
+								<button type="button"
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-config-listagem">Salvar</button>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -478,11 +478,11 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<h5 class="card-header-title">Período para exclusão</h5>
+							<h5 class="card-header-title cron_notificacoes_status_delete">Período para exclusão</h5>
 
-							<h6 class="card-header-title">Excluir notificação</h6>
+							<h6 class="card-header-title cron_notificacoes_status_delete">Excluir notificação</h6>
 
-							<div class="mb-3">
+							<div class="mb-3 cron_notificacoes_status_delete">
 								<label for="titulo"><small>Lida</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -509,7 +509,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="mb-3">
+							<div class="mb-3 cron_notificacoes_status_delete">
 								<label for="titulo"><small>Não lida</small></label>
 								<div class="row">
 									<div class="col-md-8 mb-2">
@@ -580,7 +580,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="mb-3">
+							<div class="mb-3 home_banner_mostrar">
 								<label for="limite_pautas_diario"><small>Artigos por banner</small></label>
 								<div class="input-group">
 									<input type="number" class="form-control form-control-sm" id="home_banner"
@@ -613,7 +613,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="mb-3">
+							<div class="mb-3 home_talvez_goste_mostrar">
 								<label for="limite_pautas_diario"><small>Artigos no Talvez Goste</small></label>
 								<div class="input-group">
 									<input type="number" class="form-control form-control-sm" id="home_talvez_goste"
@@ -635,8 +635,8 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<div class="mb-3">
-								<label for="home_ultimos_videos"><small>Quantidade de artigos nos últimos
+							<div class="mb-3 home_ultimos_videos_mostrar">
+								<label for="home_ultimos_videos home_ultimos_videos_mostrar"><small>Quantidade de artigos nos últimos
 										vídeos</small></label>
 								<div class="input-group">
 									<input type="number" class="form-control form-control-sm" id="home_ultimos_videos"
@@ -706,7 +706,7 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(listagem_form);
 		submit(form);
 	});
-	
+
 	$(".salvar-config-home").on("click", function () {
 		form = new FormData(home_form);
 		if (!$('#home_banner_mostrar').is(':checked')) {
@@ -744,6 +744,60 @@ use CodeIgniter\I18n\Time;
 			}
 		});
 	}
+
+	$('#cron_pautas_status_delete').change(function() {
+		if(!this.checked) { $('.cron_pautas_status_delete').hide(); } else { $('.cron_pautas_status_delete').show(); }
+	})
+
+	$('#cron_artigos_desmarcar_status').change(function() {
+		if(!this.checked) { $('.cron_artigos_desmarcar_status').hide(); } else { $('.cron_artigos_desmarcar_status').show(); }
+	})
+
+	$('#cron_artigos_descartar_status').change(function() {
+		if(!this.checked) { $('.cron_artigos_descartar_status').hide(); } else { $('.cron_artigos_descartar_status').show(); }
+	})
+
+	$('#cron_notificacoes_status_delete').change(function() {
+		if(!this.checked) { $('.cron_notificacoes_status_delete').hide(); } else { $('.cron_notificacoes_status_delete').show(); }
+	})
+	
+	$('#home_banner_mostrar').change(function() {
+		if(!this.checked) { $('.home_banner_mostrar').hide(); } else { $('.home_banner_mostrar').show(); }
+	})
+	
+	$('#home_talvez_goste_mostrar').change(function() {
+		if(!this.checked) { $('.home_talvez_goste_mostrar').hide(); } else { $('.home_talvez_goste_mostrar').show(); }
+	})
+	
+	$('#home_ultimos_videos_mostrar').change(function() {
+		if(!this.checked) { $('.home_ultimos_videos_mostrar').hide(); } else { $('.home_ultimos_videos_mostrar').show(); }
+	})
+
+	$(document).ready(function () {
+		if(!$('#cron_pautas_status_delete').is(':checked')) {
+			$('.cron_pautas_status_delete').hide();
+		}
+		if(!$('#cron_artigos_desmarcar_status').is(':checked')) {
+			$('.cron_artigos_desmarcar_status').hide();
+		}
+		if(!$('#cron_artigos_descartar_status').is(':checked')) {
+			$('.cron_artigos_descartar_status').hide();
+		}
+		if(!$('#cron_notificacoes_status_delete').is(':checked')) {
+			$('.cron_notificacoes_status_delete').hide();
+		}
+		if(!$('#home_banner_mostrar').is(':checked')) {
+			$('.home_banner_mostrar').hide();
+		}
+		if(!$('#home_talvez_goste_mostrar').is(':checked')) {
+			$('.home_talvez_goste_mostrar').hide();
+		}
+		if(!$('#home_ultimos_videos_mostrar').is(':checked')) {
+			$('.home_ultimos_videos_mostrar').hide();
+		}
+
+		
+	});
 </script>
 
 
