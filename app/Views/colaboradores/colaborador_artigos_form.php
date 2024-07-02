@@ -28,7 +28,7 @@ use CodeIgniter\I18n\Time;
 	<div class="row">
 		<div class="col-12">
 			<div class="mb-5">
-				<?php if ($fase_producao == '1'): ?>
+				<?php if ($artigo['fase_producao_id'] == '1'): ?>
 					<?= $config['artigo_regras_escrever']; ?>
 				<?php endif; ?>
 				<?php if ($fase_producao == '2'): ?>

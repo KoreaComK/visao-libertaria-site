@@ -273,12 +273,11 @@
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/layout'); ?>">Layout e configuração dos sites</a>
 										</li>
-										
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Regras para colaborar</a>
+												href="<?= site_url('colaboradores/admin/regras'); ?>">Regras para colaborar</a>
 										</li>
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Páginas estáticas</a>
+												href="<?= site_url('colaboradores/admin/fechadas'); ?>">Páginas estáticas</a>
 										</li>
 									</ul>
 								</li>

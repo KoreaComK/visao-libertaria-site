@@ -51,6 +51,22 @@ class Admin extends BaseController
 		return view('colaboradores/administracao_layout', $data);
 	}
 
+	public function regras()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_regras_colaborar', $data);
+	}
+
+
 	public function administracao()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
