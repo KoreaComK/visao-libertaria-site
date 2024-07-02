@@ -271,10 +271,7 @@
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/configuracoes'); ?>">Configurações gerais</a> </li>
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Carregar layout</a>
-										</li>
-										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Nome e descrição dos sites</a>
+												href="<?= site_url('colaboradores/admin/layout'); ?>">Layout e configuração dos sites</a>
 										</li>
 										
 										<li> <a class="dropdown-item"

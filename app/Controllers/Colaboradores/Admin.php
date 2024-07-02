@@ -36,6 +36,21 @@ class Admin extends BaseController
 		return view('colaboradores/administracao_configuracoes', $data);
 	}
 
+	public function layout()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_layout', $data);
+	}
+
 	public function administracao()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
@@ -45,18 +60,19 @@ class Admin extends BaseController
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
 
-			if (!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+			// if (!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+				if (!empty($this->request->getFiles()) && ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
 
 				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
 				if (empty($valida->getErrors())) {
-					if ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
-						$file = $this->request->getFiles()['banner'];
-						$nome_arquivo = 'banner.png';
-						if (!$file->move('public/assets', $nome_arquivo, true)) {
-							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
-						}
-					}
+					// if ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
+					// 	$file = $this->request->getFiles()['banner'];
+					// 	$nome_arquivo = 'banner.png';
+					// 	if (!$file->move('public/assets', $nome_arquivo, true)) {
+					// 		return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+					// 	}
+					// }
 					if ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['estilos'];
 						$nome_arquivo = 'estilos.css';

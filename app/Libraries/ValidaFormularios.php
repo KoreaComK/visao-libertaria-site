@@ -290,10 +290,10 @@ class ValidaFormularios extends BaseController
 	{
 		$validation = \Config\Services::validation();
 		$validation->setRules([
-			'banner' => [
-				'label' => 'Arquivo do Banner',
-				'rules' => 'ext_in[banner,png]|max_size[banner,3072]'
-			],
+			// 'banner' => [
+			// 	'label' => 'Arquivo do Banner',
+			// 	'rules' => 'ext_in[banner,png]|max_size[banner,3072]'
+			// ],
 			'rodape' => [
 				'label' => 'Imagem Rodapé',
 				'rules' => 'ext_in[rodape,png]|max_size[rodape,1024]'
