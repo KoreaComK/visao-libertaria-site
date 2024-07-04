@@ -323,6 +323,15 @@ use CodeIgniter\I18n\Time;
 								momento.
 							</label>
 						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="aceito4">
+							<label class="form-check-label" for="aceito4">
+								Verifiquei <a class="btn-link listagem-artigos-produzindo" data-bs-toggle="modal"
+									data-bs-target="#modalListagem">NESTA LISTAGEM</a> os artigos que estão sendo produzidos
+								e este assunto
+								não foi encontrado
+							</label>
+						</div>
 						<div class="text-end">
 							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
 								revisão</button>
@@ -361,8 +370,55 @@ use CodeIgniter\I18n\Time;
 							</label>
 						</div>
 						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
+							<button type="button" disabled="" class="btn btn-success mt-2 submeter-revisao">Enviar para
 								narração</button>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Reverter artigo</h5>
+						<p class="card-text">Ao reverter o artigo confirmo os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="reverter1">
+							<label class="form-check-label" for="reverter1">
+								O artigo será revertido para a etapa anterior para ajustes.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="reverter2">
+							<label class="form-check-label" for="reverter2">
+								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
+							</label>
+						</div>
+						<div class="text-center">
+							<button type="button" disabled="" class="btn btn-warning mt-2 reverter-artigo">Reverter
+								artigo</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Descartar artigo</h5>
+						<p class="card-text">Ao descartar o artigo confirmo os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="descarte1">
+							<label class="form-check-label" for="descarte1">
+								O texto será descartado e não irá mais seguir a trilha de produção.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="descarte2">
+							<label class="form-check-label" for="descarte2">
+								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
+							</label>
+						</div>
+						<div class="text-start">
+							<button type="button" disabled="" class="btn btn-danger mt-2 descartar-artigo">Descartar
+								artigo</button>
 						</div>
 					</div>
 				</div>
@@ -371,6 +427,23 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
+
+<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Artigos em produção</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body corpo-listar">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary text-left" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
 <script type="text/javascript">
 	function contapalavras() {
 		var texto = $("#texto_original").val().replaceAll('\n', " ");
@@ -445,9 +518,9 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(artigo_form);
 		$.ajax({
 			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-												url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+						url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-												url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+						url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php endif; ?>
 			method: "POST",
 			data: form,
@@ -516,34 +589,142 @@ use CodeIgniter\I18n\Time;
 					$('.submeter-revisao').attr('disabled', '');
 				}
 			}
+
+			$('#descarte1').on('change', function (e) {
+				descartarArtigo();
+			});
+			$('#descarte2').on('change', function (e) {
+				descartarArtigo();
+			});
+
+			function descartarArtigo() {
+				if ($('#descarte1').is(':checked') && $('#descarte2').is(':checked')) {
+					$('.descartar-artigo').removeAttr('disabled');
+				} else {
+					$('.descartar-artigo').attr('disabled', '');
+				}
+			}
+
+			$('.descartar-artigo').on('click', function () {
+				$.ajax({
+					url: "<?= site_url('colaboradores/artigos/descartar/') . $artigo['id']; ?>",
+					method: "POST",
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$('.descartar-artigo').attr('disabled', '');
+
+							setTimeout(function () {
+								<?php if ($artigo['fase_producao_id'] == '1'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>";
+								<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+								<?php endif; ?>
+							}, 1500);
+
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
+			});
+
+			$('.submeter-revisao').on('click', function () {
+				$.ajax({
+					url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
+					method: "POST",
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$('.submeter-revisao').attr('disabled', '');
+
+							setTimeout(function () {
+								<?php if ($artigo['fase_producao_id'] == '1'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
+								<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+								<?php endif; ?>
+							}, 1500);
+
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
+			});
+
+			$('#reverter1').on('change', function (e) {
+				reverterArtigo();
+			});
+			$('#reverter2').on('change', function (e) {
+				reverterArtigo();
+			});
+
+			function reverterArtigo() {
+				if ($('#reverter1').is(':checked') && $('#reverter2').is(':checked')) {
+					$('.reverter-artigo').removeAttr('disabled');
+				} else {
+					$('.reverter-artigo').attr('disabled', '');
+				}
+			}
+
+			$('.reverter-artigo').on('click', function () {
+				$.ajax({
+					url: "<?= site_url('colaboradores/artigos/reverter/') . $artigo['id']; ?>",
+					method: "POST",
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$('.descartar-artigo').attr('disabled', '');
+
+							setTimeout(function () {
+								<?php if ($artigo['fase_producao_id'] == '1'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>";
+								<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+								<?php endif; ?>
+							}, 1500);
+
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
+			});
+
 		<?php endif; ?>
 
-		$('.submeter-revisao').on('click', function () {
+		$('.listagem-artigos-produzindo').on('click', function () {
 			$.ajax({
-				url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
-				method: "POST",
+				url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>",
+				method: "GET",
+				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
-				dataType: "json",
+				dataType: "html",
 				beforeSend: function () { $('#modal-loading').show(); },
 				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$('.submeter-revisao').attr('disabled', '');
-
-						setTimeout(function () {
-							<?php if ($artigo['fase_producao_id'] == '1'): ?>
-								window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
-							<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-								window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
-							<?php endif; ?>
-						}, 1500);
-
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
+					$('.corpo-listar').html(retorno);
 				}
 			});
 		});

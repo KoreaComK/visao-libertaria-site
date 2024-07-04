@@ -123,7 +123,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="col-lg-12">
-					<h1 class="display-2 text-black" id="modal-artigo-titulo"></h1>
+					<h1 class="display-2" id="modal-artigo-titulo"></h1>
 					<p class="lead" id="modal-artigo-gancho"></p>
 					<div class="position-relative mb-3">
 						<div class="bg-image hover-zoom rounded-6">

@@ -26,7 +26,7 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</li>
 						<li class="nav-item pointer text-muted">
-							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd/MM/yyyy'); ?>
+							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMM yyyy'); ?>
 						</li>
 					</ul>
 				</small>

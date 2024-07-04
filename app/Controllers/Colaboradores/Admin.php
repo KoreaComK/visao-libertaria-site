@@ -181,10 +181,106 @@ class Admin extends BaseController
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$atribuicoesModel = new \App\Models\AtribuicoesModel();
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+		$artigosModel = new \App\Models\ArtigosModel();
+		$pautasModel = new \App\Models\PautasModel();
+
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['atribuicoes'] = $atribuicoesModel->findall();
 
 		if ($idColaboradores != NULL) {
+			$data['artigos'] = array();
+			$data['pautas'] = array();
+
+			$time_atual = new Time('-30 days');
+			$time_antigo = new Time('-60 days');
+			$artigosModel = new \App\Models\ArtigosModel();
+
+			$artigosModel->where("criado >= '".$time_atual->toDateTimeString()."'");
+			$artigosModel->where("escrito_colaboradores_id",$idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['atual'] = count($artigos);
+			$data['artigos']['lista'] = $artigos;
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("criado >= '".$time_antigo->toDateTimeString()."'");
+			$artigosModel->where("criado <= '".$time_atual->toDateTimeString()."'");
+			$artigosModel->where("escrito_colaboradores_id",$idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['antigo'] = count($artigos);
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("publicado >= '".$time_atual->toDateTimeString()."'");
+			$artigosModel->where("escrito_colaboradores_id",$idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['publicados_atual'] = count($artigos);
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("publicado >= '".$time_antigo->toDateTimeString()."'");
+			$artigosModel->where("publicado <= '".$time_atual->toDateTimeString()."'");
+			$artigosModel->where("escrito_colaboradores_id",$idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['publicados_antigo'] = count($artigos);
+
+			$data['artigos']['diferenca'] = $data['artigos']['atual']-$data['artigos']['antigo'];
+			$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual']-$data['artigos']['publicados_antigo'];
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '".$time_atual->toDateTimeString()."'");
+			$pautasModel->where("colaboradores_id",$idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['atual'] = count($pautas);
+			$data['pautas']['lista'] = $pautas;
+			
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '".$time_antigo->toDateTimeString()."'");
+			$pautasModel->where("criado <= '".$time_atual->toDateTimeString()."'");
+			$pautasModel->where("colaboradores_id",$idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['antigo'] = count($pautas);
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("reservado >= '".$time_atual->toDateTimeString()."'");
+			$pautasModel->where("colaboradores_id",$idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['utilizados_atual'] = count($pautas);
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '".$time_antigo->toDateTimeString()."'");
+			$pautasModel->where("criado <= '".$time_atual->toDateTimeString()."'");
+			$pautasModel->where("colaboradores_id",$idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['utilizados_antigo'] = count($pautas);
+
+			$data['pautas']['diferenca'] = $data['pautas']['atual']-$data['pautas']['antigo'];
+			$data['pautas']['utilizados_diferenca'] = $data['pautas']['utilizados_atual']-$data['pautas']['utilizados_antigo'];
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$time_antigo = new Time('-1 years');
+			$artigosModel->where("publicado >= '".$time_antigo->toDateTimeString()."'");
+			$artigosModel->where("escrito_colaboradores_id",$idColaboradores);
+			$artigosModel->orderBy("publicado",'ASC');
+			$artigos = $artigosModel->get()->getResultArray();
+
+			$data['graficos'] = array();
+			if ($artigos != NULL && !empty($artigos)) {
+				$data['graficos']['base'] = array();
+				for($mes_base = 12; $mes_base >= 0; $mes_base--) {
+					$data_base = new Time('-'.$mes_base.' months');
+					$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
+				}
+				foreach($artigos as $artigo) {
+					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
+				}
+			}
+
 			$colaboradores_atribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($idColaboradores);
 			$data['colaboradores_atribuicoes'] = array();
 			if ($colaboradores_atribuicoes != NULL && !empty($colaboradores_atribuicoes)) {
@@ -210,10 +306,25 @@ class Admin extends BaseController
 				}
 				return $retorno->retorno(true, 'Permissões do colaborador salvas.', true);
 			}
-			return $retorno->retorno(false, 'Ocorreu um erro na hora de salvar as permissões do usuário', true);
+			if (isset($post['strike_data'])) {
+				if($post['strike_data'] == 'true') {
+					$data_strike = new Time('+20 years');
+					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data'=>$data_strike->toLocalizedString('yyyy-MM-dd')));
+					if($strike_retorno) {
+						return $retorno->retorno(true, 'Bloqueio feito com sucesso.', true);
+					}
+				}
+				if($post['strike_data'] == 'false') {
+					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data'=>NULL));
+					if($strike_retorno) {
+						return $retorno->retorno(true, 'Desbloqueio feito com sucesso.', true);
+					}
+				}
+				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
+			}
 		}
 
-		$data['titulo'] = 'Permissões - Colaboradores';
+		$data['titulo'] = 'Listagem de colaboradores';
 
 		return view('colaboradores/permissoes_list', $data);
 	}

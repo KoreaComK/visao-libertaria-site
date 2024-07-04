@@ -279,6 +279,9 @@
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/fechadas'); ?>">Páginas estáticas</a>
 										</li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/admin/avisos'); ?>">Avisos</a>
+										</li>
 									</ul>
 								</li>
 							<?php endif; ?>

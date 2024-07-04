@@ -307,7 +307,20 @@ class Artigos extends BaseController
 		$artigosModel = new \App\Models\ArtigosModel();
 		$permitido = false;
 
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
 		$artigo = $artigosModel->find($idArtigo);
+		if (empty($artigo) || $artigo == null) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+		
+		$colaborador = $this->session->get('colaboradores')['id'];
+		if ($colaborador != $artigo['marcado_colaboradores_id']) {
+			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
+		}
+
 		if (empty($artigo) || $artigo == null) {
 			return $retorno->retorno(false, 'Artigo não encontrado.', true);
 		}
@@ -344,7 +357,66 @@ class Artigos extends BaseController
 		}
 
 		return $retorno->retorno(false, 'Você não tem permissão para descartar o artigo.', true);
+	}
 
+	public function reverter($idArtigo)
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$artigo = $artigosModel->find($idArtigo);
+		if (empty($artigo) || $artigo == null) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+		
+		$colaborador = $this->session->get('colaboradores')['id'];
+		if ($colaborador != $artigo['marcado_colaboradores_id']) {
+			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
+		}
+
+		$faseProducaoModel = new \App\Models\FaseProducaoModel();
+		$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
+		
+		$artigo['fase_producao_id'] = $faseProducao['etapa_anterior'];
+		if ($faseProducao['etapa_anterior'] == '1') {
+			$artigo['texto_original'] = $artigo['texto_revisado'];
+			$artigo['texto_revisado'] = NULL;
+			$artigo['revisado_colaboradores_id'] = NULL;
+			$artigo['palavras_revisor'] = 0;
+		}
+		if ($faseProducao['etapa_anterior'] == '2') {
+			$artigo['revisado_colaboradores_id'] = NULL;
+			$artigo['palavras_revisor'] = 0;
+			$artigo['arquivo_audio'] = NULL;
+			$artigo['narrado_colaboradores_id'] = NULL;
+		}
+		if ($faseProducao['etapa_anterior'] == '3') {
+			$artigo['link_produzido'] = NULL;
+			$artigo['link_shorts'] = NULL;
+			$artigo['produzido_colaboradores_id'] = NULL;
+			$artigo['arquivo_audio'] = NULL;
+			$artigo['narrado_colaboradores_id'] = NULL;
+		}
+		if ($faseProducao['etapa_anterior'] == '4') {
+			$artigo['publicado'] = NULL;
+			$artigo['publicado_colaboradores_id'] = NULL;
+			$artigo['link_produzido'] = NULL;
+			$artigo['link_shorts'] = NULL;
+			$artigo['produzido_colaboradores_id'] = NULL;
+		}
+		
+		$retornoReverter = $this->gravarArtigos('update', $artigo, $artigo['id']);
+		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'reverteu', 'artigos', 'o artigo', $idArtigo);
+		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
+		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
+		if(!$retornoReverter) {
+			return $retorno->retorno(false, 'Erro ao reverter artigo.', true);
+		}
+		return $retorno->retorno(true, 'Artigo revertido com sucesso.', true);
 	}
 
 	public function salvarImagem($artigoId = NULL)
@@ -773,6 +845,28 @@ class Artigos extends BaseController
 		return view('template/templateColaboradoresArtigosColaborarList', $data);
 	}
 
+	public function artigosProduzindo()
+	{
+		$this->verificaPermissao->PermiteAcesso('2');
+		$data[] = array();
+		$data['titulo'] = 'Artigos em produção';
+		$data['artigos'] = null;
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->whereNotIn('fase_producao_id', array(6,7))
+		->where('descartado',NULL)->join('fase_producao','fase_producao.id = artigos.fase_producao_id')
+		->get()->getResultArray();
+
+		if (!empty($artigos)) {
+			foreach ($artigos as $chave => $artigo) {
+				$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
+			}
+		}
+		$data['artigos'] = $artigos;
+
+		return view('template/templateColaboradoresListArtigosProduzindo', $data);
+	}
+
 	public function buscaArtigoJSON($artigoId = NULL)
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();
@@ -951,7 +1045,7 @@ class Artigos extends BaseController
 		$data = array();
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigo = $artigosModel->find($artigoId);
+		$artigo = $artigosModel->withDeleted()->find($artigoId);
 
 		if (empty($artigo) || $artigo == null) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
@@ -1167,7 +1261,7 @@ class Artigos extends BaseController
 			return view('template/templateComentarios', array('comentarios' => $comentarios, 'colaborador' => $this->session->get('colaboradores')['id']));
 		}
 	}
-	
+
 	/*FUNÇÕES PRIVADAS DO CONTROLLER*/
 
 	private function getCorFaseProducao($faseProducaoId)
@@ -1236,47 +1330,6 @@ class Artigos extends BaseController
 	}
 
 
-
-	private function artigoReverter($idArtigo)
-	{
-		$artigosModel = new \App\Models\ArtigosModel();
-		$artigo = $artigosModel->find($idArtigo);
-
-		$faseProducaoModel = new \App\Models\FaseProducaoModel();
-		$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
-		$artigo['fase_producao_id'] = $faseProducao['etapa_anterior'];
-		if ($faseProducao['etapa_anterior'] == '1') {
-			$artigo['texto_revisado'] = NULL;
-			$artigo['revisado_colaboradores_id'] = NULL;
-			$artigo['palavras_revisor'] = 0;
-		}
-		if ($faseProducao['etapa_anterior'] == '2') {
-			$artigo['revisado_colaboradores_id'] = NULL;
-			$artigo['palavras_revisor'] = 0;
-			$artigo['arquivo_audio'] = NULL;
-			$artigo['narrado_colaboradores_id'] = NULL;
-		}
-		if ($faseProducao['etapa_anterior'] == '3') {
-			$artigo['link_produzido'] = NULL;
-			$artigo['link_shorts'] = NULL;
-			$artigo['produzido_colaboradores_id'] = NULL;
-			$artigo['arquivo_audio'] = NULL;
-			$artigo['narrado_colaboradores_id'] = NULL;
-		}
-		if ($faseProducao['etapa_anterior'] == '4') {
-			$artigo['publicado'] = NULL;
-			$artigo['publicado_colaboradores_id'] = NULL;
-			$artigo['link_produzido'] = NULL;
-			$artigo['link_shorts'] = NULL;
-			$artigo['produzido_colaboradores_id'] = NULL;
-		}
-		//$retorno = $artigosModel->save($artigo);
-		$retorno = $this->gravarArtigos('save', $artigo);
-		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'reverteu', 'artigos', 'o artigo', $idArtigo);
-		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
-		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
-		return $retorno;
-	}
 	private function revisarArtigo($idArtigo)
 	{
 		if ($this->request->getMethod() == 'post') {
@@ -1371,20 +1424,6 @@ class Artigos extends BaseController
 			// 	$artigosCategoriasModel->insertArtigoCategoria($idArtigo, $categoria);
 			// }
 			return $artigo_id;
-		}
-	}
-
-
-
-	private function reverterFase($idArtigo, $metodo)
-	{
-		if ($this->request->getGet('anterior') != NULL) {
-			$retorno = $this->artigoReverter($idArtigo);
-			if ($retorno === true) {
-				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '?status=true');
-			} else {
-				return redirect()->to(base_url() . 'colaboradores/artigos/' . $metodo . '/' . $idArtigo . '?status=false');
-			}
 		}
 	}
 

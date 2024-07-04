@@ -42,7 +42,7 @@ use CodeIgniter\I18n\Time;
 		min-height: 13rem;
 	}
 
-	.banner-bigger .flickity-viewport .bg-image  {
+	.banner-bigger .flickity-viewport .bg-image {
 		min-height: 18rem;
 	}
 
@@ -64,7 +64,12 @@ use CodeIgniter\I18n\Time;
 		.main-carousel-videos .carousel-cell {
 			width: 100%;
 		}
+	}
 
+	@media (max-width: 992px) {
+		.side-image {
+			margin-top: 1.5rem;
+		}
 	}
 </style>
 
@@ -100,8 +105,8 @@ use CodeIgniter\I18n\Time;
 					</div>
 				</div>
 			</section>
-			<div class="col-lg-12">
-				<div class="row g-4">
+			<section class="col-lg-12">
+				<div class="row">
 					<!-- Left big card -->
 					<div class="col-lg-6">
 						<div class="card bg-image hover-zoom"
@@ -112,7 +117,9 @@ use CodeIgniter\I18n\Time;
 								style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 								<div class="w-100" style="margin-top:12rem;">
 									<!-- Card title -->
-									<h2 class="h1"><a href="post-single-4.html" class="btn-link text-white">
+									<h2 class="h1"><a
+											href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']) ?>"
+											class="btn-link stretched-link text-white">
 											<?= $banner[0]['titulo']; ?>
 										</a></h2>
 									<p class="text-white"><?= $banner[0]['gancho']; ?></p>
@@ -127,12 +134,14 @@ use CodeIgniter\I18n\Time;
 															alt="avatar">
 													</div>
 												<?php endif; ?>
-												<span class="ms-3">by <a href="#"
+												<span
+													class="<?= ($banner[0]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+													<a href="#"
 														class="stretched-link text-white btn-link"><?= $banner[0]['apelido']; ?></a></span>
 											</div>
 										</li>
 										<li class="nav-item pointer text-white">
-											<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+											<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 										</li>
 									</ul>
 								</div>
@@ -140,8 +149,8 @@ use CodeIgniter\I18n\Time;
 						</div>
 					</div>
 					<!-- Right small cards -->
-					<div class="col-lg-6">
-						<div class="row g-4">
+					<div class="col-lg-6 side-image">
+						<div class="row">
 							<!-- Card item START -->
 							<div class="col-12">
 								<div class="card bg-image hover-zoom"
@@ -153,7 +162,8 @@ use CodeIgniter\I18n\Time;
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100" style="margin-top:7rem;">
 											<!-- Card title -->
-											<h4 class="text-white"><a href="post-single-4.html"
+											<h4 class="text-white"><a
+													href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[1]['titulo']; ?></a>
 											</h4>
 											<!-- Card info -->
@@ -167,12 +177,14 @@ use CodeIgniter\I18n\Time;
 																	alt="avatar">
 															</div>
 														<?php endif; ?>
-														<span class="ms-3">by <a href="#"
+														<span
+															class="<?= ($banner[1]['avatar'] != NULL && $banner[1]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+															<a href="#"
 																class="stretched-link text-white btn-link"><?= $banner[1]['apelido']; ?></a></span>
 													</div>
 												</li>
 												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -181,7 +193,7 @@ use CodeIgniter\I18n\Time;
 							</div>
 							<!-- Card item END -->
 							<!-- Card item START -->
-							<div class="col-md-6">
+							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
 									<img src="<?= $banner[2]['imagem']; ?>" style="height:15rem;" />
@@ -190,9 +202,10 @@ use CodeIgniter\I18n\Time;
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100" style="margin-top:2rem;">
 											<!-- Card category -->
-											<h4 class="text-white"><a href="post-single-4.html"
+											<h5 class="text-white"><a
+													href="<?= site_url('site/artigo/' . $banner[2]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[2]['titulo']; ?></a>
-											</h4>
+											</h5>
 											<!-- Card info -->
 											<ul class="nav nav-divider align-items-center">
 												<li class="nav-item pointer">
@@ -204,9 +217,14 @@ use CodeIgniter\I18n\Time;
 																	alt="avatar">
 															</div>
 														<?php endif; ?>
-														<span class="ms-3">by <a href="#"
+														<span
+															class="<?= ($banner[2]['avatar'] != NULL && $banner[2]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+															<a href="#"
 																class="stretched-link text-white btn-link"><?= $banner[2]['apelido']; ?></a></span>
 													</div>
+												</li>
+												<li class="nav-item pointer text-white">
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -215,7 +233,7 @@ use CodeIgniter\I18n\Time;
 							</div>
 							<!-- Card item END -->
 							<!-- Card item START -->
-							<div class="col-md-6">
+							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
 									<img src="<?= $banner[3]['imagem']; ?>" style="height:15rem;" />
@@ -223,34 +241,39 @@ use CodeIgniter\I18n\Time;
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100" style="margin-top:2rem;">
-											<h4 class="text-white"><a href="post-single-4.html"
+											<h5 class="text-white"><a
+													href="<?= site_url('site/artigo/' . $banner[3]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[3]['titulo']; ?></a>
-											</h4>
+											</h5>
 											<!-- Card info -->
 											<ul class="nav nav-divider align-items-center">
 												<li class="nav-item pointer">
 													<div class="d-flex align-items-center text-white position-relative">
-														<?php if ($banner[3]['avatar'] != NULL && $banner[0]['avatar'] != ""): ?>
+														<?php if ($banner[3]['avatar'] != NULL && $banner[3]['avatar'] != ""): ?>
 															<div class="avatar avatar-sm">
 																<img class="avatar-img rounded-circle"
 																	src="<?= $banner[3]['avatar']; ?>" style="width:45px;"
 																	alt="avatar">
 															</div>
 														<?php endif; ?>
-														<span class="ms-3">by <a href="#"
+														<span
+															class="<?= ($banner[3]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+															<a href="#"
 																class="stretched-link text-white btn-link"><?= $banner[3]['apelido']; ?></a></span>
 													</div>
+												</li>
+												<li class="nav-item pointer text-white">
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
 									</div>
 								</div>
 							</div>
-							<!-- Card item END -->
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 
 			<!-- <div class="col-lg-4">
 				<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
@@ -275,32 +298,24 @@ use CodeIgniter\I18n\Time;
 						<?php if ($chave > 3): ?>
 							<div class="carousel-cell mb-3">
 								<div class="card bg-image hover-zoom round-5">
-									<!-- Card Image -->
 									<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
 										style="height: inherit;">
-									<!-- Card Image overlay -->
 									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4">
-										<!-- <div>
-													<a href="#" class="badge bg-dark mb-2"><i
-															class="fas fa-circle me-2 small fw-bold"></i>Travel</a>
-												</div> -->
 										<div class="w-100 mt-auto">
-											<!-- Card title -->
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-													class="text-white btn-link"><?= $b['titulo']; ?></a>
+													class="text-white stretched-link btn-link"><?= $b['titulo']; ?></a>
 											</h4>
-											<!-- Card info -->
 											<ul
 												class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
 												<li class="nav-item">
-													<div class="text-white">Por <a
+													<div class="text-white">por <a
 															href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
 															class="text-white btn-link"><?= $b['apelido']; ?></a>
 													</div>
 												</li>
 												<li class="nav-item">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $b['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+													<?= Time::createFromFormat('Y-m-d H:i:s', $b['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -325,7 +340,7 @@ use CodeIgniter\I18n\Time;
 						<div class="carousel-cell">
 							<div class="card mb-3 shadow-0">
 								<!-- Card img -->
-								<div class="position-relative bg-image hover-overlay shadow-1-strong rounded"
+								<div class="position-relative bg-image hover-zoom shadow-1-strong rounded"
 									data-mdb-ripple-init data-mdb-ripple-color="light">
 									<img class="card-img" alt="Card image" style="height:auto;"
 										src="<?= $artigos[$max]['imagem']; ?>">
@@ -341,7 +356,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 								<div class="card-body px-3 pt-3">
 									<h4 class="card-title"><a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-											class="btn-link text-reset fw-bold"><?= $artigos[$max]['titulo']; ?></a>
+											class="btn-link text-reset stretched-link fw-bold"><?= $artigos[$max]['titulo']; ?></a>
 									</h4>
 									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
 									<!-- Card info -->
@@ -355,13 +370,14 @@ use CodeIgniter\I18n\Time;
 															alt="avatar">
 													</div>
 												<?php endif; ?>
-												<span class="ms-3">por <a
-														href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+												<span
+													class="<?= ($artigos[$max]['avatar'] != NULL && $artigos[$max]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+													<a href="#"
 														class="stretched-link text-reset btn-link"><?= $artigos[$max]['apelido']; ?></a></span>
 											</div>
 										</li>
 										<li class="nav-item pointer">
-											<?= Time::createFromFormat('Y-m-d H:i:s', $artigos[$max]['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+											<?= Time::createFromFormat('Y-m-d H:i:s', $artigos[$max]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 										</li>
 									</ul>
 								</div>
@@ -399,7 +415,7 @@ use CodeIgniter\I18n\Time;
 													<!-- Card info -->
 													<ul class="nav nav-divider align-items-center mt-1 small">
 														<li class="nav-item">
-															<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+															<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 														</li>
 													</ul>
 												</div>
@@ -465,7 +481,7 @@ use CodeIgniter\I18n\Time;
 									</span>
 									<h6><a href="<?= site_url('site/artigo/' . $r['url_friendly']); ?>"
 											class="text-reset btn-link"><?= $r['titulo']; ?></a> -
-										<?= Time::createFromFormat('Y-m-d H:i:s', $r['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+										<?= Time::createFromFormat('Y-m-d H:i:s', $r['criado'])->toLocalizedString('dd MMM yyyy'); ?>
 									</h6>
 								</div>
 							<?php endforeach; ?>

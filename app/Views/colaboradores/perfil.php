@@ -502,7 +502,7 @@ use CodeIgniter\I18n\Time;
 
 	$('.listar-colaboracoes-fechadas').on('click', function (e) {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>"+e.currentTarget.id,
+			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>" + e.currentTarget.id,
 			method: "POST",
 			dataType: "html",
 			beforeSend: function () { $('#modal-loading').show(); },

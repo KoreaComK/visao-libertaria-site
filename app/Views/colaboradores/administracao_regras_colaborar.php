@@ -48,13 +48,40 @@ use CodeIgniter\I18n\Time;
 									</div>
 									<textarea id="artigo_visualizacao_narracao" name="artigo_visualizacao_narracao"
 										class="d-none"><?= (isset($dados['artigo_visualizacao_narracao'])) ? ($dados['artigo_visualizacao_narracao']) : (''); ?></textarea>
-										<span
-										class="text-muted">Tags disponíveis: {gancho}, {texto}, {colaboradores}</span>
+									<span class="text-muted">Tags disponíveis: {gancho}, {texto}, {colaboradores}</span>
 								</div>
 							</div>
 							<div class="d-sm-flex justify-content-end">
 								<button type="button"
-									class="btn btn-sm btn-primary me-2 mb-0 salvar-texto-narracao">Salvar layout de narração</button>
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-texto-narracao">Salvar layout de
+									narração</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-12">
+				<div class="card border">
+
+					<div class="card-body">
+						<h5 class="mb-3">Descrição do padrão do Youtube na publicação</h5>
+						<form class="col-12" novalidate="yes" method="post" id="regras_youtube_form">
+							<div class="col-md-12">
+								<!-- Subject -->
+								<div class="mb-3">
+									<label class="form-label" for="texto">Corpo do texto para narração</label>
+									<div class="rounded-3" id="editor_descricao_padrao_youtube">
+									</div>
+									<textarea id="descricao_padrao_youtube" name="descricao_padrao_youtube"
+										class="d-none"><?= (isset($dados['descricao_padrao_youtube'])) ? ($dados['descricao_padrao_youtube']) : (''); ?></textarea>
+									<span class="text-muted">Tags disponíveis: {referencias}, {tags}</span>
+								</div>
+							</div>
+							<div class="d-sm-flex justify-content-end">
+								<button type="button"
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-texto-descricao">Salvar layout de
+									narração</button>
 							</div>
 						</form>
 					</div>
@@ -79,13 +106,14 @@ use CodeIgniter\I18n\Time;
 							</div>
 							<div class="d-sm-flex justify-content-end">
 								<button type="button"
-									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-escritor">Salvar regras para escritor</button>
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-escritor">Salvar regras para
+									escritor</button>
 							</div>
 						</form>
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="col-lg-12">
 				<div class="card border">
 
@@ -98,13 +126,14 @@ use CodeIgniter\I18n\Time;
 									<label class="form-label" for="texto">Escreva as regras para o revisor</label>
 									<div class="rounded-3" id="editor_artigo_regras_revisar">
 									</div>
-									<textarea id="artigo_regras_revisor" name="artigo_regras_revisor"
-										class="d-none"><?= (isset($dados['artigo_regras_revisor'])) ? ($dados['artigo_regras_revisor']) : (''); ?></textarea>
+									<textarea id="artigo_regras_revisar" name="artigo_regras_revisar"
+										class="d-none"><?= (isset($dados['artigo_regras_revisar'])) ? ($dados['artigo_regras_revisar']) : (''); ?></textarea>
 								</div>
 							</div>
 							<div class="d-sm-flex justify-content-end">
 								<button type="button"
-									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-revisor">Salvar regras para revisor</button>
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-revisor">Salvar regras para
+									revisor</button>
 							</div>
 						</form>
 					</div>
@@ -123,13 +152,14 @@ use CodeIgniter\I18n\Time;
 									<label class="form-label" for="texto">Escreva as regras para o narrador</label>
 									<div class="rounded-3" id="editor_artigo_regras_narrar">
 									</div>
-									<textarea id="artigo_regras_narrador" name="artigo_regras_narrador"
-										class="d-none"><?= (isset($dados['artigo_regras_narrador'])) ? ($dados['artigo_regras_narrador']) : (''); ?></textarea>
+									<textarea id="artigo_regras_narrar" name="artigo_regras_narrar"
+										class="d-none"><?= (isset($dados['artigo_regras_narrar'])) ? ($dados['artigo_regras_narrar']) : (''); ?></textarea>
 								</div>
 							</div>
 							<div class="d-sm-flex justify-content-end">
 								<button type="button"
-									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-narrador">Salvar regras para narrador</button>
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-narrador">Salvar regras para
+									narrador</button>
 							</div>
 						</form>
 					</div>
@@ -148,13 +178,14 @@ use CodeIgniter\I18n\Time;
 									<label class="form-label" for="texto">Escreva as regras para o produtor</label>
 									<div class="rounded-3" id="editor_artigo_regras_produzir">
 									</div>
-									<textarea id="artigo_regras_produtor" name="artigo_regras_produtor"
-										class="d-none"><?= (isset($dados['artigo_regras_produtor'])) ? ($dados['artigo_regras_produtor']) : (''); ?></textarea>
+									<textarea id="artigo_regras_produzir" name="artigo_regras_produzir"
+										class="d-none"><?= (isset($dados['artigo_regras_produzir'])) ? ($dados['artigo_regras_produzir']) : (''); ?></textarea>
 								</div>
 							</div>
 							<div class="d-sm-flex justify-content-end">
 								<button type="button"
-									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-produtor">Salvar regras para produtor</button>
+									class="btn btn-sm btn-primary me-2 mb-0 salvar-regras-produtor">Salvar regras para
+									produtor</button>
 							</div>
 						</form>
 					</div>
@@ -179,20 +210,26 @@ use CodeIgniter\I18n\Time;
 	});
 
 	$(".salvar-regras-revisor").on("click", function () {
-		$('#artigo_regras_revisor').html(quill_artigo_regras_revisar.root.innerHTML);
+		$('#artigo_regras_revisar').html(quill_artigo_regras_revisar.root.innerHTML);
 		form = new FormData(regras_revisor_form);
 		submit(form);
 	});
 
 	$(".salvar-regras-narrador").on("click", function () {
-		$('#artigo_regras_narrador').html(quill_artigo_regras_narrar.root.innerHTML);
+		$('#artigo_regras_narrar').html(quill_artigo_regras_narrar.root.innerHTML);
 		form = new FormData(regras_narrador_form);
 		submit(form);
 	});
 
 	$(".salvar-regras-produtor").on("click", function () {
-		$('#artigo_regras_produtor').html(quill_artigo_regras_produzir.root.innerHTML);
+		$('#artigo_regras_produzir').html(quill_artigo_regras_produzir.root.innerHTML);
 		form = new FormData(regras_produtor_form);
+		submit(form);
+	});
+
+	$(".salvar-texto-descricao").on("click", function () {
+		$('#descricao_padrao_youtube').html(quill_descricao_padrao_youtube.root.innerHTML);
+		form = new FormData(regras_youtube_form);
 		submit(form);
 	});
 
@@ -220,38 +257,61 @@ use CodeIgniter\I18n\Time;
 	const Font = Quill.import('formats/font');
 	Font.whitelist = ['roboto'];
 	Quill.register(Font, true);
+	const toolbarOptions = [
+		['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+		['link', 'video', 'formula'],
+
+		[{ 'header': 1 }, { 'header': 2 }],               // custom button values
+		[{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+		[{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+
+		[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+		[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+
+		['clean']                                         // remove formatting button
+	];
 	const options = {
 		placeholder: 'Escreva seu texto aqui.',
-		theme: 'snow'
+		modules: {
+			toolbar: toolbarOptions
+		},
+		theme: 'snow',
 	};
 	const quill_artigo_visualizacao_narracao = new Quill('#editor_artigo_visualizacao_narracao', options);
-	<?php if(isset($dados['artigo_visualizacao_narracao'])) : ?>
+	<?php if (isset($dados['artigo_visualizacao_narracao'])): ?>
 		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_visualizacao_narracao']); ?>';
 		delta = quill_artigo_visualizacao_narracao.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
 	const quill_artigo_regras_escrever = new Quill('#editor_artigo_regras_escrever', options);
-	<?php if(isset($dados['artigo_regras_escrever'])) : ?>
-		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_regras_escrever']); ?>';;
+	<?php if (isset($dados['artigo_regras_escrever'])): ?>
+		value = '<?= $dados['artigo_regras_escrever'] ?>';
 		delta = quill_artigo_regras_escrever.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
 	const quill_artigo_regras_revisar = new Quill('#editor_artigo_regras_revisar', options);
-	<?php if(isset($dados['artigo_regras_revisar'])) : ?>
+	<?php if (isset($dados['artigo_regras_revisar'])): ?>
 		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_regras_revisar']); ?>';;
 		delta = quill_artigo_regras_revisar.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
 	const quill_artigo_regras_narrar = new Quill('#editor_artigo_regras_narrar', options);
-	<?php if(isset($dados['artigo_regras_narrar'])) : ?>
+	<?php if (isset($dados['artigo_regras_narrar'])): ?>
 		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_regras_narrar']); ?>';;
 		delta = quill_artigo_regras_narrar.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
 	const quill_artigo_regras_produzir = new Quill('#editor_artigo_regras_produzir', options);
-	<?php if(isset($dados['artigo_regras_produzir'])) : ?>
+	<?php if (isset($dados['artigo_regras_produzir'])): ?>
 		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_regras_produzir']); ?>';;
 		delta = quill_artigo_regras_produzir.clipboard.dangerouslyPasteHTML(value);
+	<?php endif; ?>
+
+	const quill_descricao_padrao_youtube = new Quill('#editor_descricao_padrao_youtube', options);
+	<?php if (isset($dados['descricao_padrao_youtube'])): ?>
+		value = '<?= preg_replace('/\s\s+/', '\n', $dados['descricao_padrao_youtube']); ?>';;
+		delta = quill_descricao_padrao_youtube.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
 </script>

@@ -10,7 +10,7 @@ use CodeIgniter\I18n\Time;
 <div class="container-fluid py-3">
 	<div class="container d-flex justify-content-center">
 		<div class="col-lg-8">
-			<h1 class="display-2 text-black"><?= $artigo['titulo']; ?></h1>
+			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
 			<p class="lead"><?= $artigo['gancho']; ?></p>
 			<ul class="nav nav-divider align-items-center">
 				<li class="nav-item pointer">
@@ -20,7 +20,7 @@ use CodeIgniter\I18n\Time;
 					</div>
 				</li>
 				<li class="nav-item pointer">
-					<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd/MM/yyyy'); ?>
+					<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
 				</li>
 			</ul>
 			<div class="position-relative mb-3">
@@ -55,80 +55,100 @@ use CodeIgniter\I18n\Time;
 					<div>
 						<div class="d-sm-flex align-items-center justify-content-between">
 							<div class="row">
-								<div class="col-lg-6 d-flex mb-2">
-									<a href="#">
-										<div class="avatar rounded-circle  me-2 me-md-4">
-											<img class="avatar-img rounded-circle" style="width: 3rem;"
-												src="<?= $artigo['colaboradores']['sugerido']['avatar'] ?>"
-												alt="avatar">
+								<?php if ($artigo['colaboradores']['sugerido'] !== NULL): ?>
+									<div class="col-lg-6 d-flex mb-2">
+										<?php if ($artigo['colaboradores']['sugerido']['avatar'] !== NULL): ?>
+											<a href="#">
+												<div class="avatar rounded-circle  me-2 me-md-4">
+													<img class="avatar-img rounded-circle" style="width: 3rem;"
+														src="<?= $artigo['colaboradores']['sugerido']['avatar'] ?>"
+														alt="avatar">
+												</div>
+											</a>
+										<?php endif; ?>
+										<div>
+											<h4 class="m-0"><a
+													href="#"><?= $artigo['colaboradores']['sugerido']['apelido'] ?></a>
+											</h4>
+											<small>Colaborador</small>
 										</div>
-									</a>
-									<div>
-										<h4 class="m-0"><a
-												href="#"><?= $artigo['colaboradores']['sugerido']['apelido'] ?></a>
-										</h4>
-										<small>Colaborador</small>
 									</div>
-								</div>
-								<div class="col-lg-6 d-flex mb-2">
-									<a href="#">
-										<div class="avatar rounded-circle me-2 me-md-4">
-											<img class="avatar-img rounded-circle" style="width: 3rem;"
-												src="<?= $artigo['colaboradores']['escrito']['avatar'] ?>" alt="avatar">
+								<?php endif; ?>
+								<?php if ($artigo['colaboradores']['escrito'] !== NULL): ?>
+									<div class="col-lg-6 d-flex mb-2">
+										<?php if ($artigo['colaboradores']['escrito']['avatar'] !== NULL): ?>
+											<a href="#">
+												<div class="avatar rounded-circle me-2 me-md-4">
+													<img class="avatar-img rounded-circle" style="width: 3rem;"
+														src="<?= $artigo['colaboradores']['escrito']['avatar'] ?>" alt="avatar">
+												</div>
+											</a>
+										<?php endif; ?>
+										<div>
+											<h4 class="m-0"><a
+													href="#"><?= $artigo['colaboradores']['escrito']['apelido'] ?></a>
+											</h4>
+											<small>Escritor</small>
+											<div><a href="#" class="btn">Veja mais artigos deste autor</a></div>
 										</div>
-									</a>
-									<div>
-										<h4 class="m-0"><a
-												href="#"><?= $artigo['colaboradores']['escrito']['apelido'] ?></a>
-										</h4>
-										<small>Escritor</small>
-										<div><a href="#" class="btn">Veja mais artigos deste autor</a></div>
 									</div>
-								</div>
-								<div class="col-lg-6 d-flex mb-2">
-									<a href="#">
-										<div class="avatar rounded-circle  me-2 me-md-4">
-											<img class="avatar-img rounded-circle" style="width: 3rem;"
-												src="<?= $artigo['colaboradores']['revisado']['avatar'] ?>"
-												alt="avatar">
+								<?php endif; ?>
+								<?php if ($artigo['colaboradores']['revisado'] !== NULL): ?>
+									<div class="col-lg-6 d-flex mb-2">
+										<?php if ($artigo['colaboradores']['revisado']['avatar'] !== NULL): ?>
+											<a href="#">
+												<div class="avatar rounded-circle  me-2 me-md-4">
+													<img class="avatar-img rounded-circle" style="width: 3rem;"
+														src="<?= $artigo['colaboradores']['revisado']['avatar'] ?>"
+														alt="avatar">
+												</div>
+											</a>
+										<?php endif; ?>
+										<div>
+											<h4 class="m-0"><a
+													href="#"><?= $artigo['colaboradores']['revisado']['apelido'] ?></a>
+											</h4>
+											<small>Revisor</small>
 										</div>
-									</a>
-									<div>
-										<h4 class="m-0"><a
-												href="#"><?= $artigo['colaboradores']['revisado']['apelido'] ?></a>
-										</h4>
-										<small>Revisor</small>
 									</div>
-								</div>
-								<div class="col-lg-6 d-flex mb-2">
-									<a href="#">
-										<div class="avatar rounded-circle  me-2 me-md-4">
-											<img class="avatar-img rounded-circle" style="width: 3rem;"
-												src="<?= $artigo['colaboradores']['narrado']['avatar'] ?>" alt="avatar">
+								<?php endif; ?>
+								<?php if ($artigo['colaboradores']['narrado'] !== NULL): ?>
+									<div class="col-lg-6 d-flex mb-2">
+										<?php if ($artigo['colaboradores']['narrado']['avatar'] !== NULL): ?>
+											<a href="#">
+												<div class="avatar rounded-circle  me-2 me-md-4">
+													<img class="avatar-img rounded-circle" style="width: 3rem;"
+														src="<?= $artigo['colaboradores']['narrado']['avatar'] ?>" alt="avatar">
+												</div>
+											</a>
+										<?php endif; ?>
+										<div>
+											<h4 class="m-0"><a
+													href="#"><?= $artigo['colaboradores']['narrado']['apelido'] ?></a>
+											</h4>
+											<small>Narrador</small>
 										</div>
-									</a>
-									<div>
-										<h4 class="m-0"><a
-												href="#"><?= $artigo['colaboradores']['narrado']['apelido'] ?></a>
-										</h4>
-										<small>Narrador</small>
 									</div>
-								</div>
-								<div class="col-lg-6 d-flex mb-2">
-									<a href="#">
-										<div class="avatar avatar-xxl me-2 me-md-4">
-											<img class="avatar-img rounded-circle" style="width: 3rem;"
-												src="<?= $artigo['colaboradores']['produzido']['avatar'] ?>"
-												alt="avatar">
+								<?php endif; ?>
+								<?php if ($artigo['colaboradores']['produzido'] !== NULL): ?>
+									<div class="col-lg-6 d-flex mb-2">
+										<?php if ($artigo['colaboradores']['produzido']['avatar'] !== NULL): ?>
+											<a href="#">
+												<div class="avatar avatar-xxl me-2 me-md-4">
+													<img class="avatar-img rounded-circle" style="width: 3rem;"
+														src="<?= $artigo['colaboradores']['produzido']['avatar'] ?>"
+														alt="avatar">
+												</div>
+											</a>
+										<?php endif; ?>
+										<div>
+											<h4 class="m-0"><a
+													href="#"><?= $artigo['colaboradores']['produzido']['apelido'] ?></a>
+											</h4>
+											<small>Produtor</small>
 										</div>
-									</a>
-									<div>
-										<h4 class="m-0"><a
-												href="#"><?= $artigo['colaboradores']['produzido']['apelido'] ?></a>
-										</h4>
-										<small>Produtor</small>
 									</div>
-								</div>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>

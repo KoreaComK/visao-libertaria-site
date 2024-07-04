@@ -7,13 +7,14 @@ use CodeIgniter\I18n\Time;
 <?= $this->section('content'); ?>
 
 <div class="container w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">
-			<?= $titulo; ?>
-		</h3>
+	<div class="row pb-4 mt-3">
+		<div class="col-12">
+			<!-- Title -->
+			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
+		</div>
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
-	<div class="my-3 p-3 bg-white rounded box-shadow">
+	<div class="my-3 p-3 rounded box-shadow">
 		<?php $tag = NULL; ?>
 		<?php foreach ($pautasList as $tag => $pautas): ?>
 			<div class="card mb-3">
@@ -34,12 +35,15 @@ use CodeIgniter\I18n\Time;
 								<i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 18px;"></i>
 							<?php endif; ?>
 							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
-								- <?= $pauta['titulo']; ?>
-							<a href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>" data-bs-toggle="modal" data-bs-target="#modalComentariosPauta" class="btn btn-outline-success m-1"
-								data-bs-texto="<?= $pauta['texto']; ?>" data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
-								target="_blank">
-								<?= ($pauta['qtde_comentarios'] > 0) ? ($pauta['qtde_comentarios']) : ('Nenhum'); ?>		<?= ($pauta['qtde_comentarios'] > 1) ? (' comentários') : (' comentário'); ?></a>
-							<a class="btn btn-outline-info m-1" href="<?= $pauta['link']; ?>" target="_blank">Ir para a notícia</a><br />
+							- <?= $pauta['titulo']; ?>
+							<a href="<?= site_url('colaboradores/pautas/detalhe/' . $pauta['id']); ?>" data-bs-toggle="modal"
+								data-bs-target="#modalComentariosPauta" class="btn btn-outline-success m-1"
+								data-bs-texto="<?= $pauta['texto']; ?>" data-bs-pautas-id="<?= $pauta['id']; ?>"
+								data-bs-imagem="<?= $pauta['imagem']; ?>" target="_blank">
+								<?= ($pauta['qtde_comentarios'] > 0) ? ($pauta['qtde_comentarios']) : ('Nenhum'); ?>
+								<?= ($pauta['qtde_comentarios'] > 1) ? (' comentários') : (' comentário'); ?></a>
+							<a class="btn btn-outline-info m-1" href="<?= $pauta['link']; ?>" target="_blank">Ir para a
+								notícia</a><br />
 						<?php endforeach; ?>
 					</p>
 				</div>
@@ -107,7 +111,7 @@ use CodeIgniter\I18n\Time;
 
 	function getComentarios() {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "GET",
 			dataType: "html",
 			beforeSend: function () { $('#modal-loading').show(); },
@@ -130,7 +134,7 @@ use CodeIgniter\I18n\Time;
 
 
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "POST",
 			data: form,
 			processData: false,
@@ -158,7 +162,7 @@ use CodeIgniter\I18n\Time;
 		form.append('metodo', 'excluir');
 
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "POST",
 			data: form,
 			processData: false,

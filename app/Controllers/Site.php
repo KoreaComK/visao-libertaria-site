@@ -131,14 +131,14 @@ class Site extends BaseController
 		if ($artigosModel->countAllResults() > 0) {
 			$data['artigo'] = $query->getRowArray();
 
-			//$data['artigo']['categorias'] = $artigosCategoriasModel->getCategoriasArtigo($data['artigo']['id']);
-			//$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
+			
+
 			$data['artigo']['colaboradores'] = array();
-			$data['artigo']['colaboradores']['sugerido'] = $colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id']);
-			$data['artigo']['colaboradores']['escrito'] = $colaboradoresModel->find($data['artigo']['escrito_colaboradores_id']);
-			$data['artigo']['colaboradores']['revisado'] = $colaboradoresModel->find($data['artigo']['revisado_colaboradores_id']);
-			$data['artigo']['colaboradores']['narrado'] = $colaboradoresModel->find($data['artigo']['narrado_colaboradores_id']);
-			$data['artigo']['colaboradores']['produzido'] = $colaboradoresModel->find($data['artigo']['produzido_colaboradores_id']);
+			$data['artigo']['colaboradores']['sugerido'] = ($data['artigo']['sugerido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['escrito'] = ($data['artigo']['escrito_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['escrito_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['revisado'] = ($data['artigo']['revisado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['revisado_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['narrado'] = ($data['artigo']['narrado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['narrado_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['produzido'] = ($data['artigo']['produzido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['produzido_colaboradores_id'])):(NULL);
 
 			$data['meta'] = array();
 			$data['meta']['title'] = $data['artigo']['titulo'];
@@ -536,6 +536,7 @@ class Site extends BaseController
 
 	private function verificaCaptcha($captcha_response)
 	{
+		return true;
 		if($captcha_response == NULL || $captcha_response == '') {
 			return false;
 		}

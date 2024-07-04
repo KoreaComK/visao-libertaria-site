@@ -3,10 +3,11 @@
 <?= $this->section('content'); ?>
 
 <div class="container w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">
-			<?= $titulo; ?>
-		</h3>
+	<div class="row pb-4 mt-3">
+		<div class="col-12">
+			<!-- Title -->
+			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
+		</div>
 	</div>
 	<div class="ms-2 me-2">
 		<h5>Pesquisa de pautas</h5>
@@ -173,7 +174,7 @@
 
 	function getComentarios() {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "GET",
 			dataType: "html",
 			beforeSend: function () { $('#modal-loading').show(); },
@@ -196,7 +197,7 @@
 
 
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "POST",
 			data: form,
 			processData: false,
@@ -224,7 +225,7 @@
 		form.append('metodo', 'excluir');
 
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>"+$('#idPauta').val(),
+			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
 			method: "POST",
 			data: form,
 			processData: false,

@@ -7,7 +7,7 @@
 <div class="container-fluid py-3">
 	<div class="container d-flex justify-content-center">
 		<div class="col-lg-8">
-			<h1 class="display-2 text-black"><?= $artigo['titulo']; ?></h1>
+			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
 			<div class="position-relative mb-3">
 				<div class="pt-3 pb-3">
 					<!-- <div class="mb-3">
@@ -294,6 +294,56 @@
 					</div>
 				</div>
 			<?php endif; ?>
+
+			<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+
+
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Reverter artigo</h5>
+						<p class="card-text">Ao reverter o artigo confirmo os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="reverter1">
+							<label class="form-check-label" for="reverter1">
+								O artigo será revertido para a etapa anterior para ajustes.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="reverter2">
+							<label class="form-check-label" for="reverter2">
+								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
+							</label>
+						</div>
+						<div class="text-center">
+							<button type="button" disabled="" class="btn btn-warning mt-2 reverter-artigo">Reverter
+								artigo</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="card border mt-4">
+					<div class="card-body">
+						<h5 class="card-title">Descartar artigo</h5>
+						<p class="card-text">Ao descartar o artigo confirmo os seguintes termos:</p>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="descarte1">
+							<label class="form-check-label" for="descarte1">
+								O texto será descartado e não irá mais seguir a trilha de produção.
+							</label>
+						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="descarte2">
+							<label class="form-check-label" for="descarte2">
+								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
+							</label>
+						</div>
+						<div class="text-start">
+							<button type="button" disabled="" class="btn btn-danger mt-2 descartar-artigo">Descartar
+								artigo</button>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>
@@ -451,38 +501,27 @@
 		})
 	<?php endif; ?>
 
-	$("#btn-comentarios").on("click", function () {
-			getComentarios();
+	<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+
+		$('#descarte1').on('change', function (e) {
+			descartarArtigo();
 		});
-		$('#btn-comentarios').trigger('click');
+		$('#descarte2').on('change', function (e) {
+			descartarArtigo();
+		});
 
-		function getComentarios() {
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-				method: "GET",
-				dataType: "html",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					$('.div-list-comentarios').html(retorno);
-				}
-			});
-		}
-
-		$("#enviar-comentario").on("click", function () {
-			form = new FormData();
-			form.append('comentario', $('#comentario').val());
-			if ($('#id_comentario').val() == '') {
-				form.append('metodo', 'inserir');
+		function descartarArtigo() {
+			if ($('#descarte1').is(':checked') && $('#descarte2').is(':checked')) {
+				$('.descartar-artigo').removeAttr('disabled');
 			} else {
-				form.append('metodo', 'alterar');
-				form.append('id_comentario', $('#id_comentario').val());
+				$('.descartar-artigo').attr('disabled', '');
 			}
+		}
 
+		$('.descartar-artigo').on('click', function () {
 			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+				url: "<?= site_url('colaboradores/artigos/descartar/') . $artigo['id']; ?>",
 				method: "POST",
-				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -490,12 +529,14 @@
 				beforeSend: function () { $('#modal-loading').show(); },
 				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
-
 					if (retorno.status) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						getComentarios()
-						$('#comentario').val('');
-						$('#id_comentario').val('');
+						$('.descartar-artigo').attr('disabled', '');
+
+						setTimeout(function () {
+							window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+						}, 1500);
+
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
@@ -503,15 +544,25 @@
 			});
 		});
 
-		function excluirComentario(id_comentario) {
-			form = new FormData();
-			form.append('id_comentario', id_comentario);
-			form.append('metodo', 'excluir');
+		$('#reverter1').on('change', function (e) {
+			reverterArtigo();
+		});
+		$('#reverter2').on('change', function (e) {
+			reverterArtigo();
+		});
 
+		function reverterArtigo() {
+			if ($('#reverter1').is(':checked') && $('#reverter2').is(':checked')) {
+				$('.reverter-artigo').removeAttr('disabled');
+			} else {
+				$('.reverter-artigo').attr('disabled', '');
+			}
+		}
+
+		$('.reverter-artigo').on('click', function () {
 			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+				url: "<?= site_url('colaboradores/artigos/reverter/') . $artigo['id']; ?>",
 				method: "POST",
-				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -521,13 +572,100 @@
 				success: function (retorno) {
 					if (retorno.status) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						getComentarios()
+						$('.descartar-artigo').attr('disabled', '');
+
+						setTimeout(function () {
+							window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+						}, 1500);
+
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
 				}
 			});
+		});
+
+
+	<?php endif; ?>
+
+
+	$("#btn-comentarios").on("click", function () {
+		getComentarios();
+	});
+	$('#btn-comentarios').trigger('click');
+
+	function getComentarios() {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+			method: "GET",
+			dataType: "html",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (retorno) {
+				$('.div-list-comentarios').html(retorno);
+			}
+		});
+	}
+
+	$("#enviar-comentario").on("click", function () {
+		form = new FormData();
+		form.append('comentario', $('#comentario').val());
+		if ($('#id_comentario').val() == '') {
+			form.append('metodo', 'inserir');
+		} else {
+			form.append('metodo', 'alterar');
+			form.append('id_comentario', $('#id_comentario').val());
 		}
+
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+			method: "POST",
+			data: form,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (retorno) {
+
+				if (retorno.status) {
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					getComentarios()
+					$('#comentario').val('');
+					$('#id_comentario').val('');
+				} else {
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+				}
+			}
+		});
+	});
+
+	function excluirComentario(id_comentario) {
+		form = new FormData();
+		form.append('id_comentario', id_comentario);
+		form.append('metodo', 'excluir');
+
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
+			method: "POST",
+			data: form,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (retorno) {
+				if (retorno.status) {
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					getComentarios()
+				} else {
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+				}
+			}
+		});
+	}
 
 	$('.submeter-revisao').on('click', function () {
 		$.ajax({

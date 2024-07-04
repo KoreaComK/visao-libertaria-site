@@ -22,7 +22,7 @@ use CodeIgniter\I18n\Time;
 							<?php if ($pauta['pauta_antiga'] == 'S'): ?>
 								<i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 18px;"></i>
 							<?php endif; ?>
-							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy'); ?> -
+							<?= Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMM yyyy'); ?> -
 							<?= $pauta['titulo']; ?>
 						</strong>
 						<?= $pauta['texto']; ?><br/>

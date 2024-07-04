@@ -85,7 +85,7 @@ use CodeIgniter\I18n\Time;
 						<img class="w-100 object-fit-cover" src="<?= $artigo['imagem']; ?>">
 					</div>
 					<div class="card-body p-2">
-						<h5 class="card-title fw-bold"><a class="btn-link text-black h5"
+						<h5 class="card-title fw-bold"><a class="btn-link h5"
 								href="<?= base_url() . 'site/artigo/' . $artigo['url_friendly']; ?>">
 								<?= $artigo['titulo']; ?></a>
 						</h5>
@@ -99,7 +99,7 @@ use CodeIgniter\I18n\Time;
 										</div>
 									</li>
 									<li class="nav-item pointer text-muted">
-										<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd/MM/yyyy'); ?>
+										<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 									</li>
 								</ul>
 							</small>
