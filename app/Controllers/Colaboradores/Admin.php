@@ -5,6 +5,7 @@ namespace App\Controllers\Colaboradores;
 use App\Controllers\BaseController;
 
 use App\Libraries\VerificaPermissao;
+use App\Models\AvisosModel;
 use CodeIgniter\I18n\Time;
 
 class Admin extends BaseController
@@ -444,6 +445,98 @@ class Admin extends BaseController
 				'pager' => $pagamentos->pager
 			];
 			return view('colaboradores/pagamentos_list', $data);
+		}
+	}
+
+	public function avisos($idAvisos = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$avisosModel = new \App\Models\AvisosModel();
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+
+		if ($idAvisos != NULL) {
+			$aviso = false;
+			if($idAvisos != 'novo') {
+				$aviso = $avisosModel->find($idAvisos);
+				$data['titulo'] = 'Atualização de Aviso';
+			} else {
+				$data['titulo'] = 'Cadastro de Aviso';
+			}
+			
+			$data['aviso'] = $aviso;
+			return view('colaboradores/avisos_form', $data);
+		}
+
+		$data['titulo'] = 'Listagem de avisos';
+
+		return view('colaboradores/avisos_list', $data);
+	}
+
+	public function avisosList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$this->verificaPermissao->PermiteAcesso('7');
+		$avisosModel = new \App\Models\AvisosModel();
+		$avisosModel->where('criado IS NOT NULL');
+		if ($this->request->getMethod() == 'get') {
+			$data['avisosList'] = [
+				'avisos' => $avisosModel->paginate($config['site_quantidade_listagem'], 'avisos'),
+				'pager' => $avisosModel->pager
+			];
+		}
+		return view('template/templateAvisosList', $data);
+	}
+
+	public function avisosGravar($avisosId = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$post = $this->request->getPost();
+		$valida = $validaFormularios->validaFormularioAvisos($post);
+		$avisosModel = new \App\Models\AvisosModel();
+		if (empty($valida->getErrors())) {
+
+			if($post['inicio'] != ''){
+				$post['inicio'] = implode('-',array_reverse(explode('/',$post['inicio'])));
+			} else {
+				$post['inicio'] = NULL;
+			}
+			if($post['fim'] != ''){
+				$post['fim'] = implode('-',array_reverse(explode('/',$post['fim'])));
+			} else {
+				$post['fim'] = NULL;
+			}
+
+			if ($avisosId === NULL) {
+				$post['id'] = $avisosModel->getNovaUUID();
+				$retornoGravado = $avisosModel->insert($post);
+			}
+			if ($avisosId !== NULL) {
+				$retornoGravado = $avisosModel->update($avisosId,$post);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Aviso salvo com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o aviso.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
 		}
 	}
 

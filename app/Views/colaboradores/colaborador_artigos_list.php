@@ -5,6 +5,90 @@
 <div class="container-fluid py-3">
 	<div class="container">
 		<div class="row">
+			<div class="col-12 mb-4">
+				<div class="row g-4">
+					<div class="col-md-6 col-xl-3">
+						<div class="card card-body bg-info bg-opacity-10 p-4 h-100">
+							<h6>Artigos escritos
+								<a tabindex="0" class="hb6 btn-light btn-floating mb-0 btn-tooltip"
+									data-toggle="tooltip" data-placement="top"
+									title="Artigos escritos nos últimos 30 dias">
+									<i class="bi bi-info-circle-fill small"></i>
+								</a>
+							</h6>
+							<h2 class="fs-1 text-info">
+								<?= (($artigos['atual'] < 10) ? ('0') : ('')) . (number_format($artigos['atual'], 0, ',', '.')); ?>
+							</h2>
+							<p class="mb-2"><span
+									class="text-<?= ($artigos['diferenca'] > 0) ? ('success') : ('danger'); ?> ms-1 me-1 "><?= (number_format($artigos['diferenca'], 0, ',', '.')); ?>
+									<i
+										class="fas <?= ($artigos['diferenca'] > 0) ? ('fa-up-long') : (($artigos['diferenca'] < 0) ? ('fa-down-long') : ('fa-minus')); ?> fa-xs"></i></span>
+								vs último mês</p>
+						</div>
+					</div>
+					<div class="col-md-6 col-xl-3">
+						<div class="card card-body bg-success bg-opacity-10 p-4 h-100">
+							<h6>Artigos publicados
+								<a tabindex="0" class="hb6 btn-light btn-floating mb-0 btn-tooltip"
+									data-toggle="tooltip" data-placement="top"
+									title="Artigos publicados nos últimos 30 dias">
+									<i class="bi bi-info-circle-fill small"></i>
+								</a>
+							</h6>
+							<h2 class="fs-1 text-success">
+								<?= (($artigos['publicados_atual'] < 10) ? ('0') : ('')) . (number_format($artigos['publicados_atual'], 0, ',', '.')); ?>
+							</h2>
+							<p class="mb-2">
+								<span
+									class="text-<?= ($artigos['publicados_diferenca'] > 0) ? ('success') : ('danger'); ?> ms-1 me-1 "><?= (number_format($artigos['publicados_diferenca'], 0, ',', '.')); ?>
+									<i
+										class="fas <?= ($artigos['publicados_diferenca'] > 0) ? ('fa-up-long') : (($artigos['publicados_diferenca'] < 0) ? ('fa-down-long') : ('fa-minus')); ?> fa-xs"></i></span>
+								vs último mês
+							</p>
+						</div>
+					</div>
+					<div class="col-md-6 col-xl-3">
+						<div class="card card-body bg-info bg-opacity-10 p-4 h-100">
+							<h6>Pautas cadastradas
+								<a tabindex="0" class="hb6 btn-light btn-floating mb-0 btn-tooltip"
+									data-toggle="tooltip" data-placement="top"
+									title="Pautas cadastradas nos últimos 30 dias">
+									<i class="bi bi-info-circle-fill small"></i>
+								</a>
+							</h6>
+							<h2 class="fs-1 text-info">
+								<?= (($pautas['atual'] < 10) ? ('0') : ('')) . (number_format($pautas['atual'], 0, ',', '.')); ?>
+							</h2>
+							<p class="mb-2"><span
+									class="text-<?= ($pautas['diferenca'] > 0) ? ('success') : ('danger'); ?> ms-1 me-1 "><?= (number_format($pautas['diferenca'], 0, ',', '.')); ?>
+									<i
+										class="fas <?= ($pautas['diferenca'] > 0) ? ('fa-up-long') : (($pautas['diferenca'] < 0) ? ('fa-down-long') : ('fa-minus')); ?> fa-xs"></i></span>
+								vs último mês</p>
+						</div>
+					</div>
+					<div class="col-md-6 col-xl-3">
+						<div class="card card-body bg-success bg-opacity-10 p-4 h-100">
+							<h6>Pautas utilizadas
+								<a tabindex="0" class="hb6 btn-light btn-floating mb-0 btn-tooltip"
+									data-toggle="tooltip" data-placement="top"
+									title="Pautas utilizadas nos últimos 30 dias">
+									<i class="bi bi-info-circle-fill small"></i>
+								</a>
+							</h6>
+							<h2 class="fs-1 text-success">
+								<?= (($pautas['utilizados_atual'] < 10) ? ('0') : ('')) . (number_format($pautas['utilizados_atual'], 0, ',', '.')); ?>
+							</h2>
+							<p class="mb-2">
+								<span
+									class="text-<?= ($pautas['utilizados_diferenca'] > 0) ? ('success') : ('danger'); ?> ms-1 me-1 "><?= (number_format($pautas['utilizados_diferenca'], 0, ',', '.')); ?>
+									<i
+										class="fas <?= ($pautas['utilizados_diferenca'] > 0) ? ('fa-up-long') : (($pautas['utilizados_diferenca'] < 0) ? ('fa-down-long') : ('fa-minus')); ?> fa-xs"></i></span>
+								vs último mês
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="col-12">
 				<div class="row g-4 mb-4">
 					<div class="col-sm-4 col-lg-2">
@@ -81,6 +165,8 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			<div class="col-12">
 				<!-- Post list table START -->
 				<div class="card border bg-transparent rounded-3 mb-4">
 
@@ -153,7 +239,8 @@
 					</div>
 				</div>
 				<!-- Post list table END -->
-
+			</div>
+			<div class="col-12">
 				<!-- Post list table START -->
 				<div class="card border bg-transparent rounded-3">
 

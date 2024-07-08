@@ -83,28 +83,23 @@ use CodeIgniter\I18n\Time;
 <div class="container-fluid py-3">
 	<div class="container">
 		<div class="row">
-			<section class="col-lg-12">
-				<div class="container vl-bg-c-opaco p-2 rounded-3 position-relative mt-1 mb-3">
-					<span class="badge vl-bg-c p-2 px-3 position-absolute top-50 start-0 translate-middle badge"
-						style="z-index:1; margin-left: 2.8rem;">Avisos:</span>
-					<div class="avisos-carousel mb-0 mt-0 data-flickity" style="margin-left: 3.8rem;">
-						<div class="carousel-cell card shadow-0" id="tns1-item0">
-							<div class="card-body pt-1 pb-1">
-								<a href="#" class="">The most
-									common business debate isn't as black and white
-									as you might think</a>
-							</div>
-						</div>
-						<div class="carousel-cell card shadow-0" id="tns1-item0">
-							<div class="card-body pt-1 pb-1">
-								<a href="#" class="">The most
-									common business debate isn't as black and white
-									as you might think</a>
-							</div>
+			<?php if ($avisos !== NULL && !empty($avisos)): ?>
+				<section class="col-lg-12">
+					<div class="container vl-bg-c-opaco p-2 rounded-3 position-relative mt-1 mb-3">
+						<span class="badge vl-bg-c p-2 px-3 position-absolute top-50 start-0 translate-middle badge"
+							style="z-index:1; margin-left: 2.8rem;">Avisos:</span>
+						<div class="avisos-carousel mb-0 mt-0 data-flickity" style="margin-left: 3.8rem;">
+							<?php foreach ($avisos as $aviso): ?>
+								<div class="carousel-cell card shadow-0" id="tns1-item0">
+									<div class="card-body pt-1 pb-1">
+										<a <?=($aviso['link']!=''&&$aviso['link']!=NULL)?('href="'.$aviso['link'].'"'):('javascript:void(0);'); ?> class=""><?=$aviso['aviso']; ?></a>
+									</div>
+								</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
-				</div>
-			</section>
+				</section>
+			<?php endif; ?>
 			<section class="col-lg-12">
 				<div class="row">
 					<!-- Left big card -->

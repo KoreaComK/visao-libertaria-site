@@ -6,7 +6,9 @@ use CodeIgniter\Database\Config;
 
 class Inicializandobancodados extends BaseController
 {
-	public function __construct() {}
+	public function __construct()
+	{
+	}
 
 	public function index()
 	{
@@ -184,7 +186,7 @@ class Inicializandobancodados extends BaseController
 			`config_valor` TEXT NOT NULL
 		);
 		');
-		
+
 		$db->query('CREATE TABLE IF NOT EXISTS  `colaboradores_historicos` (
 			`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
 			`colaboradores_id` int NOT NULL,
@@ -216,6 +218,16 @@ class Inicializandobancodados extends BaseController
 			`colaboradores_id` INT NOT NULL,
 			`data_visualizado` DATETIME NULL DEFAULT NULL,
 			`criado` datetime DEFAULT now()
+			);
+			');
+
+		$db->query('CREATE TABLE IF NOT EXISTS `avisos` (
+				`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+				`aviso` TEXT NOT NULL,
+				`link` varchar(255) DEFAULT null,
+				`inicio` datetime DEFAULT null,
+				`fim` datetime DEFAULT null,
+				`criado` datetime DEFAULT now()
 			);
 			');
 

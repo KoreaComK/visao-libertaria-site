@@ -14,10 +14,6 @@ use CodeIgniter\I18n\Time;
 			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
 		</div>
 	</div>
-	<div
-		class="mensagem p-3 mb-2 rounded text-center <?= (!isset($_GET['status'])) ? ('collapse') : (''); ?> <?= (isset($_GET['status']) && $_GET['status'] == 'true') ? ('bg-success') : ('bg-danger'); ?> col-12">
-		<?= (isset($_GET['status']) && $_GET['status'] == 'true') ? ('Ação salva com sucesso.') : ('Ocorreu um erro ao realizar sua ação.'); ?>
-	</div>
 	<div class="my-3 p-3 rounded box-shadow">
 		
 		<div class="card border bg-transparent rounded-3 mt-4">

@@ -227,6 +227,99 @@ class Artigos extends BaseController
 			}
 		}
 
+		$data['artigos'] = array();
+		$data['pautas'] = array();
+
+		$time_atual = new Time('-30 days');
+		$time_antigo = new Time('-60 days');
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['atual'] = count($artigos);
+		$data['artigos']['lista'] = $artigos;
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+		$artigosModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['antigo'] = count($artigos);
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->where("publicado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['publicados_atual'] = count($artigos);
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
+		$artigosModel->where("publicado <= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['publicados_antigo'] = count($artigos);
+
+		$data['artigos']['diferenca'] = $data['artigos']['atual'] - $data['artigos']['antigo'];
+		$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$pautasModel->where("colaboradores_id", $usuarioId);
+		$pautasModel->withDeleted();
+		$pautas = $pautasModel->get()->getResultArray();
+		$data['pautas']['atual'] = count($pautas);
+		$data['pautas']['lista'] = $pautas;
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+		$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+		$pautasModel->where("colaboradores_id", $usuarioId);
+		$pautasModel->withDeleted();
+		$pautas = $pautasModel->get()->getResultArray();
+		$data['pautas']['antigo'] = count($pautas);
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->where("reservado >= '" . $time_atual->toDateTimeString() . "'");
+		$pautasModel->where("colaboradores_id", $usuarioId);
+		$pautasModel->withDeleted();
+		$pautas = $pautasModel->get()->getResultArray();
+		$data['pautas']['utilizados_atual'] = count($pautas);
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+		$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+		$pautasModel->where("colaboradores_id", $usuarioId);
+		$pautasModel->withDeleted();
+		$pautas = $pautasModel->get()->getResultArray();
+		$data['pautas']['utilizados_antigo'] = count($pautas);
+
+		$data['pautas']['diferenca'] = $data['pautas']['atual'] - $data['pautas']['antigo'];
+		$data['pautas']['utilizados_diferenca'] = $data['pautas']['utilizados_atual'] - $data['pautas']['utilizados_antigo'];
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$time_antigo = new Time('-1 years');
+		$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
+		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
+		$artigosModel->orderBy("publicado", 'ASC');
+		$artigos = $artigosModel->get()->getResultArray();
+
+		$data['graficos'] = array();
+		if ($artigos != NULL && !empty($artigos)) {
+			$data['graficos']['base'] = array();
+			for ($mes_base = 12; $mes_base >= 0; $mes_base--) {
+				$data_base = new Time('-' . $mes_base . ' months');
+				$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
+			}
+			foreach ($artigos as $artigo) {
+				$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
+			}
+		}
+
 		return view('colaboradores/colaborador_artigos_list', $data);
 	}
 
@@ -315,7 +408,7 @@ class Artigos extends BaseController
 		if (empty($artigo) || $artigo == null) {
 			return $retorno->retorno(false, 'Artigo não encontrado.', true);
 		}
-		
+
 		$colaborador = $this->session->get('colaboradores')['id'];
 		if ($colaborador != $artigo['marcado_colaboradores_id']) {
 			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
@@ -372,7 +465,7 @@ class Artigos extends BaseController
 		if (empty($artigo) || $artigo == null) {
 			return $retorno->retorno(false, 'Artigo não encontrado.', true);
 		}
-		
+
 		$colaborador = $this->session->get('colaboradores')['id'];
 		if ($colaborador != $artigo['marcado_colaboradores_id']) {
 			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
@@ -380,7 +473,7 @@ class Artigos extends BaseController
 
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
 		$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
-		
+
 		$artigo['fase_producao_id'] = $faseProducao['etapa_anterior'];
 		if ($faseProducao['etapa_anterior'] == '1') {
 			$artigo['texto_original'] = $artigo['texto_revisado'];
@@ -408,12 +501,12 @@ class Artigos extends BaseController
 			$artigo['link_shorts'] = NULL;
 			$artigo['produzido_colaboradores_id'] = NULL;
 		}
-		
+
 		$retornoReverter = $this->gravarArtigos('update', $artigo, $artigo['id']);
 		$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'reverteu', 'artigos', 'o artigo', $idArtigo);
 		$this->artigosMarcacao->desmarcarArtigo($idArtigo);
 		$this->artigosHistoricos->cadastraHistorico($idArtigo, 'reverteu', $this->session->get('colaboradores')['id']);
-		if(!$retornoReverter) {
+		if (!$retornoReverter) {
 			return $retorno->retorno(false, 'Erro ao reverter artigo.', true);
 		}
 		return $retorno->retorno(true, 'Artigo revertido com sucesso.', true);
@@ -853,9 +946,9 @@ class Artigos extends BaseController
 		$data['artigos'] = null;
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->whereNotIn('fase_producao_id', array(6,7))
-		->where('descartado',NULL)->join('fase_producao','fase_producao.id = artigos.fase_producao_id')
-		->get()->getResultArray();
+		$artigos = $artigosModel->whereNotIn('fase_producao_id', array(6, 7))
+			->where('descartado', NULL)->join('fase_producao', 'fase_producao.id = artigos.fase_producao_id')
+			->get()->getResultArray();
 
 		if (!empty($artigos)) {
 			foreach ($artigos as $chave => $artigo) {

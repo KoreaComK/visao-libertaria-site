@@ -22,8 +22,6 @@ class Site extends BaseController
 		$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
 		$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
 
-
-
 		$data['colaboradores'] = $this->session->get('colaboradores');
 
 		$widgets = new WidgetsSite();
@@ -66,7 +64,15 @@ class Site extends BaseController
 			$data['rand'] = $artigos;
 		}
 
-
+		$data['avisos'] = false;
+		$avisosModel = new \App\Models\AvisosModel();
+		$avisosModel->orWhere('(fim IS NULL AND inicio IS NULL)');
+		$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
+		$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
+		$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
+		
+		$avisos = $avisosModel->get()->getResultArray();
+		$data['avisos'] = $avisos;
 		helper('colors_helper');
 		return view('home', $data);
 	}
