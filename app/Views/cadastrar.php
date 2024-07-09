@@ -3,13 +3,15 @@
 <?= $this->section('content'); ?>
 
 <div class="container">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">Cadastre-se para se tornar um colaborador do canal</h3>
+	<div class="row py-4">
+		<div class="col-12">
+			<h1 class="mb-0 h2">Cadastre-se e se torne um colaborador do canal</h1>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-5">
-			<div class="bg-light mb-3" style="padding: 30px;">
-				<h6 class="font-weight-bold">Atenção</h6>
+			<div class="card mb-3 p-4">
+				<h6 class="card-title fw-bold">Atenção</h6>
 				<p>Forneça seus dados abaixo. Preocupamo-nos com a sua privacidade, portanto,
 					use um nome público como preferir ser chamado. Esse nome aparecerá nos materiais que você indicar e
 					também nos vídeos.
@@ -18,8 +20,8 @@
 			</div>
 		</div>
 		<div class="col-md-7">
-			<div class="contact-form bg-light mb-3" style="padding: 30px;">
-				<form name="cadastrarColaborador" id="cadastrarColaboradorForm" class="needs-validation">
+			<div class="card contact-form mb-3 p-4">
+				<form class="card-body" name="cadastrarColaborador" id="cadastrarColaboradorForm" class="needs-validation">
 					<div class="row">
 						<div class="col-xl-6">
 							<div class="control-group mb-2">
@@ -30,9 +32,8 @@
 						</div>
 						<div class="col-xl-6">
 							<div class="control-group mb-2">
-								<input type="email" class="form-control m-2" id="email" placeholder="E-mail"
-									required name="email"
-									data-validation-required-message="Por favor digite o seu e-mail">
+								<input type="email" class="form-control m-2" id="email" placeholder="E-mail" required
+									name="email" data-validation-required-message="Por favor digite o seu e-mail">
 							</div>
 						</div>
 					</div>
@@ -59,8 +60,7 @@
 						<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
 					</div>
 					<div class="d-grid gap-2 col-6 mx-auto">
-						<button class="btn btn-primary btn-submeter"
-							type="button">Cadastrar</button>
+						<button class="btn btn-primary btn-submeter" type="button">Cadastrar</button>
 					</div>
 			</div>
 			</form>

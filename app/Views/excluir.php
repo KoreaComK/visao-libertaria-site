@@ -3,7 +3,7 @@
 <?= $this->section('content'); ?>
 
 <div class="container text-center w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
+	<div class="py-2 px-4 mb-3">
 		<h3 class="m-0">Exclusão de conta</h3>
 	</div>
 </div>

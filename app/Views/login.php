@@ -3,11 +3,13 @@
 <?= $this->section('content'); ?>
 
 <div class="container text-center w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">Acesse sua conta de colaborador</h3>
+	<div class="row py-4">
+		<div class="col-12">
+			<h1 class="mb-0 h2">Acesse sua conta de colaborador</h1>
+		</div>
 	</div>
-	<div class="justify-content-center row">
-		<form class="form-signin col-12 col-md-4 mb-5 mt-5" id="login" method="post" onsubmit="return validateLogin();">
+	<div class="d-flex justify-content-center row">
+		<form class="card form-signin col-12 col-md-4 p-4" id="login" method="post" onsubmit="return validateLogin();">
 			<div class="form-label-group mb-3">
 				<input type="email" id="email" name="email" class="form-control" value="<?= $email_form; ?>"
 					placeholder="E-mail" required autofocus />
@@ -29,7 +31,7 @@
 			<div class="form-check mb-3">
 				<label>
 					<input type="checkbox" id="lembrar" name="lembrar" class="form-check-input" value="lembrar"
-						<?= ($email_form != '') ? ('checked') : (''); ?>> 
+						<?= ($email_form != '') ? ('checked') : (''); ?>>
 					<label class="form-check-label" for="lembrar">
 						Lembre-se de mim
 					</label>
@@ -39,10 +41,10 @@
 			<div class="d-grid gap-2">
 				<button class="btn btn-lg btn-primary btn-block" type="submit">Acessar</button>
 			</div>
+			<div class="col-12 mt-3 mb-3">
+				<a href="<?= site_url('site/esqueci'); ?>">Esqueci minha senha</a>
+			</div>
 		</form>
-		<div class="col-12 mb-5">
-			<a href="<?= site_url('site/esqueci'); ?>">Esqueci minha senha</a>
-		</div>
 	</div>
 </div>
 <script type="text/javascript">

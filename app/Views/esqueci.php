@@ -3,11 +3,13 @@
 <?= $this->section('content'); ?>
 
 <div class="container text-center w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">Acesse sua conta de colaborador</h3>
+	<div class="row py-4">
+		<div class="col-12">
+			<h1 class="mb-0 h2">Acesse sua conta de colaborador</h1>
+		</div>
 	</div>
 	<div class="justify-content-center row">
-		<form class="form-signin col-4 mb-5 mt-5" id="esqueci" method="post">
+		<form class="card form-signin col-4 p-4" id="esqueci" method="post">
 
 			<?php if ($formulario == 'email'): ?>
 				<div class="form-label-group mb-3">
@@ -31,10 +33,11 @@
 			<div class="d-grid gap-2">
 				<button class="btn btn-primary btn-block btn-submeter" type="button">Enviar</button>
 			</div>
+
+			<div class="col-12 mb-3 mt-3">
+				<a href="<?= site_url('site/login'); ?>">Fazer login</a>
+			</div>
 		</form>
-		<div class="col-12 mb-5">
-			<a href="<?= site_url('site/login'); ?>">Fazer login</a>
-		</div>
 	</div>
 </div>
 <script type="text/javascript">
