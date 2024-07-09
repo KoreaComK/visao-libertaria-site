@@ -14,27 +14,27 @@
 	</div>
 	<div class="my-3 p-3 rounded box-shadow">
 
-		<?php foreach ($pagamentosList['pagamentos'] as $pagamento): ?>
-
-			<div class="media text-muted pt-3 border-bottom row " id="pauta_<?= $pagamento['id']; ?>">
-				<div class="col-12">
-					<p class="media-body pb-3 mb-0 small lh-125  border-gray">
-						<strong class="d-block">
-							<?= $pagamento['titulo']; ?>
-						</strong>
-						<small><a href="<?= site_url('colaboradores/admin/financeiro/' . $pagamento['id']); ?>"> Ver
-								detalhes
-								de Pagamento.</a></small>
-					</p>
-				</div>
+		<div class="card border bg-transparent rounded-3 mt-4">
+			<div class="card-body p-3">
+				<div class="pagamentos-list"></div>
 			</div>
-
-		<?php endforeach; ?>
-		<div class="d-block mt-3">
-			<?php if ($pagamentosList['pager']): ?>
-				<?= $pagamentosList['pager']->simpleLinks('pagamentos', 'default_template') ?>
-			<?php endif; ?>
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function () {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/admin/pagamentosList'); ?>",
+			type: 'get',
+			dataType: 'html',
+			data: {
+			},
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (data) {
+				$('.pagamentos-list').html(data);
+			}
+		});
+	});
+</script>
 <?= $this->endSection(); ?>

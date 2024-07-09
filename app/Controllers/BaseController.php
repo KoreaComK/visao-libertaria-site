@@ -94,9 +94,6 @@ abstract class BaseController extends Controller
 			];
 			$this->session->set($estrutura_session);
 		}
-
-
-
 	}
 
 	/**

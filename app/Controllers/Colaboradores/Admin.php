@@ -434,18 +434,23 @@ class Admin extends BaseController
 			return view('colaboradores/pagamentos_form', $data);
 		} else {
 			$data['titulo'] = 'Pagamentos realizados';
-			$pagamentosModel = new \App\Models\PagamentosModel();
-			$pagamentos = $pagamentosModel->getPagamentos();
-
-			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			$config = array();
-			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-			$data['pagamentosList'] = [
-				'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
-				'pager' => $pagamentos->pager
-			];
 			return view('colaboradores/pagamentos_list', $data);
 		}
+	}
+
+	public function pagamentosList()
+	{
+		$pagamentosModel = new \App\Models\PagamentosModel();
+		$pagamentos = $pagamentosModel->getPagamentos();
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$data['pagamentosList'] = [
+			'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
+			'pager' => $pagamentos->pager
+		];
+		return view('template/templatePagamentosList', $data);
 	}
 
 	public function estaticas($idEstaticas = NULL)
@@ -516,7 +521,7 @@ class Admin extends BaseController
 
 		$validaFormularios = new \App\Libraries\ValidaFormularios();
 		$post = $this->request->getPost();
-		$valida = $validaFormularios->validaFormularioPaginasEstaticas($post,$idEstaticas);
+		$valida = $validaFormularios->validaFormularioPaginasEstaticas($post, $idEstaticas);
 		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
 		if (empty($valida->getErrors())) {
 			if ($idEstaticas === NULL) {
@@ -717,7 +722,7 @@ class Admin extends BaseController
 			$data['pagamentos_id'] = $pagamentos_id;
 
 		} else {
-			$data['artigos'] = $artigosModel->getArtigos('6')->get()->getResultArray();
+			$data['artigos'] = $artigosModel->getArtigos('6', false)->get()->getResultArray();
 		}
 		if ($data['artigos'] == NULL || empty($data['artigos'])) {
 			$data['artigos'] = NULL;
@@ -800,7 +805,7 @@ class Admin extends BaseController
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
 
-		$artigos = $artigosModel->getArtigos('6')->get()->getResultArray();
+		$artigos = $artigosModel->getArtigos('6', false)->get()->getResultArray();
 		if ($artigos == null || empty($artigos)) {
 			return false;
 		}

@@ -248,7 +248,7 @@ class ArtigosModel extends Model
 		return $this;
 	}
 
-	public function getArtigos($id)
+	public function getArtigos($id,$descartado = true)
 	{
 		$this
 			->select('
@@ -276,6 +276,9 @@ class ArtigosModel extends Model
 			$this->where('artigos.fase_producao_id', $id);
 		} else {
 			$this->whereIn('artigos.id', $id);
+		}
+		if($descartado === false) {
+			$this->where('artigos.descartado', NULL);
 		}
 		return $this;
 	}

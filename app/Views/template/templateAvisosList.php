@@ -3,7 +3,6 @@
 use CodeIgniter\I18n\Time;
 
 ?>
-<?php helper('data') ?>
 <?php if ($avisosList['avisos'] !== NULL && !empty($avisosList['avisos'])): ?>
 	<table class="table align-middle p-4 mb-0 mt-2 table-hover table-shrink">
 		<!-- Table head -->
@@ -34,12 +33,14 @@ use CodeIgniter\I18n\Time;
 						<?= ($aviso['fim'] != NULL && $aviso['fim'] != '') ? (Time::createFromFormat('Y-m-d H:i:s', $aviso['fim'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
 					</td>
 					<td>
-						<a class="btn btn-light btn-floating mb-0 btn-tooltip btn-descartar"
-							data-aviso-id="<?= $aviso['id']; ?>" data-toggle="tooltip" data-placement="top"
-							title="Excluir aviso"><i class="fas fa-trash-can"></i></a>
-						<a href="<?= site_url('colaboradores/admin/avisos/' . $aviso['id']); ?>"
-							class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
-							title="Editar aviso"><i class="fas fa-pencil"></i></a>
+						<div class="d-flex">
+							<a class="btn btn-light btn-floating mb-0 btn-tooltip btn-descartar"
+								data-aviso-id="<?= $aviso['id']; ?>" data-toggle="tooltip" data-placement="top"
+								title="Excluir aviso"><i class="fas fa-trash-can"></i></a>
+							<a href="<?= site_url('colaboradores/admin/avisos/' . $aviso['id']); ?>"
+								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+								title="Editar aviso"><i class="fas fa-pencil"></i></a>
+						</div>
 					</td>
 				</tr>
 			<?php endforeach; ?>
