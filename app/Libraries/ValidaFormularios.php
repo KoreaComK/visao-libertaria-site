@@ -385,7 +385,7 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
-	public function validaFormularioPaginasEstaticas($post)
+	public function validaFormularioPaginasEstaticas($post,$id)
 	{
 		$validation = \Config\Services::validation();
 		$validation->setRules([
@@ -407,7 +407,7 @@ class ValidaFormularios extends BaseController
 			],
 			'url_friendly' => [
 				'label' => 'URL Amigável',
-				'rules' => 'required'
+				'rules' => 'required|is_unique[paginas_estaticas.url_friendly,id,' . $id . ']'
 			]
 		]);
 		$validation->run($post);

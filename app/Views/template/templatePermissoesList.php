@@ -22,8 +22,9 @@ use CodeIgniter\I18n\Time;
 			<?php foreach ($colaboradoresList['colaboradores'] as $colaborador): ?>
 				<tr>
 					<th scope="row">
-						<?php if($colaborador['avatar'] !== NULL && $colaborador['avatar'] !== ''): ?>
-							<img id="avatar_menu" src="<?= $colaborador['avatar']; ?>" width="30" height="30" class="rounded-circle">
+						<?php if ($colaborador['avatar'] !== NULL && $colaborador['avatar'] !== ''): ?>
+							<img id="avatar_menu" src="<?= $colaborador['avatar']; ?>" width="30" height="30"
+								class="rounded-circle">
 						<?php endif; ?>
 						<?= $colaborador['apelido']; ?>
 					</th>
@@ -36,7 +37,10 @@ use CodeIgniter\I18n\Time;
 					<td>
 						<?= ($colaborador['excluido'] == NULL) ? ('NÃO') : ('SIM'); ?>
 					</td>
-					<td><a href="<?= site_url('colaboradores/admin/permissoes/' . $colaborador['id']); ?>">Editar</a>
+					<td>
+						<a href="<?= site_url('colaboradores/admin/permissoes/') . $colaborador['id']; ?>"
+							class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+							title="Editar colaboradores"><i class="fas fa-pencil"></i></a>
 					</td>
 				</tr>
 			<?php endforeach; ?>
@@ -56,6 +60,10 @@ use CodeIgniter\I18n\Time;
 	<?php endif; ?>
 
 	<script>
+		$(function () {
+			$('.btn-tooltip').tooltip();
+		});
+
 		$(document).ready(function () {
 			$('.page-link ').on('click', function (e) {
 				e.preventDefault();

@@ -28,12 +28,18 @@ use CodeIgniter\I18n\Time;
 						<?= $aviso['link']; ?>
 					</td>
 					<td>
-						<?= ($aviso['inicio'] != NULL && $aviso['inicio'] != '')?(Time::createFromFormat('Y-m-d H:i:s', $aviso['inicio'])->toLocalizedString('dd MMMM yyyy')):(''); ?>
+						<?= ($aviso['inicio'] != NULL && $aviso['inicio'] != '') ? (Time::createFromFormat('Y-m-d H:i:s', $aviso['inicio'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
 					</td>
 					<td>
-						<?= ($aviso['fim'] != NULL && $aviso['fim'] != '')?(Time::createFromFormat('Y-m-d H:i:s', $aviso['fim'])->toLocalizedString('dd MMMM yyyy')):(''); ?>
+						<?= ($aviso['fim'] != NULL && $aviso['fim'] != '') ? (Time::createFromFormat('Y-m-d H:i:s', $aviso['fim'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
 					</td>
-					<td><a href="<?= site_url('colaboradores/admin/avisos/' . $aviso['id']); ?>">Editar</a>
+					<td>
+						<a class="btn btn-light btn-floating mb-0 btn-tooltip btn-descartar"
+							data-aviso-id="<?= $aviso['id']; ?>" data-toggle="tooltip" data-placement="top"
+							title="Excluir aviso"><i class="fas fa-trash-can"></i></a>
+						<a href="<?= site_url('colaboradores/admin/avisos/' . $aviso['id']); ?>"
+							class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+							title="Editar aviso"><i class="fas fa-pencil"></i></a>
 					</td>
 				</tr>
 			<?php endforeach; ?>
@@ -53,6 +59,21 @@ use CodeIgniter\I18n\Time;
 	<?php endif; ?>
 
 	<script>
+		$(function () {
+			$('.btn-tooltip').tooltip();
+		});
+
+		$(".btn-descartar").on("click", function (e) {
+			$('.conteudo-modal').html('Deseja realmente descartar este aviso?');
+			artigoId = $(e.currentTarget).attr('data-aviso-id');
+			$("#mi-modal").modal('show');
+		});
+
+		$("#modal-btn-no").on("click", function () {
+			$("#mi-modal").modal('hide');
+		});
+
+
 		$(document).ready(function () {
 			$('.page-link ').on('click', function (e) {
 				e.preventDefault();
@@ -66,6 +87,44 @@ use CodeIgniter\I18n\Time;
 						$('.avisos-list').html(data);
 					}
 				});
+			});
+
+			$("#modal-btn-si").on("click", function () {
+				$("#mi-modal").modal('hide');
+				$.ajax({
+					url: "<?php echo base_url('colaboradores/admin/avisosExcluir/'); ?>" + artigoId,
+					type: 'get',
+					dataType: 'json',
+					data: {
+					},
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$.ajax({
+								url: "<?php echo base_url('colaboradores/admin/avisosList'); ?>",
+								type: 'get',
+								dataType: 'html',
+								data: {
+									apelido: $('#apelido').val(),
+									email: $('#email').val(),
+									atribuicao: $('#atribuicao').val(),
+									status: $('#status').val(),
+								},
+								beforeSend: function () { $('#modal-loading').show(); },
+								complete: function () { $('#modal-loading').hide() },
+								success: function (data) {
+									$('.avisos-list').html(data);
+								}
+							});
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+						artigoId = null;
+					}
+				});
+				return false;
 			});
 		});
 	</script>
