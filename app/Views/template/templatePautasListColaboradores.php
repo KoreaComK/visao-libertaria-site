@@ -21,7 +21,7 @@ use CodeIgniter\I18n\Time;
 					<ul class="nav nav-divider">
 						<li class="nav-item pointer">
 							<div class="d-flex text-muted">
-								<span class="">Sugerido por <a href="#"
+								<span class="">Sugerido por <a href="<?= site_url('site/colaborador/'); ?><?= urlencode($pauta['apelido']); ?>"
 										class="text-muted btn-link"><?= $pauta['apelido']; ?></a></span>
 							</div>
 						</li>

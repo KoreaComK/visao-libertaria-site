@@ -94,7 +94,7 @@ use CodeIgniter\I18n\Time;
 								<ul class="nav nav-divider">
 									<li class="nav-item pointer">
 										<div class="d-flex text-muted">
-											<span class="">Por <a href="#"
+											<span class="">Por <a href="<?= site_url('site/colaborador/'); ?><?= urlencode($artigo['apelido']); ?>"
 													class="text-muted btn-link"><?= $artigo['apelido']; ?></a></span>
 										</div>
 									</li>
@@ -121,10 +121,10 @@ use CodeIgniter\I18n\Time;
 		<div class="page-load-status">
 			<div class="infinite-scroll-request d-flex justify-content-center mt-5 mb-5">
 				<div class="spinner-border" role="status">
-					<span class="visually-hidden">Loading...</span>
+					<span class="visually-hidden">Carregando...</span>
 				</div>
 			</div>
-			<p class="infinite-scroll-last">End of content</p>
+			<p class="infinite-scroll-last">Fim do conteúdo</p>
 			<p class="infinite-scroll-error">No more pages to load</p>
 		</div>
 	</div>

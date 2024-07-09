@@ -131,7 +131,7 @@ use CodeIgniter\I18n\Time;
 												<?php endif; ?>
 												<span
 													class="<?= ($banner[0]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-													<a href="#"
+													<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[0]['apelido']); ?>"
 														class="stretched-link text-white btn-link"><?= $banner[0]['apelido']; ?></a></span>
 											</div>
 										</li>
@@ -174,12 +174,12 @@ use CodeIgniter\I18n\Time;
 														<?php endif; ?>
 														<span
 															class="<?= ($banner[1]['avatar'] != NULL && $banner[1]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="#"
+															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[1]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[1]['apelido']; ?></a></span>
 													</div>
 												</li>
 												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[1]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -214,12 +214,12 @@ use CodeIgniter\I18n\Time;
 														<?php endif; ?>
 														<span
 															class="<?= ($banner[2]['avatar'] != NULL && $banner[2]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="#"
+															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[2]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[2]['apelido']; ?></a></span>
 													</div>
 												</li>
 												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[2]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -231,7 +231,7 @@ use CodeIgniter\I18n\Time;
 							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[3]['imagem']; ?>" style="height:15rem;" />
+									<img src="<?= $banner[3]['imagem']; ?>" style="height: inherit;" />
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
@@ -252,13 +252,13 @@ use CodeIgniter\I18n\Time;
 															</div>
 														<?php endif; ?>
 														<span
-															class="<?= ($banner[3]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="#"
+															class="<?= ($banner[3]['avatar'] != NULL && $banner[3]['avatar'] != "") ? ('ms-3') : (''); ?>">por
+															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[3]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[3]['apelido']; ?></a></span>
 													</div>
 												</li>
 												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[0]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
+													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[3]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
 												</li>
 											</ul>
 										</div>
@@ -269,23 +269,6 @@ use CodeIgniter\I18n\Time;
 					</div>
 				</div>
 			</section>
-
-			<!-- <div class="col-lg-4">
-				<div class="d-flex align-items-center justify-content-between bg-light py-2 px-4 mb-3">
-					<h3 class="m-0">Categorias</h3>
-					<a class="text-secondary font-weight-medium text-decoration-none" href="">Ver Todos</a>
-				</div>
-				<div class="d-flex flex-wrap m-n1">
-					<?php //foreach($widgetCategorias as $categorias): 
-					?>
-						<a href="<? //base_url().'site/artigos/'.$categorias['id'];
-						?>" class="btn btn-sm btn-outline-secondary m-1"><? //$categorias['nome'];
-						?></a>
-					<?php //endforeach; 
-					?>
-				</div>
-			</div> -->
-
 			<section class="col-lg-12 banner">
 
 				<div class="main-carousel mb-4 mt-4">
@@ -299,13 +282,13 @@ use CodeIgniter\I18n\Time;
 										<div class="w-100 mt-auto">
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-													class="text-white stretched-link btn-link"><?= $b['titulo']; ?></a>
+													class="text-white btn-link"><?= $b['titulo']; ?></a>
 											</h4>
 											<ul
 												class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
 												<li class="nav-item">
 													<div class="text-white">por <a
-															href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+															href="<?= site_url('site/escritor/'); ?><?=urlencode($b['apelido']); ?>"
 															class="text-white btn-link"><?= $b['apelido']; ?></a>
 													</div>
 												</li>
@@ -367,7 +350,7 @@ use CodeIgniter\I18n\Time;
 												<?php endif; ?>
 												<span
 													class="<?= ($artigos[$max]['avatar'] != NULL && $artigos[$max]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-													<a href="#"
+													<a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigos[$max]['apelido']); ?>"
 														class="stretched-link text-reset btn-link"><?= $artigos[$max]['apelido']; ?></a></span>
 											</div>
 										</li>
@@ -405,7 +388,7 @@ use CodeIgniter\I18n\Time;
 												</div>
 												<div class="col-7">
 													<h6 class="m-0"><a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
-															class="btn-link stretched-link text-reset">Ten
+															class="btn-link stretched-link text-reset">
 															<?= $artigo['titulo'] ?></a></h6>
 													<!-- Card info -->
 													<ul class="nav nav-divider align-items-center mt-1 small">

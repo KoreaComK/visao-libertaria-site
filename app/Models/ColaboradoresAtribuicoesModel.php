@@ -47,10 +47,14 @@ class ColaboradoresAtribuicoesModel extends Model
 		$query = $this->db->query("SELECT * FROM colaboradores_atribuicoes WHERE colaboradores_id = $id");
 		return $query->getResult('array');
 	}
-	public function getNomeAtribuicoesColaborador($id = null)
+	public function getNomeAtribuicoesColaborador($id = null,$mostraAdmin = true)
 	{
 		if ($id == null) {
 			return null;
+		}
+		$sql = '';
+		if($mostraAdmin === false) {
+			$sql = ' AND atribuicoes.id NOT IN (7,8,9,10,11)';
 		}
 		$query = $this->db->query("
 			SELECT 
@@ -64,7 +68,7 @@ class ColaboradoresAtribuicoesModel extends Model
 			ON
 				colaboradores_atribuicoes.atribuicoes_id = atribuicoes.id
 			WHERE
-				colaboradores_id = $id");
+				colaboradores_id = $id $sql");
 		return $query->getResult('array');
 	}
 

@@ -555,6 +555,69 @@ class Site extends BaseController
 		return view('pagina', $data);
 	}
 
+	public function escritor($apelido = NULL)
+	{
+		if ($apelido === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$apelido = urldecode($apelido);
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		
+		if ($colaborador === null || empty($colaborador)) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$data = array();
+		$colaborador = $colaborador[0];
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
+		$data['contador_artigos'] = 0;
+		if ($artigos !== null && !empty($artigos)) {
+			$data['contador_artigos'] = count($artigos);
+		}
+
+		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'],false);
+		$data['atribuicoes'] = $colaboradoresAtribuicoes;
+
+		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
+		$data['colaborador'] = $colaborador;
+		
+		return view('escritor', $data);
+	}
+
+	public function escritorList($apelido = NULL)
+	{
+		if($apelido === NULL) {
+			return false;
+		}
+
+		$apelido = urldecode($apelido);
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		if ($colaborador === null || empty($colaborador)) {
+			return false;
+		}
+		$colaborador = $colaborador[0];
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->orderBy('publicado','DESC');
+		if ($this->request->getMethod() == 'get') {
+			$data['artigosList'] = [
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
+				'pager' => $artigos->pager
+			];
+		}
+		return view('template/templateArtigosEscritorList', $data);
+	}
+
 	private function verificaCaptcha($captcha_response)
 	{
 		if($captcha_response == NULL || $captcha_response == '') {

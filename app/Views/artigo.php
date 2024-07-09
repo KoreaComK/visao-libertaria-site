@@ -15,7 +15,8 @@ use CodeIgniter\I18n\Time;
 			<ul class="nav nav-divider align-items-center">
 				<li class="nav-item pointer">
 					<div class="nav-link ps-0 pe-0 text-reset">
-						Escrito por <a href="#"
+						Escrito por <a
+							href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['escrito']['apelido']); ?>"
 							class="text-reset btn-link"><?= $artigo['colaboradores']['escrito']['apelido']; ?></a>
 					</div>
 				</li>
@@ -58,7 +59,8 @@ use CodeIgniter\I18n\Time;
 								<?php if ($artigo['colaboradores']['sugerido'] !== NULL): ?>
 									<div class="col-lg-6 d-flex mb-2">
 										<?php if ($artigo['colaboradores']['sugerido']['avatar'] !== NULL): ?>
-											<a href="#">
+											<a
+												href="<?= site_url('site/colaborador/'); ?><?= urlencode($artigo['colaboradores']['sugerido']['apelido']); ?>">
 												<div class="avatar rounded-circle  me-2 me-md-4">
 													<img class="avatar-img rounded-circle" style="width: 3rem;"
 														src="<?= $artigo['colaboradores']['sugerido']['avatar'] ?>"
@@ -68,7 +70,7 @@ use CodeIgniter\I18n\Time;
 										<?php endif; ?>
 										<div>
 											<h4 class="m-0"><a
-													href="#"><?= $artigo['colaboradores']['sugerido']['apelido'] ?></a>
+													href="<?= site_url('site/colaborador/'); ?><?= urlencode($artigo['colaboradores']['sugerido']['apelido']); ?>"><?= $artigo['colaboradores']['sugerido']['apelido'] ?></a>
 											</h4>
 											<small>Colaborador</small>
 										</div>
@@ -77,7 +79,8 @@ use CodeIgniter\I18n\Time;
 								<?php if ($artigo['colaboradores']['escrito'] !== NULL): ?>
 									<div class="col-lg-6 d-flex mb-2">
 										<?php if ($artigo['colaboradores']['escrito']['avatar'] !== NULL): ?>
-											<a href="#">
+											<a
+												href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['escrito']['apelido']); ?>">
 												<div class="avatar rounded-circle me-2 me-md-4">
 													<img class="avatar-img rounded-circle" style="width: 3rem;"
 														src="<?= $artigo['colaboradores']['escrito']['avatar'] ?>" alt="avatar">
@@ -86,17 +89,19 @@ use CodeIgniter\I18n\Time;
 										<?php endif; ?>
 										<div>
 											<h4 class="m-0"><a
-													href="#"><?= $artigo['colaboradores']['escrito']['apelido'] ?></a>
+													href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['escrito']['apelido']); ?>"><?= $artigo['colaboradores']['escrito']['apelido'] ?></a>
 											</h4>
 											<small>Escritor</small>
-											<div><a href="#" class="btn">Veja mais artigos deste autor</a></div>
+											<div><a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['escrito']['apelido']); ?>"
+													class="btn">Veja mais artigos deste autor</a></div>
 										</div>
 									</div>
 								<?php endif; ?>
 								<?php if ($artigo['colaboradores']['revisado'] !== NULL): ?>
 									<div class="col-lg-6 d-flex mb-2">
 										<?php if ($artigo['colaboradores']['revisado']['avatar'] !== NULL): ?>
-											<a href="#">
+											<a
+												href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['revisado']['apelido']); ?>">
 												<div class="avatar rounded-circle  me-2 me-md-4">
 													<img class="avatar-img rounded-circle" style="width: 3rem;"
 														src="<?= $artigo['colaboradores']['revisado']['avatar'] ?>"
@@ -106,7 +111,7 @@ use CodeIgniter\I18n\Time;
 										<?php endif; ?>
 										<div>
 											<h4 class="m-0"><a
-													href="#"><?= $artigo['colaboradores']['revisado']['apelido'] ?></a>
+													href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['revisado']['apelido']); ?>"><?= $artigo['colaboradores']['revisado']['apelido'] ?></a>
 											</h4>
 											<small>Revisor</small>
 										</div>
@@ -115,7 +120,7 @@ use CodeIgniter\I18n\Time;
 								<?php if ($artigo['colaboradores']['narrado'] !== NULL): ?>
 									<div class="col-lg-6 d-flex mb-2">
 										<?php if ($artigo['colaboradores']['narrado']['avatar'] !== NULL): ?>
-											<a href="#">
+											<a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['narrado']['apelido']); ?>">
 												<div class="avatar rounded-circle  me-2 me-md-4">
 													<img class="avatar-img rounded-circle" style="width: 3rem;"
 														src="<?= $artigo['colaboradores']['narrado']['avatar'] ?>" alt="avatar">
@@ -124,7 +129,7 @@ use CodeIgniter\I18n\Time;
 										<?php endif; ?>
 										<div>
 											<h4 class="m-0"><a
-													href="#"><?= $artigo['colaboradores']['narrado']['apelido'] ?></a>
+													href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['narrado']['apelido']); ?>"><?= $artigo['colaboradores']['narrado']['apelido'] ?></a>
 											</h4>
 											<small>Narrador</small>
 										</div>
@@ -133,7 +138,7 @@ use CodeIgniter\I18n\Time;
 								<?php if ($artigo['colaboradores']['produzido'] !== NULL): ?>
 									<div class="col-lg-6 d-flex mb-2">
 										<?php if ($artigo['colaboradores']['produzido']['avatar'] !== NULL): ?>
-											<a href="#">
+											<a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['produzido']['apelido']); ?>">
 												<div class="avatar avatar-xxl me-2 me-md-4">
 													<img class="avatar-img rounded-circle" style="width: 3rem;"
 														src="<?= $artigo['colaboradores']['produzido']['avatar'] ?>"
@@ -143,7 +148,7 @@ use CodeIgniter\I18n\Time;
 										<?php endif; ?>
 										<div>
 											<h4 class="m-0"><a
-													href="#"><?= $artigo['colaboradores']['produzido']['apelido'] ?></a>
+													href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['colaboradores']['produzido']['apelido']); ?>"><?= $artigo['colaboradores']['produzido']['apelido'] ?></a>
 											</h4>
 											<small>Produtor</small>
 										</div>
