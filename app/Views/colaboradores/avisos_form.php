@@ -96,9 +96,9 @@ use CodeIgniter\I18n\Time;
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					// setTimeout(function () {
-					// 	window.location.href = "<?= site_url('colaboradores/admin/avisos'); ?>";
-					// }, 2000);
+					setTimeout(function () {
+						window.location.href = "<?= site_url('colaboradores/admin/avisos'); ?>";
+					}, 2000);
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}

@@ -231,6 +231,18 @@ class Inicializandobancodados extends BaseController
 			);
 			');
 
+		$db->query('CREATE TABLE IF NOT EXISTS `paginas_estaticas` (
+				`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+    			`ativo` CHAR(1) NOT NULL DEFAULT "A",
+    			`url_friendly` varchar(255) NOT NULL,
+    			`localizacao` varchar(127) NOT NULL,
+				`titulo` varchar(255) NOT NULL,
+				`conteudo` TEXT NOT NULL,
+				`criado` datetime DEFAULT now(),
+				`atualizado` datetime DEFAULT now()
+			);
+		');
+
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
 			');

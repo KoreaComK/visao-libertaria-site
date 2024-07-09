@@ -384,4 +384,33 @@ class ValidaFormularios extends BaseController
 		$validation->run($post);
 		return $validation;
 	}
+
+	public function validaFormularioPaginasEstaticas($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'titulo' => [
+				'label' => 'Título',
+				'rules' => 'required'
+			],
+			'conteudo' => [
+				'label' => 'Conteúdo',
+				'rules' => 'required|min_length[25]'
+			],
+			'ativo' => [
+				'label' => 'Ativo',
+				'rules' => 'required'
+			],
+			'localizacao' => [
+				'label' => 'Localização',
+				'rules' => 'required'
+			],
+			'url_friendly' => [
+				'label' => 'URL Amigável',
+				'rules' => 'required'
+			]
+		]);
+		$validation->run($post);
+		return $validation;
+	}
 }

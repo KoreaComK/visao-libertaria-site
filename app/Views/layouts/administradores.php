@@ -277,7 +277,7 @@
 												href="<?= site_url('colaboradores/admin/regras'); ?>">Regras para colaborar</a>
 										</li>
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/admin/fechadas'); ?>">Páginas estáticas</a>
+												href="<?= site_url('colaboradores/admin/estaticas'); ?>">Páginas estáticas</a>
 										</li>
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/avisos'); ?>">Avisos</a>

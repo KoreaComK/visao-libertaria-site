@@ -448,6 +448,94 @@ class Admin extends BaseController
 		}
 	}
 
+	public function estaticas($idEstaticas = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if ($idEstaticas != NULL) {
+			if($idEstaticas != 'novo') {
+				$estaticas = $paginasEstaticasModel->find($idEstaticas);
+				$data['estaticas'] = $estaticas;
+				$data['titulo'] = 'Atualização de páginas estáticas';
+			} else {
+				$data['titulo'] = 'Cadastro de páginas estáticas';
+				$data['estaticas'] = false;
+			}
+			
+			return view('colaboradores/paginas_estaticas_form', $data);
+		}
+
+		$data['titulo'] = 'Listagem de páginas estáticas';
+
+		return view('colaboradores/paginas_estaticas_list', $data);
+	}
+
+	public function geraUrlAmigavel()
+	{
+		$post = $this->request->getPost();
+		helper('url_friendly');
+		$urlamigavel = url_friendly($post['titulo']);
+		$retorno = new \App\Libraries\RetornoPadrao();
+		return $retorno->retorno(true,$urlamigavel,true);
+	}
+
+	public function estaticasList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$this->verificaPermissao->PermiteAcesso('7');
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		$paginasEstaticasModel->where('criado IS NOT NULL');
+		if ($this->request->getMethod() == 'get') {
+			$data['estaticasList'] = [
+				'estaticas' => $paginasEstaticasModel->paginate($config['site_quantidade_listagem'], 'estaticas'),
+				'pager' => $paginasEstaticasModel->pager
+			];
+		}
+		return view('template/templateEstaticasList', $data);
+	}
+
+	public function estaticasGravar($idEstaticas = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$post = $this->request->getPost();
+		$valida = $validaFormularios->validaFormularioPaginasEstaticas($post);
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		if (empty($valida->getErrors())) {
+			if ($idEstaticas === NULL) {
+				$post['id'] = $paginasEstaticasModel->getNovaUUID();
+				$retornoGravado = $paginasEstaticasModel->insert($post);
+			}
+			if ($idEstaticas !== NULL) {
+				$retornoGravado = $paginasEstaticasModel->update($idEstaticas,$post);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Aviso salvo com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o aviso.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+	}
+
 	public function avisos($idAvisos = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
@@ -531,9 +619,9 @@ class Admin extends BaseController
 				$retornoGravado = $avisosModel->update($avisosId,$post);
 			}
 			if ($retornoGravado != false) {
-				return $retorno->retorno(true, 'Aviso salvo com sucesso.', true);
+				return $retorno->retorno(true, 'Página salva com sucesso.', true);
 			} else {
-				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o aviso.', true);
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar a página.', true);
 			}
 		} else {
 			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
