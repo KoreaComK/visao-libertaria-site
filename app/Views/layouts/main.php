@@ -127,7 +127,7 @@
 		}
 
 		.vl-bg-c-opaco {
-			background-color:rgba(244,203,41,0.4)
+			background-color: rgba(244, 203, 41, 0.4)
 		}
 
 		.btn-primary {
@@ -234,9 +234,10 @@
 									colaborador</a>
 							</li>
 							<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
-							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
-							</li>
+								<li class="nav-item">
+									<a class="nav-link ps-0"
+										href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
+								</li>
 							<?php endif; ?>
 						<?php endif; ?>
 					</ul>
@@ -291,6 +292,19 @@
 								</li>
 							<?php endif; ?>
 						<?php endif; ?>
+						<?php if (isset($_SESSION) && isset($_SESSION['site_config']['paginas']['menu_site'])): ?>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#">
+									Páginas</a>
+								<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
+									<?php foreach ($_SESSION['site_config']['paginas']['menu_site'] as $pagina): ?>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('site/pagina/' . $pagina['link']); ?>"><?= $pagina['titulo']; ?></a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+							</li>
+						<?php endif; ?>
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
@@ -309,9 +323,11 @@
 										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>
-										<a class="dropdown-item rounded-top-3" href="<?= site_url('colaboradores/perfil'); ?>">Meu
+										<a class="dropdown-item rounded-top-3"
+											href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
-										<a class="dropdown-item rounded-bottom-3" href="<?= site_url('site/logout'); ?>">Sair</a>
+										<a class="dropdown-item rounded-bottom-3"
+											href="<?= site_url('site/logout'); ?>">Sair</a>
 									</div>
 								</li>
 							</ul>
@@ -370,6 +386,17 @@
 								</li>
 							</ul>
 						</div>
+						<?php if (isset($_SESSION) && isset($_SESSION['site_config']['paginas']['rodape_site'])): ?>
+							<?php foreach ($_SESSION['site_config']['paginas']['rodape_site'] as $pagina): ?>
+								<div class="col-6">
+									<ul class="nav flex-column">
+										<li class="nav-item"><a class="mb-2"
+												href="<?= site_url('site/pagina/' . $pagina['link']); ?>"><?= $pagina['titulo']; ?></a>
+										</li>
+									</ul>
+								</div>
+							<?php endforeach; ?>
+						<?php endif; ?>
 					</div>
 				</div>
 
@@ -497,7 +524,7 @@
 		if (el_autohide) {
 			var last_scroll_top = 0;
 			window.addEventListener('scroll', function () {
-				if(screen.availWidth > 992) {
+				if (screen.availWidth > 992) {
 
 					if (window.scrollY > 50) {
 						el_autohide.addClass('fixed-top');

@@ -300,6 +300,19 @@
 								</li>
 							<?php endif; ?>
 						<?php endif; ?>
+						<?php if (isset($_SESSION) && isset($_SESSION['site_config']['paginas']['menu_administrador'])): ?>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#"><i class="far fa-file-lines"></i> 
+									Páginas</a>
+								<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
+									<?php foreach ($_SESSION['site_config']['paginas']['menu_administrador'] as $pagina): ?>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('site/pagina/' . $pagina['link']); ?>"><?= $pagina['titulo']; ?></a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+							</li>
+						<?php endif; ?>
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>

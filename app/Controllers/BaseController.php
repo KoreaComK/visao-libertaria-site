@@ -48,53 +48,54 @@ abstract class BaseController extends Controller
 		$this->session = \Config\Services::session();
 		$this->session->start();
 
-		if(!($this->session->has('site_config')) || !isset($this->session->get('colaboradores')['texto_nome']))
-		{
+		if (!($this->session->has('site_config')) || !isset($this->session->get('colaboradores')['texto_nome'])) {
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			
-			$site_nome = (array)json_decode($configuracaoModel->find('site_nome')['config_valor']);
-			$site_nome = (isset($site_nome[site_url()])&&$site_nome[site_url()]!='')?($site_nome[site_url()]):($site_nome['default']);
 
-			$site_descricao = (array)json_decode($configuracaoModel->find('site_descricao')['config_valor']);
-			$site_descricao = (isset($site_descricao[site_url()])&&$site_descricao[site_url()]!='')?($site_descricao[site_url()]):($site_descricao['default']);
+			$site_nome = (array) json_decode($configuracaoModel->find('site_nome')['config_valor']);
+			$site_nome = (isset($site_nome[site_url()]) && $site_nome[site_url()] != '') ? ($site_nome[site_url()]) : ($site_nome['default']);
 
-			$site_youtube = (array)json_decode($configuracaoModel->find('link_youtube')['config_valor']);
-			$site_youtube = (isset($site_youtube[site_url()])&&$site_youtube[site_url()]!='')?($site_youtube[site_url()]):(NULL);
+			$site_descricao = (array) json_decode($configuracaoModel->find('site_descricao')['config_valor']);
+			$site_descricao = (isset($site_descricao[site_url()]) && $site_descricao[site_url()] != '') ? ($site_descricao[site_url()]) : ($site_descricao['default']);
 
-			$site_instagram = (array)json_decode($configuracaoModel->find('link_instagram')['config_valor']);
-			$site_instagram = (isset($site_instagram[site_url()])&&$site_instagram[site_url()]!='')?($site_instagram[site_url()]):(NULL);
+			$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
 
-			$site_twitter = (array)json_decode($configuracaoModel->find('link_twitter')['config_valor']);
-			$site_twitter = (isset($site_twitter[site_url()])&&$site_twitter[site_url()]!='')?($site_twitter[site_url()]):(NULL);
+			$paginas_estaticas = array();
+			$paginas = $paginasEstaticasModel->where('ativo', 'A')->orderBy('localizacao', 'ASC')->get()->getResultArray();
+			foreach ($paginas as $pagina) {
+				if (!isset($paginas_estaticas[$pagina['localizacao']])) {
+					$paginas_estaticas[$pagina['localizacao']] = array();
+				}
+				$pagina_estatica = array();
+				$pagina_estatica['titulo'] = $pagina['titulo'];
+				$pagina_estatica['link'] = $pagina['url_friendly'];
+				$paginas_estaticas[$pagina['localizacao']][] = $pagina_estatica;
+			}
 
 			$estrutura_session = [
-					'site_config' => [
-						'youtube' => $site_youtube,
-						'twitter' => $site_twitter,
-						'instagram' => $site_instagram,
-						'texto_rodape' => $site_descricao,
-						'texto_nome' => $site_nome
-					]
-				];
+				'site_config' => [
+					'texto_rodape' => $site_descricao,
+					'texto_nome' => $site_nome,
+					'paginas' => $paginas_estaticas
+				]
+			];
 			$this->session->set($estrutura_session);
 		}
 
-		if(!($this->session->has('colaboradores')))
-		{
+		if (!($this->session->has('colaboradores'))) {
 			$estrutura_session = [
-					'colaboradores' => [
-						'id' => null,
-						'nome' => null,
-						'email' => null,
-						'avatar' => null,
-						'notificacoes' => 0,
-						'permissoes' => array()
-					]
-				];
+				'colaboradores' => [
+					'id' => null,
+					'nome' => null,
+					'email' => null,
+					'avatar' => null,
+					'notificacoes' => 0,
+					'permissoes' => array()
+				]
+			];
 			$this->session->set($estrutura_session);
 		}
-		
-		
+
+
 
 	}
 
@@ -108,14 +109,14 @@ abstract class BaseController extends Controller
 
 		$this->session = \Config\Services::session();
 		$this->session->start();
-		if($this->session->has('colaboradores') && $this->session->get('colaboradores')['id'] !== NULL) {
+		if ($this->session->has('colaboradores') && $this->session->get('colaboradores')['id'] !== NULL) {
 			$colaboradores = $this->session->get('colaboradores');
 			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
-			$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id',$colaboradores['id'])
-			->where('data_visualizado',null)->countAllResults();
-			if(!isset($colaboradores['notificacoes']) || $colaboradores['notificacoes']!==$quantidadeNotificacoes) {
+			$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id', $colaboradores['id'])
+				->where('data_visualizado', null)->countAllResults();
+			if (!isset($colaboradores['notificacoes']) || $colaboradores['notificacoes'] !== $quantidadeNotificacoes) {
 				$colaboradores['notificacoes'] = $quantidadeNotificacoes;
-				$this->session->set(array('colaboradores'=>$colaboradores));
+				$this->session->set(array('colaboradores' => $colaboradores));
 			}
 		}
 

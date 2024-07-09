@@ -540,9 +540,23 @@ class Site extends BaseController
 		return view('contato', $data);
 	}
 
+	public function pagina($url=NULL)
+	{
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		if ($url === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+		$pagina = $paginasEstaticasModel->where('url_friendly',$url)->get()->getResultArray();
+		if($pagina == NULL || empty($pagina)) {
+			return redirect()->to(base_url() . 'site');
+		}
+		$data = array();
+		$data['estatica'] = $pagina[0];
+		return view('pagina', $data);
+	}
+
 	private function verificaCaptcha($captcha_response)
 	{
-		
 		if($captcha_response == NULL || $captcha_response == '') {
 			return false;
 		}
