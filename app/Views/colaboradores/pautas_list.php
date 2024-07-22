@@ -46,12 +46,14 @@ use CodeIgniter\I18n\Time;
 			</div>
 		</div>
 	</section>
-	<div class="mb-4 text-center">
-		<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
-			data-bs-titulo-modal="Cadastre uma pauta">
-			Sugerir pauta
-		</button>
-	</div>
+	<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+		<div class="mb-4 text-center">
+			<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
+				data-bs-titulo-modal="Cadastre uma pauta">
+				Sugerir pauta
+			</button>
+		</div>
+	<?php endif; ?>
 	<div class="pautas-list row">
 		<?php foreach ($pautasList['pautas'] as $pauta): ?>
 
@@ -69,7 +71,8 @@ use CodeIgniter\I18n\Time;
 							<ul class="nav nav-divider">
 								<li class="nav-item pointer">
 									<div class="d-flex text-muted">
-										<span class="">Sugerido por <a href="<?= site_url('site/colaborador/'); ?><?= urlencode($pauta['apelido']); ?>"
+										<span class="">Sugerido por <a
+												href="<?= site_url('site/colaborador/'); ?><?= urlencode($pauta['apelido']); ?>"
 												class="text-muted btn-link"><?= $pauta['apelido']; ?></a></span>
 									</div>
 								</li>
@@ -81,13 +84,16 @@ use CodeIgniter\I18n\Time;
 						<p class="card-text"><?= $pauta['texto']; ?></p>
 						<a href="<?= $pauta['link']; ?>" target="_blank" class="btn btn-outline-success btn-sm mb-1">Ler
 							Notícia</a>
-						<a href="" data-bs-titulo="<?= $pauta['titulo']; ?>" data-bs-texto="<?= $pauta['texto']; ?>"
-							data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
-							class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
-							data-bs-target="#modalComentariosPauta">Comentários</a>
-						<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $pauta['id']); ?>"
-							class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
-						<?php if ($pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+						<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+							<a href="" data-bs-titulo="<?= $pauta['titulo']; ?>" data-bs-texto="<?= $pauta['texto']; ?>"
+								data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
+								class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
+								data-bs-target="#modalComentariosPauta">Comentários</a>
+
+							<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $pauta['id']); ?>"
+								class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
+						<?php endif; ?>
+						<?php if (isset($_SESSION['colaboradores']['id']) && $pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 							<a href="<?= site_url('colaboradores/pautas/cadastrar/' . $pauta['id']); ?>"
 								data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-toggle="modal"
 								data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Alterar a pauta"
@@ -116,117 +122,118 @@ use CodeIgniter\I18n\Time;
 </div>
 
 
+<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+	<div class="modal fade" id="modalSugerirPauta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title fs-5"></h3>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form method="post" id="pautas_form" name="pautas_form"
+						action="<?= site_url('colaboradores/pautas/cadastrar'); ?>">
 
-<div class="modal fade" id="modalSugerirPauta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h3 class="modal-title fs-5"></h3>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form method="post" id="pautas_form" name="pautas_form"
-					action="<?= site_url('colaboradores/pautas/cadastrar'); ?>">
+						<div class="mb-3">
+							<label for="username">Link da Notícia</label>
+							<div class="input-group">
+								<i class="input-group-text bi bi-link-45deg"></i>
+								<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
+									name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading"
+									required>
+							</div>
+						</div>
 
-					<div class="mb-3">
-						<label for="username">Link da Notícia</label>
-						<div class="input-group">
-							<i class="input-group-text bi bi-link-45deg"></i>
-							<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
-								name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading"
+						<div class="mb-3">
+							<label for="titulo">Título</label>
+							<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N" />
+							<input type="hidden" id="id_pauta" name="id_pauta" value="" />
+							<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta"
 								required>
 						</div>
-					</div>
 
-					<div class="mb-3">
-						<label for="titulo">Título</label>
-						<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N" />
-						<input type="hidden" id="id_pauta" name="id_pauta" value="" />
-						<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta"
-							required>
-					</div>
-
-					<div class="mb-3">
-						<label for="address">Texto <span
-								class="text-muted"><?php if (!in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>Máx.
-									<?= $config['pauta_tamanho_maximo']; ?> palavras. Mín.
-									<?= $config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
-								class="pull-right label label-default text-muted" id="count_message"></span>)</label>
-						<textarea class="form-control" name="texto" id="texto" required></textarea>
-					</div>
-
-					<div class="mb-3">
-						<label for="address">Link da Imagem</label>
-						<div class="input-group">
-							<i class="input-group-text bi bi-link-45deg"></i>
-							<input type="text" class="form-control" id="imagem" name="imagem"
-								placeholder="Link da imagem da notícia" required>
+						<div class="mb-3">
+							<label for="address">Texto <span
+									class="text-muted"><?php if (!in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>Máx.
+										<?= $config['pauta_tamanho_maximo']; ?> palavras. Mín.
+										<?= $config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
+									class="pull-right label label-default text-muted" id="count_message"></span>)</label>
+							<textarea class="form-control" name="texto" id="texto" required></textarea>
 						</div>
-					</div>
 
-					<div class="text-center preview_imagem_div mb-3 collapse">
-						<image class="img-thumbnail img-preview-modal" src="" data-toggle="tooltip" data-placement="top"
-							id="preview_imagem" title="Preview da Imagem da Pauta" style="max-height: 200px;" />
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="me-auto btn btn-outline-danger btn-excluir">Excluir pauta</button>
-				<button type="button" class="btn btn-secondary btn-reset" data-bs-dismiss="modal">Cancelar</button>
-				<button type="button" class="btn btn-primary btn-enviar">Enviar</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal modal-lg fade" id="modalComentariosPauta" tabindex="-1" aria-labelledby="exampleModalLabel"
-	aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h3 class="modal-title fs-5">Comentários da Pauta</h3>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="card mb-3">
-					<img src="" class="card-img-top modalImagem" alt="">
-					<div class="card-body">
-						<h5 class="card-title modalTitulo"></h5>
-						<p class="card-text modalTexto"></p>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-12 text-center">
-						<button class="btn btn-primary mt-3 mb-3 col-md-6" id="btn-comentarios" type="button">Atualizar
-							Comentários</button>
-					</div>
-					<div class="col-12 d-flex justify-content-center">
-
-						<div class="col-12 div-comentarios">
-							<div class="col-12">
-								<div class="mb-3">
-									<input type="hidden" id="idPauta" name="idPauta" />
-									<input type="hidden" id="id_comentario" name="id_comentario" />
-									<textarea id="comentario" name="comentario" class="form-control" rows="5"
-										placeholder="Digite seu comentário aqui"></textarea>
-								</div>
-								<div class="mb-3 text-center">
-									<button class="btn btn-primary mt-3 col-md-6" id="enviar-comentario"
-										type="button">Enviar comentário</button>
-								</div>
+						<div class="mb-3">
+							<label for="address">Link da Imagem</label>
+							<div class="input-group">
+								<i class="input-group-text bi bi-link-45deg"></i>
+								<input type="text" class="form-control" id="imagem" name="imagem"
+									placeholder="Link da imagem da notícia" required>
 							</div>
-							<div class="card m-3 div-list-comentarios"></div>
 						</div>
-					</diV>
+
+						<div class="text-center preview_imagem_div mb-3 collapse">
+							<image class="img-thumbnail img-preview-modal" src="" data-toggle="tooltip" data-placement="top"
+								id="preview_imagem" title="Preview da Imagem da Pauta" style="max-height: 200px;" />
+						</div>
+					</form>
 				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary btn-reset" data-bs-dismiss="modal">Fechar</button>
+				<div class="modal-footer">
+					<button type="button" class="me-auto btn btn-outline-danger btn-excluir">Excluir pauta</button>
+					<button type="button" class="btn btn-secondary btn-reset" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary btn-enviar">Enviar</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+
+	<div class="modal modal-lg fade" id="modalComentariosPauta" tabindex="-1" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title fs-5">Comentários da Pauta</h3>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="card mb-3">
+						<img src="" class="card-img-top modalImagem" alt="">
+						<div class="card-body">
+							<h5 class="card-title modalTitulo"></h5>
+							<p class="card-text modalTexto"></p>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12 text-center">
+							<button class="btn btn-primary mt-3 mb-3 col-md-6" id="btn-comentarios" type="button">Atualizar
+								Comentários</button>
+						</div>
+						<div class="col-12 d-flex justify-content-center">
+
+							<div class="col-12 div-comentarios">
+								<div class="col-12">
+									<div class="mb-3">
+										<input type="hidden" id="idPauta" name="idPauta" />
+										<input type="hidden" id="id_comentario" name="id_comentario" />
+										<textarea id="comentario" name="comentario" class="form-control" rows="5"
+											placeholder="Digite seu comentário aqui"></textarea>
+									</div>
+									<div class="mb-3 text-center">
+										<button class="btn btn-primary mt-3 col-md-6" id="enviar-comentario"
+											type="button">Enviar comentário</button>
+									</div>
+								</div>
+								<div class="card m-3 div-list-comentarios"></div>
+							</div>
+						</diV>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-reset" data-bs-dismiss="modal">Fechar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
 
 <script>
 	$(document).ready(function () {

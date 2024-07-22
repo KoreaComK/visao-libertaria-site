@@ -284,14 +284,10 @@
 						<li class="nav-item">
 							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos dos colaboradores</a>
 						</li>
-						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-							<?php if (in_array('1', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item dropdown">
-									<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
-										aria-expanded="false">Pautas e Notícias</a>
-								</li>
-							<?php endif; ?>
-						<?php endif; ?>
+						<li class="nav-item dropdown">
+							<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
+								aria-expanded="false">Pautas e Notícias</a>
+						</li>
 						<?php if (isset($_SESSION) && isset($_SESSION['site_config']['paginas']['menu_site'])): ?>
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#">

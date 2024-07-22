@@ -23,9 +23,6 @@ class Pautas extends BaseController
 		$pautasModel = new \App\Models\PautasModel();
 		$pautas = $pautasModel->getPautas();
 
-		$verifica = new verificaPermissao();
-		$verifica->PermiteAcesso('1');
-
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];

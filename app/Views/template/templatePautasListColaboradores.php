@@ -21,7 +21,8 @@ use CodeIgniter\I18n\Time;
 					<ul class="nav nav-divider">
 						<li class="nav-item pointer">
 							<div class="d-flex text-muted">
-								<span class="">Sugerido por <a href="<?= site_url('site/colaborador/'); ?><?= urlencode($pauta['apelido']); ?>"
+								<span class="">Sugerido por <a
+										href="<?= site_url('site/colaborador/'); ?><?= urlencode($pauta['apelido']); ?>"
 										class="text-muted btn-link"><?= $pauta['apelido']; ?></a></span>
 							</div>
 						</li>
@@ -33,12 +34,14 @@ use CodeIgniter\I18n\Time;
 				<p class="card-text"><?= $pauta['texto']; ?></p>
 				<a href="<?= $pauta['link']; ?>" target="_blank" class="btn btn-outline-success btn-sm mb-1">Ler
 					Notícia</a>
-				<a href="" data-bs-titulo="<?= $pauta['titulo']; ?>" data-bs-texto="<?= $pauta['texto']; ?>"
-					data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
-					class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
-					data-bs-target="#modalComentariosPauta">Comentários</a>
-				<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $pauta['id']); ?>"
-					class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
+				<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+					<a href="" data-bs-titulo="<?= $pauta['titulo']; ?>" data-bs-texto="<?= $pauta['texto']; ?>"
+						data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-imagem="<?= $pauta['imagem']; ?>"
+						class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
+						data-bs-target="#modalComentariosPauta">Comentários</a>
+					<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $pauta['id']); ?>"
+						class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
+				<?php endif; ?>
 				<?php if ($pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 					<a href="<?= site_url('colaboradores/pautas/cadastrar/' . $pauta['id']); ?>"
 						data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
