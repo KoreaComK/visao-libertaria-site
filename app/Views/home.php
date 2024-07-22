@@ -320,7 +320,7 @@ use CodeIgniter\I18n\Time;
 								<!-- Card img -->
 								<div class="position-relative bg-image hover-zoom shadow-1-strong rounded"
 									data-mdb-ripple-init data-mdb-ripple-color="light">
-									<img class="card-img" alt="Card image" style="height:auto;"
+									<img class="card-img" alt="Card image" style="height:20rem; object-fit: cover;"
 										src="<?= $artigos[$max]['imagem']; ?>">
 									<a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>">
 										<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
