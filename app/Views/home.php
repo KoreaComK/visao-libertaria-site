@@ -455,7 +455,7 @@ use CodeIgniter\I18n\Time;
 
 								<div class="d-flex position-relative mb-3">
 									<span
-										class="me-3 mt-n1 fa-fw fw-bold fs-3 text-dark opacity-25"><?= ($chave + 1 > 10) ? ('0' . $chave + 1) : ($chave + 1); ?>
+										class="me-3 mt-n1 fa-fw fw-bold fs-3 text-dark opacity-25"><?= ($chave + 1 < 10) ? ('0' . $chave + 1) : ($chave + 1); ?>
 									</span>
 									<h6><a href="<?= site_url('site/artigo/' . $r['url_friendly']); ?>"
 											class="text-reset btn-link"><?= $r['titulo']; ?></a> -
