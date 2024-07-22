@@ -322,7 +322,7 @@ use CodeIgniter\I18n\Time;
 									data-mdb-ripple-init data-mdb-ripple-color="light">
 									<img class="card-img" alt="Card image" style="height:20rem; object-fit: cover;"
 										src="<?= $artigos[$max]['imagem']; ?>">
-									<a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>">
+									<a href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>">
 										<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
 									</a>
 									<!-- <div class="card-img-overlay d-flex align-items-start flex-column p-3">
@@ -333,7 +333,7 @@ use CodeIgniter\I18n\Time;
 											</div> -->
 								</div>
 								<div class="card-body px-3 pt-3">
-									<h4 class="card-title"><a href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
+									<h4 class="card-title"><a href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>"
 											class="btn-link text-reset stretched-link fw-bold"><?= $artigos[$max]['titulo']; ?></a>
 									</h4>
 									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
