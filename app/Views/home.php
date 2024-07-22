@@ -274,11 +274,11 @@ use CodeIgniter\I18n\Time;
 				<div class="main-carousel mb-4 mt-4">
 					<?php foreach ($banner as $chave => $b): ?>
 						<?php if ($chave > 3): ?>
-							<div class="carousel-cell mb-3">
-								<div class="card bg-image hover-zoom round-5">
+							<div class="carousel-cell mb-3" style="height: 15rem;">
+								<div class="card bg-image hover-zoom round-5" style="height: inherit;">
 									<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
-										style="height: inherit;">
-									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4">
+										style="height: inherit; object-fit: cover;">
+									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4" style="background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100 mt-auto">
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
