@@ -150,7 +150,7 @@ use CodeIgniter\I18n\Time;
 							<div class="col-12">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:15rem;">
-									<img src="<?= $banner[1]['imagem']; ?>" style="height:15rem;" />
+									<img src="<?= $banner[1]['imagem']; ?>" style="height:15rem; object-fit: cover;" />
 									<!-- Card Image -->
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
@@ -191,11 +191,11 @@ use CodeIgniter\I18n\Time;
 							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[2]['imagem']; ?>" style="height:15rem;" />
+									<img src="<?= $banner[2]['imagem']; ?>" style="height:15rem; object-fit: cover;" />
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="w-100" style="margin-top:2rem;">
+										<div class="w-100">
 											<!-- Card category -->
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[2]['url_friendly']) ?>"
@@ -231,11 +231,11 @@ use CodeIgniter\I18n\Time;
 							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[3]['imagem']; ?>" style="height: inherit;" />
+									<img src="<?= $banner[3]['imagem']; ?>" style="height: inherit; object-fit: cover;" />
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="w-100" style="margin-top:2rem;">
+										<div class="w-100">
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[3]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[3]['titulo']; ?></a>
@@ -314,7 +314,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 
 				<div class="main-carousel-videos mb-4 mt-4">
-					<?php for ($max = 0; $max < 5; $max++): ?>
+					<?php for ($max = 0; $max < 6; $max++): ?>
 						<div class="carousel-cell">
 							<div class="card mb-3 shadow-0">
 								<!-- Card img -->
@@ -379,7 +379,7 @@ use CodeIgniter\I18n\Time;
 
 							<?php if (is_array($artigos)): ?>
 								<?php foreach ($artigos as $chave => $artigo): ?>
-									<?php if ($chave > 4): ?>
+									<?php if ($chave > 5): ?>
 										<div class="card shadow-0 col-6 mb-3">
 											<div class="row g-3">
 												<div class="col-5">
