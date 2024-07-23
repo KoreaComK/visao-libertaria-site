@@ -10,7 +10,7 @@ use CodeIgniter\I18n\Time;
 <div class="container w-auto">
 
 	<!-- page content -->
-	<div class="my-3 p-3 bg-white rounded box-shadow">
+	<div class="my-3 p-3 rounded box-shadow">
 		<div class="row">
 			<div class="offset-lg-1 col-lg-10 col-md-12 col-12 mb-4">
 
