@@ -30,7 +30,8 @@ class Site extends BaseController
 		$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
 		$artigosModel = new \App\Models\ArtigosModel();
 		
-		$quantidade_artigos = 4;
+		$inicial = 4;
+		$quantidade_artigos = $inicial;
 		if($data['config']['home_banner_mostrar'] == '1') {
 			$quantidade_artigos += $data['config']['home_banner'];
 		}
@@ -45,7 +46,7 @@ class Site extends BaseController
 			$data['banner'] = [];
 			$data['artigos'] = [];
 			for ($i = 0; $i < count($artigos); $i++) {
-				if (isset($artigos[$i]) && count($data['banner']) < $data['config']['home_banner']) {
+				if (isset($artigos[$i]) && count($data['banner']) < ($data['config']['home_banner'])+$inicial) {
 					$data['banner'][] = $artigos[$i];
 				} else {
 					$data['artigos'][] = $artigos[$i];
