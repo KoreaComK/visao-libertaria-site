@@ -1130,7 +1130,7 @@ class Artigos extends BaseController
 
 	public function detalhamento($artigoId = null)
 	{
-		$this->verificaPermissao->PermiteAcesso('4');
+		$this->verificaPermissao->PermiteAcesso('1');
 		if ($artigoId === null) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
 		}
@@ -1164,8 +1164,10 @@ class Artigos extends BaseController
 			}
 		}
 
-		if (!$permitido) {
-			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
+		$data['permitido'] = $permitido;
+
+		if (!$permitido && ($artigo['fase_producao_id']=='6' || $artigo['fase_producao_id']=='7')) {
+			return redirect()->to(base_url() . 'site/artigo/'.$artigo['url_friendly']);
 		}
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();

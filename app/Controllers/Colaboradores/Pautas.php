@@ -297,6 +297,24 @@ class Pautas extends BaseController
 		return json_encode($data['post']);
 	}
 
+	public function detalhamento($idPautas = null)
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$data = array();
+		$pautasModel = new \App\Models\PautasModel();
+
+		if ($idPautas != null) {
+			$data['pauta'] = $pautasModel->withDeleted()->find($idPautas);
+			if ($data['pauta'] != null || !empty($data['pauta'])) {
+				return view('colaboradores/colaborador_pautas_detalhes', $data);
+			}
+		}
+		return redirect()->to(base_url() . 'colaboradores/pautas');
+	}
+
 	public function excluir($idPauta = null)
 	{
 		$verifica = new verificaPermissao();

@@ -89,7 +89,7 @@
 				</div>
 			<?php endif; ?>
 
-			<?php if ($artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if ($permitido && $artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -148,7 +148,7 @@
 				</div>
 			<?php endif; ?>
 
-			<?php if ($artigo['fase_producao_id'] == '4' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if ($permitido && $artigo['fase_producao_id'] == '4' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -220,7 +220,7 @@
 
 			<?php endif; ?>
 
-			<?php if ($artigo['fase_producao_id'] == '5'): ?>
+			<?php if ($permitido && $artigo['fase_producao_id'] == '5'): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -295,7 +295,7 @@
 				</div>
 			<?php endif; ?>
 
-			<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if ($permitido && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 
 
 				<div class="card border mt-4">

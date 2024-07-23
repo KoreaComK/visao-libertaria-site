@@ -39,7 +39,7 @@ class ColaboradoresNotificacoes {
 		}
 
 		if($objeto == 'pautas') {
-			$pauta = $this->pautasModel->find($idObjeto);
+			$pauta = $this->pautasModel->withDeleted()->find($idObjeto);
 			$notificacao.=' {link}'.$pauta['titulo'].'{/link}';
 		} elseif($objeto == 'artigos') {
 			$artigo = $artigo = $this->artigosModel->withDeleted()->find($idObjeto);
@@ -70,7 +70,7 @@ class ColaboradoresNotificacoes {
 
 		$destinatarios = array();
 		if($objeto == 'pautas') {
-			$pauta = $this->pautasModel->find($idObjeto);
+			$pauta = $this->pautasModel->withDeleted()->find($idObjeto);
 			$destinatarios[] = $pauta['colaboradores_id'];
 			if($comentario === true) {
 				$this->pautasComentariosModel->where("pautas_id",$idObjeto);
