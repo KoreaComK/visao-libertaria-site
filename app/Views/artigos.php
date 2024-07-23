@@ -94,7 +94,7 @@ use CodeIgniter\I18n\Time;
 								<ul class="nav nav-divider">
 									<li class="nav-item pointer">
 										<div class="d-flex text-muted">
-											<span class="">Por <a href="<?= site_url('site/colaborador/'); ?><?= urlencode($artigo['apelido']); ?>"
+											<span class="">Por <a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['apelido']); ?>"
 													class="text-muted btn-link"><?= $artigo['apelido']; ?></a></span>
 										</div>
 									</li>

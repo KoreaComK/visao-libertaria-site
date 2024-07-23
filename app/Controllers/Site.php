@@ -636,11 +636,11 @@ class Site extends BaseController
 		$data = array();
 		$colaborador = $colaborador[0];
 
-		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
-		$data['contador_artigos'] = 0;
-		if ($artigos !== null && !empty($artigos)) {
-			$data['contador_artigos'] = count($artigos);
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->get()->getResultArray();
+		$data['contador_pautas'] = 0;
+		if ($pautas !== null && !empty($pautas)) {
+			$data['contador_pautas'] = count($pautas);
 		}
 
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
@@ -650,7 +650,36 @@ class Site extends BaseController
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
 		
-		return view('escritor', $data);
+		return view('colaborador', $data);
+	}
+
+	public function colaboradorList($apelido = NULL)
+	{
+		if($apelido === NULL) {
+			return false;
+		}
+
+		$apelido = urldecode($apelido);
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		if ($colaborador === null || empty($colaborador)) {
+			return false;
+		}
+		$colaborador = $colaborador[0];
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado','DESC');
+		if ($this->request->getMethod() == 'get') {
+			$data['pautasList'] = [
+				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+				'pager' => $pautas->pager
+			];
+		}
+		return view('template/templatePautasColaboradorList', $data);
 	}
 
 	public function links(): string

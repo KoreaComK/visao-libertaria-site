@@ -226,6 +226,9 @@
 					<div class="card border">
 						<!-- Card body -->
 						<div class="card-body">
+							<div class="d-flex justify-content-center">
+								<a href="<?=site_url('colaboradores/artigos/cadastrar/').$artigo['id'];?>" class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo">Editar artigo</a>
+							</div>
 							<form class="needs-validation w-100" id="artigo_form" novalidate="yes" method="post">
 								<div class="mb-3">
 									<label for="username">Tags do Vídeo no YouTube <span class="text-muted">(colocar #

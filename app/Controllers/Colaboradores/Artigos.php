@@ -110,7 +110,11 @@ class Artigos extends BaseController
 			$artigo = $artigosModel->find($artigoId);
 
 			$colaborador = $this->session->get('colaboradores')['id'];
-			if ($artigo === NULL || empty($artigo) || ($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) || ($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id'])) {
+			if (	$artigo === NULL || empty($artigo) || 
+					($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) ||
+					($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id']) ||
+					(!in_array('6',$this->session->get('colaboradores')['permissoes']) && !in_array('7',$this->session->get('colaboradores')['permissoes']))
+			){
 				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/');
 			}
 			$data['artigo'] = $artigo;
