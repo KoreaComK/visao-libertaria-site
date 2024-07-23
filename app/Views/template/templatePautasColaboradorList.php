@@ -6,7 +6,7 @@
 		<div class="card shadow-0 col-sm-6 col-lg-4">
 			<a href="<?= site_url('colaboradores/pautas/detalhamento/' . $pauta['id']); ?>">
 				<div class="bg-image hover-zoom rounded-3">
-					<img class="w-100 object-fit-cover" src="<?= $pauta['imagem']; ?>">
+					<img class="w-100 object-fit-cover" style="max-height: 20rem;" src="<?= $pauta['imagem']; ?>">
 				</div>
 			</a>
 			<div class="card-body p-2">
