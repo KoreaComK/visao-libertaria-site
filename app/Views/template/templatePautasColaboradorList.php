@@ -3,7 +3,7 @@
 <?php if ($pautasList['pautas'] !== NULL && !empty($pautasList['pautas'])): ?>
 	<?php foreach ($pautasList['pautas'] as $pauta): ?>
 
-		<div class="card shadow-0 col-sm-6 col-lg-4">
+		<div class="card shadow-0 col-sm-6 col-lg-3">
 			<a href="<?= site_url('colaboradores/pautas/detalhamento/' . $pauta['id']); ?>">
 				<div class="bg-image hover-zoom rounded-3">
 					<img class="w-100 object-fit-cover" style="max-height: 20rem;" src="<?= $pauta['imagem']; ?>">
