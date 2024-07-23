@@ -301,6 +301,10 @@
 								</ul>
 							</li>
 						<?php endif; ?>
+						<li class="nav-item dropdown">
+							<a class="nav-link" href="<?= site_url('site/contato'); ?>" role="button"
+								aria-expanded="false">Contato</a>
+						</li>
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
@@ -379,6 +383,12 @@
 						<div class="col-6">
 							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
+								</li>
+							</ul>
+						</div>
+						<div class="col-6">
+							<ul class="nav flex-column">
+								<li class="nav-item"><a class="mb-2" href="<?= site_url('links'); ?>">Todos os projetos</a>
 								</li>
 							</ul>
 						</div>

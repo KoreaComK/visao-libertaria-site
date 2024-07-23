@@ -451,7 +451,7 @@ class Pautas extends BaseController
 		}
 	}
 
-	function pautasFechadasList()
+	public function pautasFechadasList()
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');

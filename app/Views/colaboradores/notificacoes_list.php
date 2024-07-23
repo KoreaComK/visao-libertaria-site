@@ -33,9 +33,9 @@ use CodeIgniter\I18n\Time;
 												<?= ($n['sujeito_colaboradores_id'] == $_SESSION['colaboradores']['id']) ? ('Você ') : ($n['apelido']); ?>
 												<?= $n['acao']; ?>
 												<?php if ($n['objeto'] == 'pautas'): ?>
-													<?= str_replace('{link}', '<a href="' . base_url("colaboradores/pautas/detalhamento/" . $n["id_objeto"]) . '">', str_replace('{/link}', '</a>', $n['notificacao'])); ?>
+													<?= str_replace('{link}', '<a href="' . base_url("colaboradores/pautas/detalhamento/" . $n["id_objeto"]) . '" class="btn-link ">', str_replace('{/link}', '</a>', $n['notificacao'])); ?>
 												<?php elseif ($n['objeto'] == 'artigos'): ?>
-													<?= str_replace('{link}', '<a href="' . base_url("colaboradores/artigos/detalhamento/" . $n["id_objeto"]) . '">', str_replace('{/link}', '</a>', $n['notificacao'])); ?>
+													<?= str_replace('{link}', '<a href="' . base_url("colaboradores/artigos/detalhamento/" . $n["id_objeto"]) . '" class="btn-link ">', str_replace('{/link}', '</a>', $n['notificacao'])); ?>
 												<?php endif; ?>
 												<?= $n['tempo']; ?>
 											</p>

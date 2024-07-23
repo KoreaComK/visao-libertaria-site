@@ -47,6 +47,18 @@ abstract class BaseController extends Controller
 	{
 		$this->session = \Config\Services::session();
 		$this->session->start();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+	{
+		// Do Not Edit This Line
+		parent::initController($request, $response, $logger);
+
+		$this->session = \Config\Services::session();
+		$this->session->start();
 
 		if (!($this->session->has('site_config')) || !isset($this->session->get('colaboradores')['texto_nome'])) {
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
@@ -94,15 +106,6 @@ abstract class BaseController extends Controller
 			];
 			$this->session->set($estrutura_session);
 		}
-	}
-
-	/**
-	 * @return void
-	 */
-	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-	{
-		// Do Not Edit This Line
-		parent::initController($request, $response, $logger);
 
 		$this->session = \Config\Services::session();
 		$this->session->start();

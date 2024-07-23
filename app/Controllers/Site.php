@@ -652,6 +652,12 @@ class Site extends BaseController
 		return view('escritor', $data);
 	}
 
+	public function links(): string
+	{
+		$data = array();
+		return view('links', $data);
+	}
+
 	private function verificaCaptcha($captcha_response)
 	{
 		if($captcha_response == NULL || $captcha_response == '') {
