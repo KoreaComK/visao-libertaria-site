@@ -286,7 +286,7 @@ use CodeIgniter\I18n\Time;
 
 	const quill_artigo_regras_escrever = new Quill('#editor_artigo_regras_escrever', options);
 	<?php if (isset($dados['artigo_regras_escrever'])): ?>
-		value = '<?= $dados['artigo_regras_escrever'] ?>';
+		value = '<?= preg_replace('/\s\s+/', '\n', $dados['artigo_regras_escrever']); ?>';
 		delta = quill_artigo_regras_escrever.clipboard.dangerouslyPasteHTML(value);
 	<?php endif; ?>
 
