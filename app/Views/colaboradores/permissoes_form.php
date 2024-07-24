@@ -166,7 +166,7 @@ use CodeIgniter\I18n\Time;
 					<div class="row">
 						<?php if (!empty($artigos['lista']) && $artigos['lista'] !== NULL): ?>
 							<?php foreach ($artigos['lista'] as $chave => $artigo): ?>
-								<?php if ($chave > 2): ?>
+								<?php if ($chave < 4): ?>
 									<div class="col-12">
 										<div class="d-flex align-items-center position-relative">
 											<img class="col-2 rounded-3" src="<?= $artigo['imagem']; ?>" alt="Imagem">
@@ -204,7 +204,7 @@ use CodeIgniter\I18n\Time;
 					<div class="row">
 						<?php if (!empty($pautas['lista']) && $pautas['lista'] !== NULL): ?>
 							<?php foreach ($pautas['lista'] as $chave => $pauta): ?>
-								<?php if ($chave > 2): ?>
+								<?php if ($chave < 4): ?>
 									<div class="col-12">
 										<div class="d-flex align-items-center position-relative">
 											<img class="col-2 rounded-3" src="<?= $pauta['imagem']; ?>" alt="Imagem">
