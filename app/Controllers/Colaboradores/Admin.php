@@ -61,6 +61,111 @@ class Admin extends BaseController
 		return view('colaboradores/administracao_dashboard', $data);
 	}
 
+	public function administracao()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$artigosModel = new \App\Models\ArtigosModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+
+		if ($this->request->isAJAX()) {
+			$post = $this->request->getPost();
+
+			// if (!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+			if (!empty($this->request->getFiles()) && ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+				$validaFormularios = new \App\Libraries\ValidaFormularios();
+
+				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
+				if (empty($valida->getErrors())) {
+					// if ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
+					// 	$file = $this->request->getFiles()['banner'];
+					// 	$nome_arquivo = 'banner.png';
+					// 	if (!$file->move('public/assets', $nome_arquivo, true)) {
+					// 		return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+					// 	}
+					// }
+					if ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['estilos'];
+						$nome_arquivo = 'estilos.css';
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+					if ($this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['rodape'];
+						$nome_arquivo = 'rodape.png';
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+					if ($this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
+						$file = $this->request->getFiles()['favicon'];
+						$nome_arquivo = 'favicon.ico';
+						if (!$file->move('public/assets', $nome_arquivo, true)) {
+							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+						}
+					}
+
+				} else {
+					return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+				}
+			}
+
+			foreach ($post as $indice => $dado) {
+				$gravar = array();
+				if ($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
+					$indice = 'cron_pautas_data_delete';
+					$gravar[$indice] = $post['cron_pautas_data_delete_number'] . ' ' . $post['cron_pautas_data_delete_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_revisao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_revisao_number') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_revisao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_revisao_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_narracao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_narracao_time') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_narracao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_narracao_time'];
+				} elseif ($indice == 'cron_artigos_teoria_desmarcar_data_producao_number' || $indice == 'cron_artigos_teoria_desmarcar_data_producao_time') {
+					$indice = 'cron_artigos_teoria_desmarcar_data_producao';
+					$gravar[$indice] = $post['cron_artigos_teoria_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_teoria_desmarcar_data_producao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_revisao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_revisao_number') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_revisao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_revisao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_revisao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_narracao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_narracao_time') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_narracao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_narracao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_narracao_time'];
+				} elseif ($indice == 'cron_artigos_noticia_desmarcar_data_producao_number' || $indice == 'cron_artigos_noticia_desmarcar_data_producao_time') {
+					$indice = 'cron_artigos_noticia_desmarcar_data_producao';
+					$gravar[$indice] = $post['cron_artigos_noticia_desmarcar_data_producao_number'] . ' ' . $post['cron_artigos_noticia_desmarcar_data_producao_time'];
+				} elseif ($indice == 'cron_notificacoes_data_visualizado_number' || $indice == 'cron_notificacoes_data_visualizado_time') {
+					$indice = 'cron_notificacoes_data_visualizado';
+					$gravar[$indice] = $post['cron_notificacoes_data_visualizado_number'] . ' ' . $post['cron_notificacoes_data_visualizado_time'];
+				} elseif ($indice == 'cron_notificacoes_data_cadastrado_number' || $indice == 'cron_notificacoes_data_cadastrado_time') {
+					$indice = 'cron_notificacoes_data_cadastrado';
+					$gravar[$indice] = $post['cron_notificacoes_data_cadastrado_number'] . ' ' . $post['cron_notificacoes_data_cadastrado_time'];
+				} elseif ($indice == 'cron_email_carteira_data_number' || $indice == 'cron_email_carteira_data_time') {
+					$indice = 'cron_email_carteira_data';
+					$gravar[$indice] = $post['cron_email_carteira_data_number'] . ' ' . $post['cron_email_carteira_data_time'];
+				} elseif ($indice == 'cron_artigos_descartar_data_number' || $indice == 'cron_artigos_descartar_data_time') {
+					$indice = 'cron_artigos_descartar_data';
+					$gravar[$indice] = $post['cron_artigos_descartar_data_number'] . ' ' . $post['cron_artigos_descartar_data_time'];
+				} else {
+					$gravar[$indice] = $dado;
+				}
+				if (!$configuracaoModel->update($indice, array('config_valor' => $gravar[$indice]))) {
+					return $retorno->retorno(false, 'Erro ao atualizar as configurações.', true);
+				}
+			}
+			return $retorno->retorno(true, 'Atualização feita com sucesso.', true);
+		}
+
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_detail', $data);
+	}
+
 	public function configuracoes()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
