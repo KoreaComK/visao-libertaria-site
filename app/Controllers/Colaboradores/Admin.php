@@ -205,7 +205,7 @@ class Admin extends BaseController
 		$configuracao = array();
 		$data = array();
 		foreach ($configuracoes as $conf) {
-			$configuracao[$conf['config']] = $conf['config_valor'];
+			$configuracao[$conf['config']] = addslashes($conf['config_valor']);
 		}
 		$data['dados'] = $configuracao;
 		return view('colaboradores/administracao_regras_colaborar', $data);
