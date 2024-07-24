@@ -427,7 +427,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 
 
-				<?php if ($config['home_newsletter_mostrar'] == '0'): ?>
+				<?php if ($config['home_newsletter_mostrar'] == '1'): ?>
 					<div class="pb-3">
 						<div class="mb-4 d-md-flex justify-content-between align-items-center">
 							<h3 class="m-0">Newsletter</h3>
