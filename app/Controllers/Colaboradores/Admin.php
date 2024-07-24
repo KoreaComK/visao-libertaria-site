@@ -19,7 +19,46 @@ class Admin extends BaseController
 
 	public function dashboard()
 	{
-		return redirect()->to(base_url() . 'colaboradores/admin/administracao');
+		$this->verificaPermissao->PermiteAcesso('7');
+		$artigosModel = new \App\Models\ArtigosModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		$data['artigos'] = array();
+		$data['pautas'] = array();
+
+		$time_atual = new Time('-30 days');
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['escritos'] = count($artigos);
+		
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("descartado IS NOT NULL");
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['descartados'] = count($artigos);
+
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->whereIn("fase_producao_id",array('5','6','7'));
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['produzidos'] = count($artigos);
+
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->whereIn("fase_producao_id",array('5'));
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['publicar'] = count($artigos);
+
+
+		return view('colaboradores/administracao_dashboard', $data);
 	}
 
 	public function configuracoes()
@@ -65,17 +104,6 @@ class Admin extends BaseController
 		}
 		$data['dados'] = $configuracao;
 		return view('colaboradores/administracao_regras_colaborar', $data);
-	}
-
-
-	public function administracao()
-	{
-		$this->verificaPermissao->PermiteAcesso('7');
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$retorno = new \App\Libraries\RetornoPadrao();
-
-		$data = array();
-		return view('colaboradores/administracao_dashboard', $data);
 	}
 
 	public function permissoes($idColaboradores = NULL)
