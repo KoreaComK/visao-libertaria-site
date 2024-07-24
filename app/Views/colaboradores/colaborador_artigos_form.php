@@ -365,7 +365,7 @@ use CodeIgniter\I18n\Time;
 								Usei a ferramenta <a class="btn-link" href="https://www.duplichecker.com/"
 									target="_blank">Dupli Checker</a> e <a class="btn-link" href="https://www.zerogpt.com/"
 									target="_blank">ZeroGPT</a>
-								e em conjunto com a revisão não foram encontrados nenhum indício de plágio ou que o texto
+								e em conjunto com a revisão não foi encontrado nenhum indício de plágio ou que o texto
 								seja de IA.
 							</label>
 						</div>
