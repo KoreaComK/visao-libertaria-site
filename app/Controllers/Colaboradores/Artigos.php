@@ -744,7 +744,7 @@ class Artigos extends BaseController
 				return $retorno->retorno(false, 'Você não tem permissão para enviar para pagamento.', true);
 			}
 
-			if ($artigo['link_produzido'] === NULL) {
+			if ($artigo['link_video_youtube'] === NULL) {
 				return $retorno->retorno(false, 'Você não publicou o artigo. Envie o link do vídeo antes de submetê-lo para pagamento.', true);
 			}
 

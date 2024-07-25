@@ -229,7 +229,7 @@
 							<div class="row">
 								<div class="col-4">
 									<div class="d-flex justify-content-center">
-										<a href="<?= $artigo['link_video_youtube']; ?>" target="_blank"
+										<a href="<?= $artigo['link_produzido']; ?>" target="_blank"
 											class="btn btn-secondary btn-lg btn-block mb-3">Vídeo do Youtube</a>
 									</div>
 								</div>
