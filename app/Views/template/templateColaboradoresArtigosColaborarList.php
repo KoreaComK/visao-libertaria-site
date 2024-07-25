@@ -8,7 +8,7 @@
 			<th scope="col" class="border-0">Título</th>
 			<th scope="col" class="border-0">Última atualização</th>
 			<th scope="col" class="border-0">Tipo</th>
-			<th scope="col" class="border-0">Status</th>
+			<th scope="col" class="border-0">Marcado</th>
 			<th scope="col" class="border-0 rounded-end"></th>
 		</tr>
 	</thead>
@@ -38,7 +38,7 @@
 					<!-- Table data -->
 					<td>
 						<span
-							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?> mb-2"><?= $artigo['nome']; ?></span>
+							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?> mb-2"><?= ($artigo['marcado'] != NULL) ? ($artigo['marcado']) : ('Disponível'); ?></span>
 					</td>
 					<!-- Table data -->
 					<td class="">
