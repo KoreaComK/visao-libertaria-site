@@ -269,12 +269,6 @@ use CodeIgniter\I18n\Time;
 										type="button">Atualizar
 										Comentários</button>
 								</div>
-								<div class="mensagem-comentario p-3 mb-2 rounded text-white text-center col-12"
-									style="display: none;">
-								</div>
-								<div class="mensagem-salvar p-3 mb-2 rounded text-white text-center col-12"
-									style="display: none;">
-								</div>
 								<div class="col-12 d-flex justify-content-center">
 
 									<div class="col-12 div-comentarios">

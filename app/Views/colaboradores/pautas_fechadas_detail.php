@@ -13,7 +13,6 @@ use CodeIgniter\I18n\Time;
 			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
 		</div>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<div class="my-3 p-3 rounded box-shadow">
 		<?php $tag = NULL; ?>
 		<?php foreach ($pautasList as $tag => $pautas): ?>

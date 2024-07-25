@@ -94,7 +94,7 @@ use CodeIgniter\I18n\Time;
 								class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
 						<?php endif; ?>
 						<?php if (isset($_SESSION['colaboradores']['id']) && $pauta['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
-							<a href="<?= site_url('colaboradores/pautas/cadastrar/' . $pauta['id']); ?>"
+							<a href="javascript:void(0);"
 								data-bs-pautas-id="<?= $pauta['id']; ?>" data-bs-toggle="modal"
 								data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Alterar a pauta"
 								class="btn btn-warning btn-sm mb-1">Editar</a>
@@ -131,8 +131,7 @@ use CodeIgniter\I18n\Time;
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<form method="post" id="pautas_form" name="pautas_form"
-						action="<?= site_url('colaboradores/pautas/cadastrar'); ?>">
+					<form method="post" id="pautas_form" name="pautas_form">
 
 						<div class="mb-3">
 							<label for="username">Link da Notícia</label>

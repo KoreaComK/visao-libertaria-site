@@ -60,12 +60,6 @@
 										type="button">Atualizar
 										Comentários</button>
 								</div>
-								<div class="mensagem-comentario p-3 mb-2 rounded text-white text-center col-12"
-									style="display: none;">
-								</div>
-								<div class="mensagem-salvar p-3 mb-2 rounded text-white text-center col-12"
-									style="display: none;">
-								</div>
 								<div class="col-12 d-flex justify-content-center">
 
 									<div class="col-12 div-comentarios">
@@ -514,9 +508,7 @@
 						$('.text-descricao').select();
 						document.execCommand('copy');
 					} else {
-						$('.mensagem').show();
-						$('.mensagem').html(retorno.mensagem);
-						$('.mensagem').addClass('bg-danger');
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
 				}
 			});

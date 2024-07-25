@@ -228,22 +228,24 @@ class Pautas extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
+		
+		return redirect()->to(base_url() . 'colaboradores/pautas');
 
-		if ($isAdmin) {
-			$colaboradoresModel = new \App\Models\ColaboradoresModel();
-			$colaboradoresModel->join('colaboradores_atribuicoes', 'colaboradores.id = colaboradores_atribuicoes.colaboradores_id')
-				->where('colaboradores_atribuicoes.atribuicoes_id', '11');
-			$colaboradores = $colaboradoresModel->get()->getResultArray();
-			$data['redatores'] = $colaboradores;
-		}
+		// if ($isAdmin) {
+		// 	$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		// 	$colaboradoresModel->join('colaboradores_atribuicoes', 'colaboradores.id = colaboradores_atribuicoes.colaboradores_id')
+		// 		->where('colaboradores_atribuicoes.atribuicoes_id', '11');
+		// 	$colaboradores = $colaboradoresModel->get()->getResultArray();
+		// 	$data['redatores'] = $colaboradores;
+		// }
 
-		if ($idPautas != null) {
-			$data['post'] = $pautasModel->find($idPautas);
-			if ($data['post'] == NULL || $data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
-				return redirect()->to(base_url() . 'colaboradores/pautas');
-			}
-		}
-		return view('colaboradores/pautas_form', $data);
+		// if ($idPautas != null) {
+		// 	$data['post'] = $pautasModel->find($idPautas);
+		// 	if ($data['post'] == NULL || $data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
+		// 		return redirect()->to(base_url() . 'colaboradores/pautas');
+		// 	}
+		// }
+		// return view('colaboradores/pautas_form', $data);
 	}
 
 	public function verificaImagem()

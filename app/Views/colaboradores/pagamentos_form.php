@@ -8,7 +8,6 @@
 			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
 		</div>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation w-100" novalidate="yes" method="post" id="pagamentos_form">
 
@@ -200,13 +199,13 @@
 				beforeSend: function () { $('#modal-loading').show(); },
 				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
-					console.log(retorno);
 					if (retorno.status) {
-						window.location.href = "<?= base_url('colaboradores/admin/financeiro'); ?>";
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						setTimeout(function () {
+							window.location.href = "<?= base_url('colaboradores/admin/financeiro'); ?>";
+						}, 2000);
 					} else {
-						$('.mensagem').show();
-						$('.mensagem').html(retorno.mensagem);
-						$('.mensagem').addClass('bg-danger');
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 						$('#titulo').focus();
 					}
 				}
