@@ -18,7 +18,7 @@
 		<?php if ($artigosList['artigos'] !== NULL && !empty($artigosList['artigos'])): ?>
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
 				<tr
-					class="<?= ($colaborador === $artigo['marcado_colaboradores_id']) ? ('table-primary bg-opacity-10') : (''); ?>">
+					class="<?= ($colaborador === $artigo['marcado_colaboradores_id']) ? ('table-primary bg-opacity-10') : (($artigo['marcado_colaboradores_id'] != NULL) ? ('table-danger bg-opacity-10') : ('')); ?>">
 					<!-- Table data -->
 					<td>
 						<img class="rounded-3" src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />

@@ -314,7 +314,7 @@
 						<div class="form-check form-switch">
 							<input class="form-check-input" type="checkbox" id="reverter2">
 							<label class="form-check-label" for="reverter2">
-								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
+								Deixei um comentário no artigo informando o motivo da reversão para o escritor.
 							</label>
 						</div>
 						<div class="text-center">
