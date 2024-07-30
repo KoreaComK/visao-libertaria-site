@@ -121,7 +121,7 @@ class Perfil extends BaseController
 
 		$data['lista_pagamentos'] = $this->widgetPagamentos();
 
-		$data['lista_pautas'] = $this->widgetPautas($session);
+		//$data['lista_pautas'] = $this->widgetPautas($session);
 
 		$data['limites'] = $this->widgetLimites($session);
 
@@ -301,17 +301,17 @@ class Perfil extends BaseController
 		return $pagamentos;
 	}
 
-	private function widgetPautas($colaborador)
-	{
-		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])
-		->where('reservado IS NOT NULL')
-		->where('tag_fechamento IS NOT NULL')
-		->where('excluido IS NOT NULL')
-		->orderBy('reservado','DESC')
-		->get()->getResultArray();
-		return $pautas;
-	}
+	// private function widgetPautas($colaborador)
+	// {
+	// 	$pautasModel = new \App\Models\PautasModel();
+	// 	$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])
+	// 	->where('reservado IS NOT NULL')
+	// 	->where('tag_fechamento IS NOT NULL')
+	// 	->where('excluido IS NOT NULL')
+	// 	->orderBy('reservado','DESC')
+	// 	->get()->getResultArray();
+	// 	return $pautas;
+	// }
 
 	private function gravarColaborador($tipo, $dados, $id = null)
 	{
