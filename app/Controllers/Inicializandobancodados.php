@@ -154,6 +154,7 @@ class Inicializandobancodados extends BaseController
 			`multiplicador_escrito` float DEFAULT 0,
 			`multiplicador_revisado` float DEFAULT 0,
 			`multiplicador_narrado` float DEFAULT 0,
+			`multiplicador_produzido` float DEFAULT 0,
 			`multiplicador_escrito_noticia` float DEFAULT 0,
 			`multiplicador_revisado_noticia` float DEFAULT 0,
 			`multiplicador_narrado_noticia` float DEFAULT 0,
