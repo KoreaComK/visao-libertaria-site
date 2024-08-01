@@ -324,7 +324,9 @@ class Artigos extends BaseController
 				$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
 			}
 			foreach ($artigos as $artigo) {
-				$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
+				if(isset($data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')])){
+					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;	
+				}
 			}
 		}
 
