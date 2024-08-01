@@ -4,18 +4,18 @@
 		function getColors($x) : string
 		{
 			if(strtolower($x)=='pautas'){
-				return 'badge-secondary';
+				return 'bg-secondary';
 			}
 			if(strtolower($x)=='revisar'){
-				return 'badge-danger';
+				return 'bg-danger';
 			}
 			if(strtolower($x)=='narrar'){
-				return 'badge-warning';
+				return 'bg-warning';
 			}
 			if(strtolower($x)=='produzir'){
-				return 'badge-success';
+				return 'bg-success';
 			}
-			return 'badge-primary';
+			return 'bg-primary';
 		}
 	}
 ?>

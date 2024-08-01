@@ -1,5 +1,6 @@
 <?php
 use CodeIgniter\I18n\Time;
+
 ?>
 <?= $this->extend('layouts/main'); ?>
 
@@ -8,14 +9,14 @@ use CodeIgniter\I18n\Time;
 
 <div class="container mb-3">
 	<div class="main-body">
-		<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 		<div class="row">
 			<div class="col-lg-4">
 				<div class="card mb-3">
 					<div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
-							<img src="<?= ($colaboradores['avatar']!=NULL)?($colaboradores['avatar']):(site_url('public/assets/avatar-default.png')); ?>" id="avatar_perfil"
-								class="rounded-circle p-1 bg-primary vl-bg-c" width="110" height="110">
+							<img src="<?= ($colaboradores['avatar'] != NULL) ? ($colaboradores['avatar']) : (site_url('public/assets/avatar-default.png')); ?>"
+								id="avatar_perfil" class="rounded-circle p-1 bg-primary vl-bg-c" width="110"
+								height="110">
 							<div class="mt-3">
 								<h4 class="apelido_colaborador">
 									<?= $colaboradores['apelido'] ?>
@@ -25,26 +26,30 @@ use CodeIgniter\I18n\Time;
 								</p>
 								<p class="text-secondary mb-1">
 									<?php foreach ($atribuicoes as $atribuicao): ?>
-										<label class="badge badge-<?= $atribuicao['cor']; ?>"><?= $atribuicao['nome']; ?></label>
+										<label
+											class="badge bg-<?= $atribuicao['cor']; ?>"><?= $atribuicao['nome']; ?></label>
 									<?php endforeach; ?>
 								</p>
-								<button class="btn btn-primary" data-toggle="modal" data-target="#modal-perfil">Editar
+								<button class="btn btn-primary" data-bs-toggle="modal"
+									data-bs-target="#modal-perfil">Editar
 									Perfil</button>
-								<button class="btn btn-outline-primary" data-toggle="modal"
-									data-target="#modal-senha">Trocar senha</button>
+								<button class="btn btn-outline-primary" data-bs-toggle="modal"
+									data-bs-target="#modal-senha">Trocar senha</button>
 							</div>
 						</div>
 						<hr class="my-4">
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-								<h6 class="mb-0"><a href="<?= site_url('colaboradores/artigos/index/'.$colaboradores['id']); ?>">Listar artigos do
-									colaborador</a></h6>
+								<h6 class="mb-0"><a
+										href="<?= site_url('site/escritor/' . urlencode($colaboradores['apelido'])); ?>">Listar
+										artigos do
+										colaborador</a></h6>
 							</li>
 						</ul>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-								<h6 class="mb-0"><a href="#modal-pautas" data-toggle="modal" data-target="#modal-pautas">Listar pautas 
-									usadas em vídeos</a></h6>
+								<h6 class="mb-0"><a href="<?= site_url('site/colaborador/' . urlencode($colaboradores['apelido'])); ?>">Listar pautas
+										usadas em vídeos</a></h6>
 							</li>
 						</ul>
 					</div>
@@ -63,8 +68,8 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 						<div class="border-light">
-							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-toggle="modal"
-								data-target="#modal-pagamentos">Ver Todos os Pagamentos</a></h6>
+							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-bs-toggle="modal"
+									data-bs-target="#modal-pagamentos">Ver Todos os Pagamentos</a></h6>
 						</div>
 					</div>
 				</div>
@@ -90,8 +95,8 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 						<div class="border-light">
-							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-toggle="modal"
-									data-target="#modal-colaboracoes">Ver listagem</a></h6>
+							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-bs-toggle="modal"
+									data-bs-target="#modal-colaboracoes">Ver listagem</a></h6>
 						</div>
 					</div>
 				</div>
@@ -100,55 +105,73 @@ use CodeIgniter\I18n\Time;
 						<div class="card">
 							<div class="card-body">
 								<h4 class="d-flex align-items-center mb-3">Informações úteis:</h5>
-								<div class="row">
-									<div class="col-md-6 col-lg-6 col-12">
-										<div class="card p-3 mb-3">
-											<div class="d-flex justify-content-between">
-												<h5> <span>Limite Diário de Pautas</span> </h5>
-											</div>
-											<div class="mt-2">
-												<?php if($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
-													<div class="mt-1 mb-1">	
-														Limites serão renovados em <?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
-													</div>
-												<?php endif; ?>
-												<div class="progress">
-													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_diario_usadas']/$limites['limite_pautas_diario'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="row">
+										<div class="col-md-6 col-lg-6 col-12">
+											<div class="card p-3 mb-3">
+												<div class="d-flex justify-content-between">
+													<h5> <span>Limite Diário de Pautas</span> </h5>
 												</div>
-												<div class="mt-3">
-													<span class="text1">
-													<?=($limites['limite_pautas_diario_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_diario_usadas'];?> envio<?=($limites['limite_pautas_semanal_usadas']>1)?('s'):('');?> <span class="text2">de <?=($limites['limite_pautas_diario']<10)?('0'):('');?><?=$limites['limite_pautas_diario'];?> pautas.</span></span> </div>
+												<div class="mt-2">
+													<?php if ($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
+														<div class="mt-1 mb-1">
+															Limites serão renovados em
+															<?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+														</div>
+													<?php endif; ?>
+													<div class="progress">
+														<div class="progress-bar" role="progressbar"
+															style="width: <?= number_format(($limites['limite_pautas_diario_usadas'] / $limites['limite_pautas_diario']) * 100, 0, ',', '.'); ?>%"
+															aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+														</div>
+													</div>
+													<div class="mt-3">
+														<span class="text1">
+															<?= ($limites['limite_pautas_diario_usadas'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_diario_usadas']; ?>
+															envio<?= ($limites['limite_pautas_semanal_usadas'] > 1) ? ('s') : (''); ?>
+															<span class="text2">de
+																<?= ($limites['limite_pautas_diario'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_diario']; ?>
+																pautas.</span></span>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6 col-lg-6 col-12">
+											<div class="card p-3 mb-3">
+												<div class="d-flex justify-content-between">
+													<h5> <span>Limite Semanal de Pautas</span> </h5>
+												</div>
+												<div class="mt-2">
+													<?php if ($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
+														<div class="mt-1 mb-1">
+															Limites serão renovados em
+															<?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+														</div>
+													<?php endif; ?>
+													<div class="progress">
+														<div class="progress-bar" role="progressbar"
+															style="width: <?= number_format(($limites['limite_pautas_semanal_usadas'] / $limites['limite_pautas_semanal']) * 100, 0, ',', '.'); ?>%"
+															aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+														</div>
+													</div>
+													<div class="mt-3">
+														<span class="text1">
+															<?= ($limites['limite_pautas_semanal_usadas'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_semanal_usadas']; ?>
+															envio<?= ($limites['limite_pautas_semanal_usadas'] > 1) ? ('s') : (''); ?>
+															<span class="text2">de
+																<?= ($limites['limite_pautas_semanal'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_semanal']; ?>
+																pautas.</span></span>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
-									<div class="col-md-6 col-lg-6 col-12">
-										<div class="card p-3 mb-3">
-											<div class="d-flex justify-content-between">
-												<h5> <span>Limite Semanal de Pautas</span> </h5>
-											</div>
-											<div class="mt-2">
-												<?php if($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
-													<div class="mt-1 mb-1">	
-														Limites serão renovados em <?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
-													</div>
-												<?php endif; ?>
-												<div class="progress">
-													<div class="progress-bar" role="progressbar" style="width: <?=number_format(($limites['limite_pautas_semanal_usadas']/$limites['limite_pautas_semanal'])*100,0,',','.');?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-												</div>
-												<div class="mt-3">
-													<span class="text1">
-													<?=($limites['limite_pautas_semanal_usadas']<10)?('0'):('');?><?=$limites['limite_pautas_semanal_usadas'];?> envio<?=($limites['limite_pautas_semanal_usadas']>1)?('s'):('');?> <span class="text2">de <?=($limites['limite_pautas_semanal']<10)?('0'):('');?><?=$limites['limite_pautas_semanal'];?> pautas.</span></span> </div>
-											</div>
-										</div>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-12 font-weight-light text-right"><small><a class="text-danger" data-toggle="modal"
-						data-target="#modal-excluir" href="">Excluir minha conta</a></small></div>
+			<div class="col-lg-12 font-weight-light text-end"><small><a class="text-danger" data-bs-toggle="modal"
+						data-bs-target="#modal-excluir" href="">Excluir minha conta</a></small></div>
 		</div>
 	</div>
 </div>
@@ -159,12 +182,10 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-perfilLabel">Dados do Perfil</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<form class="needs-validation m-3" method="post" id="colaboradores_perfil"
+				<form class="needs-validation m-2" method="post" id="colaboradores_perfil"
 					enctype="multipart/form-data">
 					<div class="card mb-3">
 						<div class="card-body">
@@ -177,11 +198,10 @@ use CodeIgniter\I18n\Time;
 							<div class="mb-3">
 								<label for="twitter">Usuário no X (antigo Twitter)</label>
 								<div class="input-group mb-2">
-									<div class="input-group-prepend">
-									<div class="input-group-text">@</div>
-									</div>
-									<input type="text" class="form-control" id="twitter" placeholder="Digite seu @ para usar o AncapsuBot"
-									value="<?= $colaboradores['twitter']; ?>" name="twitter">
+									<span class="input-group-text" id="basic-addon1">@</span>
+									<input type="text" class="form-control" id="twitter"
+										placeholder="Digite seu @ para usar o AncapsuBot"
+										value="<?= $colaboradores['twitter']; ?>" name="twitter">
 								</div>
 							</div>
 
@@ -197,15 +217,14 @@ use CodeIgniter\I18n\Time;
 							<div class="mb-3">
 								<label for="imagem">Alterar Avatar</label>
 								<div class="input-group mb-3">
-									<div class="custom-file">
-										<input type="file" class="custom-file-input" id="avatar" name="avatar"
-											onchange="onFileUpload(this);" aria-describedby="avatar" accept=".png">
-										<label class="custom-file-label" for="avatar">Escolha o avatar</label>
-									</div>
+									<input type="file" class="form-control" id="avatar" name="avatar"
+										onchange="onFileUpload(this);" aria-label="Avatar" accept=".png" />
 								</div>
 							</div>
-							<hr class="mb-4">
-							<button class="btn btn-primary btn-block" type="submit">Salvar dados do Perfil</button>
+							<div class="d-grid gap-2">
+								<button class="btn btn-primary btn-block" type="submit">Salvar dados do Perfil</button>
+							</div>
+
 						</div>
 					</div>
 				</form>
@@ -220,13 +239,10 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-perfilLabel">Alterar Senha</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<form class="needs-validation m-3" method="post" id="colaboradores_senha">
-					<div class="mensagem-senha p-3 mb-2 rounded text-white text-center collapse col-12"></div>
+				<form class="needs-validation m-2" method="post" id="colaboradores_senha">
 					<div class="card mb-3">
 						<div class="card-body">
 							<div class="row mb-3">
@@ -256,8 +272,9 @@ use CodeIgniter\I18n\Time;
 										placeholder="Digite sua nova senha">
 								</div>
 							</div>
-							<hr class="mb-4">
-							<button class="btn btn-primary btn-block" type="submit">Trocar senha</button>
+							<div class="d-grid gap-2">
+								<button class="btn btn-primary btn-block" type="submit">Trocar senha</button>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -272,9 +289,7 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-perfilLabel">Colaborações deste mês</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<table class="table table-striped">
@@ -302,19 +317,19 @@ use CodeIgniter\I18n\Time;
 									<td>
 										<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_escritor']; ?>
-											<label class="badge badge-info">Escritor</label>
+											<label class="badge bg-info m-1">Escritor</label>
 										<?php endif; ?>
 										<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_revisor']; ?>
-											<label class="badge badge-info">Revisor</label>
+											<label class="badge bg-info m-1">Revisor</label>
 										<?php endif; ?>
 										<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_narrador']; ?>
-											<label class="badge badge-info">Narrador</label>
+											<label class="badge bg-info m-1">Narrador</label>
 										<?php endif; ?>
 										<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
 											<?php $total += $artigo['pontos_produtor']; ?>
-											<label class="badge badge-info">Produtor</label>
+											<label class="badge bg-info m-1">Produtor</label>
 										<?php endif; ?>
 									</td>
 									<td>
@@ -336,9 +351,7 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-perfilLabel">Colaborações já pagas</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<table class="table table-striped">
@@ -365,9 +378,7 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-perfilLabel">Pagamentos pelas Contribuições</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<table class="table table-striped">
@@ -384,52 +395,23 @@ use CodeIgniter\I18n\Time;
 							<td colspan="4" class="text-center">Não há pagamentos feitos até o momento</td>
 						<?php else: ?>
 							<?php foreach ($lista_pagamentos as $indice => $pagamento): ?>
-							<tr>
-								<th scope="row"><?= Time::createFromFormat('Y-m-d H:i:s', $pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?></td>
-								<td>
-									<a href="https://mempool.space/pt/tx/<?=$pagamento['hash_transacao'];?>" target="_blank">
-										<?=substr($pagamento['hash_transacao'],0,5);?>...<?=substr($pagamento['hash_transacao'],-5,5);?>
-									</a>
-								</td>
-								<td><a href="#" class="listar-colaboracoes-fechadas" id="<?= $pagamento['id']; ?>" data-toggle="modal" data-target="#modal-colaboracoes-fechadas" onclick="javascript:$('#modal-pagamentos').modal('toggle');"><?=number_format($pagamento['pontuacao_total'], 0, ',', '.');?></a></td>
-								<td><?=number_format(($pagamento['quantidade_bitcoin']*100000000)/$pagamento['pontuacao_total'], 0, ',', '.');?> sats</td>
-							</tr>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade bd-example-modal-lg" id="modal-pautas" tabindex="-1" role="dialog"
-	aria-labelledby="modal-perfilLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Pautas utilizadas nos vídeos</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th scope="col">Data do Fechamento</th>
-							<th scope="col">Título</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php if (empty($lista_pautas)): ?>
-							<td colspan="4" class="text-center">Nenhuma pauta foi utilizada para vídeos até o momento</td>
-						<?php else: ?>
-							<?php foreach ($lista_pautas as $indice => $pautas): ?>
-							<tr>
-								<th scope="row"><?= Time::createFromFormat('Y-m-d H:i:s', $pautas['reservado'])->toLocalizedString('dd MMMM yyyy'); ?></td>
-								<td><a href="<?= site_url('colaboradores/pautas/detalhe/'.$pautas['id']); ?>"><?= $pautas['titulo']; ?></a></td>
-							</tr>
+								<tr>
+									<th scope="row">
+										<?= Time::createFromFormat('Y-m-d H:i:s', $pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+										</td>
+									<td>
+										<a href="https://mempool.space/pt/tx/<?= $pagamento['hash_transacao']; ?>"
+											target="_blank">
+											<?= substr($pagamento['hash_transacao'], 0, 5); ?>...<?= substr($pagamento['hash_transacao'], -5, 5); ?>
+										</a>
+									</td>
+									<td><a href="#" class="listar-colaboracoes-fechadas" id="<?= $pagamento['id']; ?>"
+											data-bs-toggle="modal" data-bs-target="#modal-colaboracoes-fechadas"
+											onclick="javascript:$('#modal-pagamentos').modal('toggle');"><?= number_format($pagamento['pontuacao_total'], 0, ',', '.'); ?></a>
+									</td>
+									<td><?= number_format(($pagamento['quantidade_bitcoin'] * 100000000) / $pagamento['pontuacao_total'], 0, ',', '.'); ?>
+										sats</td>
+								</tr>
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</tbody>
@@ -445,19 +427,18 @@ use CodeIgniter\I18n\Time;
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="exampleModalLabel">Tem certeza disso?</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<p>Os pagamentos deste mês não serão enviados, pois todos os seus dados (com exceção do seu e-mail) seram deletados da nossa base de
+				<p>Os pagamentos deste mês não serão enviados, pois todos os seus dados (com exceção do seu e-mail)
+					seram deletados da nossa base de
 					dados.</p>
 				<p>Você não conseguirá mais acessar sua conta. Essa ação não pode ser desfeita.</p>
 				<p>Ao clicar em "Excluir minha conta", será enviado um e-mail de confirmação de exclusão.</p>
 				<p>Lembre-se: <strong>Essa ação não pode ser desfeita</strong>.</p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 				<button type="button" class="btn btn-primary excluir">Excluir minha conta</button>
 			</div>
 		</div>
@@ -482,11 +463,11 @@ use CodeIgniter\I18n\Time;
 
 	$('.listar-colaboracoes-fechadas').on('click', function (e) {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>"+e.currentTarget.id,
+			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>" + e.currentTarget.id,
 			method: "POST",
 			dataType: "html",
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				$('#tbody-modal-colaboracoes-fechadas').html(retorno);
 			}
@@ -504,20 +485,15 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					if (retorno.status == true) {
-						$('.mensagem').addClass('bg-success');
-						$('.mensagem').removeClass('bg-danger');
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 						$('.apelido_colaborador').html($('#apelido').val())
 					} else {
-						$('.mensagem').removeClass('bg-success');
-						$('.mensagem').addClass('bg-danger');
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-					$('.mensagem').addClass(retorno.classe);
-					$('.mensagem').html(retorno.mensagem);
-					$('.mensagem').show();
 					$('#modal-perfil').modal('toggle');
 				}
 			});
@@ -533,21 +509,14 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					if (retorno.status == true) {
-						$('.mensagem').addClass('bg-success');
-						$('.mensagem').removeClass('bg-danger');
 						$('#modal-senha').modal('toggle');
-						$('.mensagem').addClass(retorno.classe);
-						$('.mensagem').html(retorno.mensagem);
-						$('.mensagem').show();
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 					} else {
-						$('.mensagem-senha').removeClass('bg-success');
-						$('.mensagem-senha').addClass('bg-danger');
-						$('.mensagem-senha').html(retorno.mensagem);
-						$('.mensagem-senha').show();
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
 				}
 			});
@@ -559,18 +528,14 @@ use CodeIgniter\I18n\Time;
 				url: "<?php echo base_url('site/excluir'); ?>",
 				method: "POST",
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					if (retorno.status == true) {
-						$('.mensagem').addClass('bg-success');
-						$('.mensagem').removeClass('bg-danger');
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 					} else {
-						$('.mensagem').removeClass('bg-success');
-						$('.mensagem').addClass('bg-danger');
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-					$('.mensagem').html(retorno.mensagem);
-					$('.mensagem').show();
 					$('#modal-excluir').modal('toggle');
 				}
 			});

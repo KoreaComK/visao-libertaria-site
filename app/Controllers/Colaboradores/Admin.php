@@ -5,6 +5,7 @@ namespace App\Controllers\Colaboradores;
 use App\Controllers\BaseController;
 
 use App\Libraries\VerificaPermissao;
+use App\Models\AvisosModel;
 use CodeIgniter\I18n\Time;
 
 class Admin extends BaseController
@@ -16,54 +17,100 @@ class Admin extends BaseController
 		helper('url_friendly,data');
 	}
 
+	public function dashboard()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$artigosModel = new \App\Models\ArtigosModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		$data['artigos'] = array();
+		$data['pautas'] = array();
+
+		$time_atual = new Time('-30 days');
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['escritos'] = count($artigos);
+		
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->where("descartado IS NOT NULL");
+		$artigosModel->withDeleted();
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['descartados'] = count($artigos);
+
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->whereIn("fase_producao_id",array('5','6','7'));
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['produzidos'] = count($artigos);
+
+		unset($artigosModel);
+		$artigosModel = new \App\Models\ArtigosModel();
+
+		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+		$artigosModel->whereIn("fase_producao_id",array('5'));
+		$artigos = $artigosModel->get()->getResultArray();
+		$data['artigos']['publicar'] = count($artigos);
+
+
+		return view('colaboradores/administracao_dashboard', $data);
+	}
+
 	public function administracao()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$artigosModel = new \App\Models\ArtigosModel();
 		$retorno = new \App\Libraries\RetornoPadrao();
-		
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+
 		if ($this->request->isAJAX()) {
 			$post = $this->request->getPost();
-			
-			if(!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+
+			// if (!empty($this->request->getFiles()) && ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
+			if (!empty($this->request->getFiles()) && ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0 || $this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0)) {
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
-				
+
 				$valida = $validaFormularios->validaFormularioAdministracaoGerais();
 				if (empty($valida->getErrors())) {
-					if($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
-						$file = $this->request->getFiles()['banner'];
-						$nome_arquivo = 'banner.png';
-						if (!$file->move('public/assets', $nome_arquivo, true)) {
-							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
-						}
-					}
-					if($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
+					// if ($this->request->getFiles()['banner']->getSizeByUnit('kb') > 0) {
+					// 	$file = $this->request->getFiles()['banner'];
+					// 	$nome_arquivo = 'banner.png';
+					// 	if (!$file->move('public/assets', $nome_arquivo, true)) {
+					// 		return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
+					// 	}
+					// }
+					if ($this->request->getFiles()['estilos']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['estilos'];
 						$nome_arquivo = 'estilos.css';
 						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
-					if($this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0) {
+					if ($this->request->getFiles()['rodape']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['rodape'];
 						$nome_arquivo = 'rodape.png';
 						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
-					if($this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
+					if ($this->request->getFiles()['favicon']->getSizeByUnit('kb') > 0) {
 						$file = $this->request->getFiles()['favicon'];
 						$nome_arquivo = 'favicon.ico';
 						if (!$file->move('public/assets', $nome_arquivo, true)) {
 							return $retorno->retorno(false, 'Erro ao subir o arquivo.', true);
 						}
 					}
-					
+
 				} else {
 					return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
 				}
 			}
-			
+
 			foreach ($post as $indice => $dado) {
 				$gravar = array();
 				if ($indice == 'cron_pautas_data_delete_number' || $indice == 'cron_pautas_data_delete_time') {
@@ -109,18 +156,59 @@ class Admin extends BaseController
 			return $retorno->retorno(true, 'Atualização feita com sucesso.', true);
 		}
 
-
-
-
-
 		$configuracoes = $configuracaoModel->findAll();
 		$configuracao = array();
-		$data=array();
-		foreach($configuracoes as $conf) {
+		$data = array();
+		foreach ($configuracoes as $conf) {
 			$configuracao[$conf['config']] = $conf['config_valor'];
 		}
 		$data['dados'] = $configuracao;
 		return view('colaboradores/administracao_detail', $data);
+	}
+
+	public function configuracoes()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_configuracoes', $data);
+	}
+
+	public function layout()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_layout', $data);
+	}
+
+	public function regras()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+
+		$configuracoes = $configuracaoModel->findAll();
+		$configuracao = array();
+		$data = array();
+		foreach ($configuracoes as $conf) {
+			$configuracao[$conf['config']] = $conf['config_valor'];
+		}
+		$data['dados'] = $configuracao;
+		return view('colaboradores/administracao_regras_colaborar', $data);
 	}
 
 	public function permissoes($idColaboradores = NULL)
@@ -129,10 +217,106 @@ class Admin extends BaseController
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$atribuicoesModel = new \App\Models\AtribuicoesModel();
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+		$artigosModel = new \App\Models\ArtigosModel();
+		$pautasModel = new \App\Models\PautasModel();
+
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['atribuicoes'] = $atribuicoesModel->findall();
 
 		if ($idColaboradores != NULL) {
+			$data['artigos'] = array();
+			$data['pautas'] = array();
+
+			$time_atual = new Time('-30 days');
+			$time_antigo = new Time('-60 days');
+			$artigosModel = new \App\Models\ArtigosModel();
+
+			$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['atual'] = count($artigos);
+			$data['artigos']['lista'] = $artigos;
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+			$artigosModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['antigo'] = count($artigos);
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("publicado >= '" . $time_atual->toDateTimeString() . "'");
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['publicados_atual'] = count($artigos);
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
+			$artigosModel->where("publicado <= '" . $time_atual->toDateTimeString() . "'");
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->withDeleted();
+			$artigos = $artigosModel->get()->getResultArray();
+			$data['artigos']['publicados_antigo'] = count($artigos);
+
+			$data['artigos']['diferenca'] = $data['artigos']['atual'] - $data['artigos']['antigo'];
+			$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
+			$pautasModel->where("colaboradores_id", $idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['atual'] = count($pautas);
+			$data['pautas']['lista'] = $pautas;
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+			$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+			$pautasModel->where("colaboradores_id", $idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['antigo'] = count($pautas);
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("reservado >= '" . $time_atual->toDateTimeString() . "'");
+			$pautasModel->where("colaboradores_id", $idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['utilizados_atual'] = count($pautas);
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
+			$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
+			$pautasModel->where("colaboradores_id", $idColaboradores);
+			$pautasModel->withDeleted();
+			$pautas = $pautasModel->get()->getResultArray();
+			$data['pautas']['utilizados_antigo'] = count($pautas);
+
+			$data['pautas']['diferenca'] = $data['pautas']['atual'] - $data['pautas']['antigo'];
+			$data['pautas']['utilizados_diferenca'] = $data['pautas']['utilizados_atual'] - $data['pautas']['utilizados_antigo'];
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$time_antigo = new Time('-1 years');
+			$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->orderBy("publicado", 'ASC');
+			$artigos = $artigosModel->get()->getResultArray();
+
+			$data['graficos'] = array();
+			if ($artigos != NULL && !empty($artigos)) {
+				$data['graficos']['base'] = array();
+				for ($mes_base = 12; $mes_base >= 0; $mes_base--) {
+					$data_base = new Time('-' . $mes_base . ' months');
+					$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
+				}
+				foreach ($artigos as $artigo) {
+					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
+				}
+			}
+
 			$colaboradores_atribuicoes = $colaboradoresAtribuicoesModel->getAtribuicoesColaborador($idColaboradores);
 			$data['colaboradores_atribuicoes'] = array();
 			if ($colaboradores_atribuicoes != NULL && !empty($colaboradores_atribuicoes)) {
@@ -158,10 +342,25 @@ class Admin extends BaseController
 				}
 				return $retorno->retorno(true, 'Permissões do colaborador salvas.', true);
 			}
-			return $retorno->retorno(false, 'Ocorreu um erro na hora de salvar as permissões do usuário', true);
+			if (isset($post['strike_data'])) {
+				if ($post['strike_data'] == 'true') {
+					$data_strike = new Time('+20 years');
+					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data' => $data_strike->toLocalizedString('yyyy-MM-dd')));
+					if ($strike_retorno) {
+						return $retorno->retorno(true, 'Bloqueio feito com sucesso.', true);
+					}
+				}
+				if ($post['strike_data'] == 'false') {
+					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data' => NULL));
+					if ($strike_retorno) {
+						return $retorno->retorno(true, 'Desbloqueio feito com sucesso.', true);
+					}
+				}
+				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
+			}
 		}
 
-		$data['titulo'] = 'Permissões - Colaboradores';
+		$data['titulo'] = 'Listagem de colaboradores';
 
 		return view('colaboradores/permissoes_list', $data);
 	}
@@ -171,7 +370,7 @@ class Admin extends BaseController
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
-		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$this->verificaPermissao->PermiteAcesso('9');
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
@@ -192,12 +391,12 @@ class Admin extends BaseController
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
-		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
 		if ($this->request->getMethod() == 'get') {
 			$get = service('request')->getGet();
-			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id',$get['apelido'])->orderBy('criado','DESC');
+			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id', $get['apelido'])->orderBy('criado', 'DESC');
 			$data['colaboradoresHistoricosList'] = [
 				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate($config['site_quantidade_listagem'], 'historico'),
 				'pager' => $colaboradoresHistoricos->pager
@@ -270,17 +469,252 @@ class Admin extends BaseController
 			return view('colaboradores/pagamentos_form', $data);
 		} else {
 			$data['titulo'] = 'Pagamentos realizados';
-			$pagamentosModel = new \App\Models\PagamentosModel();
-			$pagamentos = $pagamentosModel->getPagamentos();
-
-			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			$config = array();
-			$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-			$data['pagamentosList'] = [
-				'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
-				'pager' => $pagamentos->pager
-			];
 			return view('colaboradores/pagamentos_list', $data);
+		}
+	}
+
+	public function pagamentosList()
+	{
+		$pagamentosModel = new \App\Models\PagamentosModel();
+		$pagamentos = $pagamentosModel->getPagamentos();
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$data['pagamentosList'] = [
+			'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
+			'pager' => $pagamentos->pager
+		];
+		return view('template/templatePagamentosList', $data);
+	}
+
+	public function estaticas($idEstaticas = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if ($idEstaticas != NULL) {
+			if ($idEstaticas != 'novo') {
+				$estaticas = $paginasEstaticasModel->find($idEstaticas);
+				$data['estaticas'] = $estaticas;
+				$data['titulo'] = 'Atualização de páginas estáticas';
+			} else {
+				$data['titulo'] = 'Cadastro de páginas estáticas';
+				$data['estaticas'] = false;
+			}
+
+			return view('colaboradores/paginas_estaticas_form', $data);
+		}
+
+		$data['titulo'] = 'Listagem de páginas estáticas';
+
+		return view('colaboradores/paginas_estaticas_list', $data);
+	}
+
+	public function geraUrlAmigavel()
+	{
+		$post = $this->request->getPost();
+		helper('url_friendly');
+		$urlamigavel = url_friendly($post['titulo']);
+		$retorno = new \App\Libraries\RetornoPadrao();
+		return $retorno->retorno(true, $urlamigavel, true);
+	}
+
+	public function estaticasList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$this->verificaPermissao->PermiteAcesso('7');
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		$paginasEstaticasModel->where('criado IS NOT NULL');
+		if ($this->request->getMethod() == 'get') {
+			$data['estaticasList'] = [
+				'estaticas' => $paginasEstaticasModel->paginate($config['site_quantidade_listagem'], 'estaticas'),
+				'pager' => $paginasEstaticasModel->pager
+			];
+		}
+		return view('template/templateEstaticasList', $data);
+	}
+
+	public function estaticasGravar($idEstaticas = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$post = $this->request->getPost();
+		$valida = $validaFormularios->validaFormularioPaginasEstaticas($post, $idEstaticas);
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		if (empty($valida->getErrors())) {
+			if ($idEstaticas === NULL) {
+				$post['id'] = $paginasEstaticasModel->getNovaUUID();
+				$retornoGravado = $paginasEstaticasModel->insert($post);
+			}
+			if ($idEstaticas !== NULL) {
+				$retornoGravado = $paginasEstaticasModel->update($idEstaticas, $post);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Aviso salvo com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o aviso.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+	}
+
+	public function paginasExcluir($idEstaticas)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$paginasEstaticas = $paginasEstaticasModel->find($idEstaticas);
+		if (empty($paginasEstaticas) || $paginasEstaticas == null) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+
+		$retornoExclusao = $paginasEstaticasModel->delete($paginasEstaticas['id'], true);
+
+		if ($retornoExclusao === true) {
+			return $retorno->retorno(true, 'Página excluída com sucesso.', true);
+		} else {
+			return $retorno->retorno(false, 'Houve um erro ao excluir a página.', true);
+		}
+	}
+
+	public function avisos($idAvisos = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$avisosModel = new \App\Models\AvisosModel();
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+
+		if ($idAvisos != NULL) {
+			$aviso = false;
+			if ($idAvisos != 'novo') {
+				$aviso = $avisosModel->find($idAvisos);
+				$data['titulo'] = 'Atualização de Aviso';
+			} else {
+				$data['titulo'] = 'Cadastro de Aviso';
+			}
+
+			$data['aviso'] = $aviso;
+			return view('colaboradores/avisos_form', $data);
+		}
+
+		$data['titulo'] = 'Listagem de avisos';
+
+		return view('colaboradores/avisos_list', $data);
+	}
+
+	public function avisosList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$this->verificaPermissao->PermiteAcesso('7');
+		$avisosModel = new \App\Models\AvisosModel();
+		$avisosModel->where('criado IS NOT NULL');
+		if ($this->request->getMethod() == 'get') {
+			$data['avisosList'] = [
+				'avisos' => $avisosModel->paginate($config['site_quantidade_listagem'], 'avisos'),
+				'pager' => $avisosModel->pager
+			];
+		}
+		return view('template/templateAvisosList', $data);
+	}
+
+	public function avisosGravar($avisosId = NULL)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$post = $this->request->getPost();
+		$valida = $validaFormularios->validaFormularioAvisos($post);
+		$avisosModel = new \App\Models\AvisosModel();
+		if (empty($valida->getErrors())) {
+
+			if ($post['inicio'] != '') {
+				$post['inicio'] = implode('-', array_reverse(explode('/', $post['inicio'])));
+			} else {
+				$post['inicio'] = NULL;
+			}
+			if ($post['fim'] != '') {
+				$post['fim'] = implode('-', array_reverse(explode('/', $post['fim'])));
+			} else {
+				$post['fim'] = NULL;
+			}
+
+			if ($avisosId === NULL) {
+				$post['id'] = $avisosModel->getNovaUUID();
+				$retornoGravado = $avisosModel->insert($post);
+			}
+			if ($avisosId !== NULL) {
+				$retornoGravado = $avisosModel->update($avisosId, $post);
+			}
+			if ($retornoGravado != false) {
+				return $retorno->retorno(true, 'Página salva com sucesso.', true);
+			} else {
+				return $retorno->retorno(false, 'Ocorreu um erro ao salvar a página.', true);
+			}
+		} else {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+	}
+
+	public function avisosExcluir($avisosId)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$avisosModel = new \App\Models\AvisosModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$paginasEstaticas = $avisosModel->find($avisosId);
+		if (empty($paginasEstaticas) || $paginasEstaticas == null) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+
+		$retornoExclusao = $avisosModel->delete($paginasEstaticas['id'], true);
+
+		if ($retornoExclusao === true) {
+			return $retorno->retorno(true, 'Página excluída com sucesso.', true);
+		} else {
+			return $retorno->retorno(false, 'Houve um erro ao excluir a página.', true);
 		}
 	}
 
@@ -292,10 +726,10 @@ class Admin extends BaseController
 		$data = array();
 		$pagamentos_id = NULL;
 
-		if(isset($post['pagamento_id'])){
+		if (isset($post['pagamento_id'])) {
 			$pagamentosModel = new \App\Models\PagamentosModel();
 			$pagamentos_id = $post['pagamento_id'];
-			$post=$pagamentosModel->find($pagamentos_id);
+			$post = $pagamentosModel->find($pagamentos_id);
 		}
 
 		$multiplicadores = array();
@@ -307,25 +741,25 @@ class Admin extends BaseController
 		$multiplicadores['revisado_noticia'] = (float) $post['multiplicador_revisado_noticia'] / 100;
 		$multiplicadores['narrado_noticia'] = (float) $post['multiplicador_narrado_noticia'] / 100;
 		$multiplicadores['produzido_noticia'] = (float) $post['multiplicador_produzido_noticia'] / 100;
-		$repasse_bitcoin = (float) str_replace(",",".",$post['quantidade_bitcoin']);
+		$repasse_bitcoin = (float) str_replace(",", ".", $post['quantidade_bitcoin']);
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		
-		if($pagamentos_id!==null){
+
+		if ($pagamentos_id !== null) {
 			$pagamentosArtigosModel = new \App\Models\PagamentosArtigosModel();
-			$pagamentosArtigos=$pagamentosArtigosModel->where('pagamentos_id',$pagamentos_id)->get()->getResultArray();
+			$pagamentosArtigos = $pagamentosArtigosModel->where('pagamentos_id', $pagamentos_id)->get()->getResultArray();
 			$artigos_id = array();
-			foreach($pagamentosArtigos as $pa){
+			foreach ($pagamentosArtigos as $pa) {
 				$artigos_id[] = $pa['artigos_id'];
 			}
 			$data['artigos'] = $artigosModel->getArtigos($artigos_id)->get()->getResultArray();
 			$data['pagamentos_id'] = $pagamentos_id;
-			
+
 		} else {
-			$data['artigos'] = $artigosModel->getArtigos('6')->get()->getResultArray();
+			$data['artigos'] = $artigosModel->getArtigos('6', false)->get()->getResultArray();
 		}
-		if($data['artigos'] == NULL || empty($data['artigos'])){
+		if ($data['artigos'] == NULL || empty($data['artigos'])) {
 			$data['artigos'] = NULL;
 			$data['usuarios'] = NULL;
 			return $data;
@@ -361,19 +795,19 @@ class Admin extends BaseController
 		}
 
 		foreach ($data['artigos'] as $artigo) {
-			if($artigo['tipo_artigo'] == 'N') {
+			if ($artigo['tipo_artigo'] == 'N') {
 				$usuarios[$artigo['escrito_colaboradores_id']]['pontos_escrita'] += (float) $artigo['palavras_escritor'] * $multiplicadores['escrito_noticia'];
 				$usuarios[$artigo['revisado_colaboradores_id']]['pontos_revisao'] += (float) $artigo['palavras_revisor'] * $multiplicadores['revisado_noticia'];
 				$usuarios[$artigo['narrado_colaboradores_id']]['pontos_narracao'] += (float) $artigo['palavras_narrador'] * $multiplicadores['narrado_noticia'];
 				$usuarios[$artigo['produzido_colaboradores_id']]['pontos_producao'] += (float) $artigo['palavras_produtor'] * $multiplicadores['produzido_noticia'];
 			}
-			if($artigo['tipo_artigo'] == 'T') {
+			if ($artigo['tipo_artigo'] == 'T') {
 				$usuarios[$artigo['escrito_colaboradores_id']]['pontos_escrita'] += (float) $artigo['palavras_escritor'] * $multiplicadores['escrito'];
 				$usuarios[$artigo['revisado_colaboradores_id']]['pontos_revisao'] += (float) $artigo['palavras_revisor'] * $multiplicadores['revisado'];
 				$usuarios[$artigo['narrado_colaboradores_id']]['pontos_narracao'] += (float) $artigo['palavras_narrador'] * $multiplicadores['narrado'];
 				$usuarios[$artigo['produzido_colaboradores_id']]['pontos_producao'] += (float) $artigo['palavras_produtor'] * $multiplicadores['produzido'];
 			}
-			
+
 		}
 
 		foreach ($usuarios as $i => $u) {
@@ -406,8 +840,8 @@ class Admin extends BaseController
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
 
-		$artigos = $artigosModel->getArtigos('6')->get()->getResultArray();
-		if($artigos == null || empty($artigos)){
+		$artigos = $artigosModel->getArtigos('6', false)->get()->getResultArray();
+		if ($artigos == null || empty($artigos)) {
 			return false;
 		}
 
@@ -422,7 +856,7 @@ class Admin extends BaseController
 		$gravar['multiplicador_revisado_noticia'] = $post['multiplicador_revisado_noticia'];
 		$gravar['multiplicador_narrado_noticia'] = $post['multiplicador_narrado_noticia'];
 		$gravar['multiplicador_produzido_noticia'] = $post['multiplicador_produzido_noticia'];
-		
+
 		$gravar['hash_transacao'] = $post['hash_transacao'];
 		//$pagamentosModel->db->transStart();
 		$idPagamentos = $pagamentosModel->insert($gravar);
@@ -432,7 +866,7 @@ class Admin extends BaseController
 		$faseProducao = $faseProducao['etapa_posterior'];
 		$pontuacaoTotalPagamento = 0;
 		foreach ($artigos as $artigo) {
-			
+
 			$pagamentosArtigosModel->save(
 				array(
 					'artigos_id' => $artigo['id'],
@@ -442,54 +876,54 @@ class Admin extends BaseController
 
 			$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_escritor'];
-			if($colaborador['carteira']!=NULL) {
-				if($artigo['tipo_artigo'] == 'T') {
+			if ($colaborador['carteira'] != NULL) {
+				if ($artigo['tipo_artigo'] == 'T') {
 					$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
 				}
-				if($artigo['tipo_artigo'] == 'N') {
+				if ($artigo['tipo_artigo'] == 'N') {
 					$pontos = $gravar['multiplicador_escrito_noticia'] * $artigo['palavras_escritor'] / 100;
 				}
-				$pontuacaoTotalPagamento+=$pontos;	
+				$pontuacaoTotalPagamento += $pontos;
 			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['revisado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_revisor'];
-			if($colaborador['carteira']!=NULL) {
-				if($artigo['tipo_artigo'] == 'T') {
+			if ($colaborador['carteira'] != NULL) {
+				if ($artigo['tipo_artigo'] == 'T') {
 					$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
 				}
-				if($artigo['tipo_artigo'] == 'N') {
+				if ($artigo['tipo_artigo'] == 'N') {
 					$pontos = $gravar['multiplicador_revisado_noticia'] * $artigo['palavras_escritor'] / 100;
 				}
-				$pontuacaoTotalPagamento+=$pontos;
+				$pontuacaoTotalPagamento += $pontos;
 			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['narrado_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_narrador'];
-			if($colaborador['carteira']!=NULL) {
-				if($artigo['tipo_artigo'] == 'T') {
+			if ($colaborador['carteira'] != NULL) {
+				if ($artigo['tipo_artigo'] == 'T') {
 					$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
 				}
-				if($artigo['tipo_artigo'] == 'N') {
+				if ($artigo['tipo_artigo'] == 'N') {
 					$pontos = $gravar['multiplicador_narrado_noticia'] * $artigo['palavras_escritor'] / 100;
 				}
-				$pontuacaoTotalPagamento+=$pontos;
+				$pontuacaoTotalPagamento += $pontos;
 			}
 			$colaboradoresModel->save($colaborador);
 
 			$colaborador = $colaboradoresModel->find($artigo['produzido_colaboradores_id']);
 			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_produtor'];
-			if($colaborador['carteira']!=NULL) {
-				if($artigo['tipo_artigo'] == 'T') {
+			if ($colaborador['carteira'] != NULL) {
+				if ($artigo['tipo_artigo'] == 'T') {
 					$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
 				}
-				if($artigo['tipo_artigo'] == 'N') {
+				if ($artigo['tipo_artigo'] == 'N') {
 					$pontos = $gravar['multiplicador_produzido_noticia'] * $artigo['palavras_escritor'] / 100;
 				}
-				
-				$pontuacaoTotalPagamento+=$pontos;
+
+				$pontuacaoTotalPagamento += $pontos;
 			}
 			$colaboradoresModel->save($colaborador);
 
@@ -498,7 +932,7 @@ class Admin extends BaseController
 			$art['fase_producao_id'] = $faseProducao;
 			$artigosModel->update($artigo['id'], $art);
 		}
-		$pagamentosModel->update($idPagamentos,array('pontuacao_total'=>$pontuacaoTotalPagamento));
+		$pagamentosModel->update($idPagamentos, array('pontuacao_total' => $pontuacaoTotalPagamento));
 		return true;
 	}
 }

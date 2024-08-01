@@ -157,13 +157,53 @@ class ValidaFormularios extends BaseController
 			],
 			'texto' => [
 				'label' => 'Texto da pauta',
-				'rules' => 'required|min_length[10]'
+				'rules' => 'required|min_length[10]|max_length[600]'
 			],
 			'imagem' => [
 				'label' => 'Link da Imagem',
 				'rules' => 'required|max_length[255]|valid_url_strict'
 			]
 		]);
+		$validation->run($post);
+		return $validation;
+	}
+
+	public function validaFormularioArtigoSalvar($post, $pauta = false)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'tipo_artigo' => [
+				'label' => 'Tipo do Artigo',
+				'rules' => 'required'
+			],
+			'titulo' => [
+				'label' => 'Título do Artigo',
+				'rules' => 'required|max_length[255]|min_length[10]'
+			],
+			'texto_original' => [
+				'label' => 'Texto do Artigo',
+				'rules' => 'required'
+			],
+			// 'categorias' => [
+			// 	'label' => 'Categorias',
+			// 	'rules' => 'required',
+			// 	'errors' => [
+			// 		'required' => 'O campo {field} é obrigatório.',
+			// 	],
+			// ]
+		]);
+		if ($pauta === false) {
+			$validation->setRule(
+				'link',
+				'Link da Notícia',
+				'required|max_length[255]|valid_url_strict',
+				[
+					'required' => 'O campo {field} é obrigatório.',
+					'max_length' => 'O campo {field} é muito grande. O máximo é {param} caracteres',
+					'valid_url_strict' => 'O campo {field} precisa ser uma URL válida.',
+				]
+			);
+		}
 		$validation->run($post);
 		return $validation;
 	}
@@ -193,9 +233,9 @@ class ValidaFormularios extends BaseController
 				'rules' => 'required'
 			],
 			'imagem' => [
-				'label' => 'Link da Imagem',
-				'rules' => 'required|max_length[255]|valid_url_strict'
-			],
+				'label' => 'Imagem',
+				'rules' => 'required'
+			]
 			// 'categorias' => [
 			// 	'label' => 'Categorias',
 			// 	'rules' => 'required',
@@ -220,6 +260,19 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioArtigoImagem()
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'imagem' => [
+				'label' => 'Imagem',
+				'rules' => 'uploaded[imagem]|is_image[imagem]|ext_in[imagem,jpg,png,jpeg]|max_size[imagem,5120]'
+			],
+		]);
+		$validation->run();
+		return $validation;
+	}
+
 	public function validaFormularioArtigoNarracaoFile()
 	{
 		$validation = \Config\Services::validation();
@@ -237,10 +290,10 @@ class ValidaFormularios extends BaseController
 	{
 		$validation = \Config\Services::validation();
 		$validation->setRules([
-			'banner' => [
-				'label' => 'Arquivo do Banner',
-				'rules' => 'ext_in[banner,png]|max_size[banner,3072]'
-			],
+			// 'banner' => [
+			// 	'label' => 'Arquivo do Banner',
+			// 	'rules' => 'ext_in[banner,png]|max_size[banner,3072]'
+			// ],
 			'rodape' => [
 				'label' => 'Imagem Rodapé',
 				'rules' => 'ext_in[rodape,png]|max_size[rodape,1024]'
@@ -268,7 +321,7 @@ class ValidaFormularios extends BaseController
 			],
 			'shorts_link' => [
 				'label' => 'Link do Shorts',
-				'rules' => 'permit_empty|max_length[255]|valid_url_strict'
+				'rules' => 'required|permit_empty|max_length[255]|valid_url_strict'
 			]
 		]);
 		$validation->run($post);
@@ -313,6 +366,48 @@ class ValidaFormularios extends BaseController
 			'hash_transacao' => [
 				'label' => 'Hash da Transação de Pagamento',
 				'rules' => 'required'
+			]
+		]);
+		$validation->run($post);
+		return $validation;
+	}
+
+	public function validaFormularioAvisos($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'aviso' => [
+				'label' => 'Aviso',
+				'rules' => 'required|max_length[511]|min_length[10]'
+			]
+		]);
+		$validation->run($post);
+		return $validation;
+	}
+
+	public function validaFormularioPaginasEstaticas($post,$id)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'titulo' => [
+				'label' => 'Título',
+				'rules' => 'required'
+			],
+			'conteudo' => [
+				'label' => 'Conteúdo',
+				'rules' => 'required|min_length[25]'
+			],
+			'ativo' => [
+				'label' => 'Ativo',
+				'rules' => 'required'
+			],
+			'localizacao' => [
+				'label' => 'Localização',
+				'rules' => 'required'
+			],
+			'url_friendly' => [
+				'label' => 'URL Amigável',
+				'rules' => 'required|is_unique[paginas_estaticas.url_friendly,id,' . $id . ']'
 			]
 		]);
 		$validation->run($post);

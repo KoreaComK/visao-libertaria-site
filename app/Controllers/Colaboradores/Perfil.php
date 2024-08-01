@@ -121,7 +121,7 @@ class Perfil extends BaseController
 
 		$data['lista_pagamentos'] = $this->widgetPagamentos();
 
-		$data['lista_pautas'] = $this->widgetPautas($session);
+		//$data['lista_pautas'] = $this->widgetPautas($session);
 
 		$data['limites'] = $this->widgetLimites($session);
 
@@ -213,19 +213,19 @@ class Perfil extends BaseController
 						<td>';
 			if ($artigo['escrito_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_escritor'] * $artigo['multiplicador_escrito'] / 100 ;
-				$html.='<label class="badge badge-info">Escritor</label>';
+				$html.='<label class="badge bg-info m-1">Escritor</label>';
 			}
 			if ($artigo['revisado_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_revisor'] * $artigo['multiplicador_revisado'] / 100 ;
-				$html.='<label class="badge badge-info">Revisor</label>';
+				$html.='<label class="badge bg-info m-1">Revisor</label>';
 			}
 			if ($artigo['narrado_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_narrador'] * $artigo['multiplicador_narrado'] / 100 ;
-				$html.='<label class="badge badge-info">Narrador</label>';
+				$html.='<label class="badge bg-info m-1">Narrador</label>';
 			}
 			if ($artigo['produzido_colaboradores_id'] == $session['id']) {
 				$total += $artigo['palavras_produtor'] * $artigo['multiplicador_produzido'] / 100 ;
-				$html.='<label class="badge badge-info">Produtor</label>';
+				$html.='<label class="badge bg-info m-1">Produtor</label>';
 			}
 			$html.='
 						</td>
@@ -301,17 +301,17 @@ class Perfil extends BaseController
 		return $pagamentos;
 	}
 
-	private function widgetPautas($colaborador)
-	{
-		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])
-		->where('reservado IS NOT NULL')
-		->where('tag_fechamento IS NOT NULL')
-		->where('excluido IS NOT NULL')
-		->orderBy('reservado','DESC')
-		->get()->getResultArray();
-		return $pautas;
-	}
+	// private function widgetPautas($colaborador)
+	// {
+	// 	$pautasModel = new \App\Models\PautasModel();
+	// 	$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])
+	// 	->where('reservado IS NOT NULL')
+	// 	->where('tag_fechamento IS NOT NULL')
+	// 	->where('excluido IS NOT NULL')
+	// 	->orderBy('reservado','DESC')
+	// 	->get()->getResultArray();
+	// 	return $pautas;
+	// }
 
 	private function gravarColaborador($tipo, $dados, $id = null)
 	{

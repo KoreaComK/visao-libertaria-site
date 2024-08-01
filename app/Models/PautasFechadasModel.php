@@ -39,13 +39,4 @@ class PautasFechadasModel extends Model
 	// protected $beforeDelete   = [];
 	// protected $afterDelete    = [];
 
-	public function getPautasFechadas($excluido = false)
-	{
-		$this->builder();
-		if ($excluido === true) {
-			$this->withDeleted();
-		}
-		$this->builder()->orderBy('criado', 'DESC');
-		return $this;
-	}
 }

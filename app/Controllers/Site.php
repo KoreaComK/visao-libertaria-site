@@ -22,8 +22,6 @@ class Site extends BaseController
 		$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
 		$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
 
-
-
 		$data['colaboradores'] = $this->session->get('colaboradores');
 
 		$widgets = new WidgetsSite();
@@ -32,7 +30,8 @@ class Site extends BaseController
 		$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
 		$artigosModel = new \App\Models\ArtigosModel();
 		
-		$quantidade_artigos = 0;
+		$inicial = 4;
+		$quantidade_artigos = $inicial;
 		if($data['config']['home_banner_mostrar'] == '1') {
 			$quantidade_artigos += $data['config']['home_banner'];
 		}
@@ -47,7 +46,7 @@ class Site extends BaseController
 			$data['banner'] = [];
 			$data['artigos'] = [];
 			for ($i = 0; $i < count($artigos); $i++) {
-				if (isset($artigos[$i]) && count($data['banner']) < $data['config']['home_banner']) {
+				if (isset($artigos[$i]) && count($data['banner']) < ($data['config']['home_banner'])+$inicial) {
 					$data['banner'][] = $artigos[$i];
 				} else {
 					$data['artigos'][] = $artigos[$i];
@@ -66,7 +65,15 @@ class Site extends BaseController
 			$data['rand'] = $artigos;
 		}
 
-
+		$data['avisos'] = false;
+		$avisosModel = new \App\Models\AvisosModel();
+		$avisosModel->orWhere('(fim IS NULL AND inicio IS NULL)');
+		$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
+		$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
+		$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
+		
+		$avisos = $avisosModel->get()->getResultArray();
+		$data['avisos'] = $avisos;
 		helper('colors_helper');
 		return view('home', $data);
 	}
@@ -81,6 +88,7 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
 
@@ -104,7 +112,11 @@ class Site extends BaseController
 			'pager' => $artigosModel->pager
 		];
 
-		return view('artigos', $data);
+		if($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
+			return view('template/templatePautasListColaboradores', $data);	
+		} else {
+			return view('artigos', $data);
+		}
 	}
 
 	/*DETALHE DO ARTIGO*/
@@ -117,6 +129,7 @@ class Site extends BaseController
 		$data = array();
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		//$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 
 		$artigosModel->where('url_friendly', $url_friendly);
@@ -125,14 +138,35 @@ class Site extends BaseController
 		if ($artigosModel->countAllResults() > 0) {
 			$data['artigo'] = $query->getRowArray();
 
-			//$data['artigo']['categorias'] = $artigosCategoriasModel->getCategoriasArtigo($data['artigo']['id']);
-			$data['artigo']['colaboradores'] = $artigosModel->getColaboradoresArtigo($data['artigo']['id'])[0];
 			
+
+			$data['artigo']['colaboradores'] = array();
+			$data['artigo']['colaboradores']['sugerido'] = ($data['artigo']['sugerido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['escrito'] = ($data['artigo']['escrito_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['escrito_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['revisado'] = ($data['artigo']['revisado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['revisado_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['narrado'] = ($data['artigo']['narrado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['narrado_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['produzido'] = ($data['artigo']['produzido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['produzido_colaboradores_id'])):(NULL);
+
 			$data['meta'] = array();
 			$data['meta']['title'] = $data['artigo']['titulo'];
 			$data['meta']['image'] = $data['artigo']['imagem'];
 			$data['meta']['description'] = addslashes(substr($data['artigo']['texto_revisado'],0,250)).'...';
 			
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->whereIn('fase_producao_id', array(6, 7));
+			$artigosModel->where('publicado > ',$data['artigo']['publicado']);
+			$artigosModel->orderBy('publicado', 'ASC');
+			$artigosModel->limit(1);
+			$data['artigo']['proximo'] = $artigosModel->get()->getResultArray();
+			unset($artigosModel);
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->whereIn('fase_producao_id', array(6, 7));
+			$artigosModel->where('publicado < ',$data['artigo']['publicado']);
+			$artigosModel->orderBy('publicado', 'DESC');
+			$artigosModel->limit(1);
+			$data['artigo']['anterior'] = $artigosModel->get()->getResultArray();
+
+
 			return view('artigo', $data);
 		} else {
 			return redirect()->to(base_url() . 'site/artigos');
@@ -505,6 +539,153 @@ class Site extends BaseController
 			$data['email'] = $this->session->get('colaboradores')['email'];
 		}
 		return view('contato', $data);
+	}
+
+	public function pagina($url=NULL)
+	{
+		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
+		if ($url === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+		$pagina = $paginasEstaticasModel->where('url_friendly',$url)->get()->getResultArray();
+		if($pagina == NULL || empty($pagina)) {
+			return redirect()->to(base_url() . 'site');
+		}
+		$data = array();
+		$data['estatica'] = $pagina[0];
+		return view('pagina', $data);
+	}
+
+	public function escritor($apelido = NULL)
+	{
+		if ($apelido === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$apelido = urldecode($apelido);
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		
+		if ($colaborador === null || empty($colaborador)) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$data = array();
+		$colaborador = $colaborador[0];
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
+		$data['contador_artigos'] = 0;
+		if ($artigos !== null && !empty($artigos)) {
+			$data['contador_artigos'] = count($artigos);
+		}
+
+		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'],false);
+		$data['atribuicoes'] = $colaboradoresAtribuicoes;
+
+		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
+		$data['colaborador'] = $colaborador;
+		
+		return view('escritor', $data);
+	}
+
+	public function escritorList($apelido = NULL)
+	{
+		if($apelido === NULL) {
+			return false;
+		}
+
+		$apelido = urldecode($apelido);
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		if ($colaborador === null || empty($colaborador)) {
+			return false;
+		}
+		$colaborador = $colaborador[0];
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->orderBy('publicado','DESC');
+		if ($this->request->getMethod() == 'get') {
+			$data['artigosList'] = [
+				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
+				'pager' => $artigos->pager
+			];
+		}
+		return view('template/templateArtigosEscritorList', $data);
+	}
+
+	public function colaborador($apelido = NULL)
+	{
+		if ($apelido === null) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$apelido = urldecode($apelido);
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		
+		if ($colaborador === null || empty($colaborador)) {
+			return redirect()->to(base_url() . 'site');
+		}
+
+		$data = array();
+		$colaborador = $colaborador[0];
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->get()->getResultArray();
+		$data['contador_pautas'] = 0;
+		if ($pautas !== null && !empty($pautas)) {
+			$data['contador_pautas'] = count($pautas);
+		}
+
+		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
+		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'],false);
+		$data['atribuicoes'] = $colaboradoresAtribuicoes;
+
+		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
+		$data['colaborador'] = $colaborador;
+		
+		return view('colaborador', $data);
+	}
+
+	public function colaboradorList($apelido = NULL)
+	{
+		if($apelido === NULL) {
+			return false;
+		}
+
+		$apelido = urldecode($apelido);
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		if ($colaborador === null || empty($colaborador)) {
+			return false;
+		}
+		$colaborador = $colaborador[0];
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado','DESC');
+		if ($this->request->getMethod() == 'get') {
+			$data['pautasList'] = [
+				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+				'pager' => $pautas->pager
+			];
+		}
+		return view('template/templatePautasColaboradorList', $data);
+	}
+
+	public function links(): string
+	{
+		$data = array();
+		return view('links', $data);
 	}
 
 	private function verificaCaptcha($captcha_response)

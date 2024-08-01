@@ -1,14 +1,13 @@
-<?= $this->extend('layouts/main'); ?>
+<?= $this->extend('layouts/administradores'); ?>
 
 <?= $this->section('content'); ?>
 
-<div class="container text-center w-auto">
-	<div class="bg-light py-2 px-4 mb-3">
-		<h3 class="m-0">
-			<?= $titulo; ?>
-		</h3>
+<div class="container w-auto">
+	<div class="row pb-4 mt-3">
+		<div class="col-12">
+			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
+		</div>
 	</div>
-	<div class="mensagem p-3 mb-2 rounded text-white text-center collapse col-12"></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<form class="needs-validation w-100" novalidate="yes" method="post" id="pagamentos_form">
 
@@ -30,7 +29,7 @@
 			</div>
 
 			<label for="">Multiplicadores (%) dos Artigos</label>
-			<div class="form-row">
+			<div class="row">
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_escrito">Escrito</label>
@@ -70,7 +69,7 @@
 			</div>
 
 			<label class="mt-3">Multiplicadores (%) das Notícias</label>
-			<div class="form-row">
+			<div class="row">
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_escrito_noticia">Escrito</label>
@@ -83,8 +82,8 @@
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_revisado_noticia">Revisado</label>
-						<input type="number" class="form-control" id="multiplicador_revisado_noticia" placeholder="Mult."
-							required name="multiplicador_revisado_noticia" value="200"
+						<input type="number" class="form-control" id="multiplicador_revisado_noticia"
+							placeholder="Mult." required name="multiplicador_revisado_noticia" value="200"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_revisado_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
@@ -101,8 +100,8 @@
 				<div class="col-md-3">
 					<div class="control-group">
 						<label for="multiplicador_produzido_noticia">Produzido</label>
-						<input type="number" class="form-control" id="multiplicador_produzido_noticia" placeholder="Mult."
-							required name="multiplicador_produzido_noticia" value="300"
+						<input type="number" class="form-control" id="multiplicador_produzido_noticia"
+							placeholder="Mult." required name="multiplicador_produzido_noticia" value="300"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_produzido_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
@@ -148,7 +147,7 @@
 
 		$('.buscar-detalhe').on('click', function (e) {
 			form = new FormData();
-			form.append('pagamento_id',<?= $pagamentos['id']; ?>);
+			form.append('pagamento_id', <?= $pagamentos['id']; ?>);
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/admin/financeiro/detalhe'); ?>",
 				method: "POST",
@@ -157,8 +156,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -178,8 +177,8 @@
 				data: form,
 				cache: false,
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					$('.pagamento-preview').html(retorno);
 					$('.collapse').show();
@@ -197,16 +196,16 @@
 				data: form,
 				cache: false,
 				dataType: "JSON",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
-					console.log(retorno);
 					if (retorno.status) {
-						window.location.href = "<?= base_url('colaboradores/admin/financeiro'); ?>";
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						setTimeout(function () {
+							window.location.href = "<?= base_url('colaboradores/admin/financeiro'); ?>";
+						}, 2000);
 					} else {
-						$('.mensagem').show();
-						$('.mensagem').html(retorno.mensagem);
-						$('.mensagem').addClass('bg-danger');
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 						$('#titulo').focus();
 					}
 				}

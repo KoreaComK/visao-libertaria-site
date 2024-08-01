@@ -4,12 +4,12 @@
 			<ul class="pagination justify-content-center">
 				<?php if ($pager->hasPreviousPage()) : ?>
 					<li class="page-item">
-						<a class="page-link vl-bg-c" href="<?= $pager->getFirst() ?>" aria-label="Primeiro">
+						<a class="page-link vl-bg-c me-1" href="<?= $pager->getFirst() ?>" aria-label="Primeiro">
 							Primeiro
 						</a>
 					</li>
 					<li class="page-item">
-						<a class="page-link vl-bg-c" href="<?= $pager->getPreviousPage() ?>" aria-label="Anterior">
+						<a class="page-link vl-bg-c ms-1 me-1" href="<?= $pager->getPreviousPage() ?>" aria-label="Anterior">
 							Anterior
 						</a>
 					</li>
@@ -20,12 +20,12 @@
 
 				<?php if ($pager->hasNextPage()) : ?>
 					<li class="page-item">
-						<a class="page-link vl-bg-c" href="<?= $pager->getNextPage() ?>" aria-label="Próximo">
+						<a class="page-link vl-bg-c next_page ms-1 me-1" href="<?= $pager->getNextPage() ?>" aria-label="Próximo">
 							Próximo
 						</a>
 					</li>
 					<li class="page-item">
-						<a class="page-link vl-bg-c" href="<?= $pager->getLast() ?>" aria-label="Último">
+						<a class="page-link vl-bg-c  ms-1" href="<?= $pager->getLast() ?>" aria-label="Último">
 							Último
 						</a>
 					</li>

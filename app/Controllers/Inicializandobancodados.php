@@ -6,7 +6,9 @@ use CodeIgniter\Database\Config;
 
 class Inicializandobancodados extends BaseController
 {
-	public function __construct() {}
+	public function __construct()
+	{
+	}
 
 	public function index()
 	{
@@ -153,6 +155,10 @@ class Inicializandobancodados extends BaseController
 			`multiplicador_revisado` float DEFAULT 0,
 			`multiplicador_narrado` float DEFAULT 0,
 			`multiplicador_produzido` float DEFAULT 0,
+			`multiplicador_escrito_noticia` float DEFAULT 0,
+			`multiplicador_revisado_noticia` float DEFAULT 0,
+			`multiplicador_narrado_noticia` float DEFAULT 0,
+			`multiplicador_produzido_noticia` float DEFAULT 0,
 			`hash_transacao` varchar(256) DEFAULT null,
 			`pontuacao_total` float DEFAULT null,
 			`criado` datetime DEFAULT now(),
@@ -181,7 +187,7 @@ class Inicializandobancodados extends BaseController
 			`config_valor` TEXT NOT NULL
 		);
 		');
-		
+
 		$db->query('CREATE TABLE IF NOT EXISTS  `colaboradores_historicos` (
 			`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
 			`colaboradores_id` int NOT NULL,
@@ -215,6 +221,28 @@ class Inicializandobancodados extends BaseController
 			`criado` datetime DEFAULT now()
 			);
 			');
+
+		$db->query('CREATE TABLE IF NOT EXISTS `avisos` (
+				`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+				`aviso` TEXT NOT NULL,
+				`link` varchar(255) DEFAULT null,
+				`inicio` datetime DEFAULT null,
+				`fim` datetime DEFAULT null,
+				`criado` datetime DEFAULT now()
+			);
+			');
+
+		$db->query('CREATE TABLE IF NOT EXISTS `paginas_estaticas` (
+				`id` varchar(36) PRIMARY KEY DEFAULT "uuid()",
+    			`ativo` CHAR(1) NOT NULL DEFAULT "A",
+    			`url_friendly` varchar(255) NOT NULL,
+    			`localizacao` varchar(127) NOT NULL,
+				`titulo` varchar(255) NOT NULL,
+				`conteudo` TEXT NOT NULL,
+				`criado` datetime DEFAULT now(),
+				`atualizado` datetime DEFAULT now()
+			);
+		');
 
 		$db->query('
 			ALTER TABLE `colaboradores_atribuicoes` ADD FOREIGN KEY (`colaboradores_id`) REFERENCES `colaboradores` (`id`);
@@ -336,12 +364,12 @@ class Inicializandobancodados extends BaseController
 		('cron_artigos_desmarcar_data_narracao', '6 hours'),
 		('cron_artigos_desmarcar_data_producao', '12 hours'),
 		('cron_email_carteira', ''),
-		('artigo_tempo_bloqueio', '48 hours')
-		('cron_notificacoes_data_visualizado', '1 weeks')
-		('cron_notificacoes_data_cadastrado', '1 months')
-		('cron_email_carteira_data', '3 days')
-		('cron_notificacoes_status_delete', '1')
-		('cron_artigos_descartar_status', '1')
+		('artigo_tempo_bloqueio', '48 hours'),
+		('cron_notificacoes_data_visualizado', '1 weeks'),
+		('cron_notificacoes_data_cadastrado', '1 months'),
+		('cron_email_carteira_data', '3 days'),
+		('cron_notificacoes_status_delete', '1'),
+		('cron_artigos_descartar_status', '1'),
 		('cron_artigos_descartar_data', '1 months')
 		;
 		");

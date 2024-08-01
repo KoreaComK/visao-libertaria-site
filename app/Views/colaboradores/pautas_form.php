@@ -11,7 +11,7 @@ use CodeIgniter\I18n\Time;
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center <?=(!isset($erros))?('collapse'):('bg-danger');?> col-12"><?=(!isset($erros))?('collapse'):($erros['mensagem']); ?></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
-		<form class="needs-validation col-12 col-md-12" novalidate="yes" method="post" id="pautas_form">
+		<form class="col-12 col-md-12 text-start" novalidate="yes" method="post" id="pautas_form">
 
 			<?php if (isset($post['criado'])): ?>
 				<div class="mb-3">
@@ -68,17 +68,9 @@ use CodeIgniter\I18n\Time;
 			<div class="mb-3">
 				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original</a><?php endif; ?>
 				<div class="input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-								fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
-								<path
-									d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z" />
-								<path
-									d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
-							</svg></span>
-					</div>
+					<i class="input-group-text bi bi-link-45deg"></i>
 					<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta" <?=(isset($post['id']))?('disabled'):(''); ?>
-						name="link" onblur="getInformationLink(this.value)" required value="<?=(isset($post))?($post['link']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
+						name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading" required value="<?=(isset($post))?($post['link']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
 			</div>
 
@@ -96,15 +88,7 @@ use CodeIgniter\I18n\Time;
 			<div class="mb-3">
 				<label for="address">Link da Imagem</label>
 				<div class="input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-								fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
-								<path
-									d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z" />
-								<path
-									d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
-							</svg></span>
-					</div>
+					<i class="input-group-text bi bi-link-45deg"></i>
 					<input type="text" class="form-control" id="imagem" name="imagem"
 						placeholder="Link da imagem da notícia" required value="<?=(isset($post))?($post['imagem']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
@@ -138,12 +122,14 @@ use CodeIgniter\I18n\Time;
 					</diV>
 				</div>
 			<?php endif; ?>
-
-			<?php if(!isset($readOnly)) : ?>
-				<button class="btn btn-primary btn-lg btn-block enviar_pauta" type="submit"><?=isset($post)?('Atualizar'):('Sugerir'); ?> pauta</button>
-			<?php else: ?>
-				<a class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" href="<?= site_url('colaboradores/pautas'); ?>">Voltar</a>
-			<?php endif; ?>
+			
+			<div class="text-center">
+				<?php if(!isset($readOnly)) : ?>
+					<button class="btn btn-primary btn-lg btn-block enviar_pauta " type="submit"><?=isset($post)?('Atualizar'):('Sugerir'); ?> pauta</button>
+				<?php else: ?>
+					<a class="btn btn-primary btn-lg btn-block mb-3 enviar_pauta" href="<?= site_url('colaboradores/pautas'); ?>">Voltar</a>
+				<?php endif; ?>
+			</div>
 		</form>
 	</div>
 </div>
@@ -205,8 +191,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				$('.mensagem').hide();
 				$('.mensagem').removeClass('bg-success');
@@ -253,8 +239,8 @@ use CodeIgniter\I18n\Time;
 			contentType: false,
 			cache: false,
 			dataType: "json",
-			beforeSend: function() { $('#modal-loading').modal('show'); },
-			complete: function() { $('#modal-loading').modal('hide'); },
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				$('.mensagem').hide();
 				$('.mensagem').removeClass('bg-success');
@@ -287,8 +273,8 @@ use CodeIgniter\I18n\Time;
 					contentType: false,
 					cache: false,
 					dataType: "json",
-					beforeSend: function() { $('#modal-loading').modal('show'); },
-					complete: function() { $('#modal-loading').modal('hide'); },
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
 					success: function (retorno) {
 						$('.mensagem').hide();
 						$('.mensagem').removeClass('bg-success');
@@ -324,8 +310,8 @@ use CodeIgniter\I18n\Time;
 				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
 				method: "GET",
 				dataType: "html",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					$('.div-list-comentarios').html(retorno);
 				}
@@ -351,8 +337,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()
@@ -383,8 +369,8 @@ use CodeIgniter\I18n\Time;
 				contentType: false,
 				cache: false,
 				dataType: "json",
-				beforeSend: function() { $('#modal-loading').modal('show'); },
-				complete: function() { $('#modal-loading').modal('hide'); },
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
 				success: function(retorno) {
 					if (retorno.status) {
 						getComentarios()

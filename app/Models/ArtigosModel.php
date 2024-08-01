@@ -39,9 +39,14 @@ class ArtigosModel extends Model
 	// protected $beforeDelete   = [];
 	protected $afterDelete    = ['cadastraHistoricoUsuarioExcluir'];
 
+	public function getContadorPostados(){
+		return $this->db->query('SELECT * from artigos WHERE artigos.fase_producao_id IN (6,7) AND descartado IS NULL')->getNumRows();
+	}
+
 	public function getArtigosHome($limit = 21){
 		$this->whereIn('artigos.fase_producao_id', array(6,7));
-		$this->orderBy('artigos.criado', 'DESC');
+		$this->orderBy('artigos.publicado', 'DESC');
+		$this->join('colaboradores','artigos.escrito_colaboradores_id = colaboradores.id');
 		$this->limit($limit);
 		return $this->get()->getResultArray();
 	}
@@ -243,7 +248,7 @@ class ArtigosModel extends Model
 		return $this;
 	}
 
-	public function getArtigos($id)
+	public function getArtigos($id,$descartado = true)
 	{
 		$this
 			->select('
@@ -271,6 +276,9 @@ class ArtigosModel extends Model
 			$this->where('artigos.fase_producao_id', $id);
 		} else {
 			$this->whereIn('artigos.id', $id);
+		}
+		if($descartado === false) {
+			$this->where('artigos.descartado', NULL);
 		}
 		return $this;
 	}
