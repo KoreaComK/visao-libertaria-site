@@ -556,9 +556,12 @@ use CodeIgniter\I18n\Time;
 			$('#aceito3').on('change', function (e) {
 				submeterRevisao();
 			});
+			$('#aceito4').on('change', function (e) {
+				submeterRevisao();
+			});
 
 			function submeterRevisao() {
-				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
+				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked') && $('#aceito4').is(':checked')) {
 					$('.submeter-revisao').removeAttr('disabled');
 				} else {
 					$('.submeter-revisao').attr('disabled', '');
@@ -629,36 +632,7 @@ use CodeIgniter\I18n\Time;
 				});
 			});
 
-			$('.submeter-revisao').on('click', function () {
-				$.ajax({
-					url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
-					method: "POST",
-					processData: false,
-					contentType: false,
-					cache: false,
-					dataType: "json",
-					beforeSend: function () { $('#modal-loading').show(); },
-					complete: function () { $('#modal-loading').hide() },
-					success: function (retorno) {
-						if (retorno.status) {
-							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-							$('.submeter-revisao').attr('disabled', '');
-
-							setTimeout(function () {
-								<?php if ($artigo['fase_producao_id'] == '1'): ?>
-									window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
-								<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-									window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
-								<?php endif; ?>
-							}, 1500);
-
-						} else {
-							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-						}
-					}
-				});
-			});
-
+			
 			$('#reverter1').on('change', function (e) {
 				reverterArtigo();
 			});
@@ -705,6 +679,37 @@ use CodeIgniter\I18n\Time;
 			});
 
 		<?php endif; ?>
+
+		$('.submeter-revisao').on('click', function () {
+				$.ajax({
+					url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
+					method: "POST",
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide() },
+					success: function (retorno) {
+						if (retorno.status) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							$('.submeter-revisao').attr('disabled', '');
+
+							setTimeout(function () {
+								<?php if ($artigo['fase_producao_id'] == '1'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/meusArtigos/'); ?>" + retorno.parametros['artigoId'];
+								<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
+									window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
+								<?php endif; ?>
+							}, 1500);
+
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
+			});
+		
 
 		$('.listagem-artigos-produzindo').on('click', function () {
 			$.ajax({
