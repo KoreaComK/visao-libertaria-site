@@ -420,8 +420,8 @@ class Artigos extends BaseController
 		}
 
 		$colaborador = $this->session->get('colaboradores')['id'];
-		if ($colaborador != $artigo['marcado_colaboradores_id']) {
-			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
+		if ($colaborador != $artigo['marcado_colaboradores_id'] && $artigo['marcado_colaboradores_id']!=NULL) {
+			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo.', true);
 		}
 
 		if (empty($artigo) || $artigo == null) {
@@ -478,7 +478,7 @@ class Artigos extends BaseController
 
 		$colaborador = $this->session->get('colaboradores')['id'];
 		if ($colaborador != $artigo['marcado_colaboradores_id']) {
-			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo para narração.', true);
+			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo.', true);
 		}
 
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
