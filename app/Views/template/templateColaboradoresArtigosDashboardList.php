@@ -6,6 +6,7 @@
 			</th>
 			<th scope="col" class="border-0 rounded-start"></th>
 			<th scope="col" class="border-0">Título</th>
+			<th scope="col" class="border-0">Escritor</th>
 			<th scope="col" class="border-0">Publicado em</th>
 			<th scope="col" class="border-0">Tipo</th>
 			<th scope="col" class="border-0">Status</th>
@@ -25,6 +26,9 @@
 					<!-- Table data -->
 					<td>
 						<h6 class="mb-0"><a href="#"><?= $artigo['titulo']; ?></a></h6>
+					</td>
+					<td>
+						<h6 class="mb-0"><a href="<?=site_url('site/escritor/'.urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a></h6>
 					</td>
 					<!-- Table data -->
 					<td><?= ($artigo['data_publicado']!=NULL)?(Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')):(''); ?>
