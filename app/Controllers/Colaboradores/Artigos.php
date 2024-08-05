@@ -948,7 +948,7 @@ class Artigos extends BaseController
 		return view('template/templateColaboradoresArtigosColaborarList', $data);
 	}
 
-	public function artigosProduzindo()
+	public function artigosProduzindo($idFaseArtigo = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('2');
 		$data[] = array();
@@ -956,8 +956,13 @@ class Artigos extends BaseController
 		$data['artigos'] = null;
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->whereNotIn('fase_producao_id', array(6, 7))
-			->where('descartado', NULL)->join('fase_producao', 'fase_producao.id = artigos.fase_producao_id')
+		$artigosModel->select('artigos.*, fase_producao.nome');
+		if($idFaseArtigo == NULL) {
+			$artigosModel->whereNotIn('fase_producao_id', array(6, 7));
+		} else {
+			$artigosModel->where('fase_producao_id', $idFaseArtigo);
+		}
+		$artigos = $artigosModel->where('descartado', NULL)->join('fase_producao', 'fase_producao.id = artigos.fase_producao_id')
 			->get()->getResultArray();
 
 		if (!empty($artigos)) {

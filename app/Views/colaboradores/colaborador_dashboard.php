@@ -13,10 +13,13 @@
 						<i class="far fa-file-lines"></i>
 					</div>
 					<div class="text-center">
-						<h3 class="mb-0">
-							<?= ($resumo['escrevendo'] < 10) ? ('0' . $resumo['escrevendo']) : ($resumo['escrevendo']); ?>
-						</h3>
-						<h6 class="mb-0">Escrevendo</h6>
+						<a class="btn-link listagem-artigos-produzindo" data-fase-producao="1"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
+							<h3 class="mb-0">
+								<?= ($resumo['escrevendo'] < 10) ? ('0' . $resumo['escrevendo']) : ($resumo['escrevendo']); ?>
+							</h3>
+							<h6 class="mb-0">Escrevendo</h6>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -30,10 +33,13 @@
 					</div>
 					<!-- Content -->
 					<div class="text-center">
-						<h3 class="mb-0">
-							<?= ($resumo['revisando'] < 10) ? ('0' . $resumo['revisando']) : ($resumo['revisando']); ?>
-						</h3>
-						<h6 class="mb-0">Revisando</h6>
+						<a class="btn-link listagem-artigos-produzindo" data-fase-producao="2"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
+							<h3 class="mb-0">
+								<?= ($resumo['revisando'] < 10) ? ('0' . $resumo['revisando']) : ($resumo['revisando']); ?>
+							</h3>
+							<h6 class="mb-0">Revisando</h6>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -48,12 +54,15 @@
 						</div>
 						<!-- Content -->
 						<div class="text-center">
-							<h3 class="mb-0">
+							<a class="btn-link listagem-artigos-produzindo" data-fase-producao="3"
+								href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
 								<h3 class="mb-0">
-									<?= ($resumo['narrando'] < 10) ? ('0' . $resumo['narrando']) : ($resumo['narrando']); ?>
+									<h3 class="mb-0">
+										<?= ($resumo['narrando'] < 10) ? ('0' . $resumo['narrando']) : ($resumo['narrando']); ?>
+									</h3>
 								</h3>
-							</h3>
-							<h6 class="mb-0">Narrando</h6>
+								<h6 class="mb-0">Narrando</h6>
+							</a>
 						</div>
 					</div>
 				</div>
@@ -68,12 +77,15 @@
 					</div>
 					<!-- Content -->
 					<div class="text-center">
-						<h3 class="mb-0">
+						<a class="btn-link listagem-artigos-produzindo" data-fase-producao="4"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
 							<h3 class="mb-0">
-								<?= ($resumo['produzindo'] < 10) ? ('0' . $resumo['produzindo']) : ($resumo['produzindo']); ?>
+								<h3 class="mb-0">
+									<?= ($resumo['produzindo'] < 10) ? ('0' . $resumo['produzindo']) : ($resumo['produzindo']); ?>
+								</h3>
 							</h3>
-						</h3>
-						<h6 class="mb-0">Produzindo</h6>
+							<h6 class="mb-0">Produzindo</h6>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -86,12 +98,15 @@
 					</div>
 					<!-- Content -->
 					<div class="text-center">
-						<h3 class="mb-0">
+						<a class="btn-link listagem-artigos-produzindo" data-fase-producao="5"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
 							<h3 class="mb-0">
-								<?= ($resumo['publicando'] < 10) ? ('0' . $resumo['publicando']) : ($resumo['publicando']); ?>
+								<h3 class="mb-0">
+									<?= ($resumo['publicando'] < 10) ? ('0' . $resumo['publicando']) : ($resumo['publicando']); ?>
+								</h3>
 							</h3>
-						</h3>
-						<h6 class="mb-0">Publicando</h6>
+							<h6 class="mb-0">Publicando</h6>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -104,11 +119,15 @@
 					</div>
 					<!-- Content -->
 					<div class="text-center">
-						<h3 class="mb-0">
+						<a class="btn-link listagem-artigos-produzindo" data-fase-producao="6"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modalListagem">
 							<h3 class="mb-0">
-								<?= ($resumo['pagando'] < 10) ? ('0' . $resumo['pagando']) : ($resumo['pagando']); ?></h3>
-						</h3>
-						<h6 class="mb-0">Pagando</h6>
+								<h3 class="mb-0">
+									<?= ($resumo['pagando'] < 10) ? ('0' . $resumo['pagando']) : ($resumo['pagando']); ?>
+								</h3>
+							</h3>
+							<h6 class="mb-0">Pagando</h6>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -120,7 +139,8 @@
 
 			<div class="card-header bg-transparent border-bottom p-3">
 				<div class="d-sm-flex justify-content-between align-items-center">
-					<h5 class="mb-2 mb-sm-0">Artigos publicados do site <span class="badge bg-primary bg-opacity-10 text-primary"><?= $contador; ?></span></h5>
+					<h5 class="mb-2 mb-sm-0">Artigos publicados do site <span
+							class="badge bg-primary bg-opacity-10 text-primary"><?= $contador; ?></span></h5>
 					<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
 						class="btn btn-sm btn-primary mb-0">Novo Artigo</a>
 				</div>
@@ -158,7 +178,22 @@
 	<!-- Counter END -->
 
 </div>
-</div>
+
+<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Artigos em produção</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body corpo-listar">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary text-left" data-bs-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -191,6 +226,24 @@
 
 	$(document).ready(function () {
 		refreshListPublicado(false);
+	});
+
+	$('.listagem-artigos-produzindo').on('click', function (e) {
+		faseproducaoid = e.currentTarget.getAttribute('data-fase-producao');
+		$.ajax({
+			url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>/"+faseproducaoid,
+			method: "GET",
+			data: {},
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "html",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (retorno) {
+				$('.corpo-listar').html(retorno);
+			}
+		});
 	});
 </script>
 

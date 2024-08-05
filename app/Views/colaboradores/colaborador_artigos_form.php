@@ -433,7 +433,7 @@ use CodeIgniter\I18n\Time;
 			<div class="modal-body corpo-listar">
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary text-left" data-dismiss="modal">Fechar</button>
+				<button type="button" class="btn btn-secondary text-left" data-bs-dismiss="modal">Fechar</button>
 			</div>
 		</div>
 	</div>

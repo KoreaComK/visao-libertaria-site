@@ -15,7 +15,7 @@
 			<?php foreach ($artigos as $artigo): ?>
 				<tr>
 					<td>
-						<h6 class="mb-0"><a href="<?= $artigo['link']; ?>" class="btn-link" target="_blank"><?= $artigo['titulo']; ?></a></h6>
+						<h6 class="mb-0"><a href="<?= ($artigo['fase_producao_id'] == '1')?($artigo['link']):(site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])); ?>" class="btn-link" target="_blank"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<td>
 						<span
