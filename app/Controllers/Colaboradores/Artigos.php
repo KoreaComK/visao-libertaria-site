@@ -1421,9 +1421,11 @@ class Artigos extends BaseController
 		}
 		if ($faseProducao['etapa_posterior'] == '4') {
 			$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+			$artigo['palavras_narrador'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
 		}
 		if ($faseProducao['etapa_posterior'] == '5') {
 			$artigo['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+			$artigo['palavras_produtor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
 		}
 		if ($faseProducao['etapa_posterior'] == '6') {
 			$artigo['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
