@@ -33,7 +33,7 @@ class Perfil extends BaseController
 
 				$post['twitter'] = $gerenciadorTextos->simplificaString($post['twitter']);
 				$valida = $validaFormularios->validaFormularioPerfilColaborador($post, $session['id']);
-				if(substr($post['carteira'],0,1) != '1' && substr($post['carteira'],0,1) != '3' && substr($post['carteira'],0,3) != 'bc1') {
+				if($post['carteira'] != NULL && $post['carteira'] != "" && substr($post['carteira'],0,1) != '1' && substr($post['carteira'],0,1) != '3' && substr($post['carteira'],0,3) != 'bc1') {
 					return $retorno->retorno(false, 'Perfil não atualizado! Endereço bitcoin inválido.', true);
 				}
 				if (empty($valida->getErrors())) {
