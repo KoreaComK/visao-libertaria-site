@@ -144,7 +144,7 @@
 	});
 
 	$(".btn-marcar").on("click", function (e) {
-		$('.conteudo-modal').html('Deseja desmarcar este artigo?');
+		$('.conteudo-modal').html('Deseja marcar este artigo?');
 		artigoId = $(e.currentTarget).attr('data-vl-artigo');
 		$("#mi-modal").modal('show');
 		$("#modal-btn-si").addClass('modal-btn-confirma-marcar');
