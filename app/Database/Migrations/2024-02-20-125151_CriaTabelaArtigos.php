@@ -27,6 +27,12 @@ final class CriaTabelaArtigos extends Migration
             'fase_producao_id' => [
                 'type' => 'INT',
             ],
+            'tipo_artigo' => [
+                'type' => 'CHAR',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'T',
+            ],
             'link' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,

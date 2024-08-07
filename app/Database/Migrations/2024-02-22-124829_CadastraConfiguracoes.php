@@ -189,6 +189,30 @@ final class CadastraConfiguracoes extends Migration
             [
                 'config' => 'artigo_tempo_bloqueio',
                 'config_valor' => '48 hours',
+            ],
+            [
+                'config' => 'cron_notificacoes_data_visualizado',
+                'config_valor' => '1 weeks',
+            ],
+            [
+                'config' => 'cron_notificacoes_data_cadastrado',
+                'config_valor' => '1 months',
+            ],
+            [
+                'config' => 'cron_email_carteira_data',
+                'config_valor' => '3 days'
+            ],
+            [
+                'config' =>  'cron_notificacoes_status_delete',
+                'config_valor' => '1'
+            ],
+            [
+                'config' => 'cron_artigos_descartar_status',
+                'config_valor' => '1'
+            ],
+            [
+                'config' => 'cron_artigos_descartar_data',
+                'config_valor' => '1 months'
             ]
         ];
 

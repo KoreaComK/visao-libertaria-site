@@ -39,6 +39,22 @@ final class CriaTabelaPagamentos extends Migration
                 'type' => 'FLOAT',
                 'default' => 0,
             ],
+            'multiplicador_escrito_noticia' => [
+                'type' => 'FLOAT',
+                'default' => 0,
+            ],
+            'multiplicador_revisado_noticia' => [
+                'type' => 'FLOAT',
+                'default' => 0,
+            ],
+            'multiplicador_narrado_noticia' => [
+                'type' => 'FLOAT',
+                'default' => 0,
+            ],
+            'multiplicador_produzido_noticia' => [
+                'type' => 'FLOAT',
+                'default' => 0,
+            ],
             'hash_transacao' => [
                 'type' => 'VARCHAR',
                 'constraint' => 256,

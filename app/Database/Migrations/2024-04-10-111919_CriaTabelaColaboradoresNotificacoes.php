@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Database\Migrations;
 
+use CodeIgniter\Database\RawSql;
 use CodeIgniter\Database\Migration;
 
 class CriaTabelaColaboradoresNotificacoes extends Migration
@@ -11,7 +12,7 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
     private string $tabela = 'colaboradores_notificacoes';
     private string $foreignKeyRestriction = 'NO ACTION';
 
-    public function up()
+    public function up(): void
     {
         $this->forge->addField([
             'id' => [
@@ -26,13 +27,17 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
+            'objeto' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+            ],
             'notificacao' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'url' => [
+            'id_objeto' => [
                 'type' => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 36,
             ],
             'colaboradores_id' => [
                 'type' => 'INT',
@@ -41,6 +46,10 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
                 'default' => null,
+            ],
+            'criado' => [
+                'type' => 'DATETIME',
+                'default' => new RawSql('CURRENT_TIMESTAMP'),
             ],
         ]);
 
@@ -64,7 +73,7 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
         $this->forge->createTable($this->tabela, true);
     }
 
-    public function down()
+    public function down(): void
     {
         $this->forge->dropTable($this->tabela);
     }
