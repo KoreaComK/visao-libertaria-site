@@ -441,7 +441,7 @@
 
 	<?php endif; ?>
 
-	<?php if ($artigo['fase_producao_id'] == '4'): ?>
+	<?php if ($permitido && $artigo['fase_producao_id'] == '4'): ?>
 
 		function submeterRevisao() {
 			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
@@ -474,7 +474,7 @@
 		})
 	<?php endif; ?>
 
-	<?php if ($artigo['fase_producao_id'] == '5'): ?>
+	<?php if ($permitido && $artigo['fase_producao_id'] == '5'): ?>
 
 		function submeterRevisao() {
 			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
