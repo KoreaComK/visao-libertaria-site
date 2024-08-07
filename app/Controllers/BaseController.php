@@ -63,7 +63,7 @@ abstract class BaseController extends Controller
 		if (!($this->session->has('site_config')) || !isset($this->session->get('colaboradores')['texto_nome'])) {
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 
-			$site_nome = (array) json_decode($configuracaoModel->find('site_nome')['config_valor']);
+			$site_nome = json_decode($configuracaoModel->find('site_nome')['config_valor'], true);
 			$site_nome = (isset($site_nome[site_url()]) && $site_nome[site_url()] != '') ? ($site_nome[site_url()]) : ($site_nome['default']);
 
 			$site_descricao = (array) json_decode($configuracaoModel->find('site_descricao')['config_valor']);
