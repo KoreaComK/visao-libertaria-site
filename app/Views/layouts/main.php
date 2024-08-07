@@ -374,19 +374,19 @@
 				<div class="col-md-6 col-lg-3 mb-4">
 					<h5 class="mb-4">Navegação</h5>
 					<div class="row">
-						<div class="col-6">
+						<div class="col-12">
 							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/artigos'); ?>">Artigos</a>
 								</li>
 							</ul>
 						</div>
-						<div class="col-6">
+						<div class="col-12">
 							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
 								</li>
 							</ul>
 						</div>
-						<div class="col-6">
+						<div class="col-12">
 							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('links'); ?>">Todos os projetos</a>
 								</li>
