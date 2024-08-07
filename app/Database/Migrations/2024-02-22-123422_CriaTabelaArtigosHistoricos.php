@@ -18,7 +18,6 @@ final class CriaTabelaArtigosHistoricos extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'artigos_id' => [
                 'type' => 'VARCHAR',

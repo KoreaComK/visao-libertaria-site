@@ -15,7 +15,6 @@ class CriaTabelaAvisos extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'aviso' => [
                 'type' => 'TEXT',

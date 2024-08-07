@@ -18,7 +18,6 @@ final class CriaTabelaArtigos extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'url_friendly' => [
                 'type' => 'VARCHAR',

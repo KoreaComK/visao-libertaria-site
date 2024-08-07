@@ -18,7 +18,6 @@ final class CriaTabelaPautasComentarios extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'pautas_id' => [
                 'type' => 'VARCHAR',

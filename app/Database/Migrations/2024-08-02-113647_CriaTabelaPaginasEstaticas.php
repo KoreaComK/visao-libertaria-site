@@ -15,7 +15,6 @@ class CriaTabelaPaginasEstaticas extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'ativo' => [
                 'type' => 'CHAR',

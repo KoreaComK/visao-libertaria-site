@@ -18,7 +18,6 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
-                'default' => 'uuid()',
             ],
             'sujeito_colaboradores_id' => [
                 'type' => 'INT',
