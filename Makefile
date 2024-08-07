@@ -15,8 +15,10 @@ bash-db:
 build:
 	docker-compose build web
 
-restart:
-	docker-compose restart
+restart: down up
+
+test:
+	docker-compose exec web bash -c "./vendor/bin/phpunit"
 
 help:
 	@echo "Available commands:"

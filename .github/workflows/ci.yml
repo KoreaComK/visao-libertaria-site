@@ -1,0 +1,23 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - main
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Build containers
+        run: docker-compose up -d
+
+      - name: Run composer install
+        run: docker-compose exec -T web bash -c "composer install"
+
+      - name: Run tests
+        run: docker-compose exec -T web bash -c "./vendor/bin/phpunit"
+          

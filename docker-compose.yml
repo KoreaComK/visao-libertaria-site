@@ -8,6 +8,8 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/localhost/htdocs
+    environment:
+      - XDEBUG_MODE=coverage
     depends_on:
       - db
   db:
