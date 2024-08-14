@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   web:
     container_name: vl-web
@@ -12,7 +10,7 @@ services:
       - db
   db:
     container_name: vl-db
-    image: mariadb:10.6.9
+    image: mariadb:10.6.16
     volumes:
       - ./.db:/var/lib/mysql
       - .docker/db_test.sql:/docker-entrypoint-initdb.d/1.sql
