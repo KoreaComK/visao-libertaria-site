@@ -17,6 +17,7 @@ final class CriaTabelaPautas extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
+                'default' => new RawSql('"uuid()"'),
             ],
             'colaboradores_id' => [
                 'type' => 'INT',

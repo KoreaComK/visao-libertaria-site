@@ -18,6 +18,7 @@ class CriaTabelaColaboradoresNotificacoes extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
+                'default' => new RawSql('"uuid()"'),
             ],
             'sujeito_colaboradores_id' => [
                 'type' => 'INT',

@@ -18,6 +18,7 @@ final class CriaTabelaPautasComentarios extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
+                'default' => new RawSql('"uuid()"'),
             ],
             'pautas_id' => [
                 'type' => 'VARCHAR',

@@ -17,6 +17,7 @@ final class CriaTabelaArtigosComentarios extends Migration
             'id' => [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
+                'default' => new RawSql('"uuid()"'),
             ],
             'artigos_id' => [
                 'type' => 'VARCHAR',
