@@ -110,7 +110,7 @@ use CodeIgniter\I18n\Time;
 							<!-- Card Image overlay -->
 							<div class="mask align-items-center p-3 p-sm-4"
 								style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-								<div class="w-100" style="margin-top:12rem;">
+								<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-0%);">
 									<!-- Card title -->
 									<h2 class="h1"><a
 											href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']) ?>"
@@ -155,7 +155,7 @@ use CodeIgniter\I18n\Time;
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="w-100" style="margin-top:7rem;">
+										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<!-- Card title -->
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']) ?>"
@@ -195,7 +195,7 @@ use CodeIgniter\I18n\Time;
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="w-100">
+										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<!-- Card category -->
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[2]['url_friendly']) ?>"
@@ -235,7 +235,7 @@ use CodeIgniter\I18n\Time;
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="w-100">
+										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[3]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[3]['titulo']; ?></a>
