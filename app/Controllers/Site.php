@@ -459,11 +459,8 @@ class Site extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		} else {
-			$this->session->destroy();
+			$this->session->remove('colaboradores');
 
-			if(get_cookie('senha') !== null) { delete_cookie('senha'); }
-			if(get_cookie('lembrar') !== null) { delete_cookie('lembrar'); }
-			if(get_cookie('email') !== null) { delete_cookie('email'); }
 			if(get_cookie('hash') !== null) {
 				$retorno = $this->logar_cookie();
 				$get = service('request')->getGet();
@@ -492,7 +489,7 @@ class Site extends BaseController
 	public function logout()
 	{
 		helper('cookie');
-		$this->session->destroy();
+		$this->session->remove('colaboradores');
 		$link = base_url() . 'site/login';
 		$get = $this->request->getGet();
 		if(!empty($get)) {

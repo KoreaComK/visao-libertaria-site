@@ -220,7 +220,7 @@
 				<div class="d-md-flex justify-content-between align-items-center my-2">
 					<!-- Top bar left -->
 					<ul class="nav">
-						<?php if (!isset($_SESSION) || $_SESSION['colaboradores']['id'] === null): ?>
+						<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('site/cadastrar'); ?>">Cadastre-se</a>
 							</li>
@@ -228,7 +228,7 @@
 								<a class="nav-link" href="<?= site_url('site/login'); ?>">Acessar</a>
 							</li>
 						<?php endif; ?>
-						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
+						<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>
 							<li class="nav-item">
 								<a class="nav-link ps-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Área do
 									colaborador</a>
@@ -307,7 +307,7 @@
 						</li>
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
-						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
+						<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>
 
 							<ul class="navbar-nav">
 								<li class="nav-item dropdown">
