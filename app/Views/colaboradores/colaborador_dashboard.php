@@ -134,6 +134,47 @@
 
 		</div>
 
+		<div class="card border mt-4 mb-4">
+			<div class="card-header border-bottom p-3">
+				<h5 class="card-header-title mb-0">Tempos limites para colaborar</h5>
+			</div>
+			<!-- Card body START -->
+			<div class="card-body">
+				<p>ATENÇÃO! Se os limites não forem respeitados, o artigo será desmarcado e o colaborador terá que
+					esperar um tempo para voltar a pegar o mesmo artigo.</p>
+				<p>Os limites estão <b><?= ($limite['ativo'] == '1') ? ('ativos') : ('inativos'); ?></b>.</p>
+				<div class="row">
+					<div class="col-md-12 col-lg-4">
+						<p>
+							Para os artigos <b class="text-uppercase">teóricos</b>, os limites são:
+						<ul class="list-unstyled">
+							<li>Revisão: <b><?= $limite['teoria']['revisao']; ?></b></li>
+							<li>Narração: <b><?= $limite['teoria']['narracao']; ?></b></li>
+							<li>Produção: <b><?= $limite['teoria']['producao']; ?></b></li>
+						</ul>
+						</p>
+					</div>
+					<div class="col-md-12 col-lg-4">
+						<p>
+							Para os artigos de <b class="text-uppercase">notícia</b>, os limites são:
+						<ul class="list-unstyled">
+							<li>Revisão: <b><?= $limite['noticia']['revisao']; ?></b></li>
+							<li>Narração: <b><?= $limite['noticia']['narracao']; ?></b></li>
+							<li>Produção: <b><?= $limite['noticia']['producao']; ?></b></li>
+						</ul>
+						</p>
+					</div>
+					<div class="col-md-12 col-lg-4">
+						<p>O limite máximo para o artigo ser produzido está <b><?= ($limite['descartar']['ativo'] == '1') ? ('ativo') : ('inativo'); ?></b>.</p>
+						<p>Caso o artigo não seja produzido em <b><?= $limite['descartar']['tempo']; ?></b>, o artigo será descartado.</p>
+					</div>
+				</div>
+
+
+			</div>
+			<!-- Card body END -->
+		</div>
+
 		<!-- Post list table START -->
 		<div class="card border bg-transparent rounded-3 mt-4">
 
@@ -231,7 +272,7 @@
 	$('.listagem-artigos-produzindo').on('click', function (e) {
 		faseproducaoid = e.currentTarget.getAttribute('data-fase-producao');
 		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>/"+faseproducaoid,
+			url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>/" + faseproducaoid,
 			method: "GET",
 			data: {},
 			processData: false,

@@ -55,6 +55,17 @@ class Artigos extends BaseController
 		$data['resumo']['publicando'] = 0;
 		$data['resumo']['pagando'] = 0;
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$data['limite']['ativo'] = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
+		$data['limite']['teoria']['revisao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor']));
+		$data['limite']['teoria']['narracao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor']));
+		$data['limite']['teoria']['producao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor']));
+		$data['limite']['noticia']['revisao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_revisao')['config_valor']));
+		$data['limite']['noticia']['narracao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_narracao')['config_valor']));
+		$data['limite']['noticia']['producao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_producao')['config_valor']));
+		$data['limite']['descartar']['ativo'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_descartar_status')['config_valor']));
+		$data['limite']['descartar']['tempo'] = str_replace('years','anos',str_replace('months','meses',str_replace('weeks','semanas',str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_descartar_data')['config_valor'])))));
+
 		//Se usuário tem acesso a escritor
 		$this->verificaPermissao->PermiteAcesso('2');
 
