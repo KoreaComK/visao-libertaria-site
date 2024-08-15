@@ -110,7 +110,7 @@ use CodeIgniter\I18n\Time;
 							<!-- Card Image overlay -->
 							<div class="mask align-items-center p-3 p-sm-4"
 								style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-								<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-0%);">
+								<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
 									<!-- Card title -->
 									<h2 class="h1"><a
 											href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']) ?>"
