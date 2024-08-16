@@ -35,7 +35,7 @@
 					<!-- Table data -->
 					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMMM yyyy'); ?>
 					</td>
-					<td><?= $artigo['limite']; ?>
+					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['limite'])->toLocalizedString('dd MMMM yyyy'); ?>
 					</td>
 					<!-- Table data -->
 					<td>

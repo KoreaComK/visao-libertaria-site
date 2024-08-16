@@ -956,7 +956,7 @@ class Artigos extends BaseController
 				if($limite_descarte[1] == 'weeks'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0] * 7); }
 				if($limite_descarte[1] == 'months'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addMonths($limite_descarte[0]); }
 				if($limite_descarte[1] == 'years'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addYears($limite_descarte[0]); }
-				$artigos[$chave]['limite'] = $tempo->humanize();
+				$artigos[$chave]['limite'] = $tempo;
 			}
 		}
 		$data['artigosList'] = [
