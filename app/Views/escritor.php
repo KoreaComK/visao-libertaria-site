@@ -33,6 +33,30 @@
 						</div>
 					</div>
 				</div>
+				<div class="col-12">
+					<div
+						class="bg-success bg-opacity-10 d-md-flex p-4 my-3 mx-0 text-center text-md-start rounded-3 row">
+						<div class="col-12">
+							<h2 class="fs-1">Conquistas Alcançadas pelo Escritor</h2>
+						</div>
+						<?php if (empty($conquistas)): ?>
+							<div class="col-12">
+								<p class="">Nenhuma conquista alcançada até o momento.</p>
+							</div>
+						<?php else: ?>
+							<?php foreach ($conquistas as $conquista): ?>
+								<div class="col-sm-6 col-lg-2">
+									<div class="mb-2 mt-2">
+										<img class="img-fluid rounded-circle btn-tooltip"
+											src="<?= site_url($conquista['imagem']); ?>"
+											title="Recebido depois de escrever <?= $conquista['pontuacao']; ?> artigos"
+											data-toggle="tooltip" data-placement="top">
+									</div>
+								</div>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -45,7 +69,7 @@
 				</div>
 				<div class="col-12">
 					<div class="row gy-4 listagem-escritor">
-						
+
 					</div>
 				</div>
 			</div>
@@ -53,6 +77,11 @@
 	</section>
 </div>
 <script>
+
+	$(function () {
+		$('.btn-tooltip').tooltip();
+	});
+
 	$(document).ready(function () {
 		$.ajax({
 			url: "<?php echo base_url('site/escritorList/'); ?><?= urlencode($colaborador['apelido']); ?>",

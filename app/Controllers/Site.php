@@ -583,6 +583,9 @@ class Site extends BaseController
 
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
+
+		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
+		$data['conquistas'] = $colaboradoresConquistasModel->join('conquistas','conquistas.id = colaboradores_conquistas.conquistas_id')->where('colaboradores_id',$colaborador['id'])->where("(tipo = 'escritor' or tipo is null)")->orderBy('conquistas_id','ASC')->get()->getResultArray();
 		
 		return view('escritor', $data);
 	}
