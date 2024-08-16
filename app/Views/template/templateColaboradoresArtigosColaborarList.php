@@ -2,8 +2,7 @@
 <table class="table align-middle p-4 mb-0 table-hover table-shrink">
 	<!-- Table head -->
 	<thead class="table-dark">
-		<tr>
-			</th>
+		<tr style="vertical-align: middle !important;">
 			<th scope="col" class="border-0 rounded-start"></th>
 			<th scope="col" class="border-0">Título</th>
 			<th scope="col" class="border-0">Escritor</th>
