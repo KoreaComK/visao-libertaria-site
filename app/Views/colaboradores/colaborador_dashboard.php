@@ -142,7 +142,7 @@
 			<div class="card-body">
 				<p>ATENÇÃO! Se os limites não forem respeitados, o artigo será desmarcado e o colaborador terá que
 					esperar um tempo para voltar a pegar o mesmo artigo.</p>
-				<p>Os limites estão <b><?= ($limite['ativo'] == '1') ? ('ativos') : ('inativos'); ?></b>.</p>
+				<p>Os limites estão <b><?= ($limite['ativo'] == '1') ? ('ativos') : ('inativos'); ?></b>. O tempo de bloqueio é de <b><?= $limite['bloqueio']; ?></b></p>
 				<div class="row">
 					<div class="col-md-12 col-lg-4">
 						<p>

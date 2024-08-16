@@ -57,6 +57,7 @@ class Artigos extends BaseController
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$data['limite']['ativo'] = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
+		$data['limite']['bloqueio'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('artigo_tempo_bloqueio')['config_valor']));
 		$data['limite']['teoria']['revisao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor']));
 		$data['limite']['teoria']['narracao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor']));
 		$data['limite']['teoria']['producao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor']));
