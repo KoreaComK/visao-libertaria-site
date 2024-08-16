@@ -53,6 +53,14 @@ final class CriaTabelaColaboradores extends Migration
                 'type' => 'DOUBLE',
                 'default' => 0,
             ],
+            'pontos_escritor' => [
+                'type' => 'INT',
+                'default' => 0,
+            ],
+            'pontos_pautador' => [
+                'type' => 'INT',
+                'default' => 0,
+            ],
             'strikes' => [
                 'type' => 'INT',
                 'null' => true,

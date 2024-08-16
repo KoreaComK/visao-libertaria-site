@@ -1,45 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\RawSql;
 use CodeIgniter\Database\Migration;
 
-class CriaTabelaAvisos extends Migration
+final class CriaTabelaConquistas extends Migration
 {
-    private string $tabela = 'avisos';
+    private string $tabela = 'conquistas';
 
     public function up(): void
     {
         $this->forge->addField([
-            'id' => [
+            'id',
+            'nome' => [
                 'type' => 'VARCHAR',
-                'constraint' => 36,
-                'default' => new RawSql('"uuid()"'),
+                'constraint' => '255',
             ],
-            'aviso' => [
-                'type' => 'TEXT',
-                'null' => false,
-            ],
-            'link' => [
+            'imagem' => [
                 'type' => 'VARCHAR',
-                'constraint' => 255,
-                'null' => true,
-                'default' => null,
+                'constraint' => '255',
             ],
-            'inicio' => [
-                'type' => 'DATETIME',
-                'null' => true,
-                'default' => null,
+            'tipo' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
             ],
-            'fim' => [
-                'type' => 'DATETIME',
+            'pontuacao' => [
+                'type' => 'INT',
                 'null' => true,
-                'default' => null,
+                'default' => 0,
             ],
             'criado' => [
                 'type' => 'DATETIME',
                 'default' => new RawSql('CURRENT_TIMESTAMP'),
+            ],
+            'excluido' => [
+                'type' => 'DATETIME',
+                'null' => true,
+                'default' => null,
             ],
         ]);
 

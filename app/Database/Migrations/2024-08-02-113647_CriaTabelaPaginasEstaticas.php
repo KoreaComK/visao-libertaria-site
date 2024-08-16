@@ -52,6 +52,8 @@ class CriaTabelaPaginasEstaticas extends Migration
             ],
         ]);
 
+        $this->forge->addPrimaryKey('id');
+
         $this->forge->createTable($this->tabela, true);
     }
 

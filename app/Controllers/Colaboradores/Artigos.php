@@ -764,6 +764,9 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$isGravado = $this->artigoProximo($artigoId);
+			
+			$this->atualizaColaboradoresConquistas($artigoId);
+
 			if ($isGravado === true) {
 				return $retorno->retorno(true, 'O artigo foi submetido para pagamento com sucesso.', true);
 			} else {
@@ -1615,5 +1618,23 @@ class Artigos extends BaseController
 		$config['artigo_visualizacao_narracao'] = '<p>' . implode('</p><p>', $config['artigo_visualizacao_narracao']) . '</p>';
 		$config['artigo_visualizacao_narracao'] = str_replace("\n", "<br/>", $config['artigo_visualizacao_narracao']);
 		return $config['artigo_visualizacao_narracao'];
+	}
+
+	private function atualizaColaboradoresConquistas($idArtigo)
+	{
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$artigosModel = new \App\Models\ArtigosModel();
+		$conquistasModel = new \App\Models\ConquistasModel();
+		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
+
+		$artigo = $artigosModel->find($idArtigo);
+		$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
+		$pontuacao = $colaborador['pontos_escritor']+1;
+		$colaboradoresModel->update($colaborador['id'],array('pontos_escritor'=>$pontuacao));
+
+		$conquistas = $conquistasModel->where('tipo','escritor')->where('pontuacao',$pontuacao)->get()->getResultArray();
+		if(!empty($conquistas) && isset($conquistas[0])) {
+			$colaboradoresConquistasModel->insert(array('colaboradores_id'=>$artigo['escrito_colaboradores_id'],'conquistas_id'=>$conquistas[0]['id']));
+		}
 	}
 }
