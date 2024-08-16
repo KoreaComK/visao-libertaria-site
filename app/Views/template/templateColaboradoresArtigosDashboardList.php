@@ -25,7 +25,7 @@
 					</td>
 					<!-- Table data -->
 					<td>
-						<h6 class="mb-0"><a href="#"><?= $artigo['titulo']; ?></a></h6>
+						<h6 class="mb-0"><a href="<?=site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])?>"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<td>
 						<h6 class="mb-0"><a href="<?=site_url('site/escritor/'.urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a></h6>

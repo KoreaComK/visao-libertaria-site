@@ -24,7 +24,7 @@
 					</td>
 					<!-- Table data -->
 					<td>
-						<h6 class="mb-0"><a href="#"><?= $artigo['titulo']; ?></a></h6>
+						<h6 class="mb-0"><a href="<?=site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])?>"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<!-- Table data -->
 					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMMM yyyy'); ?>

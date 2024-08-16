@@ -8,6 +8,7 @@
 			<th scope="col" class="border-0">Título</th>
 			<th scope="col" class="border-0">Escritor</th>
 			<th scope="col" class="border-0">Última atualização</th>
+			<th scope="col" class="border-0">Data limite</th>
 			<th scope="col" class="border-0">Tipo</th>
 			<th scope="col" class="border-0">Marcado</th>
 			<th scope="col" class="border-0 rounded-end"></th>
@@ -33,6 +34,8 @@
 					</td>
 					<!-- Table data -->
 					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMMM yyyy'); ?>
+					</td>
+					<td><?= $artigo['limite']; ?>
 					</td>
 					<!-- Table data -->
 					<td>

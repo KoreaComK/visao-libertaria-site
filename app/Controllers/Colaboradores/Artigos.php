@@ -946,9 +946,17 @@ class Artigos extends BaseController
 		$data['fase_producao_id'] = $get['fase_producao_id'];
 		$data['colaborador'] = $this->session->get('colaboradores')['id'];
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$limite_descarte = explode(' ',$configuracaoModel->find('cron_artigos_descartar_data')['config_valor']);
+
 		if (!empty($artigos)) {
 			foreach ($artigos as $chave => $artigo) {
 				$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
+				if($limite_descarte[1] == 'days'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0]); }
+				if($limite_descarte[1] == 'weeks'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0] * 7); }
+				if($limite_descarte[1] == 'months'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addMonths($limite_descarte[0]); }
+				if($limite_descarte[1] == 'years'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addYears($limite_descarte[0]); }
+				$artigos[$chave]['limite'] = $tempo->humanize();
 			}
 		}
 		$data['artigosList'] = [
