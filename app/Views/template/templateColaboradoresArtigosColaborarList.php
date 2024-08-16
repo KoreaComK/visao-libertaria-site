@@ -106,7 +106,7 @@
 		<?php else: ?>
 			<tr>
 				<!-- Table data -->
-				<td colspan="6">
+				<td colspan="8">
 					<h6 class="text-center">Nenhum resultado foi encontrado</h6>
 				</td>
 			</tr>
