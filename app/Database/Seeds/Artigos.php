@@ -19,11 +19,10 @@ class Artigos extends Seeder
 			$titulo = $faker->words(3,true).' '.$faker->name().' '.$faker->words(3,true);
 			$url_friendly = preg_replace('/[\@\.\;\" "]+/', '-', $titulo);
 
-			$texto_original = $faker->paragraphs($faker->numberBetween(60,100), true);
-			$texto_revisado = $faker->paragraphs($faker->numberBetween(60,100), true);
+			$texto = $faker->paragraphs($faker->numberBetween(60,100), true);
 
-			$quantidade_palavras_original = count(explode(' ',str_replace('\r\n',' ',$texto_original)));
-			$quantidade_palavras_revisado = count(explode(' ',str_replace('\r\n',' ',$texto_revisado)));
+			$quantidade_palavras_original = count(explode(' ',str_replace('\r\n',' ',$texto)));
+			$quantidade_palavras_revisado = count(explode(' ',str_replace('\r\n',' ',$texto)));
 
 			$fase_producao = $faker->numberBetween(1,7);
 			$revisado = null;
@@ -36,11 +35,9 @@ class Artigos extends Seeder
 			$link_youtube = null;
 
 			if($fase_producao == 1){
-				$texto_revisado = null;
 				$quantidade_palavras_revisado = 0;
 			}
 			if($fase_producao == 2){
-				$texto_revisado = null;
 				$quantidade_palavras_revisado = 0;
 			}
 			if($fase_producao == 3){
@@ -95,11 +92,10 @@ class Artigos extends Seeder
 				'sugerido_colaboradores_id' => $faker->numberBetween(1,1000),
 				'titulo' => $titulo,
 				'gancho' => $faker->sentence(),
-				'texto_original' => $texto_original,
+				'texto' => $texto,
 				'referencias' => $referencias,
 				'imagem' => $faker->imageUrl(1920,1080, true),
 				'escrito_colaboradores_id' => $faker->numberBetween(1,1000),
-				'texto_revisado' => $texto_revisado,
 				'revisado_colaboradores_id' => $revisado,
 				'arquivo_audio' => $arquivo_audio,
 				'narrado_colaboradores_id' => $narrado,

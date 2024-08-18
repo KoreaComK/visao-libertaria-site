@@ -52,7 +52,7 @@ final class CriaTabelaArtigos extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'texto_original' => [
+            'texto' => [
                 'type' => 'TEXT',
             ],
             'referencias' => [
@@ -66,11 +66,6 @@ final class CriaTabelaArtigos extends Migration
             ],
             'escrito_colaboradores_id' => [
                 'type' => 'INT',
-                'null' => true,
-                'default' => null,
-            ],
-            'texto_revisado' => [
-                'type' => 'TEXT',
                 'null' => true,
                 'default' => null,
             ],

@@ -180,7 +180,7 @@ class ValidaFormularios extends BaseController
 				'label' => 'Título do Artigo',
 				'rules' => 'required|max_length[255]|min_length[10]'
 			],
-			'texto_original' => [
+			'texto' => [
 				'label' => 'Texto do Artigo',
 				'rules' => 'required'
 			],
@@ -224,7 +224,7 @@ class ValidaFormularios extends BaseController
 				'label' => 'Gancho',
 				'rules' => 'required|max_length[255]|min_length[25]'
 			],
-			'texto_original' => [
+			'texto' => [
 				'label' => 'Texto do Artigo',
 				'rules' => 'required'
 			],

@@ -397,7 +397,7 @@
 		submeterRevisao();
 	});
 
-	<?php if ($artigo['fase_producao_id'] == '3'): ?>
+	<?php if ($artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
 
 		function submeterRevisao() {
 			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {

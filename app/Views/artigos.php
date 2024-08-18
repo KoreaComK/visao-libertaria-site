@@ -104,7 +104,7 @@ use CodeIgniter\I18n\Time;
 								</ul>
 							</small>
 							<p class="">
-								<?= substr($artigo['texto_revisado'], 0, strpos($artigo['texto_revisado'], "\n")); ?>
+								<?= substr($artigo['texto'], 0, strpos($artigo['texto'], "\n")); ?>
 							</p>
 						</div>
 					</div>

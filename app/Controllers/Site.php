@@ -150,7 +150,7 @@ class Site extends BaseController
 			$data['meta'] = array();
 			$data['meta']['title'] = $data['artigo']['titulo'];
 			$data['meta']['image'] = $data['artigo']['imagem'];
-			$data['meta']['description'] = addslashes(substr($data['artigo']['texto_revisado'],0,250)).'...';
+			$data['meta']['description'] = addslashes(substr($data['artigo']['texto'],0,250)).'...';
 			
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->whereIn('fase_producao_id', array(6, 7));

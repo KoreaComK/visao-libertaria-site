@@ -26,6 +26,7 @@ class Artigos extends BaseController
 		$this->artigosMarcacao = new ArtigosMarcacao;
 		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
 		helper('url_friendly');
+		helper('gera_hash_artigo');
 		$this->iniciaVariavel = [
 			'titulo' => null,
 			'pauta' => array(),
@@ -37,7 +38,7 @@ class Artigos extends BaseController
 				'titulo' => null,
 				'fase_producao_id' => null,
 				'gancho' => null,
-				'texto_original' => null,
+				'texto' => null,
 				'referencias' => null,
 				'imagem' => null
 			],
@@ -57,15 +58,15 @@ class Artigos extends BaseController
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$data['limite']['ativo'] = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
-		$data['limite']['bloqueio'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('artigo_tempo_bloqueio')['config_valor']));
-		$data['limite']['teoria']['revisao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor']));
-		$data['limite']['teoria']['narracao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor']));
-		$data['limite']['teoria']['producao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor']));
-		$data['limite']['noticia']['revisao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_revisao')['config_valor']));
-		$data['limite']['noticia']['narracao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_narracao')['config_valor']));
-		$data['limite']['noticia']['producao'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_noticia_desmarcar_data_producao')['config_valor']));
-		$data['limite']['descartar']['ativo'] = str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_descartar_status')['config_valor']));
-		$data['limite']['descartar']['tempo'] = str_replace('years','anos',str_replace('months','meses',str_replace('weeks','semanas',str_replace('days','dias',str_replace('hours','horas',$configuracaoModel->find('cron_artigos_descartar_data')['config_valor'])))));
+		$data['limite']['bloqueio'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('artigo_tempo_bloqueio')['config_valor']));
+		$data['limite']['teoria']['revisao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor']));
+		$data['limite']['teoria']['narracao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor']));
+		$data['limite']['teoria']['producao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor']));
+		$data['limite']['noticia']['revisao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_revisao')['config_valor']));
+		$data['limite']['noticia']['narracao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_narracao')['config_valor']));
+		$data['limite']['noticia']['producao'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_producao')['config_valor']));
+		$data['limite']['descartar']['ativo'] = str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_descartar_status')['config_valor']));
+		$data['limite']['descartar']['tempo'] = str_replace('years', 'anos', str_replace('months', 'meses', str_replace('weeks', 'semanas', str_replace('days', 'dias', str_replace('hours', 'horas', $configuracaoModel->find('cron_artigos_descartar_data')['config_valor'])))));
 
 		//Se usuário tem acesso a escritor
 		$this->verificaPermissao->PermiteAcesso('2');
@@ -112,7 +113,7 @@ class Artigos extends BaseController
 			if (!empty($pauta)) {
 				$data['pauta'] = $pauta;
 				$data['artigo']['titulo'] = $pauta['titulo'];
-				$data['artigo']['texto_original'] = $pauta['texto'];
+				$data['artigo']['texto'] = $pauta['texto'];
 			}
 		}
 
@@ -122,15 +123,16 @@ class Artigos extends BaseController
 			$artigo = $artigosModel->find($artigoId);
 
 			$colaborador = $this->session->get('colaboradores')['id'];
-			if (	$artigo === NULL || empty($artigo) || 
-					($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) ||
-					($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id']) ||
-					(	$artigo['fase_producao_id'] != '1' && 
-						$artigo['fase_producao_id'] != '2' && 
-						!in_array('6',$this->session->get('colaboradores')['permissoes']) && 
-						!in_array('7',$this->session->get('colaboradores')['permissoes'])
-					)
-			){
+			if (
+				$artigo === NULL || empty($artigo) ||
+				($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) ||
+				($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id']) ||
+				($artigo['fase_producao_id'] != '1' &&
+					$artigo['fase_producao_id'] != '2' &&
+					!in_array('6', $this->session->get('colaboradores')['permissoes']) &&
+					!in_array('7', $this->session->get('colaboradores')['permissoes'])
+				)
+			) {
 				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/');
 			}
 			$data['artigo'] = $artigo;
@@ -141,6 +143,8 @@ class Artigos extends BaseController
 		$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 		$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
 
+		$artigosTextosHistoricosModel = new \App\Models\ArtigosTextosHistoricosModel();
+		$data['historicoTexto'] = $artigosTextosHistoricosModel->where('artigos_id', $artigoId)->get()->getResultArray();
 
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 		$data['cadastro'] = ($artigoId === NULL) ? (true) : (false);
@@ -153,6 +157,22 @@ class Artigos extends BaseController
 		}
 		$data['config'] = $config;
 		return view('colaboradores/colaborador_artigos_form', $data);
+	}
+
+	public function artigosTextoHistorico($idArtigoHistorico = NULL)
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (!$this->request->getMethod() == 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$artigosTextosHistoricosModel = new \App\Models\ArtigosTextosHistoricosModel();
+		$historico = $artigosTextosHistoricosModel->find($idArtigoHistorico);
+		return $retorno->retorno(true, 'Dados do histórico copiados.', true, $historico);
 	}
 
 	public function historicos($artigoId = NULL)
@@ -175,6 +195,33 @@ class Artigos extends BaseController
 				</li>
 			';
 		}
+		return $html;
+	}
+
+	public function artigosTextoHistoricosList($artigoId = NULL)
+	{
+		if ($artigoId === NULL) {
+			return '';
+		}
+
+		$artigosTextosHistoricosModel = new \App\Models\ArtigosTextosHistoricosModel();
+		$historicoTexto = $artigosTextosHistoricosModel->where('artigos_id', $artigoId)->get()->getResultArray();
+		$html = '';
+		foreach ($historicoTexto as $h) {
+			$html .= '
+				<li class="list-group-item p-1 border-0">
+					<small><a class="btn-link btn-texto-historico" href="javascript:void(0);"
+						data-bs-toggle="modal" data-bs-target="#modalVerTextoHistorico"
+						id="btn-historico" data-historico-texto-id="' . $h['id'] . '" onclick="mostraHistoricoTexto(this);">
+						Ver texto de
+						' . Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '
+					</a></small>
+				</li>
+			';
+		}
+		$html.="<script>$(function() {
+
+});</script>";
 		return $html;
 	}
 
@@ -336,8 +383,8 @@ class Artigos extends BaseController
 				$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
 			}
 			foreach ($artigos as $artigo) {
-				if(isset($data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')])){
-					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;	
+				if (isset($data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')])) {
+					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
 				}
 			}
 		}
@@ -432,7 +479,7 @@ class Artigos extends BaseController
 		}
 
 		$colaborador = $this->session->get('colaboradores')['id'];
-		if ($colaborador != $artigo['marcado_colaboradores_id'] && $artigo['marcado_colaboradores_id']!=NULL) {
+		if ($colaborador != $artigo['marcado_colaboradores_id'] && $artigo['marcado_colaboradores_id'] != NULL) {
 			return $retorno->retorno(false, 'Apenas quem marcou o artigo pode revertê-lo.', true);
 		}
 
@@ -498,8 +545,6 @@ class Artigos extends BaseController
 
 		$artigo['fase_producao_id'] = $faseProducao['etapa_anterior'];
 		if ($faseProducao['etapa_anterior'] == '1') {
-			$artigo['texto_original'] = $artigo['texto_revisado'];
-			$artigo['texto_revisado'] = NULL;
 			$artigo['revisado_colaboradores_id'] = NULL;
 			$artigo['palavras_revisor'] = 0;
 		}
@@ -650,7 +695,7 @@ class Artigos extends BaseController
 				$config = array();
 				$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 				$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_original']));
+				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
 				if ($palavras <= $config['artigo_tamanho_maximo'] && $palavras >= $config['artigo_tamanho_minimo']) {
 					$isGravado = $this->artigoProximo($artigoId);
 					if ($isGravado === true) {
@@ -687,7 +732,7 @@ class Artigos extends BaseController
 				$config = array();
 				$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 				$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_original']));
+				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
 				if ($palavras <= $config['artigo_tamanho_maximo'] && $palavras >= $config['artigo_tamanho_minimo']) {
 					$isGravado = $this->artigoProximo($artigoId);
 					if ($isGravado === true) {
@@ -764,7 +809,7 @@ class Artigos extends BaseController
 
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 			$isGravado = $this->artigoProximo($artigoId);
-			
+
 			$this->atualizaColaboradoresConquistas($artigoId);
 
 			if ($isGravado === true) {
@@ -951,15 +996,23 @@ class Artigos extends BaseController
 		$data['colaborador'] = $this->session->get('colaboradores')['id'];
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$limite_descarte = explode(' ',$configuracaoModel->find('cron_artigos_descartar_data')['config_valor']);
+		$limite_descarte = explode(' ', $configuracaoModel->find('cron_artigos_descartar_data')['config_valor']);
 
 		if (!empty($artigos)) {
 			foreach ($artigos as $chave => $artigo) {
 				$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
-				if($limite_descarte[1] == 'days'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0]); }
-				if($limite_descarte[1] == 'weeks'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0] * 7); }
-				if($limite_descarte[1] == 'months'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addMonths($limite_descarte[0]); }
-				if($limite_descarte[1] == 'years'){ $tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addYears($limite_descarte[0]); }
+				if ($limite_descarte[1] == 'days') {
+					$tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0]);
+				}
+				if ($limite_descarte[1] == 'weeks') {
+					$tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addDays($limite_descarte[0] * 7);
+				}
+				if ($limite_descarte[1] == 'months') {
+					$tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addMonths($limite_descarte[0]);
+				}
+				if ($limite_descarte[1] == 'years') {
+					$tempo = Time::parse($artigo['criado'], 'America/Sao_Paulo')->addYears($limite_descarte[0]);
+				}
 				$artigos[$chave]['limite'] = $tempo;
 			}
 		}
@@ -980,7 +1033,7 @@ class Artigos extends BaseController
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->select('artigos.*, fase_producao.nome');
-		if($idFaseArtigo == NULL) {
+		if ($idFaseArtigo == NULL) {
 			$artigosModel->whereNotIn('fase_producao_id', array(6, 7));
 		} else {
 			$artigosModel->where('fase_producao_id', $idFaseArtigo);
@@ -1016,7 +1069,6 @@ class Artigos extends BaseController
 		$retornar = array();
 		$retornar['titulo'] = $artigo['titulo'];
 		$retornar['imagem'] = $artigo['imagem'];
-		$retornar['texto'] = ($artigo['fase_producao_id'] == '2') ? ($artigo['texto_original']) : ($artigo['texto_revisado']);
 		$retornar['texto'] = '<p>' . str_replace("\n", "</p><p>", $retornar['texto']) . '</p>';
 		$retornar['gancho'] = $artigo['gancho'];
 		$retornar['referencias'] = $artigo['referencias'];
@@ -1204,8 +1256,8 @@ class Artigos extends BaseController
 
 		$data['permitido'] = $permitido;
 
-		if (!$permitido && ($artigo['fase_producao_id']=='6' || $artigo['fase_producao_id']=='7')) {
-			return redirect()->to(base_url() . 'site/artigo/'.$artigo['url_friendly']);
+		if (!$permitido && ($artigo['fase_producao_id'] == '6' || $artigo['fase_producao_id'] == '7')) {
+			return redirect()->to(base_url() . 'site/artigo/' . $artigo['url_friendly']);
 		}
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
@@ -1449,11 +1501,11 @@ class Artigos extends BaseController
 		}
 		if ($faseProducao['etapa_posterior'] == '4') {
 			$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-			$artigo['palavras_narrador'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
+			$artigo['palavras_narrador'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
 		}
 		if ($faseProducao['etapa_posterior'] == '5') {
 			$artigo['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-			$artigo['palavras_produtor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto_revisado']));
+			$artigo['palavras_produtor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
 		}
 		if ($faseProducao['etapa_posterior'] == '6') {
 			$artigo['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
@@ -1474,17 +1526,20 @@ class Artigos extends BaseController
 
 			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
-			$gravar['texto_revisado'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
+			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
 			$gravar['atualizado'] = $artigosModel->getNow();
 			$gravar['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 
-			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
+			$artigo_anterior = $artigosModel->find($idArtigo);
+
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
 			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'revisou', 'artigos', 'o artigo', $idArtigo);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'revisou', $this->session->get('colaboradores')['id']);
+
+			$this->cadastraHistoricoTextoArtigo($idArtigo, gera_hash_artigo($artigo_anterior));
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// $artigosCategoriasModel->deleteArtigoCategoria($idArtigo);
@@ -1506,12 +1561,12 @@ class Artigos extends BaseController
 			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
 			$gravar['url_friendly'] = url_friendly(htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8'));
-			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 			$gravar['imagem'] = '';
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['escrito_colaboradores_id'] = $session['id'];
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
+			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
 			$gravar['fase_producao_id'] = 1;
 			$gravar['link'] = $post['link'];
 
@@ -1525,6 +1580,7 @@ class Artigos extends BaseController
 			$artigo_id = $this->gravarArtigos('insert', $gravar);
 			$this->colaboradoresNotificacoes->cadastraNotificacao($session['id'], 'escreveu', 'artigos', 'o artigo', $artigo_id);
 			$this->artigosHistoricos->cadastraHistorico($artigo_id, 'escreveu', $this->session->get('colaboradores')['id']);
+			$this->cadastraHistoricoTextoArtigo($artigo_id, gera_hash_artigo(NULL));
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// foreach ($post['categorias'] as $categoria) {
 			// 	$artigosCategoriasModel->insertArtigoCategoria($artigo_id, $categoria);
@@ -1542,16 +1598,19 @@ class Artigos extends BaseController
 
 			$gravar['tipo_artigo'] = $post['tipo_artigo'];
 			$gravar['titulo'] = htmlspecialchars($post['titulo'], ENT_QUOTES, 'UTF-8');
-			$gravar['texto_original'] = htmlspecialchars($post['texto_original'], ENT_QUOTES, 'UTF-8');
+			$gravar['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto_original']));
+			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
 			$gravar['atualizado'] = $artigosModel->getNow();
+
+			$artigo_anterior = $artigosModel->find($idArtigo);
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);
 			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o artigo', $idArtigo, true);
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'alterou', $this->session->get('colaboradores')['id']);
+			$this->cadastraHistoricoTextoArtigo($idArtigo, gera_hash_artigo($artigo_anterior));
 
 			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
 			// $artigosCategoriasModel->deleteArtigoCategoria($idArtigo);
@@ -1605,11 +1664,7 @@ class Artigos extends BaseController
 		foreach ($config['artigo_visualizacao_narracao'] as $indice => $linha) {
 			$alterado = null;
 			$alterado = str_replace("{gancho}", $artigo['gancho'], $linha);
-			if ($artigo['texto_revisado'] !== NULL) {
-				$alterado = str_replace("{texto}", $artigo['texto_revisado'], $alterado);
-			} else {
-				$alterado = str_replace("{texto}", $artigo['texto_original'], $alterado);
-			}
+			$alterado = str_replace("{texto}", $artigo['texto'], $alterado);
 
 			$alterado = str_replace("{colaboradores}", $colaboradores, $alterado);
 			$config['artigo_visualizacao_narracao'][$indice] = $alterado;
@@ -1629,12 +1684,34 @@ class Artigos extends BaseController
 
 		$artigo = $artigosModel->find($idArtigo);
 		$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
-		$pontuacao = $colaborador['pontos_escritor']+1;
-		$colaboradoresModel->update($colaborador['id'],array('pontos_escritor'=>$pontuacao));
+		$pontuacao = $colaborador['pontos_escritor'] + 1;
+		$colaboradoresModel->update($colaborador['id'], array('pontos_escritor' => $pontuacao));
 
-		$conquistas = $conquistasModel->where('tipo','escritor')->where('pontuacao',$pontuacao)->get()->getResultArray();
-		if(!empty($conquistas) && isset($conquistas[0])) {
-			$colaboradoresConquistasModel->insert(array('colaboradores_id'=>$artigo['escrito_colaboradores_id'],'conquistas_id'=>$conquistas[0]['id']));
+		$conquistas = $conquistasModel->where('tipo', 'escritor')->where('pontuacao', $pontuacao)->get()->getResultArray();
+		if (!empty($conquistas) && isset($conquistas[0])) {
+			$colaboradoresConquistasModel->insert(array('colaboradores_id' => $artigo['escrito_colaboradores_id'], 'conquistas_id' => $conquistas[0]['id']));
 		}
+	}
+
+	private function cadastraHistoricoTextoArtigo($idArtigo, $hashArtigo)
+	{
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosTextoHistoricosModel = new \App\Models\ArtigosTextosHistoricosModel();
+		$artigo = $artigosModel->find($idArtigo);
+		$hash = gera_hash_artigo($artigo);
+		if ($hash != $hashArtigo) {
+			$colaborador = $this->session->get('colaboradores')['id'];
+			$gravar = array();
+			$gravar['artigos_id'] = $artigo['id'];
+			$gravar['titulo'] = $artigo['titulo'];
+			$gravar['gancho'] = $artigo['gancho'];
+			$gravar['texto'] = $artigo['texto'];
+			$gravar['referencias'] = $artigo['referencias'];
+			$gravar['colaboradores_id'] = $colaborador;
+			$gravar['id'] = $artigosTextoHistoricosModel->getNovaUUID();
+			$retorno = $artigosTextoHistoricosModel->insert($gravar);
+			return $retorno;
+		}
+		return false;
 	}
 }
