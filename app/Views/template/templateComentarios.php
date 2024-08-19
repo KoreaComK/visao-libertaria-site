@@ -36,7 +36,7 @@ use CodeIgniter\I18n\Time;
 	<?php endforeach; ?>
 <?php else: ?>
 	<div class="card-body ml-1 mr-1 mb-1 text-center">
-		<p class="card-text fs-6">Não há comentários neste artigo.</p>
+		<p class="card-text fs-6">Não há comentários neste artigo</p>
 	</div>
 <?php endif; ?>
 

@@ -1069,7 +1069,7 @@ class Artigos extends BaseController
 		$retornar = array();
 		$retornar['titulo'] = $artigo['titulo'];
 		$retornar['imagem'] = $artigo['imagem'];
-		$retornar['texto'] = '<p>' . str_replace("\n", "</p><p>", $retornar['texto']) . '</p>';
+		$retornar['texto'] = '<p>' . str_replace("\n", "</p><p>", $artigo['texto']) . '</p>';
 		$retornar['gancho'] = $artigo['gancho'];
 		$retornar['referencias'] = $artigo['referencias'];
 		return $retorno->retorno(true, 'Artigo encontrado.', true, $retornar);

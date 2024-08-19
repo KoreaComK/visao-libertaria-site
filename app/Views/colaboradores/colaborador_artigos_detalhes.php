@@ -26,24 +26,40 @@
 			</div>
 
 			<?php if ($historico !== NULL && !empty($historico)): ?>
-				<div class="col-12 mb-3">
+				<div class="col-12 mb-3 mt-3">
 					<!-- Chart START -->
 					<div class="card border">
-						<div class="card-body mb-5">
-							<h6>Histórico do artigo:</h6>
-							<ul class="list-group fw-light">
-								<?php foreach ($historico as $h): ?>
-									<li class="list-group-item p-1 border-0">
-										<small>
-											<?= $h['apelido']; ?>
-											<?= $h['acao']; ?>
-											<span class="badge badge-pill badge-secondary fw-light">
-												<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
-											</span>
-										</small>
-									</li>
-								<?php endforeach; ?>
-							</ul>
+						<div class="">
+							<div class="accordion" id="accordionHistorico">
+								<div class="accordion-item border-0">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+											data-bs-target="#historicoList" aria-expanded="true"
+											aria-controls="historicoList">
+											Histórico do artigo:
+										</button>
+									</h2>
+									<div id="historicoList" class="accordion-collapse collapse"
+										data-bs-parent="#accordionHistorico">
+										<div class="accordion-body">
+
+											<ul class="list-group fw-light lista-historico">
+												<?php foreach ($historico as $h): ?>
+													<li class="list-group-item p-1 border-0">
+														<small>
+															<?= $h['apelido']; ?>
+															<?= $h['acao']; ?>
+															<span class="badge badge-pill badge-secondary fw-light">
+																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+															</span>
+														</small>
+													</li>
+												<?php endforeach; ?>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -51,36 +67,54 @@
 
 			<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
 				<div class="col-12 mb-3 mt-3">
-					<!-- Chart START -->
-					<div class="card border">
-						<div class="card-body">
-							<div class="row">
-								<div class="col-12 text-center">
-									<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3" id="btn-comentarios"
-										type="button">Atualizar
-										Comentários</button>
-								</div>
-								<div class="col-12 d-flex justify-content-center">
+						<div class="card border">
+							<div class="">
+								<div class="accordion" id="accordionHistoricoArtigo">
+									<div class="accordion-item border-0">
+										<h2 class="accordion-header">
+											<button class="accordion-button collapsed" type="button"
+												data-bs-toggle="collapse" data-bs-target="#comentarios"
+												aria-expanded="true" aria-controls="comentarios">
+												Comentários do artigo:
+											</button>
+										</h2>
+										<div id="comentarios" class="accordion-collapse collapse"
+											data-bs-parent="#accordionHistoricoArtigo">
+											<div class="accordion-body">
+												<div class="row">
+													<div class="col-12 text-center">
+														<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+															id="btn-comentarios" type="button">Atualizar
+															Comentários</button>
+													</div>
+													<div class="col-12 d-flex justify-content-center">
 
-									<div class="col-12 div-comentarios">
-										<div class="col-12">
-											<div class="mb-3">
-												<input type="hidden" id="id_comentario" name="id_comentario" />
-												<textarea id="comentario" name="comentario" class="form-control" rows="5"
-													placeholder="Digite seu comentário aqui"></textarea>
-											</div>
-											<div class="mb-3 text-center">
-												<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-													id="enviar-comentario" type="button">Enviar comentário</button>
+														<div class="col-12 div-comentarios">
+															<div class="col-12">
+																<div class="mb-3">
+																	<input type="hidden" id="id_comentario"
+																		name="id_comentario" />
+																	<textarea id="comentario" name="comentario"
+																		class="form-control" rows="5"
+																		placeholder="Digite seu comentário aqui"></textarea>
+																</div>
+																<div class="mb-3 text-center">
+																	<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+																		id="enviar-comentario" type="button">Enviar
+																		comentário</button>
+																</div>
+															</div>
+															<div class="card m-3 div-list-comentarios"></div>
+														</div>
+													</diV>
+												</div>
 											</div>
 										</div>
-										<div class="card m-3 div-list-comentarios"></div>
 									</div>
-								</diV>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 			<?php endif; ?>
 
 			<?php if ($permitido && $artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
