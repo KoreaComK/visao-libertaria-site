@@ -563,6 +563,32 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
+<?php if (!$cadastro): ?>
+	<div class="modal align-middle" tabindex="-1" id="modalAvisoCadastro">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title">ATENÇÃO!</h3>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Seu artigo está salvo, mas não foi submetido para revisão.</p>
+					<p>Pra submetê-lo, aceite os termos na parte inferior da tela e clique em ENVIAR PARA REVISÃO.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var myModal = new bootstrap.Modal($('#modalAvisoCadastro'))
+		myModal.show();
+	</script>
+
+<?php endif; ?>
+
 <script type="text/javascript">
 	function contapalavras() {
 		var texto = $("#texto").val().replaceAll('\n', " ");
@@ -637,9 +663,9 @@ use CodeIgniter\I18n\Time;
 		form = new FormData(artigo_form);
 		$.ajax({
 			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-													url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+																	url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-													url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
+																	url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			<?php endif; ?>
 			method: "POST",
 			data: form,
