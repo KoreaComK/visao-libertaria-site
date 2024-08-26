@@ -563,7 +563,7 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
-<?php if (!$cadastro): ?>
+<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
 	<div class="modal align-middle" tabindex="-1" id="modalAvisoCadastro">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">

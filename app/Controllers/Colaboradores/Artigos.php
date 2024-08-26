@@ -239,6 +239,20 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
+		$permissoes = $this->session->get('colaboradores')['permissoes'];
+		$permissao = false;
+		if(in_array('7',$permissoes)) {
+			$permissao = true;
+		}
+		if ($artigoId !== NULL) {
+			$usuarioId = $this->session->get('colaboradores')['id'];
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigo = $artigosModel->find($artigoId);
+			if($permissao === false && $artigo['escrito_colaboradores_id'] != $usuarioId){
+				redirect()->to(site_url('site/logout'));
+			}
+		}
+
 		$post = $this->request->getPost();
 		$valida = $validaFormularios->validaFormularioArtigoSalvar($post, ($this->request->getGet('pauta')) ? (true) : (false));
 		if (empty($valida->getErrors())) {
