@@ -1031,6 +1031,12 @@ class Artigos extends BaseController
 		$data['titulo'] = 'Artigos em produção';
 		$data['artigos'] = null;
 
+		$permissoes = $this->session->get('colaboradores')['permissoes'];
+		$isAdmin = false;
+		if(in_array('7',$permissoes)) {
+			$isAdmin = true;
+		}
+
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->select('artigos.*, fase_producao.nome');
 		if ($idFaseArtigo == NULL) {
@@ -1047,6 +1053,7 @@ class Artigos extends BaseController
 			}
 		}
 		$data['artigos'] = $artigos;
+		$data['admin'] = $isAdmin;
 
 		return view('template/templateColaboradoresListArtigosProduzindo', $data);
 	}
