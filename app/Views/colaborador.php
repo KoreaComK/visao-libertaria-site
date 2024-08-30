@@ -29,7 +29,7 @@
 									<?php endforeach; ?>
 								</li>
 							</ul>
-							<p class="my-2">Se cadastrou no site há <?= $tempo; ?>.</p>
+							<p class="my-2">Cadastrou-se no site há <?= $tempo; ?>.</p>
 						</div>
 					</div>
 				</div>

@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-3">
 	<div class="container d-flex justify-content-center">
-		<div class="col-lg-8">
+		<div class="col-lg-8 col-sm-12">
 			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
 			<div class="position-relative mb-3">
 				<div class="pt-3 pb-3">

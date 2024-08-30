@@ -40,6 +40,25 @@ use CodeIgniter\I18n\Time;
 					<p>
 						<a href="https://www.youtube.com/channel/UCAvIp-okEqNNIrISZEm5rag" class="btn-link">Gordão Fitness: Acompanhamento da minha perda de peso.</a>
 					</p>
+					<p>
+						<a href="https://www.youtube.com/channel/UCnVU5PE5WVWRKMWNi1E1KxQ" class="btn-link">Tomate na mão: Avaliação filmes de ficção científica para a televisão e o cinema.</a>
+					</p>
+					<p class="lead">Canais do Peter no Odysee:</p>
+					<p>
+						<a href="https://odysee.com/@opinionfreemarket:4" class="btn-link">Opinion Free Market: Livre mercado de ideias.</a>
+					</p>
+					<p>
+						<a href="https://odysee.com/@ancapsu:be" class="btn-link">ANCAPSU.</a>
+					</p>
+					<p>
+						<a href="https://odysee.com/@ancapsu:c" class="btn-link">Visão Libertária.</a>
+					</p>
+					<p>
+						<a href="https://odysee.com/@wrevolving:1" class="btn-link">Mundo em Revolução.</a>
+					</p>
+					<p>
+						<a href="https://odysee.com/@diariosdaquarentena:0" class="btn-link">Diários da Quarentena.</a>
+					</p>
 					<p class="lead">Contas no twitter:</p>
 					<p>
 						<a href="https://x.com/ancapsu" class="btn-link">@ancapsu: Canal principal.</a>
