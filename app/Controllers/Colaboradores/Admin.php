@@ -430,6 +430,7 @@ class Admin extends BaseController
 		if ($acao == 'salvar') {
 			if ($this->request->getMethod() == 'post') {
 				$post = service('request')->getPost();
+				$post['hash_transacao'] = preg_replace("/[^a-zA-Z0-9]+/", "", $post['hash_transacao']);
 				$data = array();
 				$validaFormularios = new \App\Libraries\ValidaFormularios();
 				$retorno = new \App\Libraries\RetornoPadrao();

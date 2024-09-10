@@ -1228,6 +1228,8 @@ class Artigos extends BaseController
 				$enviar['link_shorts'] = $post['shorts_link'];
 				$enviar['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 				$retornoGravado = $this->gravarArtigos('update', $enviar, $artigoId);
+				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'produziu', 'artigos', 'o artigo', $artigoId);
+				$this->artigosHistoricos->cadastraHistorico($artigoId, 'produziu', $this->session->get('colaboradores')['id']);
 			}
 			if ($retornoGravado != false) {
 				return $retorno->retorno(true, 'Artigo salvo com sucesso.', true);
