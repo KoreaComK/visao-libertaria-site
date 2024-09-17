@@ -48,7 +48,7 @@ use CodeIgniter\I18n\Time;
 
 						<p><?= str_replace("\n", '<br/>', $artigo['texto']); ?></p>
 						<h4 class="mb-3">Referências:</h4>
-						<p style="line-break:auto;"><?= str_replace("\n", '<br/>', $artigo['referencias']); ?></p>
+						<p style="line-break:anywhere;"><?= str_replace("\n", '<br/>', $artigo['referencias']); ?></p>
 					</div>
 				</div>
 
