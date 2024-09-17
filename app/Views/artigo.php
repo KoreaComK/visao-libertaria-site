@@ -9,7 +9,7 @@ use CodeIgniter\I18n\Time;
 
 <div class="container-fluid py-3">
 	<div class="container d-flex justify-content-center">
-		<div class="col-lg-8">
+		<div class="col-12 col-lg-8">
 			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
 			<p class="lead"><?= $artigo['gancho']; ?></p>
 			<ul class="nav nav-divider align-items-center">
@@ -48,7 +48,7 @@ use CodeIgniter\I18n\Time;
 
 						<p><?= str_replace("\n", '<br/>', $artigo['texto']); ?></p>
 						<h4 class="mb-3">Referências:</h4>
-						<p><?= str_replace("\n", '<br/>', $artigo['referencias']); ?></p>
+						<p style="line-break:auto;"><?= str_replace("\n", '<br/>', $artigo['referencias']); ?></p>
 					</div>
 				</div>
 
