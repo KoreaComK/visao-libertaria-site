@@ -645,7 +645,7 @@ use CodeIgniter\I18n\Time;
 	});
 	<?php if ($artigo['texto'] !== null): ?>
 		quill.setContents([
-			{ insert: "<?= preg_replace('/\s\s+/', '\n', addslashes(htmlspecialchars_decode($artigo['texto']))); ?>" },
+			{ insert: "<?= preg_replace('/\s\s+/', '\n\n', addslashes(htmlspecialchars_decode($artigo['texto']))); ?>" },
 		])
 	<?php endif; ?>
 
