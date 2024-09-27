@@ -95,8 +95,6 @@ class Artigos extends BaseController
 			}
 		}
 
-		$data['contador'] = $artigosModel->getContadorPostados();
-
 		return view('colaboradores/colaborador_dashboard', $data);
 	}
 
@@ -870,13 +868,26 @@ class Artigos extends BaseController
 				->join('colaboradores H', 'artigos.marcado_colaboradores_id = H.id', 'LEFT')
 				->join('fase_producao I', 'artigos.fase_producao_id = I.id');
 			$artigosModel->where('artigos.descartado', NULL);
-			$artigosModel->whereIn('I.id', array('6', '7'));
 
 			if (!is_null($get['texto']) && !empty($get['texto']) && $get['texto'] != '') {
 				$artigosModel->Like('artigos.titulo', $get['texto']);
 			}
 
+			if (!is_null($get['fase_producao']) && !empty($get['fase_producao']) && $get['fase_producao'] != '') {
+				$artigosModel->whereIn('I.id', array($get['fase_producao']));
+			}
+
+			if (!is_null($get['colaborador']) && !empty($get['colaborador']) && $get['colaborador'] != '') {
+				if (!is_null($get['fase_producao_colaborador']) && !empty($get['fase_producao_colaborador']) && $get['fase_producao_colaborador'] != '') {
+					$artigosModel->like($get['fase_producao_colaborador'].'.apelido', $get['colaborador']);
+				}
+			}
+
 			$artigosModel->orderBy('data_publicado', 'DESC');
+			
+			$data['total'] = 1;
+			$contador = $artigosModel;
+			
 
 			$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
 			if (!empty($artigos)) {

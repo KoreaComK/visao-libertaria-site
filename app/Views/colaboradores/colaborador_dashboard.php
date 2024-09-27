@@ -142,7 +142,8 @@
 			<div class="card-body">
 				<p>ATENÇÃO! Se os limites não forem respeitados, o artigo será desmarcado e o colaborador terá que
 					esperar um tempo para voltar a pegar o mesmo artigo.</p>
-				<p>Os limites estão <b><?= ($limite['ativo'] == '1') ? ('ativos') : ('inativos'); ?></b>. O tempo de bloqueio é de <b><?= $limite['bloqueio']; ?></b>.</p>
+				<p>Os limites estão <b><?= ($limite['ativo'] == '1') ? ('ativos') : ('inativos'); ?></b>. O tempo de
+					bloqueio é de <b><?= $limite['bloqueio']; ?></b>.</p>
 				<div class="row">
 					<div class="col-md-12 col-lg-4">
 						<p>
@@ -165,8 +166,11 @@
 						</p>
 					</div>
 					<div class="col-md-12 col-lg-4">
-						<p>O limite máximo para o artigo ser produzido está <b><?= ($limite['descartar']['ativo'] == '1') ? ('ativo') : ('inativo'); ?></b>.</p>
-						<p>Caso o artigo não seja produzido em <b><?= $limite['descartar']['tempo']; ?></b>, o artigo será descartado.</p>
+						<p>O limite máximo para o artigo ser produzido está
+							<b><?= ($limite['descartar']['ativo'] == '1') ? ('ativo') : ('inativo'); ?></b>.
+						</p>
+						<p>Caso o artigo não seja produzido em <b><?= $limite['descartar']['tempo']; ?></b>, o artigo
+							será descartado.</p>
 					</div>
 				</div>
 
@@ -180,8 +184,7 @@
 
 			<div class="card-header bg-transparent border-bottom p-3">
 				<div class="d-sm-flex justify-content-between align-items-center">
-					<h5 class="mb-2 mb-sm-0">Artigos publicados do site <span
-							class="badge bg-primary bg-opacity-10 text-primary"><?= $contador; ?></span></h5>
+					<h5 class="mb-2 mb-sm-0">Listagem de artigos do site</h5>
 					<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
 						class="btn btn-sm btn-primary mb-0">Novo Artigo</a>
 				</div>
@@ -192,17 +195,49 @@
 				<!-- Search and select START -->
 				<div class="row g-3 align-items-center justify-content-between mb-3" data-np-autofill-form-type="other"
 					data-np-checked="1" data-np-watching="1">
-					<!-- Search -->
-					<div class="col-md-12">
-						<form class="rounded position-relative" data-np-autofill-form-type="other" data-np-checked="1"
-							data-np-watching="1">
-							<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa-publicado"
-								name="text-pesquisa-publicado" placeholder="Pesquisar" aria-label="Pesquisar">
-							<button
-								class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-publicado"
-								type="submit"><i class="fas fa-magnifying-glass"></i></button>
-						</form>
-					</div>
+					<form class="rounded position-relative row mt-3" data-np-autofill-form-type="other"
+						data-np-checked="1" data-np-watching="1">
+						<!-- Search -->
+						<div class="col-12 col-md-5 mt-3">
+							<input class="form-control pe-5" type="search" id="text-pesquisa-publicado"
+								name="text-pesquisa-publicado" placeholder="Pesquisar Título Artigo" aria-label="Pesquisar">
+						</div>
+						<div class="col-12 col-md-3 mt-3">
+							<select class="form-control form-select select-pesquisa" id="select-pesquisa"
+								name="select-pesquisa">
+								<option value="">Fase de Produção</option>
+								<option value="2">Revisando</option>
+								<option value="3">Narrando</option>
+								<option value="4">Produzindo</option>
+								<option value="5">Publicando</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-3 mt-3">
+							<select class="form-control form-select select-tipo" id="select-tipo" name="select-tipo">
+								<option value="">Tipo</option>
+								<option value="T">Teórico</option>
+								<option value="N">Notícia</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-1 mt-3"><button class="btn border-0 btn-pesquisar-publicado"
+								type="submit"><i class="fas fa-magnifying-glass"></i></button></div>
+						<div class="col-12 col-md-9 mt-3">
+							<input class="form-control pe-5" type="search" id="text-colaborador"
+								name="text-pesquisa-publicado" placeholder="Pesquisar Colaborador" aria-label="Pesquisar">
+						</div>
+						<div class="col-12 col-md-3 mt-3">
+							<select class="form-control form-select select-pesquisa" id="select-colaborador"
+								name="select-pesquisa">
+								<option value="">Fase do Colaboração</option>
+								<option value="A">Sugestão</option>
+								<option value="B">Escritor</option>
+								<option value="C">Revisor</option>
+								<option value="D">Narrador</option>
+								<option value="E">Produtor</option>
+							</select>
+						</div>
+						
+					</form>
 				</div>
 				<!-- Search and select END -->
 
@@ -247,7 +282,10 @@
 			type: 'get',
 			dataType: 'html',
 			data: {
-				texto: $('#text-pesquisa-publicado').val()
+				texto: $('#text-pesquisa-publicado').val(),
+				fase_producao: $('#select-pesquisa').val(),
+				colaborador: $('#text-colaborador').val(),
+				fase_producao_colaborador: $('#select-colaborador').val()
 			},
 			beforeSend: function () { $('#modal-loading').show(); },
 			complete: function () { $('#modal-loading').hide() },

@@ -44,7 +44,7 @@
 					<!-- Table data -->
 					<td>
 						<div class="d-flex gap-2">
-							<a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
+							<a href="<?= (in_array($artigo['fase_producao_id'],array('6','7')))?(site_url('site/artigo/' . $artigo['url_friendly'])):(site_url('colaboradores/artigos/detalhamento/' . $artigo['id']));?>"
 								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
 								title="Ir para o artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
 						</div>
@@ -78,4 +78,6 @@
 			refreshListPublicado(e.target.href);
 		});
 	});
+
+	$('.contador').html('<?= $total; ?>');
 </script>
