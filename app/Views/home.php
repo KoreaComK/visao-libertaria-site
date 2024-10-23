@@ -92,7 +92,7 @@ use CodeIgniter\I18n\Time;
 							<?php foreach ($avisos as $aviso): ?>
 								<div class="carousel-cell card shadow-0" id="tns1-item0">
 									<div class="card-body pt-1 pb-1">
-										<a <?=($aviso['link']!=''&&$aviso['link']!=NULL)?('href="'.$aviso['link'].'"'):('javascript:void(0);'); ?> class=""><?=$aviso['aviso']; ?></a>
+										<a <?= ($aviso['link'] != '' && $aviso['link'] != NULL) ? ('href="' . $aviso['link'] . '"') : ('javascript:void(0);'); ?> class=""><?= $aviso['aviso']; ?></a>
 									</div>
 								</div>
 							<?php endforeach; ?>
@@ -131,7 +131,7 @@ use CodeIgniter\I18n\Time;
 												<?php endif; ?>
 												<span
 													class="<?= ($banner[0]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-													<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[0]['apelido']); ?>"
+													<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[0]['apelido']); ?>"
 														class="stretched-link text-white btn-link"><?= $banner[0]['apelido']; ?></a></span>
 											</div>
 										</li>
@@ -155,7 +155,8 @@ use CodeIgniter\I18n\Time;
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
+										<div class="me-3"
+											style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<!-- Card title -->
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']) ?>"
@@ -174,7 +175,7 @@ use CodeIgniter\I18n\Time;
 														<?php endif; ?>
 														<span
 															class="<?= ($banner[1]['avatar'] != NULL && $banner[1]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[1]['apelido']); ?>"
+															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[1]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[1]['apelido']; ?></a></span>
 													</div>
 												</li>
@@ -195,7 +196,8 @@ use CodeIgniter\I18n\Time;
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
+										<div class="me-3"
+											style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<!-- Card category -->
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[2]['url_friendly']) ?>"
@@ -214,7 +216,7 @@ use CodeIgniter\I18n\Time;
 														<?php endif; ?>
 														<span
 															class="<?= ($banner[2]['avatar'] != NULL && $banner[2]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[2]['apelido']); ?>"
+															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[2]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[2]['apelido']; ?></a></span>
 													</div>
 												</li>
@@ -231,11 +233,13 @@ use CodeIgniter\I18n\Time;
 							<div class="col-md-6 g-4 pt-2">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[3]['imagem']; ?>" style="height: inherit; object-fit: cover;" />
+									<img src="<?= $banner[3]['imagem']; ?>"
+										style="height: inherit; object-fit: cover;" />
 									<!-- Card Image overlay -->
 									<div class="mask align-items-center p-3 p-sm-4"
 										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
+										<div class="me-3"
+											style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<h5 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $banner[3]['url_friendly']) ?>"
 													class="btn-link stretched-link text-reset"><?= $banner[3]['titulo']; ?></a>
@@ -253,7 +257,7 @@ use CodeIgniter\I18n\Time;
 														<?php endif; ?>
 														<span
 															class="<?= ($banner[3]['avatar'] != NULL && $banner[3]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?=urlencode($banner[3]['apelido']); ?>"
+															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[3]['apelido']); ?>"
 																class="stretched-link text-white btn-link"><?= $banner[3]['apelido']; ?></a></span>
 													</div>
 												</li>
@@ -278,7 +282,8 @@ use CodeIgniter\I18n\Time;
 								<div class="card bg-image hover-zoom round-5" style="height: inherit;">
 									<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
 										style="height: inherit; object-fit: cover;">
-									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4" style="background-color: rgba(0, 0, 0, 0.6);">
+									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4"
+										style="background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100 mt-auto">
 											<h4 class="text-white"><a
 													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
@@ -288,7 +293,7 @@ use CodeIgniter\I18n\Time;
 												class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
 												<li class="nav-item">
 													<div class="text-white">por <a
-															href="<?= site_url('site/escritor/'); ?><?=urlencode($b['apelido']); ?>"
+															href="<?= site_url('site/escritor/'); ?><?= urlencode($b['apelido']); ?>"
 															class="text-white btn-link"><?= $b['apelido']; ?></a>
 													</div>
 												</li>
@@ -312,7 +317,6 @@ use CodeIgniter\I18n\Time;
 					<h2 class="m-0"><i class="bi bi-hourglass-top me-2"></i>Últimos vídeos do Visão Libertária</h2>
 					<p>Os vídeos mais recentes pra você se manter informado.</p>
 				</div>
-
 				<div class="main-carousel-videos mb-4 mt-4">
 					<?php for ($max = 0; $max < 6; $max++): ?>
 						<div class="carousel-cell">
@@ -333,7 +337,8 @@ use CodeIgniter\I18n\Time;
 											</div> -->
 								</div>
 								<div class="card-body px-3 pt-3">
-									<h4 class="card-title"><a href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>"
+									<h4 class="card-title"><a
+											href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>"
 											class="btn-link text-reset stretched-link fw-bold"><?= $artigos[$max]['titulo']; ?></a>
 									</h4>
 									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
@@ -376,29 +381,11 @@ use CodeIgniter\I18n\Time;
 								href="<?= site_url('site/artigos') ?>">Ver Todos</a>
 						</div>
 						<div class="col-lg-12 row">
-
 							<?php if (is_array($artigos)): ?>
 								<?php foreach ($artigos as $chave => $artigo): ?>
 									<?php if ($chave > 5): ?>
-										<div class="card shadow-0 col-6 mb-3">
-											<div class="row g-3">
-												<div class="col-5">
-													<img class="rounded" style="max-width: inherit;" src="<?= $artigo['imagem'] ?>"
-														alt="">
-												</div>
-												<div class="col-7">
-													<h6 class="m-0"><a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
-															class="btn-link stretched-link text-reset">
-															<?= $artigo['titulo'] ?></a></h6>
-													<!-- Card info -->
-													<ul class="nav nav-divider align-items-center mt-1 small">
-														<li class="nav-item">
-															<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
-														</li>
-													</ul>
-												</div>
-											</div>
-										</div>
+										<?php $artigo['class'] = 'col-md-6 col-lg-6'; ?>
+										<?= view_cell('\App\Libraries\cards::cardsHorizontais', $artigo); ?>
 									<?php endif; ?>
 								<?php endforeach; ?>
 							<?php else: ?>

@@ -44,9 +44,7 @@
 					<h2>Pautas reservadas pelo Peter </h2>
 				</div>
 				<div class="col-12">
-					<div class="row gy-4 listagem-colaborador">
-						
-					</div>
+					<div class="row gy-4 <?=$classeListaCSS;?>"></div>
 				</div>
 			</div>
 		</div>
@@ -63,7 +61,7 @@
 			beforeSend: function () { $('#modal-loading').show(); },
 			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
-				$('.listagem-colaborador').html(data);
+				$('.<?=$classeListaCSS;?>').html(data);
 			}
 		});
 	});

@@ -430,7 +430,7 @@ class Artigos extends BaseController
 				$artigosModel->where('fase_producao_id', $post['fase_producao']);
 			}
 
-			if ($post['titulo'] != "" && $post['titulo'] != NULL) {
+			if (isset($post['titulo']) && $post['titulo'] != "" && $post['titulo'] != NULL) {
 				$artigosModel->like('titulo', $post['titulo'], 'both', null, true);
 			}
 
@@ -453,7 +453,7 @@ class Artigos extends BaseController
 
 			$artigosModel->whereIn('fase_producao_id', array('6', '7'));
 
-			if ($post['titulo'] != "" && $post['titulo'] != NULL) {
+			if (isset($post['titulo']) && $post['titulo'] != "" && $post['titulo'] != NULL) {
 				$artigosModel->like('titulo', $post['titulo'], 'both', null, true);
 			}
 

@@ -45,52 +45,31 @@ class Pautas extends BaseController
 		}
 	}
 
-	public function pautasListColaboradores()
-	{
+	// public function redatores(): string
+	// {
+	// 	$verifica = new verificaPermissao();
+	// 	$verifica->PermiteAcesso('11');
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+	// 	$data = array();
+	// 	$data['titulo'] = 'Pautas Sugeridas para Redatores';
+	// 	$pautasModel = new \App\Models\PautasModel();
 
-		$verifica = new verificaPermissao();
-		$verifica->PermiteAcesso('1');
+	// 	$permissoes = $this->session->get('colaboradores')['permissoes'];
+	// 	if (in_array('7', $permissoes)) {
+	// 		$pautas = $pautasModel->getPautas(false, false, true);
+	// 	} else {
+	// 		$pautas = $pautasModel->getPautas(false, false, $this->session->get('colaboradores')['id']);
+	// 	}
 
-		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->getPautas();
-		if ($this->request->getMethod() == 'get') {
-			$data['pautasList'] = [
-				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-				'pager' => $pautas->pager
-			];
-		}
-		return view('template/templatePautasListColaboradores', $data);
-	}
-
-	public function redatores(): string
-	{
-		$verifica = new verificaPermissao();
-		$verifica->PermiteAcesso('11');
-
-		$data = array();
-		$data['titulo'] = 'Pautas Sugeridas para Redatores';
-		$pautasModel = new \App\Models\PautasModel();
-
-		$permissoes = $this->session->get('colaboradores')['permissoes'];
-		if (in_array('7', $permissoes)) {
-			$pautas = $pautasModel->getPautas(false, false, true);
-		} else {
-			$pautas = $pautasModel->getPautas(false, false, $this->session->get('colaboradores')['id']);
-		}
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-		$data['pautasList'] = [
-			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-			'pager' => $pautas->pager
-		];
-		return view('colaboradores/pautas_list', $data);
-	}
+	// 	$configuracaoModel = new \App\Models\ConfiguracaoModel();
+	// 	$config = array();
+	// 	$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+	// 	$data['pautasList'] = [
+	// 		'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+	// 		'pager' => $pautas->pager
+	// 	];
+	// 	return view('colaboradores/pautas_list', $data);
+	// }
 
 	public function verificaPautaCadastrada()
 	{

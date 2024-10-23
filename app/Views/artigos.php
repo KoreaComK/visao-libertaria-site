@@ -79,36 +79,7 @@ use CodeIgniter\I18n\Time;
 
 		<div class="row list-artigos" data-masonry='{"percentPosition": true }'>
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
-
-				<div class="card shadow-0 col-sm-6 col-lg-3">
-					<div class="bg-image hover-zoom rounded-3">
-						<img class="w-100 object-fit-cover" src="<?= $artigo['imagem']; ?>">
-					</div>
-					<div class="card-body p-2">
-						<h5 class="card-title fw-bold"><a class="btn-link h5"
-								href="<?= base_url() . 'site/artigo/' . $artigo['url_friendly']; ?>">
-								<?= $artigo['titulo']; ?></a>
-						</h5>
-						<div>
-							<small>
-								<ul class="nav nav-divider">
-									<li class="nav-item pointer">
-										<div class="d-flex text-muted">
-											<span class="">Por <a href="<?= site_url('site/escritor/'); ?><?= urlencode($artigo['apelido']); ?>"
-													class="text-muted btn-link"><?= $artigo['apelido']; ?></a></span>
-										</div>
-									</li>
-									<li class="nav-item pointer text-muted">
-										<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
-									</li>
-								</ul>
-							</small>
-							<p class="">
-								<?= substr($artigo['texto'], 0, strpos($artigo['texto'], "\n")); ?>
-							</p>
-						</div>
-					</div>
-				</div>
+				<?= view_cell('\App\Libraries\cards::cardsVerticaisSimples', $artigo); ?>
 			<?php endforeach; ?>
 		</div>
 
@@ -125,7 +96,7 @@ use CodeIgniter\I18n\Time;
 				</div>
 			</div>
 			<p class="infinite-scroll-last">Fim do conteúdo</p>
-			<p class="infinite-scroll-error">No more pages to load</p>
+			<p class="infinite-scroll-error">Todo o conteúdo foi carregado.</p>
 		</div>
 	</div>
 </div>

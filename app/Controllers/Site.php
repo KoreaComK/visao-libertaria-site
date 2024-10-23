@@ -88,6 +88,7 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo,\'artigo\' AS tipo_conteudo');
 		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
@@ -111,12 +112,8 @@ class Site extends BaseController
 			'artigos' => $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigosModel->pager
 		];
-
-		if($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
-			return view('template/templatePautasListColaboradores', $data);	
-		} else {
-			return view('artigos', $data);
-		}
+		
+		return view('artigos', $data);
 	}
 
 	/*DETALHE DO ARTIGO*/
@@ -609,14 +606,18 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo, \'artigo\' AS tipo_conteudo');
+		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
 		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->orderBy('publicado','DESC');
 		if ($this->request->getMethod() == 'get') {
-			$data['artigosList'] = [
-				'artigos' => $artigos->paginate($config['site_quantidade_listagem'], 'artigos'),
+			$data['listas'] = [
+				'lista' => $artigos->paginate($config['site_quantidade_listagem'], 'lista'),
 				'pager' => $artigos->pager
 			];
 		}
-		return view('template/templateArtigosEscritorList', $data);
+		$data['urlComponente'] = '\App\Libraries\cards::cardsVerticaisSimples';
+		$data['classeListaCSS'] = 'listagem-escritor';
+		return view_cell('\App\Libraries\listas::listasVerticaisSimples', $data);
 	}
 
 	public function colaborador($apelido = NULL)
@@ -649,6 +650,7 @@ class Site extends BaseController
 
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
+		$data['classeListaCSS'] = 'listagem-colaborador';
 		
 		return view('colaborador', $data);
 	}
@@ -672,14 +674,18 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->select('pautas.id AS id, imagem AS imagem, link AS url, titulo AS titulo, apelido AS autor, reservado AS publicacao, texto AS texticulo, \'pauta\' AS tipo_conteudo');
+		$pautasModel->join('colaboradores','pautas.colaboradores_id = colaboradores.id');
 		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado','DESC');
 		if ($this->request->getMethod() == 'get') {
-			$data['pautasList'] = [
-				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+			$data['listas'] = [
+				'lista' => $pautas->paginate($config['site_quantidade_listagem'], 'lista'),
 				'pager' => $pautas->pager
 			];
 		}
-		return view('template/templatePautasColaboradorList', $data);
+		$data['urlComponente'] = '\App\Libraries\cards::cardsVerticaisSimples';
+		$data['classeListaCSS'] = 'listagem-colaborador';
+		return view_cell('\App\Libraries\listas::listasVerticaisSimples', $data);
 	}
 
 	public function links(): string

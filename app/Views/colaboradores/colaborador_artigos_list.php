@@ -242,42 +242,25 @@
 			<div class="col-12">
 				<!-- Post list table START -->
 				<div class="card border bg-transparent rounded-3">
-
-					<div class="card-header bg-transparent border-bottom p-3">
-						<div class="d-sm-flex justify-content-between align-items-center">
-							<h5 class="mb-2 mb-sm-0">Meus artigos publicados</h5>
-							<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
-								class="btn btn-sm btn-primary mb-0">Novo Artigo</a>
-						</div>
-					</div>
-					<!-- Card body START -->
-					<div class="card-body p-3">
-
-						<!-- Search and select START -->
-						<div class="row g-3 align-items-center justify-content-between mb-3"
-							data-np-autofill-form-type="other" data-np-checked="1" data-np-watching="1">
-							<!-- Search -->
-							<div class="col-md-12">
-								<form class="rounded position-relative" data-np-autofill-form-type="other"
-									data-np-checked="1" data-np-watching="1">
-									<input class="form-control pe-5 bg-transparent" type="search"
-										id="text-pesquisa-publicado" name="text-pesquisa-publicado"
-										placeholder="Pesquisar" aria-label="Pesquisar">
-									<button
-										class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-publicado"
-										type="submit"><i class="fas fa-magnifying-glass"></i></button>
-								</form>
-							</div>
-						</div>
-						<!-- Search and select END -->
-
-						<!-- Post list table START -->
-						<div class="table-responsive border-0 tabela-publicado">
-
-						</div>
-						<!-- Post list table END -->
-
-					</div>
+					<?php
+						$estrutura_tabela = array('dados' => array(
+							'cabecalho' => array (
+								'titulo' => 'Meus artigos publicados',
+								'botao' => array(
+									'show' => true,
+									'label' => 'Ver página pública',
+									'url' => site_url('site/escritor/'.urlencode($_SESSION['colaboradores']['nome'])),
+									'target' => '_blank'
+								),
+								'pesquisa' => array(
+									'tipo' => 'simples',
+									'campo' => 'titulo',
+									'ajax_default' => array('tipo'=>'finalizado')
+								)
+							)
+						));
+					?>
+					<?= view_cell('\App\Libraries\tabelas::adicionaEstruturaTabela', $estrutura_tabela); ?>
 				</div>
 				<!-- Post list table END -->
 			</div>
@@ -297,11 +280,7 @@
 		$('.select-pesquisa').on('change', function (e) {
 			refreshListProducao();
 		});
-		$('.btn-pesquisar-publicado').on('click', function (e) {
-			refreshListPublicado(false);
-		});
 		$(".btn-pesquisar-producao").trigger("click");
-		$(".btn-pesquisar-publicado").trigger("click");
 	});
 
 	function refreshListProducao() {

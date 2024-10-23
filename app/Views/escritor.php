@@ -68,9 +68,7 @@
 					<h2>Artigos escritos por <?= $colaborador['apelido']; ?></h2>
 				</div>
 				<div class="col-12">
-					<div class="row gy-4 listagem-escritor">
-
-					</div>
+					<div class="row gy-4 listagem-escritor"></div>
 				</div>
 			</div>
 		</div>
