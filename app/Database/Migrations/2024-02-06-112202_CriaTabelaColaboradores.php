@@ -71,6 +71,11 @@ final class CriaTabelaColaboradores extends Migration
                 'null' => true,
                 'default' => null,
             ],
+            'shadowban' => [
+                'type' => 'CHAR(1)',
+                'null' => false,
+                'default' => 'N',
+            ],
             'confirmacao_hash' => [
                 'type' => 'VARCHAR',
                 'constraint' => '64',

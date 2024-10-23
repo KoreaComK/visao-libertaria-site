@@ -1002,6 +1002,7 @@ class Artigos extends BaseController
 			->join('colaboradores H', 'artigos.marcado_colaboradores_id = H.id', 'LEFT')
 			->join('fase_producao I', 'artigos.fase_producao_id = I.id');
 		$artigosModel->where('artigos.descartado', NULL);
+		$artigosModel->where('B.shadowban', 'N');
 		if (isset($get['texto']) && $get['texto'] != '') {
 			$artigosModel->like('artigos.titulo', $get['texto']);
 		}

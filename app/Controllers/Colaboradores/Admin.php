@@ -223,7 +223,7 @@ class Admin extends BaseController
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['atribuicoes'] = $atribuicoesModel->findall();
 
-		if ($idColaboradores != NULL) {
+		if ($idColaboradores != NULL && $this->request->getMethod() == 'get') {
 			$data['artigos'] = array();
 			$data['pautas'] = array();
 
@@ -231,6 +231,7 @@ class Admin extends BaseController
 			$time_antigo = new Time('-60 days');
 			$artigosModel = new \App\Models\ArtigosModel();
 
+			$artigosModel->select('id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, publicado AS publicacao, \'artigo\' AS tipo_conteudo');
 			$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
 			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
 			$artigosModel->withDeleted();
@@ -265,6 +266,7 @@ class Admin extends BaseController
 			$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
 
 			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->select('id AS id, imagem AS imagem, link AS url, titulo AS titulo, criado AS publicacao, \'pauta\' AS tipo_conteudo');
 			$pautasModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
 			$pautasModel->where("colaboradores_id", $idColaboradores);
 			$pautasModel->withDeleted();
@@ -355,6 +357,13 @@ class Admin extends BaseController
 					if ($strike_retorno) {
 						return $retorno->retorno(true, 'Desbloqueio feito com sucesso.', true);
 					}
+				}
+				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
+			}
+			if (isset($post['shadowban'])) {
+				$shadowban_retorno = $colaboradoresModel->update($post['colaborador_id'], array('shadowban' => $post['shadowban']));
+				if ($shadowban_retorno) {
+					return $retorno->retorno(true, 'Shadowban atualizado com sucesso.', true);
 				}
 				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
 			}

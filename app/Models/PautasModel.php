@@ -72,6 +72,7 @@ class PautasModel extends Model
 		$this->builder()
 			->select('pautas.*, colaboradores.apelido AS apelido')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
+			$this->builder()->where('colaboradores.shadowban','N');
 		if ($redatores === true) {
 			$this->builder()->where('pautas.redator_colaboradores_id IS NOT NULL');
 		}
@@ -99,7 +100,8 @@ class PautasModel extends Model
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
 			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
 			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT')
-			->where('pautas.redator_colaboradores_id IS NULL');
+			->where('pautas.redator_colaboradores_id IS NULL')
+			->where('colaboradores.shadowban','N');
 		$this->builder()->orderBy('pautas.criado', 'DESC');
 		if($pesquisa !== NULL) {
 			$this->builder()->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");

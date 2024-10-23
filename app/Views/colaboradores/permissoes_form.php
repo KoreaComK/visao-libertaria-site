@@ -145,6 +145,10 @@ use CodeIgniter\I18n\Time;
 									<a class="link btn-link text-danger strike-bloquear <?=($colaboradores['strike_data'] !== NULL)?('d-none'):(''); ?>" href="javascript:void(0);">Bloquear colaborador</a>
 									<a class="link btn-link text-danger strike-desbloquear <?=($colaboradores['strike_data'] !== NULL)?(''):('d-none'); ?>" href="javascript:void(0);">Desbloquear colaborador</a>
 								</li>
+								<li class="list-group-item">
+									<a class="link btn-link text-danger shadowban-habilitar <?=($colaboradores['shadowban'] != 'N')?('d-none'):(''); ?>" href="javascript:void(0);">Habilitar shadowban</a>
+									<a class="link btn-link text-danger shadowban-desabilitar <?=($colaboradores['shadowban'] != 'S')?('d-none'):(''); ?>" href="javascript:void(0);">Desabilitar shadowban</a>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -167,17 +171,12 @@ use CodeIgniter\I18n\Time;
 						<?php if (!empty($artigos['lista']) && $artigos['lista'] !== NULL): ?>
 							<?php foreach ($artigos['lista'] as $chave => $artigo): ?>
 								<?php if ($chave < 4): ?>
-									<div class="col-12">
-										<div class="d-flex align-items-center position-relative">
-											<img class="col-2 rounded-3" src="<?= $artigo['imagem']; ?>" alt="Imagem">
-											<div class="ms-3">
-												<a href="<?= base_url("colaboradores/artigos/detalhamento/" . $artigo["id"]); ?>"
-													class="h6 btn-link">
-													<?= $artigo['titulo']; ?></a>
-											</div>
-										</div>
-									</div>
-									<hr class="my-3">
+									<?php $artigo['class-img'] = 'col-3'; ?>
+									<?php $artigo['class-div'] = 'col-9'; ?>
+									<?= view_cell('\App\Libraries\cards::cardsHorizontais', $artigo); ?>
+									<?php if($chave<3): ?>
+										<hr class="my-3">
+									<?php endif; ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						<?php else: ?>
@@ -205,17 +204,12 @@ use CodeIgniter\I18n\Time;
 						<?php if (!empty($pautas['lista']) && $pautas['lista'] !== NULL): ?>
 							<?php foreach ($pautas['lista'] as $chave => $pauta): ?>
 								<?php if ($chave < 4): ?>
-									<div class="col-12">
-										<div class="d-flex align-items-center position-relative">
-											<img class="col-2 rounded-3" src="<?= $pauta['imagem']; ?>" alt="Imagem">
-											<div class="ms-3">
-												<a href="<?= base_url("colaboradores/pautas	/detalhamento/" . $pauta["id"]); ?>"
-													class="h6 btn-link">
-													<?= $pauta['titulo']; ?></a>
-											</div>
-										</div>
-									</div>
-									<hr class="my-3">
+									<?php $pauta['class-img'] = 'col-3'; ?>
+									<?php $pauta['class-div'] = 'col-9'; ?>
+									<?= view_cell('\App\Libraries\cards::cardsHorizontais', $pauta); ?>
+									<?php if($chave<3): ?>
+										<hr class="my-3">
+									<?php endif; ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						<?php else: ?>
@@ -337,8 +331,6 @@ use CodeIgniter\I18n\Time;
 		});
 
 	});
-	
-	
 
 	function strike(form){
 		$.ajax({
@@ -377,6 +369,24 @@ use CodeIgniter\I18n\Time;
 		strike(form);
 		$('.strike-desbloquear').addClass('d-none');
 		$('.strike-bloquear').removeClass('d-none');
+	});
+
+	$('.shadowban-habilitar').on('click', function (e) {
+		form = new FormData();
+		form.append('shadowban', 'S');
+		form.append('colaborador_id', <?= $colaboradores['id'] ?>);
+		strike(form);
+		$('.shadowban-desabilitar').removeClass('d-none');
+		$('.shadowban-habilitar').addClass('d-none');
+	});
+
+	$('.shadowban-desabilitar').on('click', function (e) {
+		form = new FormData();
+		form.append('shadowban', 'N');
+		form.append('colaborador_id', <?= $colaboradores['id'] ?>);
+		strike(form);
+		$('.shadowban-desabilitar').addClass('d-none');
+		$('.shadowban-habilitar').removeClass('d-none');
 	});
 
 	$('.btn-historico').on('click', function (e) {
