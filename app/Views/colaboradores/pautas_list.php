@@ -54,7 +54,7 @@ use CodeIgniter\I18n\Time;
 			</button>
 		</div>
 	<?php endif; ?>
-	<?= view('\template\templatePautasListColaboradores', array('pautasList'=>$pautasList)); ?>
+	<?= view('/template/templatePautasListColaboradores', array('pautasList'=>$pautasList)); ?>
 	<div class="page-load-status">
 		<div class="infinite-scroll-request d-flex justify-content-center mt-5 mb-5">
 			<div class="spinner-border" role="status">
