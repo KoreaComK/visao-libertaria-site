@@ -385,7 +385,7 @@ use CodeIgniter\I18n\Time;
 								<?php foreach ($artigos as $chave => $artigo): ?>
 									<?php if ($chave > 5): ?>
 										<?php $artigo['class'] = 'col-md-6 col-lg-6'; ?>
-										<?= view_cell('\App\Libraries\cards::cardsHorizontais', $artigo); ?>
+										<?= view_cell('\App\Libraries\Cards::cardsHorizontais', $artigo); ?>
 									<?php endif; ?>
 								<?php endforeach; ?>
 							<?php else: ?>

@@ -615,9 +615,9 @@ class Site extends BaseController
 				'pager' => $artigos->pager
 			];
 		}
-		$data['urlComponente'] = '\App\Libraries\cards::cardsVerticaisSimples';
+		$data['urlComponente'] = '\App\Libraries\Cards::cardsVerticaisSimples';
 		$data['classeListaCSS'] = 'listagem-escritor';
-		return view_cell('\App\Libraries\listas::listasVerticaisSimples', $data);
+		return view_cell('\App\Libraries\Listas::listasVerticaisSimples', $data);
 	}
 
 	public function colaborador($apelido = NULL)
@@ -683,9 +683,9 @@ class Site extends BaseController
 				'pager' => $pautas->pager
 			];
 		}
-		$data['urlComponente'] = '\App\Libraries\cards::cardsVerticaisSimples';
+		$data['urlComponente'] = '\App\Libraries\Cards::cardsVerticaisSimples';
 		$data['classeListaCSS'] = 'listagem-colaborador';
-		return view_cell('\App\Libraries\listas::listasVerticaisSimples', $data);
+		return view_cell('\App\Libraries\Listas::listasVerticaisSimples', $data);
 	}
 
 	public function links(): string

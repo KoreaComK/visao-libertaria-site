@@ -173,7 +173,7 @@ use CodeIgniter\I18n\Time;
 								<?php if ($chave < 4): ?>
 									<?php $artigo['class-img'] = 'col-3'; ?>
 									<?php $artigo['class-div'] = 'col-9'; ?>
-									<?= view_cell('\App\Libraries\cards::cardsHorizontais', $artigo); ?>
+									<?= view_cell('\App\Libraries\Cards::cardsHorizontais', $artigo); ?>
 									<?php if($chave<3): ?>
 										<hr class="my-3">
 									<?php endif; ?>
@@ -206,7 +206,7 @@ use CodeIgniter\I18n\Time;
 								<?php if ($chave < 4): ?>
 									<?php $pauta['class-img'] = 'col-3'; ?>
 									<?php $pauta['class-div'] = 'col-9'; ?>
-									<?= view_cell('\App\Libraries\cards::cardsHorizontais', $pauta); ?>
+									<?= view_cell('\App\Libraries\Cards::cardsHorizontais', $pauta); ?>
 									<?php if($chave<3): ?>
 										<hr class="my-3">
 									<?php endif; ?>

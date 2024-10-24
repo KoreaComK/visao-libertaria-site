@@ -79,7 +79,7 @@ use CodeIgniter\I18n\Time;
 
 		<div class="row list-artigos" data-masonry='{"percentPosition": true }'>
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
-				<?= view_cell('\App\Libraries\cards::cardsVerticaisSimples', $artigo); ?>
+				<?= view_cell('\App\Libraries\Cards::cardsVerticaisSimples', $artigo); ?>
 			<?php endforeach; ?>
 		</div>
 

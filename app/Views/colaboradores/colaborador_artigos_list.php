@@ -260,7 +260,7 @@
 							)
 						));
 					?>
-					<?= view_cell('\App\Libraries\tabelas::adicionaEstruturaTabela', $estrutura_tabela); ?>
+					<?= view_cell('\App\Libraries\Tabelas::adicionaEstruturaTabela', $estrutura_tabela); ?>
 				</div>
 			</div>
 		</div>
