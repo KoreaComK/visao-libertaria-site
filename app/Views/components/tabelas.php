@@ -62,18 +62,12 @@ dados = {
 
 <script>
     function refreshListPublicado(url) {
-        form = new FormData(tablesearch);
-        <?php if (isset($dados['cabecalho']['pesquisa']) && isset($dados['cabecalho']['pesquisa']['ajax_default'])): ?>
-            <?php foreach($dados['cabecalho']['pesquisa']['ajax_default'] as $chave => $dado): ?>
-                form.append('<?=$chave;?>','<?=$dado;?>');
-            <?php endforeach; ?>
-        <?php endif; ?>
+        var formPesquisa = $('#tablesearch').serialize(); 
         $.ajax({
-            url: '<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>',
-            method: "GET",
-			data: form,
-			processData: false,
-			contentType: false,
+            url: '<?php echo site_url('colaboradores/artigos/meusArtigosList/'); ?>',
+            method: "get",
+			data: formPesquisa,
+			processData: true,
 			cache: false,
 			dataType: "html",
             beforeSend: function () { $('#modal-loading').show(); },
@@ -85,16 +79,9 @@ dados = {
     }
 
     $(document).ready(function () {
-        $('.btn-pesquisar-producao').on('click', function (e) {
-            refreshListProducao();
-        });
-        $('.select-pesquisa').on('change', function (e) {
-            refreshListProducao();
-        });
         $('.btn-pesquisar-publicado').on('click', function (e) {
             refreshListPublicado(false);
         });
-        $(".btn-pesquisar-producao").trigger("click");
         $(".btn-pesquisar-publicado").trigger("click");
     });
 </script>

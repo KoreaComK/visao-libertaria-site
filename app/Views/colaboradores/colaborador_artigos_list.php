@@ -240,7 +240,7 @@
 				<!-- Post list table END -->
 			</div>
 			<div class="col-12">
-				<!-- Post list table START -->
+				<!-- Meus artigos publicados -->
 				<div class="card border bg-transparent rounded-3">
 					<?php
 						$estrutura_tabela = array('dados' => array(
@@ -262,7 +262,6 @@
 					?>
 					<?= view_cell('\App\Libraries\tabelas::adicionaEstruturaTabela', $estrutura_tabela); ?>
 				</div>
-				<!-- Post list table END -->
 			</div>
 		</div>
 
@@ -297,26 +296,6 @@
 			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
 				$('.tabela-producao').html(data);
-			}
-		});
-	}
-
-	function refreshListPublicado(url) {
-		if (url == false) {
-			url = '<?php echo base_url('colaboradores/artigos/meusArtigosList'); ?>';
-		}
-		$.ajax({
-			url: url,
-			type: 'get',
-			dataType: 'html',
-			data: {
-				titulo: $('#text-pesquisa-publicado').val(),
-				tipo: 'finalizado'
-			},
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (data) {
-				$('.tabela-publicado').html(data);
 			}
 		});
 	}
