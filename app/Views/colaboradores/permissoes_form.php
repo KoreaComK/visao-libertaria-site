@@ -142,8 +142,8 @@ use CodeIgniter\I18n\Time;
 										class="h6 mb-0"><?= ($colaboradores['confirmado_data'] !== NULL) ? ('E-mail confirmado') : ('E-mail não confirmado'); ?></span>
 								</li>
 								<li class="list-group-item">
-									<a class="link btn-link text-danger strike-bloquear <?=($colaboradores['strike_data'] !== NULL)?('d-none'):(''); ?>" href="javascript:void(0);">Bloquear colaborador</a>
-									<a class="link btn-link text-danger strike-desbloquear <?=($colaboradores['strike_data'] !== NULL)?(''):('d-none'); ?>" href="javascript:void(0);">Desbloquear colaborador</a>
+									<a class="link btn-link text-danger bloqueado-bloquear <?=($colaboradores['bloqueado'] !== 'N')?('d-none'):(''); ?>" href="javascript:void(0);">Bloquear colaborador</a>
+									<a class="link btn-link text-danger bloqueado-desbloquear <?=($colaboradores['bloqueado'] !== 'N')?(''):('d-none'); ?>" href="javascript:void(0);">Desbloquear colaborador</a>
 								</li>
 								<li class="list-group-item">
 									<a class="link btn-link text-danger shadowban-habilitar <?=($colaboradores['shadowban'] != 'N')?('d-none'):(''); ?>" href="javascript:void(0);">Habilitar shadowban</a>
@@ -332,7 +332,7 @@ use CodeIgniter\I18n\Time;
 
 	});
 
-	function strike(form){
+	function bloqueado(form){
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/admin/permissoes'); ?>",
 			method: "POST",
@@ -353,22 +353,22 @@ use CodeIgniter\I18n\Time;
 		});
 	}
 
-	$('.strike-bloquear').on('click', function (e) {
+	$('.bloqueado-bloquear').on('click', function (e) {
 		form = new FormData();
-		form.append('strike_data', 'true');
+		form.append('bloqueado', 'true');
 		form.append('colaborador_id', <?= $colaboradores['id'] ?>);
-		strike(form);
-		$('.strike-desbloquear').removeClass('d-none');
-		$('.strike-bloquear').addClass('d-none');
+		bloqueado(form);
+		$('.bloqueado-desbloquear').removeClass('d-none');
+		$('.bloqueado-bloquear').addClass('d-none');
 	});
 
-	$('.strike-desbloquear').on('click', function (e) {
+	$('.bloqueado-desbloquear').on('click', function (e) {
 		form = new FormData();
-		form.append('strike_data', 'false');
+		form.append('bloqueado', 'false');
 		form.append('colaborador_id', <?= $colaboradores['id'] ?>);
-		strike(form);
-		$('.strike-desbloquear').addClass('d-none');
-		$('.strike-bloquear').removeClass('d-none');
+		bloqueado(form);
+		$('.bloqueado-desbloquear').addClass('d-none');
+		$('.bloqueado-bloquear').removeClass('d-none');
 	});
 
 	$('.shadowban-habilitar').on('click', function (e) {

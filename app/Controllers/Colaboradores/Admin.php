@@ -344,17 +344,16 @@ class Admin extends BaseController
 				}
 				return $retorno->retorno(true, 'Permissões do colaborador salvas.', true);
 			}
-			if (isset($post['strike_data'])) {
-				if ($post['strike_data'] == 'true') {
-					$data_strike = new Time('+20 years');
-					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data' => $data_strike->toLocalizedString('yyyy-MM-dd')));
-					if ($strike_retorno) {
+			if (isset($post['bloqueado'])) {
+				if ($post['bloqueado'] == 'true') {
+					$bloqueio_retorno = $colaboradoresModel->update($post['colaborador_id'], array('bloqueado' => 'S'));
+					if ($bloqueio_retorno) {
 						return $retorno->retorno(true, 'Bloqueio feito com sucesso.', true);
 					}
 				}
-				if ($post['strike_data'] == 'false') {
-					$strike_retorno = $colaboradoresModel->update($post['colaborador_id'], array('strike_data' => NULL));
-					if ($strike_retorno) {
+				if ($post['bloqueado'] == 'false') {
+					$bloqueio_retorno = $colaboradoresModel->update($post['colaborador_id'], array('bloqueado' => 'N'));
+					if ($bloqueio_retorno) {
 						return $retorno->retorno(true, 'Desbloqueio feito com sucesso.', true);
 					}
 				}

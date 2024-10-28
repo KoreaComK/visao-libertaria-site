@@ -398,6 +398,9 @@ class Site extends BaseController
 						$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - CONFIRMAR SEU E-MAIL', $enviaEmail->getMensagemCadastro($colaborador['confirmacao_hash']));
 						return $retorno->retorno(false, 'Sua conta não foi confirmada. Foi enviado novamente uma pedido de confirmação para o seu e-mail.', true);
 					}
+					if ($colaborador['bloqueado'] !== 'N') {
+						return $retorno->retorno(false, 'Sua conta está bloqueada indefinidamente.', true);
+					}
 					if ($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
 						return $retorno->retorno(false, 'Sua conta está bloqueada até ' . Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
 					}

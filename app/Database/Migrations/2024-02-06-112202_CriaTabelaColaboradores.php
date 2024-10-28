@@ -61,17 +61,17 @@ final class CriaTabelaColaboradores extends Migration
                 'type' => 'INT',
                 'default' => 0,
             ],
-            'strikes' => [
-                'type' => 'INT',
-                'null' => true,
-                'default' => 0,
-            ],
             'strike_data' => [
                 'type' => 'DATETIME',
                 'null' => true,
                 'default' => null,
             ],
             'shadowban' => [
+                'type' => 'CHAR(1)',
+                'null' => false,
+                'default' => 'N',
+            ],
+            'bloqueado' => [
                 'type' => 'CHAR(1)',
                 'null' => false,
                 'default' => 'N',
