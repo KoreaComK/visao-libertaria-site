@@ -69,7 +69,7 @@ use CodeIgniter\I18n\Time;
 				<label for="username">Link da Notícia</label> <?php if (isset($post)): ?> <a href="<?= $post['link']; ?>" class="col-md-12 text-muted" target="_blank">Ler notícia original</a><?php endif; ?>
 				<div class="input-group">
 					<i class="input-group-text bi bi-link-45deg"></i>
-					<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta" <?=(isset($post['id']))?('disabled'):(''); ?>
+					<input type="text" class="form-control" id="link" autocomplete="off" placeholder="Link da notícia para pauta" <?=(isset($post['id']))?('disabled'):(''); ?>
 						name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading" required value="<?=(isset($post))?($post['link']):(''); ?>" <?= (isset($readOnly))?('disabled'):('');?>>
 				</div>
 			</div>
