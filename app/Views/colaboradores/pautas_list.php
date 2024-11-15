@@ -93,7 +93,7 @@ use CodeIgniter\I18n\Time;
 							<label for="titulo">Título</label>
 							<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N" />
 							<input type="hidden" id="id_pauta" name="id_pauta" value="" />
-							<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta"
+							<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta" autocomplete="off"
 								required>
 						</div>
 
@@ -103,14 +103,14 @@ use CodeIgniter\I18n\Time;
 										<?= $config['pauta_tamanho_maximo']; ?> palavras. Mín.
 										<?= $config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
 									class="pull-right label label-default text-muted" id="count_message"></span>)</label>
-							<textarea class="form-control" name="texto" id="texto" required></textarea>
+							<textarea class="form-control" name="texto" id="texto" autocomplete="off" required></textarea>
 						</div>
 
 						<div class="mb-3">
 							<label for="address">Link da Imagem</label>
 							<div class="input-group">
 								<i class="input-group-text bi bi-link-45deg"></i>
-								<input type="text" class="form-control" id="imagem" name="imagem"
+								<input type="text" class="form-control" autocomplete="off" id="imagem" name="imagem"
 									placeholder="Link da imagem da notícia" required>
 							</div>
 						</div>
