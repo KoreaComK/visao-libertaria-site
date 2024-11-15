@@ -62,9 +62,11 @@ dados = {
 </div>
 
 <script>
-    function refreshListPublicado(url) {
+    function refreshTable_<?= $dados['cabecalho']['sufixo'] ?>(url) {
         var formPesquisa = $('#tablesearch').serialize();
-        formPesquisa += '&<?= $dados['pesquisa']['ajax_default'] ?>'
+        <?php if(isset($dados['pesquisa']['ajax_default'])): ?>
+            formPesquisa += '&<?= $dados['pesquisa']['ajax_default'] ?>'
+        <?php endif; ?>
 
         var url_ajax = '<?= $dados['pesquisa']['url'] ?>';
         if(url!=false) { url_ajax = url; }
@@ -85,7 +87,7 @@ dados = {
 
     $(document).ready(function () {
         $('.btn-pesquisar-<?= $dados['cabecalho']['sufixo'] ?>').on('click', function (e) {
-            refreshListPublicado(false);
+            refreshTable_<?= $dados['cabecalho']['sufixo'] ?>(false);
         });
         $(".btn-pesquisar-<?= $dados['cabecalho']['sufixo'] ?>").trigger("click");
     });

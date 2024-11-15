@@ -401,6 +401,48 @@ class Artigos extends BaseController
 			}
 		}
 
+		$data['estrutura_tabela_producao'] = array('dados' => array(
+			'cabecalho' => array (
+				'titulo' => 'Meus artigos em produção',
+				'sufixo' => 'producao',
+				'botao' => array(
+					'show' => true,
+					'label' => 'Novo artigo',
+					'url' => site_url('colaboradores/artigos/cadastrar'),
+					'target' => '_blank'
+				),
+				'pesquisa' => array(
+					'tipo' => 'simples',
+					'campo' => 'titulo'
+				)
+			),
+			'pesquisa' => array(
+				'ajax_default' => 'tipo=emProducao',
+				'url' => site_url('colaboradores/artigos/meusArtigosList')
+			)
+		));
+
+		$data['estrutura_tabela_publicados'] = array('dados' => array(
+			'cabecalho' => array (
+				'titulo' => 'Meus artigos publicados',
+				'sufixo' => 'publicados',
+				'botao' => array(
+					'show' => true,
+					'label' => 'Ver página pública',
+					'url' => site_url('site/escritor/'.urlencode($_SESSION['colaboradores']['nome'])),
+					'target' => '_blank'
+				),
+				'pesquisa' => array(
+					'tipo' => 'simples',
+					'campo' => 'titulo'
+				)
+			),
+			'pesquisa' => array(
+				'ajax_default' => 'tipo=finalizado',
+				'url' => site_url('colaboradores/artigos/meusArtigosList')
+			)
+		));
+
 		return view('colaboradores/colaborador_artigos_list', $data);
 	}
 
@@ -426,9 +468,9 @@ class Artigos extends BaseController
 			$artigosModel->whereNotIn('fase_producao_id', array('6', '7'));
 			$artigosModel->where('descartado', NULL);
 
-			if ($post['fase_producao'] != "" && $post['fase_producao'] != NULL) {
-				$artigosModel->where('fase_producao_id', $post['fase_producao']);
-			}
+			// if ($post['fase_producao'] != "" && $post['fase_producao'] != NULL) {
+			// 	$artigosModel->where('fase_producao_id', $post['fase_producao']);
+			// }
 
 			if (isset($post['titulo']) && $post['titulo'] != "" && $post['titulo'] != NULL) {
 				$artigosModel->like('titulo', $post['titulo'], 'both', null, true);

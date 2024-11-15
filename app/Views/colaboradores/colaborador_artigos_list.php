@@ -169,102 +169,14 @@
 			<div class="col-12">
 				<!-- Post list table START -->
 				<div class="card border bg-transparent rounded-3 mb-4">
-
-					<div class="card-header bg-transparent border-bottom p-3">
-						<div class="d-sm-flex justify-content-between align-items-center">
-							<h5 class="mb-2 mb-sm-0">Meus artigos em produção</h5>
-							<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>"
-								class="btn btn-sm btn-primary mb-0">Novo Artigo</a>
-						</div>
-					</div>
-					<!-- Card body START -->
-					<div class="card-body p-3">
-
-						<!-- Search and select START -->
-						<div class="row g-3 align-items-center justify-content-between mb-3"
-							data-np-autofill-form-type="other" data-np-checked="1" data-np-watching="1">
-							<!-- Search -->
-							<div class="col-md-8">
-								<form class="rounded position-relative" data-np-autofill-form-type="other"
-									data-np-checked="1" data-np-watching="1">
-									<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa"
-										name="text-pesquisa" placeholder="Pesquisar" aria-label="Pesquisar">
-									<button
-										class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-producao"
-										type="submit"><i class="fas fa-magnifying-glass"></i></button>
-								</form>
-							</div>
-
-							<!-- Select option -->
-							<div class="col-md-3">
-								<!-- Short by filter -->
-								<form>
-									<select class="form-select z-index-9 bg-transparent select-pesquisa"
-										id="select-pesquisa" name="select-pesquisa">
-										<option value="">Escolha a fase</option>
-										<option value="1">Escrevendo</option>
-										<option value="2">Revisando</option>
-										<option value="3">Narrando</option>
-										<option value="4">Produzindo</option>
-										<option value="5">Publicando</option>
-									</select>
-								</form>
-							</div>
-						</div>
-						<!-- Search and select END -->
-
-						<!-- Post list table START -->
-						<div class="table-responsive border-0">
-							<table class="table align-middle p-4 mb-0 table-hover table-shrink">
-								<!-- Table head -->
-								<thead class="table-dark">
-									<tr style="vertical-align: middle !important;">
-										<th scope="col" class="border-0 rounded-start"></th>
-										<th scope="col" class="border-0">Título</th>
-										<th scope="col" class="border-0">Atualizado em</th>
-										<th scope="col" class="border-0">Tipo do artigo</th>
-										<th scope="col" class="border-0">Status</th>
-										<th scope="col" class="border-0 rounded-end"></th>
-									</tr>
-								</thead>
-
-								<!-- Table body START -->
-								<tbody class="border-top-0 tabela-producao"></tbody>
-								<!-- Table body END -->
-							</table>
-						</div>
-						<!-- Post list table END -->
-
-					</div>
+					<?= view_cell('\App\Libraries\Tabelas::adicionaEstruturaTabela', $estrutura_tabela_producao); ?>
 				</div>
 				<!-- Post list table END -->
 			</div>
 			<div class="col-12">
 				<!-- Meus artigos publicados -->
 				<div class="card border bg-transparent rounded-3">
-					<?php
-						$estrutura_tabela = array('dados' => array(
-							'cabecalho' => array (
-								'titulo' => 'Meus artigos publicados',
-								'sufixo' => 'publicados',
-								'botao' => array(
-									'show' => true,
-									'label' => 'Ver página pública',
-									'url' => site_url('site/escritor/'.urlencode($_SESSION['colaboradores']['nome'])),
-									'target' => '_blank'
-								),
-								'pesquisa' => array(
-									'tipo' => 'simples',
-									'campo' => 'titulo'
-								)
-							),
-							'pesquisa' => array(
-								'ajax_default' => 'tipo=finalizado',
-								'url' => site_url('colaboradores/artigos/meusArtigosList')
-							)
-						));
-					?>
-					<?= view_cell('\App\Libraries\Tabelas::adicionaEstruturaTabela', $estrutura_tabela); ?>
+					<?= view_cell('\App\Libraries\Tabelas::adicionaEstruturaTabela', $estrutura_tabela_publicados); ?>
 				</div>
 			</div>
 		</div>
