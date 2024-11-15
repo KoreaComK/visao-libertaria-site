@@ -18,12 +18,15 @@ dados = {
                 campo
         }
     }
+    pesquisa = {
+        ajax_default
+        url
+    }
 }
 */
 ?>
 
 <div class="col-12">
-    <!-- Post list table START -->
     <div class="card border bg-transparent rounded-3">
 
         <div class="card-header bg-transparent border-bottom p-3">
@@ -47,24 +50,26 @@ dados = {
                             <input class="form-control pe-5 bg-transparent" type="text" id="<?= $dados['cabecalho']['pesquisa']['campo'] ?>"
                                 name="<?= $dados['cabecalho']['pesquisa']['campo'] ?>" placeholder="Pesquisar" aria-label="Pesquisar">
                             <button
-                                class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-publicado"
+                                class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar-<?= $dados['cabecalho']['sufixo'] ?>"
                                 type="submit"><i class="fas fa-magnifying-glass"></i></button>
                         </form>
                     </div>
                 <?php endif; ?>
             </div>
-            <div class="table-responsive border-0 tabela-publicado">
-
-            </div>
+            <div class="table-responsive border-0 tabela-dados-<?= $dados['cabecalho']['sufixo'] ?>"></div>
         </div>
     </div>
 </div>
 
 <script>
     function refreshListPublicado(url) {
-        var formPesquisa = $('#tablesearch').serialize(); 
+        var formPesquisa = $('#tablesearch').serialize();
+        formPesquisa += '&<?= $dados['pesquisa']['ajax_default'] ?>'
+
+        var url_ajax = '<?= $dados['pesquisa']['url'] ?>';
+        if(url!=false) { url_ajax = url; }
         $.ajax({
-            url: '<?php echo site_url('colaboradores/artigos/meusArtigosList/'); ?>',
+            url: url_ajax,
             method: "get",
 			data: formPesquisa,
 			processData: true,
@@ -73,15 +78,15 @@ dados = {
             beforeSend: function () { $('#modal-loading').show(); },
             complete: function () { $('#modal-loading').hide() },
             success: function (data) {
-                $('.tabela-publicado').html(data);
+                $('.tabela-dados-<?= $dados['cabecalho']['sufixo'] ?>').html(data);
             }
         });
     }
 
     $(document).ready(function () {
-        $('.btn-pesquisar-publicado').on('click', function (e) {
+        $('.btn-pesquisar-<?= $dados['cabecalho']['sufixo'] ?>').on('click', function (e) {
             refreshListPublicado(false);
         });
-        $(".btn-pesquisar-publicado").trigger("click");
+        $(".btn-pesquisar-<?= $dados['cabecalho']['sufixo'] ?>").trigger("click");
     });
 </script>

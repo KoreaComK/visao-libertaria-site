@@ -241,7 +241,7 @@
 						</div>
 						<div class="text-end">
 							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
-								produção</button>
+								publicação</button>
 						</div>
 					</div>
 				</div>

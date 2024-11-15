@@ -11,7 +11,7 @@ use CodeIgniter\I18n\Time;
 	</div>
 	<div class="mensagem p-3 mb-2 rounded text-white text-center <?=(!isset($erros))?('collapse'):('bg-danger');?> col-12"><?=(!isset($erros))?('collapse'):($erros['mensagem']); ?></div>
 	<div class="d-flex justify-content-center mb-5 text-left">
-		<form class="col-12 col-md-12 text-start" novalidate="yes" method="post" id="pautas_form">
+		<form class="col-12 col-md-12 text-start" novalidate="yes" method="post" id="pautas_form" autocomplete="off">
 
 			<?php if (isset($post['criado'])): ?>
 				<div class="mb-3">

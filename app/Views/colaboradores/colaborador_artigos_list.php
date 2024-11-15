@@ -246,6 +246,7 @@
 						$estrutura_tabela = array('dados' => array(
 							'cabecalho' => array (
 								'titulo' => 'Meus artigos publicados',
+								'sufixo' => 'publicados',
 								'botao' => array(
 									'show' => true,
 									'label' => 'Ver página pública',
@@ -254,9 +255,12 @@
 								),
 								'pesquisa' => array(
 									'tipo' => 'simples',
-									'campo' => 'titulo',
-									'ajax_default' => array('tipo'=>'finalizado')
+									'campo' => 'titulo'
 								)
+							),
+							'pesquisa' => array(
+								'ajax_default' => 'tipo=finalizado',
+								'url' => site_url('colaboradores/artigos/meusArtigosList')
 							)
 						));
 					?>

@@ -228,9 +228,8 @@
 						<div class="col-12 col-md-3 mt-3">
 							<select class="form-control form-select select-pesquisa" id="select-colaborador"
 								name="select-pesquisa">
-								<option value="">Fase do Colaboração</option>
-								<option value="A">Sugestão</option>
-								<option value="B">Escritor</option>
+								<option value="A">Sugestor</option>
+								<option value="B" selected>Escritor</option>
 								<option value="C">Revisor</option>
 								<option value="D">Narrador</option>
 								<option value="E">Produtor</option>
