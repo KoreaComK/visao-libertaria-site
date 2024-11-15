@@ -77,14 +77,14 @@ use CodeIgniter\I18n\Time;
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<form method="post" id="pautas_form" name="pautas_form">
+					<form method="post" id="pautas_form" name="pautas_form" autocomplete="off">
 
 						<div class="mb-3">
 							<label for="username">Link da Notícia</label>
 							<div class="input-group">
 								<i class="input-group-text bi bi-link-45deg"></i>
 								<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
-									name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading"
+									name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading" autocomplete="off"
 									required>
 							</div>
 						</div>
