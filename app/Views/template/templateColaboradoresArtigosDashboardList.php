@@ -20,21 +20,26 @@
 				<tr>
 					<!-- Table data -->
 					<td>
-						<img class="rounded-3"  src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
+						<img class="rounded-3" src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
 					</td>
 					<!-- Table data -->
 					<td>
-						<h6 class="mb-0"><a href="<?=site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])?>"><?= $artigo['titulo']; ?></a></h6>
+						<h6 class="mb-0"><a
+								href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= $artigo['titulo']; ?></a>
+						</h6>
 					</td>
 					<td>
-						<h6 class="mb-0"><a href="<?=site_url('site/escritor/'.urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a></h6>
+						<h6 class="mb-0"><a
+								href="<?= site_url('site/escritor/' . urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a>
+						</h6>
 					</td>
 					<!-- Table data -->
-					<td><?= ($artigo['data_publicado']!=NULL)?(Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')):(''); ?>
+					<td><?= ($artigo['data_publicado'] != NULL) ? (Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
 					</td>
 					<!-- Table data -->
 					<td>
-					<a href="#" class="badge text-bg-<?= ($artigo['tipo_artigo']=='T')?('primary'):('danger');?> mb-2"><?= ($artigo['tipo_artigo']=='T')?('Teórico'):('Notícia');?></a>
+						<a href="#"
+							class="badge text-bg-<?= ($artigo['tipo_artigo'] == 'T') ? ('primary') : ('danger'); ?> mb-2"><?= ($artigo['tipo_artigo'] == 'T') ? ('Teórico') : ('Notícia'); ?></a>
 					</td>
 					<!-- Table data -->
 					<td>
@@ -44,9 +49,15 @@
 					<!-- Table data -->
 					<td>
 						<div class="d-flex gap-2">
-							<a href="<?= (in_array($artigo['fase_producao_id'],array('6','7')))?(site_url('site/artigo/' . $artigo['url_friendly'])):(site_url('colaboradores/artigos/detalhamento/' . $artigo['id']));?>"
+							<?php if (!isset($admin)): ?>
+							<a href="<?= (in_array($artigo['fase_producao_id'], array('6', '7'))) ? (site_url('site/artigo/' . $artigo['url_friendly'])) : (site_url('colaboradores/artigos/detalhamento/' . $artigo['id'])); ?>"
 								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
 								title="Ir para o artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
+							<?php else: ?>
+								<a href="<?= site_url('colaboradores/admin/artigoEditar/' . $artigo['id']); ?>"
+									class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
+									title="Editar artigo"><i class="fas fa-pencil"></i></i></a>
+							<?php endif; ?>
 						</div>
 					</td>
 				</tr>

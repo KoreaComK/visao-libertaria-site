@@ -380,6 +380,28 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
+							<h6 class="card-header-title cron_artigos_desmarcar_status">Tempo de bloqueio</h6>
+
+							<div class="cron_artigos_desmarcar_status">
+								<label
+									for="cron_artigos_noticia_desmarcar_data_producao_number"><small>Tempo de bloqueio por desmarcação</small></label>
+								<div class="row">
+									<div class="col-md-8 mb-2">
+										<input type="number" class="form-control form-control-sm"
+											id="artigo_tempo_bloqueio_number" placeholder="Tempo de bloqueio"
+											name="artigo_tempo_bloqueio_number" required min="1"
+											value="<?= (isset($dados['artigo_tempo_bloqueio'])) ? (explode(' ', $dados['artigo_tempo_bloqueio'])[0]) : (''); ?>">
+									</div>
+									<div class="col-md-4">
+										<select class="form-select form-select-sm" id="artigo_tempo_bloqueio_time"
+											name="artigo_tempo_bloqueio_time">
+											<option value="hours" <?= (isset($dados['artigo_tempo_bloqueio']) && explode(' ', $dados['artigo_tempo_bloqueio'])[1] == 'hours') ? ('selected') : (''); ?>>hora(s)</option>
+											<option value="days" <?= (isset($dados['artigo_tempo_bloqueio']) && explode(' ', $dados['artigo_tempo_bloqueio'])[1] == 'days') ? ('selected') : (''); ?>>dia(s)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
 							<hr class="cron_artigos_descartar_status">
 
 							<h5 class="card-header-title cron_artigos_descartar_status">Tempo limite para descarte</h5>
@@ -636,7 +658,8 @@ use CodeIgniter\I18n\Time;
 							</div>
 
 							<div class="mb-3 home_ultimos_videos_mostrar">
-								<label for="home_ultimos_videos home_ultimos_videos_mostrar"><small>Quantidade de artigos nos últimos
+								<label for="home_ultimos_videos home_ultimos_videos_mostrar"><small>Quantidade de
+										artigos nos últimos
 										vídeos</small></label>
 								<div class="input-group">
 									<input type="number" class="form-control form-control-sm" id="home_ultimos_videos"
@@ -745,58 +768,58 @@ use CodeIgniter\I18n\Time;
 		});
 	}
 
-	$('#cron_pautas_status_delete').change(function() {
-		if(!this.checked) { $('.cron_pautas_status_delete').hide(); } else { $('.cron_pautas_status_delete').show(); }
+	$('#cron_pautas_status_delete').change(function () {
+		if (!this.checked) { $('.cron_pautas_status_delete').hide(); } else { $('.cron_pautas_status_delete').show(); }
 	})
 
-	$('#cron_artigos_desmarcar_status').change(function() {
-		if(!this.checked) { $('.cron_artigos_desmarcar_status').hide(); } else { $('.cron_artigos_desmarcar_status').show(); }
+	$('#cron_artigos_desmarcar_status').change(function () {
+		if (!this.checked) { $('.cron_artigos_desmarcar_status').hide(); } else { $('.cron_artigos_desmarcar_status').show(); }
 	})
 
-	$('#cron_artigos_descartar_status').change(function() {
-		if(!this.checked) { $('.cron_artigos_descartar_status').hide(); } else { $('.cron_artigos_descartar_status').show(); }
+	$('#cron_artigos_descartar_status').change(function () {
+		if (!this.checked) { $('.cron_artigos_descartar_status').hide(); } else { $('.cron_artigos_descartar_status').show(); }
 	})
 
-	$('#cron_notificacoes_status_delete').change(function() {
-		if(!this.checked) { $('.cron_notificacoes_status_delete').hide(); } else { $('.cron_notificacoes_status_delete').show(); }
+	$('#cron_notificacoes_status_delete').change(function () {
+		if (!this.checked) { $('.cron_notificacoes_status_delete').hide(); } else { $('.cron_notificacoes_status_delete').show(); }
 	})
-	
-	$('#home_banner_mostrar').change(function() {
-		if(!this.checked) { $('.home_banner_mostrar').hide(); } else { $('.home_banner_mostrar').show(); }
+
+	$('#home_banner_mostrar').change(function () {
+		if (!this.checked) { $('.home_banner_mostrar').hide(); } else { $('.home_banner_mostrar').show(); }
 	})
-	
-	$('#home_talvez_goste_mostrar').change(function() {
-		if(!this.checked) { $('.home_talvez_goste_mostrar').hide(); } else { $('.home_talvez_goste_mostrar').show(); }
+
+	$('#home_talvez_goste_mostrar').change(function () {
+		if (!this.checked) { $('.home_talvez_goste_mostrar').hide(); } else { $('.home_talvez_goste_mostrar').show(); }
 	})
-	
-	$('#home_ultimos_videos_mostrar').change(function() {
-		if(!this.checked) { $('.home_ultimos_videos_mostrar').hide(); } else { $('.home_ultimos_videos_mostrar').show(); }
+
+	$('#home_ultimos_videos_mostrar').change(function () {
+		if (!this.checked) { $('.home_ultimos_videos_mostrar').hide(); } else { $('.home_ultimos_videos_mostrar').show(); }
 	})
 
 	$(document).ready(function () {
-		if(!$('#cron_pautas_status_delete').is(':checked')) {
+		if (!$('#cron_pautas_status_delete').is(':checked')) {
 			$('.cron_pautas_status_delete').hide();
 		}
-		if(!$('#cron_artigos_desmarcar_status').is(':checked')) {
+		if (!$('#cron_artigos_desmarcar_status').is(':checked')) {
 			$('.cron_artigos_desmarcar_status').hide();
 		}
-		if(!$('#cron_artigos_descartar_status').is(':checked')) {
+		if (!$('#cron_artigos_descartar_status').is(':checked')) {
 			$('.cron_artigos_descartar_status').hide();
 		}
-		if(!$('#cron_notificacoes_status_delete').is(':checked')) {
+		if (!$('#cron_notificacoes_status_delete').is(':checked')) {
 			$('.cron_notificacoes_status_delete').hide();
 		}
-		if(!$('#home_banner_mostrar').is(':checked')) {
+		if (!$('#home_banner_mostrar').is(':checked')) {
 			$('.home_banner_mostrar').hide();
 		}
-		if(!$('#home_talvez_goste_mostrar').is(':checked')) {
+		if (!$('#home_talvez_goste_mostrar').is(':checked')) {
 			$('.home_talvez_goste_mostrar').hide();
 		}
-		if(!$('#home_ultimos_videos_mostrar').is(':checked')) {
+		if (!$('#home_ultimos_videos_mostrar').is(':checked')) {
 			$('.home_ultimos_videos_mostrar').hide();
 		}
 
-		
+
 	});
 </script>
 

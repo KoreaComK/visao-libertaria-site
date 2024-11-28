@@ -203,7 +203,8 @@
 						<?php endif; ?>
 						<?php if (in_array('7', $_SESSION['colaboradores']['permissoes']) || in_array('8', $_SESSION['colaboradores']['permissoes']) || in_array('9', $_SESSION['colaboradores']['permissoes']) || in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
+								<a class="nav-link ps-0"
+									href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administração</a>
 							</li>
 						<?php endif; ?>
 					</ul>
@@ -231,7 +232,8 @@
 				<div>
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">
 						<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
-							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" loading="lazy">
+							src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"
+							loading="lazy">
 						<span class="lead fw-bold"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					</a>
 				</div>
@@ -264,11 +266,16 @@
 											artigos</a>
 									</li>
 								<?php endif; ?>
+								<?php if (in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
+									<li> <a class="dropdown-item"
+											href="<?= site_url('colaboradores/admin/artigos'); ?>">Gerenciar todos os
+											artigos</a> </li>
+								<?php endif; ?>
 							</ul>
 						</li>
 						<?php if (isset($_SESSION) && isset($_SESSION['site_config']['paginas']['menu_colaborador'])): ?>
 							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#"><i class="far fa-file-lines"></i> 
+								<a class="nav-link dropdown-toggle" href="#"><i class="far fa-file-lines"></i>
 									Páginas</a>
 								<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
 									<?php foreach ($_SESSION['site_config']['paginas']['menu_colaborador'] as $pagina): ?>

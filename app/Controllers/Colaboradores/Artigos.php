@@ -909,7 +909,9 @@ class Artigos extends BaseController
 				->join('colaboradores G', 'artigos.descartado_colaboradores_id = G.id', 'LEFT')
 				->join('colaboradores H', 'artigos.marcado_colaboradores_id = H.id', 'LEFT')
 				->join('fase_producao I', 'artigos.fase_producao_id = I.id');
-			$artigosModel->where('artigos.descartado', NULL);
+			if(!isset($get['descartado']) || $get['descartado']=='N'){
+				$artigosModel->where('artigos.descartado', NULL);
+			}
 
 			if (!is_null($get['texto']) && !empty($get['texto']) && $get['texto'] != '') {
 				$artigosModel->Like('artigos.titulo', $get['texto']);
@@ -925,6 +927,11 @@ class Artigos extends BaseController
 				}
 			}
 
+			if(isset($get['descartado']) && $get['descartado']=='S') {
+				$artigosModel->where('artigos.descartado IS NOT NULL');
+				$artigosModel->withDeleted();
+			}
+
 			$artigosModel->orderBy('data_publicado', 'DESC');
 			
 			$data['total'] = 1;
@@ -936,6 +943,13 @@ class Artigos extends BaseController
 				foreach ($artigos as $chave => $artigo) {
 					$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
 				}
+			}
+
+			$colaborador_permissoes = $this->session->get('colaboradores')['permissoes'];
+			$colaborador = $this->session->get('colaboradores')['id'];
+
+			if(isset($get['admin']) && in_array('7', $colaborador_permissoes)) {
+				$data['admin'] = true;
 			}
 
 			$data['artigosList'] = [

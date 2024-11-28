@@ -7,14 +7,37 @@ use App\Controllers\BaseController;
 use App\Libraries\VerificaPermissao;
 use App\Models\AvisosModel;
 use CodeIgniter\I18n\Time;
+use App\Libraries\ColaboradoresNotificacoes;
+use App\Libraries\ArtigosHistoricos;
+use App\Libraries\ArtigosMarcacao;
 
 class Admin extends BaseController
 {
 	public $verificaPermissao;
 	function __construct()
 	{
+		$this->artigosHistoricos = new ArtigosHistoricos;
+		$this->artigosMarcacao = new ArtigosMarcacao;
+		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
 		$this->verificaPermissao = new verificaPermissao();
 		helper('url_friendly,data');
+		$this->iniciaVariavel = [
+			'titulo' => null,
+			'pauta' => array(),
+			'fase_producao' => null,
+			//'categorias_artigo' => array(),
+			'artigo' => [
+				'id' => null,
+				'link' => null,
+				'titulo' => null,
+				'fase_producao_id' => null,
+				'gancho' => null,
+				'texto' => null,
+				'referencias' => null,
+				'imagem' => null
+			],
+			'historico' => null
+		];
 	}
 
 	public function dashboard()
@@ -146,6 +169,9 @@ class Admin extends BaseController
 				} elseif ($indice == 'cron_artigos_descartar_data_number' || $indice == 'cron_artigos_descartar_data_time') {
 					$indice = 'cron_artigos_descartar_data';
 					$gravar[$indice] = $post['cron_artigos_descartar_data_number'] . ' ' . $post['cron_artigos_descartar_data_time'];
+				} elseif ($indice == 'artigo_tempo_bloqueio_number' || $indice == 'artigo_tempo_bloqueio_time') {
+					$indice = 'artigo_tempo_bloqueio';
+					$gravar[$indice] = $post['artigo_tempo_bloqueio_number'] . ' ' . $post['artigo_tempo_bloqueio_time'];
 				} else {
 					$gravar[$indice] = $dado;
 				}
@@ -725,6 +751,107 @@ class Admin extends BaseController
 		} else {
 			return $retorno->retorno(false, 'Houve um erro ao excluir a página.', true);
 		}
+	}
+
+	public function artigos()
+	{
+		$data = array();
+		$data['resumo'] = array();
+		$data['resumo']['escrevendo'] = 0;
+		$data['resumo']['revisando'] = 0;
+		$data['resumo']['narrando'] = 0;
+		$data['resumo']['produzindo'] = 0;
+		$data['resumo']['publicando'] = 0;
+		$data['resumo']['pagando'] = 0;
+
+		//Se usuário tem acesso a escritor
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel->get()->getResultArray();
+		foreach ($artigos as $artigo) {
+			if ($artigo['fase_producao_id'] == '1') {
+				$data['resumo']['escrevendo']++;
+			}
+			if ($artigo['fase_producao_id'] == '2') {
+				$data['resumo']['revisando']++;
+			}
+			if ($artigo['fase_producao_id'] == '3') {
+				$data['resumo']['narrando']++;
+			}
+			if ($artigo['fase_producao_id'] == '4') {
+				$data['resumo']['produzindo']++;
+			}
+			if ($artigo['fase_producao_id'] == '5') {
+				$data['resumo']['publicando']++;
+			}
+			if ($artigo['fase_producao_id'] == '6') {
+				$data['resumo']['pagando']++;
+			}
+		}
+		return view('colaboradores/administracao_artigos_list', $data);
+	}
+
+	public function artigoEditar($artigoId = NULL)
+	{
+		if ($artigoId == NULL) {
+			return redirect()->to(base_url() . 'colaboradores/admin/artigos/');
+		}
+		$this->verificaPermissao->PermiteAcesso('7');
+		$data = $this->iniciaVariavel;
+
+		//Carrega formulário artigo apenas para cadastro
+		if ($artigoId == null && $this->request->getMethod() == 'get' && $this->request->getGet('pauta') !== null) {
+			$pautaId = $this->request->getGet('pauta');
+			$pautasModel = new \App\Models\PautasModel();
+			$pauta = $pautasModel->find($pautaId);
+			if (!empty($pauta)) {
+				$data['pauta'] = $pauta;
+				$data['artigo']['titulo'] = $pauta['titulo'];
+				$data['artigo']['texto'] = $pauta['texto'];
+			}
+		}
+
+		//Carrega formulário artigo para edição e revisão
+		if ($artigoId !== NULL) {
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigo = $artigosModel->find($artigoId);
+
+			$colaborador = $this->session->get('colaboradores')['id'];
+			if (
+				$artigo === NULL || empty($artigo) ||
+				($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) ||
+				($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id']) ||
+				($artigo['fase_producao_id'] != '1' &&
+					$artigo['fase_producao_id'] != '2' &&
+					!in_array('6', $this->session->get('colaboradores')['permissoes']) &&
+					!in_array('7', $this->session->get('colaboradores')['permissoes'])
+				)
+			) {
+				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/');
+			}
+			$data['artigo'] = $artigo;
+		}
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
+		$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
+
+		$artigosTextosHistoricosModel = new \App\Models\ArtigosTextosHistoricosModel();
+		$data['historicoTexto'] = $artigosTextosHistoricosModel->where('artigos_id', $artigoId)->get()->getResultArray();
+
+		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
+		$data['cadastro'] = ($artigoId === NULL) ? (true) : (false);
+
+		$data['artigo']['fase_producao_id'] = (!isset($artigo) || $artigo['fase_producao_id'] == '1') ? ('1') : ('2');
+		if ($data['artigo']['fase_producao_id'] == '1') {
+			$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
+		} else {
+			$config['artigo_regras_revisar'] = $configuracaoModel->find('artigo_regras_revisar')['config_valor'];
+		}
+		$data['config'] = $config;
+		return view('colaboradores/colaborador_artigos_form', $data);
 	}
 
 	private function geraPreviewPagamento($post)
