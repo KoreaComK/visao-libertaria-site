@@ -1365,6 +1365,11 @@ class Artigos extends BaseController
 
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config['artigo_regras_narrar'] = $configuracaoModel->find('artigo_regras_narrar')['config_valor'];
+		$config['artigo_regras_produzir'] = $configuracaoModel->find('artigo_regras_produzir')['config_valor'];
+		$data['config'] = $config;
+
 		return view('colaboradores/colaborador_artigos_detalhes', $data);
 
 	}

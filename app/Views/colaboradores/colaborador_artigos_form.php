@@ -31,13 +31,13 @@ use CodeIgniter\I18n\Time;
 				<?php if ($artigo['fase_producao_id'] == '1'): ?>
 					<?= $config['artigo_regras_escrever']; ?>
 				<?php endif; ?>
-				<?php if ($fase_producao == '2'): ?>
+				<?php if ($artigo['fase_producao_id'] == '2'): ?>
 					<?= $config['artigo_regras_revisar']; ?>
 				<?php endif; ?>
-				<?php if ($fase_producao == '3'): ?>
+				<?php if ($artigo['fase_producao_id'] == '3'): ?>
 					<?= $config['artigo_regras_narrar']; ?>
 				<?php endif; ?>
-				<?php if ($fase_producao == '4'): ?>
+				<?php if ($artigo['fase_producao_id'] == '4'): ?>
 					<?= $config['artigo_regras_produzir']; ?>
 				<?php endif; ?>
 			</div>

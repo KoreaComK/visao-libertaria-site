@@ -7,6 +7,16 @@
 <div class="container-fluid py-3">
 	<div class="container d-flex justify-content-center">
 		<div class="col-lg-8 col-sm-12">
+			<div class="col-12">
+				<div class="mb-5">
+					<?php if ($artigo['fase_producao_id'] == '3'): ?>
+						<?= $config['artigo_regras_narrar']; ?>
+					<?php endif; ?>
+					<?php if ($artigo['fase_producao_id'] == '4'): ?>
+						<?= $config['artigo_regras_produzir']; ?>
+					<?php endif; ?>
+				</div>
+			</div>
 			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
 			<div class="position-relative mb-3">
 				<div class="pt-3 pb-3">
@@ -67,47 +77,45 @@
 
 			<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
 				<div class="col-12 mb-3 mt-3">
-						<div class="card border">
-							<div class="">
-								<div class="accordion" id="accordionHistoricoArtigo">
-									<div class="accordion-item border-0">
-										<h2 class="accordion-header">
-											<button class="accordion-button collapsed" type="button"
-												data-bs-toggle="collapse" data-bs-target="#comentarios"
-												aria-expanded="true" aria-controls="comentarios">
-												Comentários do artigo:
-											</button>
-										</h2>
-										<div id="comentarios" class="accordion-collapse collapse"
-											data-bs-parent="#accordionHistoricoArtigo">
-											<div class="accordion-body">
-												<div class="row">
-													<div class="col-12 text-center">
-														<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-															id="btn-comentarios" type="button">Atualizar
-															Comentários</button>
-													</div>
-													<div class="col-12 d-flex justify-content-center">
-
-														<div class="col-12 div-comentarios">
-															<div class="col-12">
-																<div class="mb-3">
-																	<input type="hidden" id="id_comentario"
-																		name="id_comentario" />
-																	<textarea id="comentario" name="comentario"
-																		class="form-control" rows="5"
-																		placeholder="Digite seu comentário aqui"></textarea>
-																</div>
-																<div class="mb-3 text-center">
-																	<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-																		id="enviar-comentario" type="button">Enviar
-																		comentário</button>
-																</div>
-															</div>
-															<div class="card m-3 div-list-comentarios"></div>
-														</div>
-													</diV>
+					<div class="card border">
+						<div class="">
+							<div class="accordion" id="accordionHistoricoArtigo">
+								<div class="accordion-item border-0">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+											data-bs-target="#comentarios" aria-expanded="true" aria-controls="comentarios">
+											Comentários do artigo:
+										</button>
+									</h2>
+									<div id="comentarios" class="accordion-collapse collapse"
+										data-bs-parent="#accordionHistoricoArtigo">
+										<div class="accordion-body">
+											<div class="row">
+												<div class="col-12 text-center">
+													<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+														id="btn-comentarios" type="button">Atualizar
+														Comentários</button>
 												</div>
+												<div class="col-12 d-flex justify-content-center">
+
+													<div class="col-12 div-comentarios">
+														<div class="col-12">
+															<div class="mb-3">
+																<input type="hidden" id="id_comentario"
+																	name="id_comentario" />
+																<textarea id="comentario" name="comentario"
+																	class="form-control" rows="5"
+																	placeholder="Digite seu comentário aqui"></textarea>
+															</div>
+															<div class="mb-3 text-center">
+																<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+																	id="enviar-comentario" type="button">Enviar
+																	comentário</button>
+															</div>
+														</div>
+														<div class="card m-3 div-list-comentarios"></div>
+													</div>
+												</diV>
 											</div>
 										</div>
 									</div>
@@ -115,6 +123,7 @@
 							</div>
 						</div>
 					</div>
+				</div>
 			<?php endif; ?>
 
 			<?php if ($permitido && $artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
@@ -269,8 +278,8 @@
 								</div>
 								<div class="col-4">
 									<div class="d-flex justify-content-center">
-										<a href="<?= site_url('colaboradores/artigos/cadastrar/') . $artigo['id']; ?>" target="_blank"
-											class="btn btn-danger btn-lg btn-block mb-3">Editar artigo</a>
+										<a href="<?= site_url('colaboradores/artigos/cadastrar/') . $artigo['id']; ?>"
+											target="_blank" class="btn btn-danger btn-lg btn-block mb-3">Editar artigo</a>
 									</div>
 								</div>
 							</div>
