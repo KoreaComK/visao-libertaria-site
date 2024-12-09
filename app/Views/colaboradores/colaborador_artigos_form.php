@@ -114,7 +114,7 @@ use CodeIgniter\I18n\Time;
 								<div class="mb-3">
 									<label class="form-label" for="titulo">Título</label>
 									<input type="text" class="form-control" id="titulo" name="titulo"
-										placeholder="Título do artigo"
+										placeholder="Título do artigo" maxlength="100"
 										value="<?= str_replace('"', "'", $artigo['titulo']); ?>">
 									<small>O título deve ser chamativo. Deixe as palavras-chave em maiúsculo</small>
 								</div>
@@ -124,9 +124,9 @@ use CodeIgniter\I18n\Time;
 								<div class="mb-3" for="gancho">
 									<label class="form-label">Gancho </label>
 									<textarea class="form-control" rows="3" placeholder="Texto curto antes da vinheta"
-										id="gancho"
+										id="gancho" maxlength="255"
 										name="gancho"><?= str_replace('"', "'", $artigo['gancho']); ?></textarea>
-									<small>Máximo 255 caracteres.</small>
+									<small>Uma frase chamativa que cative o telespectador. Máximo 255 caracteres.</small>
 								</div>
 							</div>
 
