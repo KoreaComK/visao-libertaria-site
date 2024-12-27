@@ -800,38 +800,57 @@ class Admin extends BaseController
 		$this->verificaPermissao->PermiteAcesso('7');
 		$data = $this->iniciaVariavel;
 
-		//Carrega formulário artigo apenas para cadastro
-		if ($artigoId == null && $this->request->getMethod() == 'get' && $this->request->getGet('pauta') !== null) {
-			$pautaId = $this->request->getGet('pauta');
-			$pautasModel = new \App\Models\PautasModel();
-			$pauta = $pautasModel->find($pautaId);
-			if (!empty($pauta)) {
-				$data['pauta'] = $pauta;
-				$data['artigo']['titulo'] = $pauta['titulo'];
-				$data['artigo']['texto'] = $pauta['texto'];
-			}
-		}
-
 		//Carrega formulário artigo para edição e revisão
-		if ($artigoId !== NULL) {
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigo = $artigosModel->find($artigoId);
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigo = $artigosModel->where('id',$artigoId)->withDeleted()->get()->getResultArray()[0];
+		$data['artigo'] = $artigo;
 
-			$colaborador = $this->session->get('colaboradores')['id'];
-			if (
-				$artigo === NULL || empty($artigo) ||
-				($artigo['fase_producao_id'] == '1' && $colaborador != $artigo['escrito_colaboradores_id']) ||
-				($artigo['fase_producao_id'] == '2' && $colaborador == $artigo['escrito_colaboradores_id']) ||
-				($artigo['fase_producao_id'] != '1' &&
-					$artigo['fase_producao_id'] != '2' &&
-					!in_array('6', $this->session->get('colaboradores')['permissoes']) &&
-					!in_array('7', $this->session->get('colaboradores')['permissoes'])
-				)
-			) {
-				return redirect()->to(base_url() . 'colaboradores/artigos/cadastrar/');
-			}
-			$data['artigo'] = $artigo;
-		}
+		$colaborador = $this->session->get('colaboradores')['id'];
+		
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',1);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['colaboradores'] = $colaboradoresModel->get()->getResultArray();
+		
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',2);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['escritores'] = $colaboradoresModel->get()->getResultArray();
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',3);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['revisores'] = $colaboradoresModel->get()->getResultArray();
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',4);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['narradores'] = $colaboradoresModel->get()->getResultArray();
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',5);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['produtores'] = $colaboradoresModel->get()->getResultArray();
+
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		$colaboradoresModel->where('atribuicoes_id',6);
+		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->orderBy('apelido','ASC');
+		$data['publicadores'] = $colaboradoresModel->get()->getResultArray();
+
+		$faseProducaoModel = new \App\Models\FaseProducaoModel();
+		$data['fase_producao'] = $faseProducaoModel->findAll();
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
@@ -844,14 +863,43 @@ class Admin extends BaseController
 		$data['historico'] = $this->artigosHistoricos->buscaHistorico($artigoId);
 		$data['cadastro'] = ($artigoId === NULL) ? (true) : (false);
 
-		$data['artigo']['fase_producao_id'] = (!isset($artigo) || $artigo['fase_producao_id'] == '1') ? ('1') : ('2');
-		if ($data['artigo']['fase_producao_id'] == '1') {
-			$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
-		} else {
-			$config['artigo_regras_revisar'] = $configuracaoModel->find('artigo_regras_revisar')['config_valor'];
-		}
 		$data['config'] = $config;
-		return view('colaboradores/colaborador_artigos_form', $data);
+		return view('colaboradores/admin_artigos_form', $data);
+	}
+
+	public function artigoInformacoesAdicionais($artigoId = NULL) {
+		if ($artigoId == NULL) {
+			return redirect()->to(base_url() . 'colaboradores/admin/artigos/');
+		}
+		
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('7');
+
+		$post = service('request')->getPost();
+
+		$art = array();
+		$artigosModel = new \App\Models\ArtigosModel();
+		$art['sugerido_colaboradores_id'] = ($post['sugerido_colaboradores_id']=='')?(NULL):($post['sugerido_colaboradores_id']);
+		$art['escrito_colaboradores_id'] = ($post['escrito_colaboradores_id']=='')?(NULL):($post['escrito_colaboradores_id']);
+		$art['revisado_colaboradores_id'] = ($post['revisado_colaboradores_id']=='')?(NULL):($post['revisado_colaboradores_id']);
+		$art['narrado_colaboradores_id'] = ($post['narrado_colaboradores_id']=='')?(NULL):($post['narrado_colaboradores_id']);
+		$art['produzido_colaboradores_id'] = ($post['produzido_colaboradores_id']=='')?(NULL):($post['produzido_colaboradores_id']);
+		$art['publicado_colaboradores_id'] = ($post['publicado_colaboradores_id']=='')?(NULL):($post['publicado_colaboradores_id']);
+		$art['marcado_colaboradores_id'] = ($post['marcado_colaboradores_id']=='')?(NULL):($post['marcado_colaboradores_id']);
+		$art['marcado'] = ($post['marcado_colaboradores_id']=='')?(NULL):($artigosModel->getNow());
+		$art['descartado'] = ($post['descartado']=='true')?($artigosModel->getNow()):(NULL);
+		$art['descartado_colaboradores_id'] = ($post['descartado']=='true')?($this->session->get('colaboradores')['id']):(NULL);
+		$art['fase_producao_id'] = $post['fase_producao_id'];
+		$art['atualizado'] = $artigosModel->getNow();
+		$atualizado = $artigosModel->update($artigoId, $art);
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		if ($atualizado != false) {
+			return $retorno->retorno(true, 'Artigo salvo com sucesso.', true);
+		} else {
+			return $retorno->retorno(false, 'Ocorreu um erro ao salvar o artigo.', true);
+		}
+
 	}
 
 	private function geraPreviewPagamento($post)
