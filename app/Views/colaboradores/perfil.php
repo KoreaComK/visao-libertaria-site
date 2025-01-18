@@ -38,18 +38,18 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 						<hr class="my-4">
+						<p class="fs-4">Páginas públicas</p>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 								<h6 class="mb-0"><a
 										href="<?= site_url('site/escritor/' . urlencode($colaboradores['apelido'])); ?>">Listar
-										artigos do
-										colaborador</a></h6>
+										artigos publicados</a></h6>
 							</li>
 						</ul>
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 								<h6 class="mb-0"><a href="<?= site_url('site/colaborador/' . urlencode($colaboradores['apelido'])); ?>">Listar pautas
-										usadas em vídeos</a></h6>
+										utilizadas</a></h6>
 							</li>
 						</ul>
 					</div>
