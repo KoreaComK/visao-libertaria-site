@@ -699,6 +699,9 @@ class Site extends BaseController
 
 	private function verificaCaptcha($captcha_response)
 	{
+		if(getenv('CI_ENVIRONMENT') == 'development') {
+			return true;
+		}
 		if($captcha_response == NULL || $captcha_response == '') {
 			return false;
 		}

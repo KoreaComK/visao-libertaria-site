@@ -834,11 +834,7 @@
 	$('#enviar_artigo').on('click', function () {
 		form = new FormData(artigo_form);
 		$.ajax({
-			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-																		url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
-			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-																		url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
-			<?php endif; ?>
+			url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -850,16 +846,8 @@
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-
-					<?php if ($cadastro): ?>
-						setTimeout(function () {
-							window.location.href = "<?= site_url('colaboradores/artigos/cadastrar/'); ?>" + retorno.parametros['artigoId'];
-						}, 2000);
-					<?php else: ?>
-						atualizaHistorico();
-						atualizaArtigoHistorico();
-					<?php endif; ?>
-
+					atualizaHistorico();
+					atualizaArtigoHistorico();
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
