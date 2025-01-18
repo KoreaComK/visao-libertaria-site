@@ -121,26 +121,7 @@
 				<h5 class="modal-title" id="exampleModalLabel">Prévia do artigo</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body">
-				<div class="col-lg-12">
-					<h1 class="display-2" id="modal-artigo-titulo"></h1>
-					<p class="lead" id="modal-artigo-gancho"></p>
-					<div class="position-relative mb-3">
-						<div class="bg-image hover-zoom rounded-6">
-							<img class="w-100 img-fluid" height="auto" style="max-height:22rem;" src=""
-								id="modal-artigo-imagem"></img>
-							<div class="mask" style="background-color: rgba(0, 0, 0, 0.6);"></div>
-						</div>
-						<div class="pt-3 pb-3">
-							<div>
-								<p id="modal-artigo-texto"></p>
-								<h4 class="mb-3">Referências:</h4>
-								<p id="modal-artigo-referencias"></p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			<div class="modal-body"></div>
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="btn btn-default" data-bs-dismiss="modal"
 					id="modal-btn-close">Fechar</button>
@@ -185,11 +166,6 @@
 			complete: function () { $('#modal-loading').hide() },
 			success: function (dados) {
 				if (dados.status) {
-					$('#modal-artigo-titulo').html(dados.parametros.titulo);
-					$('#modal-artigo-gancho').html(dados.parametros.gancho);
-					$('#modal-artigo-imagem').attr('src', dados.parametros.imagem);
-					$('#modal-artigo-texto').html(dados.parametros.texto);
-					$('#modal-artigo-referencias').html(dados.parametros.referencias);
 					$('#modal-btn-marcar').attr('data-vl-artigo', artigoId);
 				} else {
 					popMessage('ATENÇÃO', dados.mensagem, TOAST_STATUS.DANGER);

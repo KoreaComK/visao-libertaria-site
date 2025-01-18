@@ -133,10 +133,21 @@
 			color: #4b515c;
 		}
 
+		.artigo-list-image {
+			width: 8rem;
+			height: auto;
+		}
+
 
 		@media screen and (min-width: 600px) {
 			.menu-direita {
 				align-items: start !important;
+			}
+		}
+
+		@media screen and (max-width: 720px) {
+			.artigo-list-image {
+				display: none;
 			}
 		}
 	</style>
