@@ -157,6 +157,18 @@
 			transition: all 0.6s ease-in-out;
 		}
 
+		.button {
+			position: fixed;
+			bottom: 0.5rem;
+			right: 0.5rem;
+			padding: 1rem;
+			left: 0.1rem;
+			right: auto;
+			top: 50%;
+			bottom: auto;
+			z-index: 999;
+		}
+
 
 		@media screen and (min-width: 600px) {
 			.menu-direita {
@@ -355,7 +367,233 @@
 		</nav>
 	</header>
 
+	<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+		
+		<button type="button" class="btn btn-primary rounded-circle button btn-tooltip" data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
+		data-bs-titulo-modal="Cadastre uma pauta" title="Sugerir Pauta"
+			data-toggle="tooltip" data-placement="right"><i class="h4 bi bi-pen lh-1"></i></button>
+
+		<?php if (strpos($_SERVER['PHP_SELF'], '/colaboradores/pautas') === false): ?>
+			<div class="modal fade" id="modalSugerirPauta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h3 class="modal-title fs-5"></h3>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form method="post" id="pautas_form" name="pautas_form" autocomplete="off">
+
+								<div class="mb-3">
+									<label for="username">Link da Notícia</label>
+									<div class="input-group">
+										<i class="input-group-text bi bi-link-45deg"></i>
+										<input type="text" class="form-control" id="link"
+											placeholder="Link da notícia para pauta" name="link"
+											onblur="getInformationLink(this.value)" data-bs-target="#modal-loading"
+											autocomplete="off" required>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<label for="titulo">Título</label>
+									<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N" />
+									<input type="hidden" id="id_pauta" name="id_pauta" value="" />
+									<input type="text" class="form-control" id="titulo" name="titulo"
+										placeholder="Título da pauta" autocomplete="off" required>
+								</div>
+
+								<div class="mb-3">
+									<label for="address">Texto <span
+											class="text-muted"><?php if (!in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>Máx.
+												<?= $config['pauta_tamanho_maximo']; ?> palavras. Mín.
+												<?= $config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
+											class="pull-right label label-default text-muted"
+											id="count_message"></span>)</label>
+									<textarea class="form-control" name="texto" id="texto" autocomplete="off"
+										required></textarea>
+								</div>
+
+								<div class="mb-3">
+									<label for="address">Link da Imagem</label>
+									<div class="input-group">
+										<i class="input-group-text bi bi-link-45deg"></i>
+										<input type="text" class="form-control" autocomplete="off" id="imagem" name="imagem"
+											placeholder="Link da imagem da notícia" required>
+									</div>
+								</div>
+
+								<div class="text-center preview_imagem_div mb-3 collapse">
+									<image class="img-thumbnail img-preview-modal" src="" data-toggle="tooltip"
+										data-placement="top" id="preview_imagem" title="Preview da Imagem da Pauta"
+										style="max-height: 200px;" />
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary btn-reset" data-bs-dismiss="modal">Cancelar</button>
+							<button type="button" class="btn btn-primary btn-enviar">Enviar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<script>
+
+				const exampleModal = document.getElementById('modalSugerirPauta');
+				exampleModal.addEventListener('show.bs.modal', event => {
+					const button = event.relatedTarget;
+
+					const titulo = button.getAttribute('data-bs-titulo-modal');
+
+					$('.modal-title').html(titulo);
+						$('#pautas_form').trigger('reset');
+						$('.img-preview-modal').attr('src', '');
+				});
+
+				exampleModal.addEventListener('hide.bs.modal', event => {
+					$(".btn-reset").trigger("click");
+				});
+
+				$('#imagem').change(function () {
+					$('.preview_imagem_div').show();
+					form = new FormData(pautas_form);
+					$.ajax({
+						url: "<?= site_url('colaboradores/pautas/verificaImagem'); ?>",
+						method: "POST",
+						data: form,
+						processData: false,
+						contentType: false,
+						cache: false,
+						dataType: "json",
+						beforeSend: function () { $('#modal-loading').show(); },
+						complete: function () { $('#modal-loading').hide() },
+						success: function (retorno) {
+							if (retorno.status) {
+								$('#preview_imagem').attr('src', $('#imagem').val());
+							} else {
+								$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
+								$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
+								popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+							}
+						}
+					});
+				});
+
+				$('.btn-reset').on('click', function () {
+					$('#link').attr('disabled', false);
+					$('#pautas_form').trigger('reset');
+					$('.img-preview-modal').attr('src', '');
+					$('.preview_imagem_div').hide();
+					$('#id_pauta').val('');
+				})
+
+				$('#texto').keyup(contapalavras);
+
+				$('.btn-enviar').on('click', function () {
+					form = new FormData(pautas_form);
+					idPauta = "";
+					if ($('#id_pauta').val() != "") {
+						idPauta = '/' + $('#id_pauta').val();
+					}
+					$.ajax({
+						url: "<?= site_url('colaboradores/pautas/cadastrar'); ?>" + idPauta,
+						method: "POST",
+						data: form,
+						processData: false,
+						contentType: false,
+						cache: false,
+						dataType: "json",
+						beforeSend: function () { $('#modal-loading').show(); },
+						complete: function () { $('#modal-loading').hide() },
+						success: function (retorno) {
+							if (retorno.status) {
+								popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+								setTimeout(function () {
+									document.location.href = '<?= site_url('colaboradores/pautas'); ?>';
+								}, 2000);
+								$(".btn-reset").trigger("click");
+							} else {
+								popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+							}
+						}
+					});
+				})
+
+				$(document).ready(function () {
+					contapalavras();
+				})
+
+				function contapalavras() {
+					var texto = $("#texto").val().replaceAll('\n', " ");
+					texto = texto.replace(/[0-9]/gi, "");
+					var matches = texto.split(" ");
+					number = matches.filter(function (word) {
+						return word.length > 0;
+					}).length;
+					var s = "";
+					if (number > 1) {
+						s = 's'
+					} else {
+						s = '';
+					}
+					$('#count_message').html(number + " palavra" + s)
+				}
+
+				function getInformationLink(link) {
+					$('#pautas_form').trigger("reset");
+
+					link = link.trim();
+					link = link.substring(0, 254);
+					$('#link').val(link);
+
+					form = new FormData();
+					form.append('link_pauta', link);
+					if (link == '') { return false; }
+
+					$.ajax({
+						url: "<?= site_url('colaboradores/pautas/verificaPautaCadastrada'); ?>",
+						method: "POST",
+						data: form,
+						processData: false,
+						contentType: false,
+						cache: false,
+						dataType: "json",
+						beforeSend: function () { $('#modal-loading').show(); },
+						complete: function () { $('#modal-loading').hide() },
+						success: function (retorno) {
+							if (retorno.status) {
+								$('#titulo').val(retorno.titulo);
+								$('#imagem').val(retorno.imagem);
+								$('#texto').val(retorno.texto);
+								$('#preview_imagem').attr('src', retorno.imagem);
+								$('.preview_imagem_div').show();
+								contapalavras()
+								if (retorno.mensagem == null) {
+									$('#pauta_antiga').val('N');
+								} else {
+									$('#pauta_antiga').val('S');
+									popMessage('ATENÇÃO!', retorno.mensagem, TOAST_STATUS.INFO);
+								}
+								if (retorno.imagem == "") {
+									$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
+									$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
+								}
+							} else {
+								$('#preview_imagem').attr('src', '<?= base_url('public/assets/imagem-default.png'); ?>');
+								$('#imagem').val('<?= base_url('public/assets/imagem-default.png'); ?>');
+								popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+							}
+						}
+					});
+				}
+			</script>
+		<?php endif; ?>
+	<?php endif; ?>
+
 	<?= $this->renderSection('content'); ?>
+
+
 
 	<footer class="pb-0">
 		<div class="container">
@@ -388,7 +626,8 @@
 						</div>
 						<div class="col-6">
 							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('links'); ?>">Todos os projetos</a>
+								<li class="nav-item"><a class="mb-2" href="<?= site_url('links'); ?>">Todos os
+										projetos</a>
 								</li>
 							</ul>
 						</div>
@@ -489,6 +728,10 @@
 	$(document).ready(function () {
 		bsCustomFileInput.init()
 	})
+
+	$(function () {
+		$('.btn-tooltip').tooltip();
+	});
 
 	var darkMode;
 	if (localStorage.getItem('dark-mode')) {

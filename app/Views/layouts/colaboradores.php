@@ -373,6 +373,10 @@
 		bsCustomFileInput.init()
 	})
 
+	$(function () {
+		$('.btn-tooltip').tooltip();
+	});
+
 	var darkMode;
 	if (localStorage.getItem('dark-mode')) {
 		darkMode = localStorage.getItem('dark-mode');
