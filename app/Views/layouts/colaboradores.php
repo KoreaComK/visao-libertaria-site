@@ -143,7 +143,7 @@
 	<?php
 	if (file_exists('public/assets/estilos.css')):
 		?>
-		<link rel="stylesheet" href="public/assets/estilos.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="<?= site_url('public/assets/estilos.css'); ?>" crossorigin="anonymous">
 		<?php
 	endif;
 	?>
