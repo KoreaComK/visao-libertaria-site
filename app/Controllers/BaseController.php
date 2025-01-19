@@ -87,7 +87,9 @@ abstract class BaseController extends Controller
 				'site_config' => [
 					'texto_rodape' => $site_descricao,
 					'texto_nome' => $site_nome,
-					'paginas' => $paginas_estaticas
+					'paginas' => $paginas_estaticas,
+					'pauta_tamanho_minimo' => $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'],
+					'pauta_tamanho_maximo' => $configuracaoModel->find('pauta_tamanho_maximo')['config_valor']
 				]
 			];
 			$this->session->set($estrutura_session);

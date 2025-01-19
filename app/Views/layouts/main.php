@@ -406,8 +406,8 @@
 								<div class="mb-3">
 									<label for="address">Texto <span
 											class="text-muted"><?php if (!in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>Máx.
-												<?= $config['pauta_tamanho_maximo']; ?> palavras. Mín.
-												<?= $config['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
+												<?= $_SESSION['site_config']['pauta_tamanho_maximo']; ?> palavras. Mín.
+												<?= $_SESSION['site_config']['pauta_tamanho_minimo']; ?> palavras.</span><?php endif; ?> (<span
 											class="pull-right label label-default text-muted"
 											id="count_message"></span>)</label>
 									<textarea class="form-control" name="texto" id="texto" autocomplete="off"
