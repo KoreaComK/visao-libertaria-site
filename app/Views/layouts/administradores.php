@@ -193,7 +193,7 @@
 	<header>
 		<div class="navbar-top d-lg-block navbar-expand-lg small">
 			<div class="container">
-				<div class="d-md-flex justify-content-between align-items-center my-2">
+				<div class="d-flex justify-content-between align-items-center my-2">
 					<!-- Top bar left -->
 					<ul class="nav">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
