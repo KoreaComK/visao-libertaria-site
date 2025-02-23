@@ -406,7 +406,7 @@ use CodeIgniter\I18n\Time;
 										</a>
 									</td>
 									<td><a href="#" class="listar-colaboracoes-fechadas" id="<?= $pagamento['id']; ?>"
-											data-bs-toggle="modal" data-bs-target="#modal-colaboracoes-fechadas"
+											data-bs-toggle="modal" data-bs-target="#modal-colaboracoes-fechadas" data-toggle="tooltip" title="Veja suas contribuições deste pagamento"
 											onclick="javascript:$('#modal-pagamentos').modal('toggle');"><?= number_format($pagamento['pontuacao_total'], 0, ',', '.'); ?></a>
 									</td>
 									<td><?= number_format(($pagamento['quantidade_bitcoin'] * 100000000) / $pagamento['pontuacao_total'], 0, ',', '.'); ?>
