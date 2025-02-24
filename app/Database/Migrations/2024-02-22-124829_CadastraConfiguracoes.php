@@ -171,15 +171,27 @@ final class CadastraConfiguracoes extends Migration
                 'config_valor' => '1',
             ],
             [
-                'config' => 'cron_artigos_desmarcar_data_revisao',
+                'config' => 'cron_artigos_teoria_desmarcar_data_revisao',
                 'config_valor' => '24 hours',
             ],
             [
-                'config' => 'cron_artigos_desmarcar_data_narracao',
+                'config' => 'cron_artigos_teoria_desmarcar_data_narracao',
                 'config_valor' => '6 hours',
             ],
             [
-                'config' => 'cron_artigos_desmarcar_data_producao',
+                'config' => 'cron_artigos_teoria_desmarcar_data_producao',
+                'config_valor' => '12 hours',
+            ],
+            [
+                'config' => 'cron_artigos_noticia_desmarcar_data_revisao',
+                'config_valor' => '24 hours',
+            ],
+            [
+                'config' => 'cron_artigos_noticia_desmarcar_data_narracao',
+                'config_valor' => '6 hours',
+            ],
+            [
+                'config' => 'cron_artigos_noticia_desmarcar_data_producao',
                 'config_valor' => '12 hours',
             ],
             [

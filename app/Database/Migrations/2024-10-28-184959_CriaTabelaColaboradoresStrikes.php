@@ -2,6 +2,7 @@
 
 namespace App\Database\Migrations;
 
+use CodeIgniter\Database\RawSql;
 use CodeIgniter\Database\Migration;
 
 class CriaTabelaColaboradoresStrikes extends Migration
