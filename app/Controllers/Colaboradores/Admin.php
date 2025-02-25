@@ -207,6 +207,50 @@ class Admin extends BaseController
 		return view('colaboradores/administracao_configuracoes', $data);
 	}
 
+	public function contatos()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$contatosModel = new \App\Models\ContatosModel();
+		$contatosAssuntosModel = new  \App\Models\ContatosAssuntosModel();
+
+		$contatos = $contatosModel->findAll();
+		$data = array();
+		$data['dados'] = $contatos;
+		$data['assuntos'] = $contatosAssuntosModel->findAll();
+		$data['titulo'] = "Contatos feitos via formulário do site";
+		return view('colaboradores/administracao_contatos_list', $data);
+	}
+
+	public function contatosList()
+	{
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$config = array();
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$this->verificaPermissao->PermiteAcesso('9');
+		$contatosModel = new \App\Models\ContatosModel();
+		if ($this->request->getMethod() == 'get') {
+			$get = service('request')->getGet();
+			$contatosModel->join('contatos_assuntos','contatos.contatos_assuntos_id = contatos_assuntos.id');
+			if(!empty($get['email'])) {
+				$contatosModel->like("email",$get['email']);
+			}
+			if(!empty($get['assuntos'])) {
+				$contatosModel->where("contatos_assuntos_id",$get['assuntos']);
+			}
+			if(!empty($get['status'])) {
+				$contatosModel->where(($get['status']=='NR')?('resposta IS NULL'):('resposta IS NOT NULL'));
+			}
+			
+			$data['contatosList'] = [
+				'contatos' => $contatosModel->paginate($config['site_quantidade_listagem'], 'contatos'),
+				'pager' => $contatosModel->pager
+			];
+		}
+		return view('template/templateContatosList', $data);
+	}
+
 	public function layout()
 	{
 		$this->verificaPermissao->PermiteAcesso('7');

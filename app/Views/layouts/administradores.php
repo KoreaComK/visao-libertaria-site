@@ -293,10 +293,16 @@
 								</li>
 							<?php endif; ?>
 							<?php if (in_array('8', $_SESSION['colaboradores']['permissoes'])): ?>
-								<li class="nav-item">
-									<a class="nav-link" href="<?= site_url('colaboradores/admin/permissoes'); ?>"><i
-											class="fas fa-user-group"></i>
-										Colaboradores</a>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" id="menuAdministracaoConfiguracao"><i
+										class="fas fa-user-group"></i> Colaboradores</a>
+									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuAdministracaoConfiguracao">
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/admin/permissoes'); ?>">Colaboradores cadastrados</a> </li>
+										<li> <a class="dropdown-item"
+												href="<?= site_url('colaboradores/admin/contatos'); ?>">Contatos</a>
+										</li>
+									</ul>
 								</li>
 							<?php endif; ?>
 						<?php endif; ?>
