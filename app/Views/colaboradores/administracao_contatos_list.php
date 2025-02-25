@@ -62,7 +62,7 @@ use CodeIgniter\I18n\Time;
 						</div>
 					</form>
 				</div>
-				<div class="permissoes-list"></div>
+				<div class="contatos-list"></div>
 				<!-- Search and select END -->
 			</div>
 		</div>
@@ -81,7 +81,7 @@ use CodeIgniter\I18n\Time;
 			beforeSend: function () { $('#modal-loading').show(); },
 			complete: function () { $('#modal-loading').hide() },
 			success: function (data) {
-				$('.permissoes-list').html(data);
+				$('.contatos-list').html(data);
 			}
 		});
 	});
