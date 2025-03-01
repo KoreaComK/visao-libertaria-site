@@ -77,29 +77,27 @@
 			});
 		});
 
-		$(document).ready(function () {
-			$("#modal-btn-si").on("click", function () {
-				$("#mi-modal").modal('hide');
-				$.ajax({
-					url: "<?php echo base_url('colaboradores/admin/contatosExcluir/'); ?>" + contatosId,
-					type: 'get',
-					dataType: 'json',
-					data: {
-					},
-					beforeSend: function () { $('#modal-loading').show(); },
-					complete: function () { $('#modal-loading').hide() },
-					success: function (retorno) {
-						if (retorno.status) {
-							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-							$(".btn-submeter").trigger("click");
-						} else {
-							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-						}
-						artigoId = null;
+		$("#modal-btn-si").on("click", function () {
+			$("#mi-modal").modal('toggle');
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/admin/contatosExcluir/'); ?>" + contatosId,
+				type: 'get',
+				dataType: 'json',
+				data: {
+				},
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide() },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						$(".btn-submeter").trigger("click");
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				});
-				return false;
+					artigoId = null;
+				}
 			});
+			return false;
 		});
 
 		$(".btn-excluir").on("click", function (e) {
