@@ -62,4 +62,10 @@ class EnviaEmail
 		$mensagem = "ATENÇÃO!!!!!. \r\nVocê contribuiu com algum artigo no Visão Libertária e não cadastrou sua carteira. Cadastre-a ou não receberá os satoshis da sua contribuição.";
 		return $mensagem;
 	}
+
+	public function getMensagemRepostaContato($pergunta, $resposta)
+	{
+		$mensagem = "Contato: \n\n".$pergunta.'\n\n Resposta:\n\n'.$resposta;
+		return $mensagem;
+	}
 }

@@ -55,7 +55,7 @@ use CodeIgniter\I18n\Time;
 
 							<div class="col-md-2">
 								<div class="control-group">
-									<button class="btn btn-primary btn-sm btn-block btn-submeter"
+									<button class="btn btn-primary btn-sm btn-submeter"
 										type="button">Pesquisar</button>
 								</div>
 							</div>

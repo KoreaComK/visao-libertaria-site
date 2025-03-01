@@ -221,6 +221,49 @@ class Admin extends BaseController
 		return view('colaboradores/administracao_contatos_list', $data);
 	}
 
+	public function contato($id)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$contatosModel = new \App\Models\ContatosModel();
+		$contatosAssuntosModel = new  \App\Models\ContatosAssuntosModel();
+
+		$contatosModel->select("contatos.*, contatos_assuntos.assunto, colaboradores.apelido");
+		$contatosModel->join('colaboradores','colaboradores.email = contatos.email','left');
+		$contatosModel->join('contatos_assuntos','contatos.contatos_assuntos_id = contatos_assuntos.id');
+		$contatosModel->where('contatos.id',$id);
+		$contato = $contatosModel->get()->getResultArray();
+		if(empty($contato)) {
+			return redirect()->to(base_url() . 'colaboradores/admin/contatos');
+		}
+		$data = array();
+		$data['dados'] = $contato[0];
+		$data['titulo'] = 'Contato feito pelo formulário do site';
+		return view('colaboradores/administracao_contatos_form', $data);
+	}
+
+	public function contatoResposta($id)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$contatosModel = new \App\Models\ContatosModel();
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$contato = $contatosModel->find($id);
+		if($contato == NULL) {
+			return redirect()->to(base_url() . 'colaboradores/admin/contatos');
+		}
+		if ($this->request->getMethod() == 'post') {
+			$post = service('request')->getPost();
+		}
+		if ($this->request->getMethod() == 'post') {
+			$contatosModel->update($contato['id'], array('resposta' => $post['resposta']));
+			$config = array();
+			$contato_email = $contato['email'];
+			$enviaEmail = new \App\Libraries\EnviaEmail();
+			$enviaEmail->enviaEmail($contato_email, 'Re: CONTATO ANCAPSU - VISÃO LIBERTÁRIA', $enviaEmail->getMensagemContato($contato['descricao'],$post['resposta']));
+			return $retorno->retorno(false, 'Contato respondido com sucesso.', true);
+		}
+		return $retorno->retorno(false, 'Erro ao cadastrar a resposta.', true);
+	}
+
 	public function contatosList()
 	{
 
@@ -232,6 +275,8 @@ class Admin extends BaseController
 		$contatosModel = new \App\Models\ContatosModel();
 		if ($this->request->getMethod() == 'get') {
 			$get = service('request')->getGet();
+			$contatosModel->select("contatos.*, contatos_assuntos.assunto, colaboradores.apelido");
+			$contatosModel->join('colaboradores','colaboradores.email = contatos.email','left');
 			$contatosModel->join('contatos_assuntos','contatos.contatos_assuntos_id = contatos_assuntos.id');
 			if(!empty($get['email'])) {
 				$contatosModel->like("email",$get['email']);
@@ -249,6 +294,30 @@ class Admin extends BaseController
 			];
 		}
 		return view('template/templateContatosList', $data);
+	}
+
+	public function contatosExcluir($idContato)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$contatosModel = new \App\Models\ContatosModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$contato = $contatosModel->find($idContato);
+		if (empty($contato) || $contato == null) {
+			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+		}
+		$retornoExclusao = $contatosModel->delete($contato['id']);
+
+		if ($retornoExclusao === true) {
+			return $retorno->retorno(true, 'Contato excluído com sucesso.', true);
+		} else {
+			return $retorno->retorno(false, 'Houve um erro ao excluir a contato.', true);
+		}
 	}
 
 	public function layout()
