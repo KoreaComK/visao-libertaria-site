@@ -49,7 +49,7 @@ class ValidaFormularios extends BaseController
 				'label' => 'E-mail',
 				'rules' => 'required|valid_email'
 			],
-			'assunto' => [
+			'select-assunto' => [
 				'label' => 'Assunto',
 				'rules' => 'required'
 			],

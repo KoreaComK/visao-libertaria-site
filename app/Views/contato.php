@@ -27,8 +27,13 @@
 							placeholder="Seu e-mail" required autofocus />
 					</div>
 					<div class="form-label-group mb-3">
-						<input type="text" id="assunto" name="assunto" class="form-control"
-							placeholder="Assunto do contato" required>
+						<select class="form-control form-select select-assunto" id="select-assunto" name="select-assunto">
+							<option value="" data-description="" selected>Selecione um assunto</option>
+							<?php foreach($assuntos as $assunto): ?>
+								<option value="<?= $assunto['id']; ?>" data-description="<?= $assunto['descricao']; ?>"><?= $assunto['assunto']; ?></option>
+							<?php endforeach; ?>
+						</select>
+						<small class="descricao"></small>
 					</div>
 					<div class="mb-3">
 						<textarea id="mensagem" name="mensagem" class="form-control" rows="5"
@@ -67,6 +72,12 @@
 				}
 			}
 		});
+	});
+
+	$('#select-assunto').on('change', function (e) {
+		const selectedOption = $(this).find('option:selected');
+		const description = selectedOption[0].dataset.description;
+		$('.descricao').html(description);
 	});
 </script>
 

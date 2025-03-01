@@ -514,14 +514,25 @@ class Site extends BaseController
 				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
 					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
-					$configuracaoModel = new \App\Models\ConfiguracaoModel();
-					$config = array();
-					$config['contato_email'] = $configuracaoModel->find('contato_email')['config_valor'];
-					$config['contato_email_copia'] = $configuracaoModel->find('contato_email_copia')['config_valor'];
-					$config['contato_email_copia'] = ($config['contato_email_copia']=='')?(false):($config['contato_email_copia']);
-					$enviaEmail = new \App\Libraries\EnviaEmail();
-					$enviaEmail->enviaEmail($config['contato_email'], 'CONTATO - '.$post['assunto'], $enviaEmail->getMensagemContato($post['mensagem'],$post['email']), $config['contato_email_copia']);
-					return $retorno->retorno(true, 'Contato enviado com sucesso. Iremos responder assim que possível.', true);
+					//$configuracaoModel = new \App\Models\ConfiguracaoModel();
+					//$config = array();
+					// $config['contato_email'] = $configuracaoModel->find('contato_email')['config_valor'];
+					// $config['contato_email_copia'] = $configuracaoModel->find('contato_email_copia')['config_valor'];
+					// $config['contato_email_copia'] = ($config['contato_email_copia']=='')?(false):($config['contato_email_copia']);
+					// $enviaEmail = new \App\Libraries\EnviaEmail();
+					// $enviaEmail->enviaEmail($config['contato_email'], 'CONTATO - '.$post['assunto'], $enviaEmail->getMensagemContato($post['mensagem'],$post['email']), $config['contato_email_copia']);
+					$contatosModel = new \App\Models\ContatosModel();
+					$inserir = array();
+					$inserir['id'] = $contatosModel->getNovaUUID();
+					$inserir['email'] = $post['email'];
+					$inserir['contatos_assuntos_id'] = $post['select-assunto'];
+					$inserir['descricao'] = $post['mensagem'];
+					$retornoInsert = $contatosModel->insert($inserir);
+					if($retornoInsert !== false) {
+						return $retorno->retorno(true, 'Contato enviado com sucesso. Iremos responder assim que possível.', true);
+					} else {
+						return $retorno->retorno(false, 'Erro ao enviar contato, tente novamente.', true);
+					}
 				}
 			} else {
 				$erros = $valida->getErrors();
@@ -535,6 +546,8 @@ class Site extends BaseController
 		if(($this->session->has('colaboradores'))) {
 			$data['email'] = $this->session->get('colaboradores')['email'];
 		}
+		$contatosAssuntosModel = new \App\Models\ContatosAssuntosModel();
+		$data['assuntos'] = $contatosAssuntosModel->findAll();
 		return view('contato', $data);
 	}
 

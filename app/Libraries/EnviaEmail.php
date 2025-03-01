@@ -65,7 +65,7 @@ class EnviaEmail
 
 	public function getMensagemRepostaContato($pergunta, $resposta)
 	{
-		$mensagem = "Contato: \n\n".$pergunta."\n\n Resposta:\n\n".$resposta;
+		$mensagem = "ATENÇÃO! NÃO RESPONDA A ESTE E-MAIL, POIS SERÁ DESCARTADO. \n\nContato: \n\n".$pergunta."\n\nResposta:\n\n".$resposta;
 		return $mensagem;
 	}
 }
