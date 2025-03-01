@@ -65,7 +65,7 @@ class EnviaEmail
 
 	public function getMensagemRepostaContato($pergunta, $resposta)
 	{
-		$mensagem = "Contato: \n\n".$pergunta.'\n\n Resposta:\n\n'.$resposta;
+		$mensagem = "Contato: \n\n".$pergunta."\n\n Resposta:\n\n".$resposta;
 		return $mensagem;
 	}
 }
