@@ -67,6 +67,9 @@
 			success: function (retorno) {
 				if (retorno.status == true) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					setTimeout(function () {
+						document.location.href = '<?= site_url('site'); ?>';
+					}, 3000);
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
