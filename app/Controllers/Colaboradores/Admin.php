@@ -309,7 +309,7 @@ class Admin extends BaseController
 
 		$contato = $contatosModel->find($idContato);
 		if (empty($contato) || $contato == null) {
-			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+			return $retorno->retorno(false, 'Contato não encontrado.', true);
 		}
 		$retornoExclusao = $contatosModel->delete($contato['id']);
 
@@ -737,7 +737,7 @@ class Admin extends BaseController
 
 		$paginasEstaticas = $paginasEstaticasModel->find($idEstaticas);
 		if (empty($paginasEstaticas) || $paginasEstaticas == null) {
-			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+			return $retorno->retorno(false, 'Página não encontrado.', true);
 		}
 
 		$retornoExclusao = $paginasEstaticasModel->delete($paginasEstaticas['id'], true);
@@ -854,7 +854,7 @@ class Admin extends BaseController
 
 		$paginasEstaticas = $avisosModel->find($avisosId);
 		if (empty($paginasEstaticas) || $paginasEstaticas == null) {
-			return $retorno->retorno(false, 'Artigo não encontrado.', true);
+			return $retorno->retorno(false, 'Aviso não encontrado.', true);
 		}
 
 		$retornoExclusao = $avisosModel->delete($paginasEstaticas['id'], true);
