@@ -258,8 +258,8 @@ class Admin extends BaseController
 			$config = array();
 			$contato_email = $contato['email'];
 			$enviaEmail = new \App\Libraries\EnviaEmail();
-			$enviaEmail->enviaEmail($contato_email, 'Re: CONTATO ANCAPSU - VISÃO LIBERTÁRIA', $enviaEmail->getMensagemContato($contato['descricao'],$post['resposta']));
-			return $retorno->retorno(false, 'Contato respondido com sucesso.', true);
+			$enviaEmail->enviaEmail($contato_email, 'Re: CONTATO ANCAPSU - VISÃO LIBERTÁRIA', $enviaEmail->getMensagemRepostaContato($contato['descricao'],$post['resposta']));
+			return $retorno->retorno(true, 'Contato respondido com sucesso.', true);
 		}
 		return $retorno->retorno(false, 'Erro ao cadastrar a resposta.', true);
 	}
