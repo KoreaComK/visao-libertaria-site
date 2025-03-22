@@ -41,7 +41,7 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
-	public function validaFormularioContato($post)
+	public function validaFormularioContato($post, $bloqueio = false)
 	{
 		$validation = \Config\Services::validation();
 		$validation->setRules([
@@ -58,6 +58,30 @@ class ValidaFormularios extends BaseController
 				'rules' => 'required'
 			],
 		]);
+		if($bloqueio !== false) {
+			$validation->setRules([
+				'email' => [
+					'label' => 'E-mail',
+					'rules' => 'required|valid_email'
+				],
+				'select-assunto' => [
+					'label' => 'Assunto',
+					'rules' => 'required'
+				],
+				'mensagem' => [
+					'label' => 'Mensagem',
+					'rules' => 'required'
+				],
+				'redesocial' => [
+					'label' => 'Rede social',
+					'rules' => 'required'
+				],
+				'perfil' => [
+					'label' => 'Perfil',
+					'rules' => 'required'
+				],
+			]);
+		}
 		$validation->run($post);
 		return $validation;
 	}

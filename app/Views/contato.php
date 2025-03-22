@@ -35,6 +35,14 @@
 						</select>
 						<small class="descricao"></small>
 					</div>
+					<div class="form-label-group mb-3">
+						<input type="text" id="redesocial" name="redesocial" class="form-control" style="display: none;"
+							placeholder="Rede social que sofreu bloqueio" />
+					</div>
+					<div class="form-label-group mb-3">
+						<input type="text" id="perfil" name="perfil" class="form-control" style="display: none;"
+							placeholder="Nome do perfil que foi bloqueado" />
+					</div>
 					<div class="mb-3">
 						<textarea id="mensagem" name="mensagem" class="form-control" rows="5"
 							placeholder="Digite sua mensagem aqui."></textarea>
@@ -81,6 +89,14 @@
 		const selectedOption = $(this).find('option:selected');
 		const description = selectedOption[0].dataset.description;
 		$('.descricao').html(description);
+
+		if($(this).val() == '2') {
+			$('#perfil').show();
+			$('#redesocial').show();
+		} else {
+			$('#perfil').hide();
+			$('#redesocial').hide();
+		}
 	});
 </script>
 

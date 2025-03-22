@@ -509,24 +509,23 @@ class Site extends BaseController
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$post = $this->request->getPost();
 
-			$valida = $validaFormularios->validaFormularioContato($post);
+			$bloqueio = false;
+			if($post['select-assunto'] == '2') {  $bloqueio = true; }
+			$valida = $validaFormularios->validaFormularioContato($post, $bloqueio);
 			if (empty($valida->getErrors())) {
 				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
 					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
-					//$configuracaoModel = new \App\Models\ConfiguracaoModel();
-					//$config = array();
-					// $config['contato_email'] = $configuracaoModel->find('contato_email')['config_valor'];
-					// $config['contato_email_copia'] = $configuracaoModel->find('contato_email_copia')['config_valor'];
-					// $config['contato_email_copia'] = ($config['contato_email_copia']=='')?(false):($config['contato_email_copia']);
-					// $enviaEmail = new \App\Libraries\EnviaEmail();
-					// $enviaEmail->enviaEmail($config['contato_email'], 'CONTATO - '.$post['assunto'], $enviaEmail->getMensagemContato($post['mensagem'],$post['email']), $config['contato_email_copia']);
 					$contatosModel = new \App\Models\ContatosModel();
 					$inserir = array();
 					$inserir['id'] = $contatosModel->getNovaUUID();
 					$inserir['email'] = $post['email'];
 					$inserir['contatos_assuntos_id'] = $post['select-assunto'];
-					$inserir['descricao'] = $post['mensagem'];
+					if($post['select-assunto'] == '2') {  
+						$inserir['descricao'] = "Rede social que sofreu banimento: ".$post['redesocial']."<br/>Perfil banido: ".$post['perfil']."<br/>".$post['mensagem'];
+					} else {
+						$inserir['descricao'] = $post['mensagem'];
+					}
 					$retornoInsert = $contatosModel->insert($inserir);
 					if($retornoInsert !== false) {
 						return $retorno->retorno(true, 'Contato enviado com sucesso. Iremos responder assim que possível.', true);
