@@ -465,7 +465,7 @@ class Site extends BaseController
 				$retorno = $this->logar_cookie();
 				$get = service('request')->getGet();
 				$url = 'colaboradores/perfil';
-				if(!empty($get) && isset($get['url'])) {
+				if(!empty($get) && isset($get['url']) && str_contains($get['url'],site_url())) {
 					$url = $get['url'];
 				}
 				if($retorno) {
@@ -475,7 +475,7 @@ class Site extends BaseController
 
 			$get = service('request')->getGet();
 			$url = false;
-			if(!empty($get) && isset($get['url'])) {
+			if(!empty($get) && isset($get['url']) && str_contains($get['url'],site_url())) {
 				$url = $get['url'];
 			}
 			$data['url'] = $url;
