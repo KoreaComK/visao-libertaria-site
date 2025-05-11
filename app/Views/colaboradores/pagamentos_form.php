@@ -74,7 +74,7 @@
 					<div class="control-group">
 						<label for="multiplicador_escrito_noticia">Escrito</label>
 						<input type="number" class="form-control" id="multiplicador_escrito_noticia" placeholder="Mult."
-							required name="multiplicador_escrito_noticia" value="200"
+							required name="multiplicador_escrito_noticia" value="100"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_escrito_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
@@ -83,7 +83,7 @@
 					<div class="control-group">
 						<label for="multiplicador_revisado_noticia">Revisado</label>
 						<input type="number" class="form-control" id="multiplicador_revisado_noticia"
-							placeholder="Mult." required name="multiplicador_revisado_noticia" value="200"
+							placeholder="Mult." required name="multiplicador_revisado_noticia" value="100"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_revisado_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
@@ -92,7 +92,7 @@
 					<div class="control-group">
 						<label for="multiplicador_narrado_noticia">Narrado</label>
 						<input type="number" class="form-control" id="multiplicador_narrado_noticia" placeholder="Mult."
-							required name="multiplicador_narrado_noticia" value="200"
+							required name="multiplicador_narrado_noticia" value="100"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_narrado_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
@@ -101,7 +101,7 @@
 					<div class="control-group">
 						<label for="multiplicador_produzido_noticia">Produzido</label>
 						<input type="number" class="form-control" id="multiplicador_produzido_noticia"
-							placeholder="Mult." required name="multiplicador_produzido_noticia" value="300"
+							placeholder="Mult." required name="multiplicador_produzido_noticia" value="150"
 							value="<?= (isset($pagamentos)) ? ($pagamentos['multiplicador_produzido_noticia']) : (''); ?>"
 							<?= (isset($pagamentos)) ? ('disabled') : (''); ?>>
 					</div>
