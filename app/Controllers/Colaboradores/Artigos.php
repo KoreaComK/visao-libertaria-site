@@ -72,19 +72,24 @@ class Artigos extends BaseController
 		$this->verificaPermissao->PermiteAcesso('2');
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->whereNotIn('fase_producao_id', array('7'))->get()->getResultArray();
-		$artigos = $artigosModel->where('descartado', NULL)->get()->getResultArray();
+		$artigos = $artigosModel->select("artigos.*, A.shadowban AS sbe, B.shadowban AS sbr, C.shadowban AS sbn, D.shadowban AS sbp")
+		->join('colaboradores A','A.id = artigos.escrito_colaboradores_id', 'left')
+		->join('colaboradores B','B.id = artigos.revisado_colaboradores_id', 'left')
+		->join('colaboradores C','C.id = artigos.narrado_colaboradores_id', 'left')
+		->join('colaboradores D','D.id = artigos.produzido_colaboradores_id', 'left')
+		->whereNotIn('fase_producao_id', array('7'))
+		->where('descartado', NULL)->get()->getResultArray();
 		foreach ($artigos as $artigo) {
-			if ($artigo['fase_producao_id'] == '1') {
+			if ($artigo['fase_producao_id'] == '1' && $artigo['sbe'] != 'S') {
 				$data['resumo']['escrevendo']++;
 			}
-			if ($artigo['fase_producao_id'] == '2') {
+			if ($artigo['fase_producao_id'] == '2' && $artigo['sbr'] != 'S') {
 				$data['resumo']['revisando']++;
 			}
-			if ($artigo['fase_producao_id'] == '3') {
+			if ($artigo['fase_producao_id'] == '3' && $artigo['sbn'] != 'S') {
 				$data['resumo']['narrando']++;
 			}
-			if ($artigo['fase_producao_id'] == '4') {
+			if ($artigo['fase_producao_id'] == '4' && $artigo['sbp'] != 'S') {
 				$data['resumo']['produzindo']++;
 			}
 			if ($artigo['fase_producao_id'] == '5') {
