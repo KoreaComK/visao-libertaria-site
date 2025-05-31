@@ -26,23 +26,20 @@ use CodeIgniter\I18n\Time;
 
 <div class="container w-auto">
 	<section class="pt-4 pb-4">
-		<div class="container">
-			<div class="row">
-				<div class="col-12 p-0">
-					<div class="bg-dark p-4 text-center rounded-4">
-						<h1 class="text-white"> Pautas e Notícias importantes dos últimos dias </h1>
-						<nav class="d-flex justify-content-center" aria-label="breadcrumb">
-							<ol class="breadcrumb breadcrumb-dark m-0">
-								<li class="breadcrumb-item "><a href="<?= site_url(); ?>" class="text-white"><i
-											class="bi bi-house me-1"></i>
-										Home</a></li>
-								<li class="breadcrumb-item active text-secondary">
-									Pautas e Notícias importantes dos últimos dias
-								</li>
-							</ol>
-						</nav>
-					</div>
-				</div>
+		<div class="row">
+			<div class="col-12">
+				<nav class="custom-breadcrumb mb-4" aria-label="breadcrumb">
+					<ol class="breadcrumb d-flex align-items-center">
+						<li class="breadcrumb-item">
+							<a href="<?= site_url(); ?>">
+								<i class="bi bi-house-fill pe-1"></i>Home
+							</a>
+						</li>
+						<li class="breadcrumb-item active" aria-current="page">
+							<i class="bi bi-newspaper pe-1"></i>Pautas e Notícias
+						</li>
+					</ol>
+				</nav>
 			</div>
 		</div>
 	</section>
@@ -54,7 +51,7 @@ use CodeIgniter\I18n\Time;
 			</button>
 		</div>
 	<?php endif; ?>
-	<?= view('/template/templatePautasListColaboradores', array('pautasList'=>$pautasList)); ?>
+	<?= view('/template/templatePautasListColaboradores', array('pautasList' => $pautasList)); ?>
 	<div class="page-load-status">
 		<div class="infinite-scroll-request d-flex justify-content-center mt-5 mb-5">
 			<div class="spinner-border" role="status">
@@ -84,8 +81,8 @@ use CodeIgniter\I18n\Time;
 							<div class="input-group">
 								<i class="input-group-text bi bi-link-45deg"></i>
 								<input type="text" class="form-control" id="link" placeholder="Link da notícia para pauta"
-									name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading" autocomplete="off"
-									required>
+									name="link" onblur="getInformationLink(this.value)" data-bs-target="#modal-loading"
+									autocomplete="off" required>
 							</div>
 						</div>
 
@@ -93,8 +90,8 @@ use CodeIgniter\I18n\Time;
 							<label for="titulo">Título</label>
 							<input type="hidden" id="pauta_antiga" name="pauta_antiga" value="N" />
 							<input type="hidden" id="id_pauta" name="id_pauta" value="" />
-							<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta" autocomplete="off"
-								required>
+							<input type="text" class="form-control" id="titulo" name="titulo" placeholder="Título da pauta"
+								autocomplete="off" required>
 						</div>
 
 						<div class="mb-3">

@@ -35,7 +35,6 @@ use CodeIgniter\I18n\Time;
 									<select class="form-select form-select-sm" name="assuntos" id="assuntos">
 										<option value="" selected>Escolha o assunto</option>
 										<?php foreach ($assuntos as $assunto): ?>
-											<label class="assuntos btn btn-secondary btn-sm vl-bg-c">
 												<option value="<?= $assunto['id']; ?>">
 													<?= $assunto['assunto']; ?>
 												</option>

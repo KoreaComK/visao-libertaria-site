@@ -15,10 +15,6 @@ use CodeIgniter\I18n\Time;
 <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
 
 <style>
-	.list-artigos .bg-image {
-		height: 10rem;
-	}
-
 	.page-load-status {
 		display: none;
 	}
@@ -37,42 +33,30 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div> -->
 
-<!-- <div class="container-fluid mt-5">
-	<div class="container">
-		<nav class="breadcrumb bg-transparent m-0 p-y2">
-			<a class="breadcrumb-item" href="<?= base_url() . 'site'; ?>">Principal</a>
-			<?php if ($nomeCategoriaAtual == null): ?>
-				<span class="breadcrumb-item active">Categorias</span>
-			<?php else: ?>
-				<a class="breadcrumb-item" href="<?= base_url() . 'site/artigos' ?>">Categorias</a>
-				<span class="breadcrumb-item active"><?= $nomeCategoriaAtual; ?></span>
-			<?php endif; ?>
-		</nav>
-	</div>
-</div> -->
+
 <div class="container-fluid py-3">
 	<div class="container">
 
 		<section class="pt-4 pb-4">
-			<div class="container">
-				<div class="row">
-					<div class="col-12 p-0">
-						<div class="bg-dark p-4 text-center rounded-4">
-							<h1 class="text-white">
-								<?= ($nomeCategoriaAtual !== null) ? ($nomeCategoriaAtual) : ('Artigos Publicados'); ?>
-							</h1>
-							<nav class="d-flex justify-content-center" aria-label="breadcrumb">
-								<ol class="breadcrumb breadcrumb-dark m-0">
-									<li class="breadcrumb-item "><a href="<?= site_url(); ?>" class="text-white"><i
-												class="bi bi-house me-1"></i>
-											Home</a></li>
-									<li class="breadcrumb-item active text-secondary">
-										<?= ($nomeCategoriaAtual !== null) ? ($nomeCategoriaAtual) : ('Artigos Publicados'); ?>
-									</li>
-								</ol>
-							</nav>
-						</div>
-					</div>
+			<div class="row">
+				<div class="col-12">
+					<nav class="custom-breadcrumb" aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item">
+								<a href="<?= site_url(); ?>">
+									<i class="bi bi-house-fill pe-1"></i>Home
+								</a>
+							</li>
+							<li class="breadcrumb-item">
+								<a href="javascript:void(0);">
+									<i class="bi bi-journal-text pe-1"></i>Artigos
+								</a>
+							</li>
+							<li class="breadcrumb-item active" aria-current="page">
+								<i class="bi bi-grid-fill pe-1"></i>Todos os Artigos Publicados
+							</li>
+						</ol>
+					</nav>
 				</div>
 			</div>
 		</section>
