@@ -84,15 +84,27 @@ use CodeIgniter\I18n\Time;
 	<div class="container">
 		<div class="row">
 			<?php if ($avisos !== NULL && !empty($avisos)): ?>
-				<section class="col-lg-12">
-					<div class="container vl-bg-c-opaco p-2 rounded-3 position-relative mt-1 mb-3">
-						<span class="badge vl-bg-c p-2 px-3 position-absolute top-50 start-0 translate-middle badge"
-							style="z-index:1; margin-left: 2.8rem;">Avisos:</span>
-						<div class="avisos-carousel mb-0 mt-0 data-flickity" style="margin-left: 3.8rem;">
+				<section class="col-12">
+					<div class="vl-bg-c-opaco p-2 rounded-3 position-relative mt-1 mb-3">
+						<!-- Badge de Avisos -->
+						<div class="badge vl-bg-c p-2 px-3 position-absolute top-50 start-0 translate-middle"
+							style="z-index: 1; margin-left: 2.8rem;">
+							<i class="bi bi-bell-fill me-1"></i>Avisos
+						</div>
+						<!-- Carrossel de Avisos -->
+						<div class="avisos-carousel mb-0 mt-0" style="margin-left: 3.8rem;">
 							<?php foreach ($avisos as $aviso): ?>
-								<div class="carousel-cell card shadow-0" id="tns1-item0">
-									<div class="card-body pt-1 pb-1">
-										<a <?= ($aviso['link'] != '' && $aviso['link'] != NULL) ? ('href="' . $aviso['link'] . '"') : ('javascript:void(0);'); ?> class=""><?= $aviso['aviso']; ?></a>
+								<div class="carousel-cell">
+									<div class="card shadow-0 border-0 bg-transparent">
+										<div class="card-body py-1">
+											<?php if (!empty($aviso['link'])): ?>
+												<a href="<?= $aviso['link']; ?>" class="text-decoration-none">
+													<?= $aviso['aviso']; ?>
+												</a>
+											<?php else: ?>
+												<span><?= $aviso['aviso']; ?></span>
+											<?php endif; ?>
+										</div>
 									</div>
 								</div>
 							<?php endforeach; ?>
@@ -102,37 +114,40 @@ use CodeIgniter\I18n\Time;
 			<?php endif; ?>
 			<section class="col-lg-12">
 				<div class="row">
-					<!-- Left big card -->
+					<!-- Card Principal -->
 					<div class="col-lg-6">
-						<div class="card bg-image hover-zoom"
-							style="background-position: center center; background-size: cover; height:30rem;">
-							<img src="<?= $banner[0]['imagem']; ?>" style="height:30rem;" />
-							<!-- Card Image overlay -->
-							<div class="mask align-items-center p-3 p-sm-4"
-								style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
+						<div class="card bg-image hover-zoom" style="background-position: center center; background-size: cover; height:30rem;">
+							<img src="<?= $banner[0]['imagem']; ?>" 
+								 style="height:30rem; object-fit: cover;" 
+								 alt="<?= $banner[0]['titulo']; ?>" />
+								 
+							<div class="mask align-items-center p-3 p-sm-4" style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 								<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
-									<!-- Card title -->
-									<h2 class="h1"><a
-											href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']) ?>"
-											class="btn-link stretched-link text-white">
+									<h2 class="h1">
+										<a href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']); ?>" 
+										   class="btn-link stretched-link text-white">
 											<?= $banner[0]['titulo']; ?>
-										</a></h2>
+										</a>
+									</h2>
 									<p class="text-white"><?= $banner[0]['gancho']; ?></p>
-									<!-- Card info -->
+									
 									<ul class="nav nav-divider align-items-center">
 										<li class="nav-item pointer">
 											<div class="d-flex align-items-center text-white position-relative">
-												<?php if ($banner[0]['avatar'] != NULL && $banner[0]['avatar'] != ""): ?>
+												<?php if (!empty($banner[0]['avatar'])): ?>
 													<div class="avatar avatar-sm">
-														<img class="avatar-img rounded-circle"
-															src="<?= $banner[0]['avatar']; ?>" style="width:45px;"
-															alt="avatar">
+														<img class="avatar-img rounded-circle" 
+															 src="<?= $banner[0]['avatar']; ?>" 
+															 style="width:45px;" 
+															 alt="<?= $banner[0]['apelido']; ?>">
 													</div>
 												<?php endif; ?>
-												<span
-													class="<?= ($banner[0]['avatar'] != NULL && $banner[0]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-													<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[0]['apelido']); ?>"
-														class="stretched-link text-white btn-link"><?= $banner[0]['apelido']; ?></a></span>
+												<span class="<?= !empty($banner[0]['avatar']) ? 'ms-3' : ''; ?>">
+													por <a href="<?= site_url('site/escritor/' . urlencode($banner[0]['apelido'])); ?>" 
+														  class="stretched-link text-white btn-link">
+														<?= $banner[0]['apelido']; ?>
+													</a>
+												</span>
 											</div>
 										</li>
 										<li class="nav-item pointer text-white">
@@ -143,40 +158,43 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 					</div>
-					<!-- Right small cards -->
+
+					<!-- Cards Secundários -->
 					<div class="col-lg-6 side-image">
 						<div class="row">
-							<!-- Card item START -->
+							<!-- Card Secundário Principal -->
 							<div class="col-12">
-								<div class="card bg-image hover-zoom"
-									style="background-position: center center; background-size: cover; height:15rem;">
-									<img src="<?= $banner[1]['imagem']; ?>" style="height:15rem; object-fit: cover;" />
-									<!-- Card Image -->
-									<!-- Card Image overlay -->
-									<div class="mask align-items-center p-3 p-sm-4"
-										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3"
-											style="position: absolute; top: 50%; transform: translateY(-50%);">
-											<!-- Card title -->
-											<h4 class="text-white"><a
-													href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']) ?>"
-													class="btn-link stretched-link text-reset"><?= $banner[1]['titulo']; ?></a>
+								<div class="card bg-image hover-zoom" style="background-position: center center; background-size: cover; height:15rem;">
+									<img src="<?= $banner[1]['imagem']; ?>" 
+										 style="height:15rem; object-fit: cover;" 
+										 alt="<?= $banner[1]['titulo']; ?>" />
+											
+									<div class="mask align-items-center p-3 p-sm-4" style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
+										<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
+											<h4 class="text-white">
+												<a href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']); ?>" 
+												   class="btn-link stretched-link text-reset">
+													<?= $banner[1]['titulo']; ?>
+												</a>
 											</h4>
-											<!-- Card info -->
+												
 											<ul class="nav nav-divider align-items-center">
 												<li class="nav-item pointer">
 													<div class="d-flex align-items-center text-white position-relative">
-														<?php if ($banner[1]['avatar'] != NULL && $banner[1]['avatar'] != ""): ?>
+														<?php if (!empty($banner[1]['avatar'])): ?>
 															<div class="avatar avatar-sm">
-																<img class="avatar-img rounded-circle"
-																	src="<?= $banner[1]['avatar']; ?>" style="width:45px;"
-																	alt="avatar">
+																<img class="avatar-img rounded-circle" 
+																	 src="<?= $banner[1]['avatar']; ?>" 
+																	 style="width:45px;" 
+																	 alt="<?= $banner[1]['apelido']; ?>">
 															</div>
 														<?php endif; ?>
-														<span
-															class="<?= ($banner[1]['avatar'] != NULL && $banner[1]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[1]['apelido']); ?>"
-																class="stretched-link text-white btn-link"><?= $banner[1]['apelido']; ?></a></span>
+														<span class="<?= !empty($banner[1]['avatar']) ? 'ms-3' : ''; ?>">
+															por <a href="<?= site_url('site/escritor/' . urlencode($banner[1]['apelido'])); ?>" 
+																  class="stretched-link text-white btn-link">
+																<?= $banner[1]['apelido']; ?>
+															</a>
+														</span>
 													</div>
 												</li>
 												<li class="nav-item pointer text-white">
@@ -187,88 +205,52 @@ use CodeIgniter\I18n\Time;
 									</div>
 								</div>
 							</div>
-							<!-- Card item END -->
-							<!-- Card item START -->
-							<div class="col-md-6 g-4 pt-2">
-								<div class="card bg-image hover-zoom"
-									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[2]['imagem']; ?>" style="height:15rem; object-fit: cover;" />
-									<!-- Card Image overlay -->
-									<div class="mask align-items-center p-3 p-sm-4"
-										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3"
-											style="position: absolute; top: 50%; transform: translateY(-50%);">
-											<!-- Card category -->
-											<h5 class="text-white"><a
-													href="<?= site_url('site/artigo/' . $banner[2]['url_friendly']) ?>"
-													class="btn-link stretched-link text-reset"><?= $banner[2]['titulo']; ?></a>
-											</h5>
-											<!-- Card info -->
-											<ul class="nav nav-divider align-items-center">
-												<li class="nav-item pointer">
-													<div class="d-flex align-items-center text-white position-relative">
-														<?php if ($banner[2]['avatar'] != NULL && $banner[2]['avatar'] != ""): ?>
-															<div class="avatar avatar-sm">
-																<img class="avatar-img rounded-circle"
-																	src="<?= $banner[2]['avatar']; ?>" style="width:45px;"
-																	alt="avatar">
-															</div>
-														<?php endif; ?>
-														<span
-															class="<?= ($banner[2]['avatar'] != NULL && $banner[2]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[2]['apelido']); ?>"
-																class="stretched-link text-white btn-link"><?= $banner[2]['apelido']; ?></a></span>
-													</div>
-												</li>
-												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[2]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
-												</li>
-											</ul>
+
+							<!-- Cards Secundários Menores -->
+							<?php for($i = 2; $i <= 3; $i++): ?>
+								<div class="col-md-6 g-4 pt-2">
+									<div class="card bg-image hover-zoom" style="background-position: center center; background-size: cover; height:13rem;">
+										<img src="<?= $banner[$i]['imagem']; ?>" 
+											 style="height: inherit; object-fit: cover;" 
+											 alt="<?= $banner[$i]['titulo']; ?>" />
+												
+										<div class="mask align-items-center p-3 p-sm-4" style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
+											<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
+												<h5 class="text-white">
+													<a href="<?= site_url('site/artigo/' . $banner[$i]['url_friendly']); ?>" 
+													   class="btn-link stretched-link text-reset">
+														<?= $banner[$i]['titulo']; ?>
+													</a>
+												</h5>
+													
+												<ul class="nav nav-divider align-items-center">
+													<li class="nav-item pointer">
+														<div class="d-flex align-items-center text-white position-relative">
+															<?php if (!empty($banner[$i]['avatar'])): ?>
+																<div class="avatar avatar-sm">
+																	<img class="avatar-img rounded-circle" 
+																		 src="<?= $banner[$i]['avatar']; ?>" 
+																		 style="width:45px;" 
+																		 alt="<?= $banner[$i]['apelido']; ?>">
+																</div>
+															<?php endif; ?>
+															<span class="<?= !empty($banner[$i]['avatar']) ? 'ms-3' : ''; ?>">
+																por <a href="<?= site_url('site/escritor/' . urlencode($banner[$i]['apelido'])); ?>" 
+																	  class="stretched-link text-white btn-link">
+																	<?= $banner[$i]['apelido']; ?>
+																</a>
+															</span>
+														</div>
+													</li>
+													<li class="nav-item pointer text-white">
+														<?= Time::createFromFormat('Y-m-d H:i:s', $banner[$i]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
+													</li>
+												</ul>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<!-- Card item END -->
-							<!-- Card item START -->
-							<div class="col-md-6 g-4 pt-2">
-								<div class="card bg-image hover-zoom"
-									style="background-position: center center; background-size: cover; height:13rem;">
-									<img src="<?= $banner[3]['imagem']; ?>"
-										style="height: inherit; object-fit: cover;" />
-									<!-- Card Image overlay -->
-									<div class="mask align-items-center p-3 p-sm-4"
-										style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
-										<div class="me-3"
-											style="position: absolute; top: 50%; transform: translateY(-50%);">
-											<h5 class="text-white"><a
-													href="<?= site_url('site/artigo/' . $banner[3]['url_friendly']) ?>"
-													class="btn-link stretched-link text-reset"><?= $banner[3]['titulo']; ?></a>
-											</h5>
-											<!-- Card info -->
-											<ul class="nav nav-divider align-items-center">
-												<li class="nav-item pointer">
-													<div class="d-flex align-items-center text-white position-relative">
-														<?php if ($banner[3]['avatar'] != NULL && $banner[3]['avatar'] != ""): ?>
-															<div class="avatar avatar-sm">
-																<img class="avatar-img rounded-circle"
-																	src="<?= $banner[3]['avatar']; ?>" style="width:45px;"
-																	alt="avatar">
-															</div>
-														<?php endif; ?>
-														<span
-															class="<?= ($banner[3]['avatar'] != NULL && $banner[3]['avatar'] != "") ? ('ms-3') : (''); ?>">por
-															<a href="<?= site_url('site/escritor/'); ?><?= urlencode($banner[3]['apelido']); ?>"
-																class="stretched-link text-white btn-link"><?= $banner[3]['apelido']; ?></a></span>
-													</div>
-												</li>
-												<li class="nav-item pointer text-white">
-													<?= Time::createFromFormat('Y-m-d H:i:s', $banner[3]['publicado'])->toLocalizedString('dd MMM yyyy'); ?>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
+							<?php endfor; ?>
 						</div>
 					</div>
 				</div>
@@ -315,7 +297,7 @@ use CodeIgniter\I18n\Time;
 
 				<div class="m-4">
 					<h2 class="m-0"><i class="bi bi-hourglass-top me-2"></i>Últimos vídeos do Visão Libertária</h2>
-					<p>Os vídeos mais recentes pra você se manter informado.</p>
+					<p>Os vídeos recentes para se manter informado.</p>
 				</div>
 				<div class="main-carousel-videos mb-4 mt-4">
 					<?php for ($max = 0; $max < 6; $max++): ?>
@@ -342,7 +324,6 @@ use CodeIgniter\I18n\Time;
 											class="btn-link text-reset stretched-link fw-bold"><?= $artigos[$max]['titulo']; ?></a>
 									</h4>
 									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
-									<!-- Card info -->
 									<ul class="nav nav-divider align-items-center">
 										<li class="nav-item pointer">
 											<div class="d-flex align-items-center position-relative">
