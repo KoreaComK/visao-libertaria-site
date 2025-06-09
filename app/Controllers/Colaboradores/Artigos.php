@@ -83,16 +83,16 @@ class Artigos extends BaseController
 			if ($artigo['fase_producao_id'] == '1' && $artigo['sbe'] != 'S') {
 				$data['resumo']['escrevendo']++;
 			}
-			if ($artigo['fase_producao_id'] == '2' && $artigo['sbr'] != 'S') {
+			if ($artigo['fase_producao_id'] == '2' && $artigo['sbe'] != 'S') {
 				$data['resumo']['revisando']++;
 			}
-			if ($artigo['fase_producao_id'] == '3' && $artigo['sbn'] != 'S') {
+			if ($artigo['fase_producao_id'] == '3' && $artigo['sbr'] != 'S') {
 				$data['resumo']['narrando']++;
 			}
-			if ($artigo['fase_producao_id'] == '4' && $artigo['sbp'] != 'S') {
+			if ($artigo['fase_producao_id'] == '4' && $artigo['sbn'] != 'S') {
 				$data['resumo']['produzindo']++;
 			}
-			if ($artigo['fase_producao_id'] == '5') {
+			if ($artigo['fase_producao_id'] == '5' && $artigo['sbp'] != 'S') {
 				$data['resumo']['publicando']++;
 			}
 			if ($artigo['fase_producao_id'] == '6') {
