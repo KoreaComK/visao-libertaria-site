@@ -118,15 +118,16 @@ use CodeIgniter\I18n\Time;
 					<div class="col-lg-6">
 						<div class="card bg-image hover-zoom"
 							style="background-position: center center; background-size: cover; height:30rem;">
-							<img src="<?= $banner[0]['imagem']; ?>" style="height:30rem; object-fit: cover;"
+							<img src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[0]['link_video_youtube']).'/maxresdefault.jpg'; ?>" style="height:30rem; object-fit: cover;"
 								alt="<?= $banner[0]['titulo']; ?>" />
 
 							<div class="mask align-items-center p-3 p-sm-4"
 								style="position: absolute; background-color: rgba(0, 0, 0, 0.6);">
 								<div class="me-3" style="position: absolute; top: 50%; transform: translateY(-50%);">
 									<h2 class="h1">
-										<a href="<?= site_url('site/artigo/' . $banner[0]['url_friendly']); ?>"
-											class="btn-link stretched-link text-white">
+										<a href="javascript:void(0);"
+											data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[0]['link_video_youtube']); ?>"
+											class="btn-link stretched-link text-white video-thumbnail">
 											<?= $banner[0]['titulo']; ?>
 										</a>
 									</h2>
@@ -167,7 +168,7 @@ use CodeIgniter\I18n\Time;
 							<div class="col-12">
 								<div class="card bg-image hover-zoom"
 									style="background-position: center center; background-size: cover; height:15rem;">
-									<img src="<?= $banner[1]['imagem']; ?>" style="height:15rem; object-fit: cover;"
+									<img src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[1]['link_video_youtube']).'/maxresdefault.jpg'; ?>" style="height:15rem; object-fit: cover;"
 										alt="<?= $banner[1]['titulo']; ?>" />
 
 									<div class="mask align-items-center p-3 p-sm-4"
@@ -175,8 +176,9 @@ use CodeIgniter\I18n\Time;
 										<div class="me-3"
 											style="position: absolute; top: 50%; transform: translateY(-50%);">
 											<h4 class="text-white">
-												<a href="<?= site_url('site/artigo/' . $banner[1]['url_friendly']); ?>"
-													class="btn-link stretched-link text-reset">
+												<a href="javascript:void(0);"
+													data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[1]['link_video_youtube']); ?>"
+													class="btn-link stretched-link text-white video-thumbnail">
 													<?= $banner[1]['titulo']; ?>
 												</a>
 											</h4>
@@ -215,7 +217,7 @@ use CodeIgniter\I18n\Time;
 								<div class="col-md-6 g-4 pt-2">
 									<div class="card bg-image hover-zoom"
 										style="background-position: center center; background-size: cover; height:13rem;">
-										<img src="<?= $banner[$i]['imagem']; ?>" style="height: inherit; object-fit: cover;"
+										<img src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[$i]['link_video_youtube']).'/maxresdefault.jpg'; ?>" style="height: inherit; object-fit: cover;"
 											alt="<?= $banner[$i]['titulo']; ?>" />
 
 										<div class="mask align-items-center p-3 p-sm-4"
@@ -223,9 +225,10 @@ use CodeIgniter\I18n\Time;
 											<div class="me-3"
 												style="position: absolute; top: 50%; transform: translateY(-50%);">
 												<h5 class="text-white">
-													<a href="<?= site_url('site/artigo/' . $banner[$i]['url_friendly']); ?>"
-														class="btn-link stretched-link text-reset">
-														<?= $banner[$i]['titulo']; ?>
+													<a href="javascript:void(0);"
+														data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $banner[$i]['link_video_youtube']); ?>"
+														class="btn-link stretched-link text-white video-thumbnail">
+														<?= $banner[2]['titulo']; ?>
 													</a>
 												</h5>
 
@@ -262,20 +265,23 @@ use CodeIgniter\I18n\Time;
 					</div>
 				</div>
 			</section>
+
 			<section class="col-lg-12 banner mb-4">
 				<div class="main-carousel mb-4 mt-4">
 					<?php foreach ($banner as $chave => $b): ?>
 						<?php if ($chave > 3): ?>
 							<div class="carousel-cell mb-3" style="height: 15rem;">
 								<div class="card bg-image hover-zoom round-5" style="height: inherit;">
-									<img class="card-img" src="<?= $b['imagem']; ?>" alt="<?= $b['titulo']; ?>"
+									<img class="card-img" src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $b['link_video_youtube']).'/maxresdefault.jpg'; ?>" alt="<?= $b['titulo']; ?>"
 										style="height: inherit; object-fit: cover;">
 									<div class="card-img-overlay d-flex flex-column p-3 p-sm-4"
 										style="background-color: rgba(0, 0, 0, 0.6);">
 										<div class="w-100 mt-auto">
-											<h4 class="text-white"><a
-													href="<?= site_url('site/artigo/' . $b['url_friendly']) ?>"
-													class="text-white btn-link"><?= $b['titulo']; ?></a>
+											<h4 class="text-white"><a href="javascript:void(0);"
+													data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $b['link_video_youtube']); ?>"
+													class="btn-link stretched-link text-white video-thumbnail">
+													<?= $b['titulo']; ?>
+												</a>
 											</h4>
 											<ul
 												class="nav nav-divider text-white align-items-center d-none d-sm-inline-block small">
@@ -305,8 +311,7 @@ use CodeIgniter\I18n\Time;
 						<?php foreach ($videos as $chave => $video): ?>
 							<div class="card col-lg-<?= ($chave < 3) ? ('4') : ('3'); ?> col-md-6 col-sm-12 shadow-0">
 								<!-- Card img -->
-								<div class="position-relative bg-image hover-zoom rounded"
-									data-mdb-ripple-color="light">
+								<div class="position-relative bg-image hover-zoom rounded" data-mdb-ripple-color="light">
 									<img class="card-img" alt="Card image" style="object-fit: cover; cursor: pointer;"
 										src="https://img.youtube.com/vi/<?= $video['video_id']; ?>/maxresdefault.jpg">
 									<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
@@ -342,8 +347,8 @@ use CodeIgniter\I18n\Time;
 								<div class="position-relative bg-image hover-zoom shadow-1-strong rounded"
 									data-mdb-ripple-init data-mdb-ripple-color="light">
 									<img class="card-img" alt="Card image" style="height:20rem; object-fit: cover;"
-										src="<?= $artigos[$max]['imagem']; ?>">
-									<a href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>">
+									src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $artigos[$max]['link_video_youtube']).'/maxresdefault.jpg'; ?>" alt="<?= $b['titulo']; ?>" >
+									<a href="javascript:void(0);" class="video-thumbnail" data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $artigos[$max]['link_video_youtube']); ?>">
 										<div class="mask" style="background-color: hsla(0, 0%, 98%, 0.2)"></div>
 									</a>
 									<!-- <div class="card-img-overlay d-flex align-items-start flex-column p-3">
@@ -354,9 +359,8 @@ use CodeIgniter\I18n\Time;
 											</div> -->
 								</div>
 								<div class="card-body px-3 pt-3">
-									<h4 class="card-title"><a
-											href="<?= site_url('site/artigo/' . $artigos[$max]['url_friendly']) ?>"
-											class="btn-link text-reset stretched-link fw-bold"><?= $artigos[$max]['titulo']; ?></a>
+									<h4 class="card-title"><a href="javascript:void(0);" data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $artigos[$max]['link_video_youtube']); ?>"
+											class="btn-link text-reset stretched-link fw-bold video-thumbnail"><?= $artigos[$max]['titulo']; ?></a>
 									</h4>
 									<p class="card-text"><?= $artigos[$max]['gancho']; ?></p>
 									<ul class="nav nav-divider align-items-center">
@@ -458,8 +462,8 @@ use CodeIgniter\I18n\Time;
 									<span
 										class="me-3 mt-n1 fa-fw fw-bold fs-3 text-dark opacity-25"><?= ($chave + 1 < 10) ? ('0' . $chave + 1) : ($chave + 1); ?>
 									</span>
-									<h6><a href="<?= site_url('site/artigo/' . $r['url_friendly']); ?>"
-											class="text-reset btn-link"><?= $r['titulo']; ?></a> -
+									<h6><a href="javascript:void(0);"
+											class="text-reset btn-link video-thumbnail" data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $r['link_video_youtube']); ?>"><?= $r['titulo']; ?></a> -
 										<?= Time::createFromFormat('Y-m-d H:i:s', $r['criado'])->toLocalizedString('dd MMM yyyy'); ?>
 									</h6>
 								</div>
@@ -477,15 +481,15 @@ use CodeIgniter\I18n\Time;
 
 <!-- Modal do YouTube -->
 <div class="modal fade" id="youtubeModal" tabindex="-1" aria-labelledby="youtubeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body p-0">
-        <div class="ratio ratio-16x9">
-          <iframe id="youtubeIframe" src="" title="YouTube video" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-body p-0">
+				<div class="ratio ratio-16x9">
+					<iframe id="youtubeIframe" src="" title="YouTube video" allowfullscreen></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -521,17 +525,17 @@ use CodeIgniter\I18n\Time;
 </script>
 
 <script>
-$(document).ready(function() {
-    $('.video-thumbnail').on('click', function() {
-        const videoId = $(this).data('video-id');
-        $('#youtubeIframe').attr('src', `https://youtube.com/embed/${videoId}?&autoplay=1`);
-        $('#youtubeModal').modal('show');
-    });
+	$(document).ready(function () {
+		$('.video-thumbnail').on('click', function () {
+			const videoId = $(this).data('video-id');
+			$('#youtubeIframe').attr('src', `https://youtube.com/embed/${videoId}?&autoplay=1`);
+			$('#youtubeModal').modal('show');
+		});
 
-    // Limpar o iframe quando a modal for fechada
-    $('#youtubeModal').on('hidden.bs.modal', function () {
-        $('#youtubeIframe').attr('src', '');
-    });
-});
+		// Limpar o iframe quando a modal for fechada
+		$('#youtubeModal').on('hidden.bs.modal', function () {
+			$('#youtubeIframe').attr('src', '');
+		});
+	});
 </script>
 <?= $this->endSection(); ?>
