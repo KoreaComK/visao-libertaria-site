@@ -6,6 +6,13 @@ use Config\App;
 use CodeIgniter\I18n\Time;
 use App\Libraries\ArtigosHistoricos;
 
+use CodeIgniter\Controller;
+use CodeIgniter\HTTP\CLIRequest;
+use CodeIgniter\HTTP\IncomingRequest;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use Psr\Log\LoggerInterface;
+
 class Cron extends BaseController
 {
 	/*HOME PAGE*/
@@ -244,7 +251,48 @@ class Cron extends BaseController
 			}
 		}
 
+		/* Parte relacionada a captação de vídeos do youtube */
+		$youtubeApiKey = getenv('YOUTUBE_API_KEY');
+		$projetosModel = new \App\Models\ProjetosModel();
+		$projetos = $projetosModel->findAll();
+
+		if ($projetos) {
+			foreach ($projetos as $projeto) {
+
+				$projetosVideosModel = new \App\Models\ProjetosVideosModel();
+				// Busca informações detalhadas do vídeo
+				$client = \Config\Services::curlrequest();
+				$videoResponse = $client->request('GET', 'https://www.googleapis.com/youtube/v3/search', [
+					'query' => [
+						'key' => $youtubeApiKey,
+						'channelId' => $projeto['canal_youtube_id'],
+						'part' => 'snippet',
+						'order' => 'date',
+						'maxResults' => 50,
+						'type' => 'video'
+					]
+				]);
+
+				$resultadosTotais = json_decode($videoResponse->getBody(), true)['pageInfo']['totalResults'];
+				if ($resultadosTotais > 0) {
+					$videos = json_decode($videoResponse->getBody(), true)['items'];
+					foreach ($videos as $video) {
+						$videoCadastrado = $projetosVideosModel->find($video['id']['videoId']);
+						if($videoCadastrado == NULL) {
+							$dataPublicacao = new \DateTime($video['snippet']['publishedAt']);
+							$dadosVideo = [
+								'video_id' => $video['id']['videoId'],
+								'titulo' => $video['snippet']['title'],
+								'projetos_id' => $projeto['id'],
+								'publicado' => $dataPublicacao->format('Y-m-d H:i:s'),
+								'thumbnail' => $video['snippet']['thumbnails']['high']['url']
+							];
+							$projetosVideosModel->insert($dadosVideo);
+						}
+					}
+				}
+			}
+		}
 		return 'Cron Finalizado';
 	}
-
 }
