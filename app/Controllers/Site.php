@@ -71,9 +71,26 @@ class Site extends BaseController
 		$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
 		$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
 		$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
+
+		
 		
 		$avisos = $avisosModel->get()->getResultArray();
 		$data['avisos'] = $avisos;
+
+		// Busca os últimos 7 vídeos de cada projeto
+		$projetosModel = new \App\Models\ProjetosModel();
+		$projetosVideosModel = new \App\Models\ProjetosVideosModel();
+		
+		$projetos = $projetosModel->findAll();
+		$data['videos_projetos'] = [];
+		
+		foreach ($projetos as $projeto) {
+			$videos = $projetosVideosModel->where('projetos_id', $projeto['id'])
+										->orderBy('publicado', 'DESC')
+										->limit(value: 7)->get()->getResultArray();
+			$data['videos_projetos'][$projeto['nome']] = $videos;
+		}
+
 		helper('colors_helper');
 		return view('home', $data);
 	}
