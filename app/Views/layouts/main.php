@@ -593,8 +593,6 @@
 
 	<?= $this->renderSection('content'); ?>
 
-
-
 	<footer class="pb-0">
 		<div class="container">
 			<hr>

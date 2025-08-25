@@ -6,94 +6,263 @@ use App\Libraries\WidgetsSite;
 use Config\App;
 use CodeIgniter\I18n\Time;
 
+use App\Models\ProjetosModel;
+use App\Models\ProjetosVideosModel;
+use App\Models\ArtigosModel;
+
 class Site extends BaseController
 {
-	/*HOME PAGE*/
-	public function index(): string
+	protected $projetosModel;
+	protected $projetosVideosModel;
+	protected $artigosModel;
+
+	public function __construct()
 	{
-		$data = array();
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$data['config'] = array();
-		$data['config']['home_banner'] = (int)$configuracaoModel->find('home_banner')['config_valor'];
-		$data['config']['home_banner_mostrar'] = $configuracaoModel->find('home_banner_mostrar')['config_valor'];
-		$data['config']['home_newsletter_mostrar'] = $configuracaoModel->find('home_newsletter_mostrar')['config_valor'];
-		$data['config']['home_talvez_goste'] = (int)$configuracaoModel->find('home_talvez_goste')['config_valor'];
-		$data['config']['home_talvez_goste_mostrar'] = $configuracaoModel->find('home_talvez_goste_mostrar')['config_valor'];
-		$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
-		$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
+		helper('_formata_video');
 
-		$data['colaboradores'] = $this->session->get('colaboradores');
+		$this->projetosModel = new ProjetosModel();
+		$this->projetosVideosModel = new ProjetosVideosModel();
+		$this->artigosModel = new ArtigosModel();
+	}
 
-		$widgets = new WidgetsSite();
+	/*HOME PAGE*/
+	// public function index(): string
+	// {
+	// 	$data = array();
+	// 	$configuracaoModel = new \App\Models\ConfiguracaoModel();
+	// 	$data['config'] = array();
+	// 	$data['config']['home_banner'] = (int)$configuracaoModel->find('home_banner')['config_valor'];
+	// 	$data['config']['home_banner_mostrar'] = $configuracaoModel->find('home_banner_mostrar')['config_valor'];
+	// 	$data['config']['home_newsletter_mostrar'] = $configuracaoModel->find('home_newsletter_mostrar')['config_valor'];
+	// 	$data['config']['home_talvez_goste'] = (int)$configuracaoModel->find('home_talvez_goste')['config_valor'];
+	// 	$data['config']['home_talvez_goste_mostrar'] = $configuracaoModel->find('home_talvez_goste_mostrar')['config_valor'];
+	// 	$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
+	// 	$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
 
-		//$data['widgetCategorias'] = $widgets->widgetCategorias();
-		$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
-		$artigosModel = new \App\Models\ArtigosModel();
-		
-		$inicial = 4;
-		$quantidade_artigos = $inicial;
-		if($data['config']['home_banner_mostrar'] == '1') {
-			$quantidade_artigos += $data['config']['home_banner'];
-		}
-		if($data['config']['home_ultimos_videos_mostrar'] == '1') {
-			$quantidade_artigos += $data['config']['home_ultimos_videos'];
-		}
+	// 	$data['colaboradores'] = $this->session->get('colaboradores');
 
-		$artigos = $artigosModel->getArtigosHome($quantidade_artigos);
-		if ($artigos === null || empty($artigos)) {
-			$data['artigos'] = false;
-		} else {
-			$data['banner'] = [];
-			$data['artigos'] = [];
-			for ($i = 0; $i < count($artigos); $i++) {
-				if (isset($artigos[$i]) && count($data['banner']) < ($data['config']['home_banner'])+$inicial) {
-					$data['banner'][] = $artigos[$i];
-				} else {
-					$data['artigos'][] = $artigos[$i];
-				}
+	// 	$widgets = new WidgetsSite();
+
+	// 	//$data['widgetCategorias'] = $widgets->widgetCategorias();
+	// 	$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
+	// 	$artigosModel = new \App\Models\ArtigosModel();
+
+	// 	$inicial = 4;
+	// 	$quantidade_artigos = $inicial;
+	// 	if($data['config']['home_banner_mostrar'] == '1') {
+	// 		$quantidade_artigos += $data['config']['home_banner'];
+	// 	}
+	// 	if($data['config']['home_ultimos_videos_mostrar'] == '1') {
+	// 		$quantidade_artigos += $data['config']['home_ultimos_videos'];
+	// 	}
+
+	// 	$artigos = $artigosModel->getArtigosHome($quantidade_artigos);
+	// 	if ($artigos === null || empty($artigos)) {
+	// 		$data['artigos'] = false;
+	// 	} else {
+	// 		$data['banner'] = [];
+	// 		$data['artigos'] = [];
+	// 		for ($i = 0; $i < count($artigos); $i++) {
+	// 			if (isset($artigos[$i]) && count($data['banner']) < ($data['config']['home_banner'])+$inicial) {
+	// 				$data['banner'][] = $artigos[$i];
+	// 			} else {
+	// 				$data['artigos'][] = $artigos[$i];
+	// 			}
+	// 		}
+	// 	}
+
+	// 	$quantidade_artigos = 0;
+	// 	if($data['config']['home_talvez_goste_mostrar'] == '1') {
+	// 		$quantidade_artigos += $data['config']['home_talvez_goste'];
+	// 	}
+	// 	$artigos = $artigosModel->getArtigosHomeRand($quantidade_artigos);
+	// 	if ($artigos === null || empty($artigos)) {
+	// 		$data['rand'] = false;
+	// 	} else {
+	// 		$data['rand'] = $artigos;
+	// 	}
+
+	// 	$data['avisos'] = false;
+	// 	$avisosModel = new \App\Models\AvisosModel();
+	// 	$avisosModel->orWhere('(fim IS NULL AND inicio IS NULL)');
+	// 	$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
+	// 	$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
+	// 	$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
+
+
+
+	// 	$avisos = $avisosModel->get()->getResultArray();
+	// 	$data['avisos'] = $avisos;
+
+	// 	// Busca os últimos 7 vídeos de cada projeto
+	// 	$projetosModel = new \App\Models\ProjetosModel();
+	// 	$projetosVideosModel = new \App\Models\ProjetosVideosModel();
+
+	// 	$projetos = $projetosModel->findAll();
+	// 	$data['videos_projetos'] = [];
+
+	// 	foreach ($projetos as $projeto) {
+	// 		$videos = $projetosVideosModel->where('projetos_id', $projeto['id'])
+	// 									->orderBy('publicado', 'DESC')
+	// 									->limit(value: 7)->get()->getResultArray();
+	// 		$data['videos_projetos'][$projeto['nome']] = $videos;
+	// 	}
+
+	// 	helper('colors_helper');
+	// 	return view('home', $data);
+	// }
+
+	public function index()
+	{
+		// Buscar todos os projetos
+		$projetos = $this->projetosModel->findAll();
+
+		// Array para armazenar os vídeos por projeto
+		$data['videos_por_projeto'] = [];
+
+		// Para cada projeto, buscar os últimos 10 vídeos
+		foreach ($projetos as $projeto) {
+			if ($projeto['listar'] == 'S') {
+				$videos = $this->projetosVideosModel
+					->where('projetos_id', $projeto['id'])
+					->orderBy('publicado', 'DESC')
+					->limit(10)->get()->getResultArray();
+
+				// Adicionar os vídeos ao array com o nome do projeto como chave
+				$data['videos_por_projeto'][$projeto['nome']]['videos'] = $videos;
 			}
 		}
 
-		$quantidade_artigos = 0;
-		if($data['config']['home_talvez_goste_mostrar'] == '1') {
-			$quantidade_artigos += $data['config']['home_talvez_goste'];
-		}
-		$artigos = $artigosModel->getArtigosHomeRand($quantidade_artigos);
-		if ($artigos === null || empty($artigos)) {
-			$data['rand'] = false;
-		} else {
-			$data['rand'] = $artigos;
-		}
+		// Buscar os últimos 10 artigos
+		$data['ultimos_artigos'] = $this->artigosModel
+			->whereIn('fase_producao_id', array(6, 7)) // Apenas artigos ativos
+			->where('descartado', null)
+			->orderBy('publicado', 'DESC')
+			->limit(10)
+			->get()
+			->getResultArray();
 
-		$data['avisos'] = false;
-		$avisosModel = new \App\Models\AvisosModel();
-		$avisosModel->orWhere('(fim IS NULL AND inicio IS NULL)');
-		$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
-		$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
-		$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
+		// Query para vídeos em destaque (mantém a original)
+		$subquery = $this->projetosModel->db->table('projetos')
+			->select('projetos.*, projetos_videos.*, ROW_NUMBER() OVER(PARTITION BY projetos_videos.projetos_id ORDER BY projetos_videos.publicado DESC) as rn')
+			->join('projetos_videos', 'projetos_videos.projetos_id = projetos.id')
+			->getCompiledSelect();
 
-		
-		
-		$avisos = $avisosModel->get()->getResultArray();
-		$data['avisos'] = $avisos;
+		$data['videos_destaque'] = $this->projetosModel->db->table("({$subquery}) as ranked_videos")
+			->whereIn('rn', array(1, 2))
+			->get()
+			->getResultArray();
 
-		// Busca os últimos 7 vídeos de cada projeto
-		$projetosModel = new \App\Models\ProjetosModel();
-		$projetosVideosModel = new \App\Models\ProjetosVideosModel();
-		
-		$projetos = $projetosModel->findAll();
-		$data['videos_projetos'] = [];
-		
-		foreach ($projetos as $projeto) {
-			$videos = $projetosVideosModel->where('projetos_id', $projeto['id'])
-										->orderBy('publicado', 'DESC')
-										->limit(value: 7)->get()->getResultArray();
-			$data['videos_projetos'][$projeto['nome']] = $videos;
-		}
 
-		helper('colors_helper');
-		return view('home', $data);
+		$data['active_menu'] = 'home';
+
+		return view('_home', $data);
 	}
+
+	public function videos($projeto = null)
+	{
+		// Verificar se é uma requisição AJAX para infinite scroll
+		if ($this->request->isAJAX()) {
+			return $this->videosAjax($projeto);
+		}
+
+		// Buscar todos os projetos
+		$data['projetos'] = $this->projetosModel->findAll();
+
+		// Configurar a query base
+		$this->projetosVideosModel->select('projetos_videos.*, projetos.nome as projeto_nome');
+		$this->projetosVideosModel->join('projetos', 'projetos.id = projetos_videos.projetos_id');
+		$this->projetosVideosModel->orderBy('projetos_videos.publicado', 'DESC');
+
+		// Se um projeto específico foi solicitado, filtrar
+		if ($projeto !== null) {
+			$projeto_decoded = urldecode($projeto);
+			$this->projetosVideosModel->where('projetos.nome', $projeto_decoded);
+			$data['projeto_atual'] = $projeto_decoded;
+		}
+
+		$data['videosList'] = [
+			'videos' => $this->projetosVideosModel->paginate(10),
+			'pager' => $this->projetosVideosModel->pager
+		];
+
+		$data['colaboradores'] = $this->session->get('colaboradores');
+
+		$data['active_menu'] = 'videos';
+
+		return view('_videos', $data);
+	}
+
+	private function videosAjax($projeto = null)
+	{
+		// Configurar a query base
+		$this->projetosVideosModel->select('projetos_videos.*, projetos.nome as projeto_nome');
+		$this->projetosVideosModel->join('projetos', 'projetos.id = projetos_videos.projetos_id');
+		$this->projetosVideosModel->orderBy('projetos_videos.publicado', 'DESC');
+
+		// Se um projeto específico foi solicitado, filtrar
+		if ($projeto !== null) {
+			$projeto_decoded = urldecode($projeto);
+			$this->projetosVideosModel->where('projetos.nome', $projeto_decoded);
+		}
+
+		$videos = $this->projetosVideosModel->paginate(10);
+		$pager = $this->projetosVideosModel->pager;
+
+		// Retornar apenas os vídeos em HTML para o infinite scroll
+		$html = '';
+		foreach ($videos as $video) {
+			$titulo = htmlspecialchars($video['titulo'] ?? '', ENT_QUOTES, 'UTF-8');
+			$projeto_nome = htmlspecialchars($video['projeto_nome'] ?? 'Projeto', ENT_QUOTES, 'UTF-8');
+			$video_id = $video['video_id'] ?? '';
+			$publicado = $video['publicado'] ?? '';
+
+			$html .= '<div class="col-lg-3 col-md-4 col-sm-6 mb-4">';
+			$html .= '<div class="card video-card h-100">';
+			$html .= '<div class="video-thumbnail">';
+			$html .= '<img src="' . cria_url_thumb($video_id) . '" alt="' . $titulo . '" class="card-img-top">';
+			$html .= '<div class="play-overlay">';
+			$html .= '<i class="bi bi-play-circle-fill play-icon"></i>';
+			$html .= '<a href="' . cria_link_watch($video_id) . '" class="gen-video-popup" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>';
+			$html .= '</div>';
+			$html .= '<div class="project-badge">' . $projeto_nome . '</div>';
+			$html .= '</div>';
+			$html .= '<div class="card-body d-flex flex-column">';
+			$html .= '<h6 class="card-title">' . $titulo . '</h6>';
+			$html .= '<p class="card-text text-muted small">' . date('d/m/Y', strtotime($publicado)) . '</p>';
+			$html .= '<div class="mt-auto">';
+			$html .= '<a href="' . cria_link_watch($video_id) . '" class="gen-button gen-video-popup">';
+			$html .= '<div class="gen-button-block">';
+			$html .= '<span class="gen-button-line-left"></span>';
+			$html .= '<span class="gen-button-text">Assistir</span>';
+			$html .= '</div>';
+			$html .= '</a>';
+			$html .= '</div>';
+			$html .= '</div>';
+			$html .= '</div>';
+			$html .= '</div>';
+		}
+
+		return $this->response->setJSON([
+			'html' => $html,
+			'hasMore' => $pager->hasMore(),
+			'currentPage' => $pager->getCurrentPage(),
+			'totalPages' => $pager->getPageCount()
+		]);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/*LISTAGEM DE ARTIGOS*/
 	public function artigos($id_categoria = null): string
@@ -102,7 +271,7 @@ class Site extends BaseController
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
-		$config['site_quantidade_listagem'] = (int)$configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo,\'artigo\' AS tipo_conteudo');
@@ -129,7 +298,7 @@ class Site extends BaseController
 			'artigos' => $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos'),
 			'pager' => $artigosModel->pager
 		];
-		
+
 		return view('artigos', $data);
 	}
 
@@ -152,30 +321,30 @@ class Site extends BaseController
 		if ($artigosModel->countAllResults() > 0) {
 			$data['artigo'] = $query->getRowArray();
 
-			
+
 
 			$data['artigo']['colaboradores'] = array();
-			$data['artigo']['colaboradores']['sugerido'] = ($data['artigo']['sugerido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id'])):(NULL);
-			$data['artigo']['colaboradores']['escrito'] = ($data['artigo']['escrito_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['escrito_colaboradores_id'])):(NULL);
-			$data['artigo']['colaboradores']['revisado'] = ($data['artigo']['revisado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['revisado_colaboradores_id'])):(NULL);
-			$data['artigo']['colaboradores']['narrado'] = ($data['artigo']['narrado_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['narrado_colaboradores_id'])):(NULL);
-			$data['artigo']['colaboradores']['produzido'] = ($data['artigo']['produzido_colaboradores_id']!==NULL)?($colaboradoresModel->find($data['artigo']['produzido_colaboradores_id'])):(NULL);
+			$data['artigo']['colaboradores']['sugerido'] = ($data['artigo']['sugerido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id'])) : (NULL);
+			$data['artigo']['colaboradores']['escrito'] = ($data['artigo']['escrito_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['escrito_colaboradores_id'])) : (NULL);
+			$data['artigo']['colaboradores']['revisado'] = ($data['artigo']['revisado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['revisado_colaboradores_id'])) : (NULL);
+			$data['artigo']['colaboradores']['narrado'] = ($data['artigo']['narrado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['narrado_colaboradores_id'])) : (NULL);
+			$data['artigo']['colaboradores']['produzido'] = ($data['artigo']['produzido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['produzido_colaboradores_id'])) : (NULL);
 
 			$data['meta'] = array();
 			$data['meta']['title'] = $data['artigo']['titulo'];
 			$data['meta']['image'] = $data['artigo']['imagem'];
-			$data['meta']['description'] = addslashes(substr($data['artigo']['texto'],0,250)).'...';
-			
+			$data['meta']['description'] = addslashes(substr($data['artigo']['texto'], 0, 250)) . '...';
+
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->whereIn('fase_producao_id', array(6, 7));
-			$artigosModel->where('publicado > ',$data['artigo']['publicado']);
+			$artigosModel->where('publicado > ', $data['artigo']['publicado']);
 			$artigosModel->orderBy('publicado', 'ASC');
 			$artigosModel->limit(1);
 			$data['artigo']['proximo'] = $artigosModel->get()->getResultArray();
 			unset($artigosModel);
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->whereIn('fase_producao_id', array(6, 7));
-			$artigosModel->where('publicado < ',$data['artigo']['publicado']);
+			$artigosModel->where('publicado < ', $data['artigo']['publicado']);
 			$artigosModel->orderBy('publicado', 'DESC');
 			$artigosModel->limit(1);
 			$data['artigo']['anterior'] = $artigosModel->get()->getResultArray();
@@ -433,8 +602,8 @@ class Site extends BaseController
 					}
 
 					$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
-					$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id',$colaborador['id'])
-					->where('data_visualizado',null)->countAllResults();
+					$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id', $colaborador['id'])
+						->where('data_visualizado', null)->countAllResults();
 
 					$estrutura_session = [
 						'colaboradores' => [
@@ -456,10 +625,10 @@ class Site extends BaseController
 					$this->session->set($estrutura_session);
 
 					$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
-					$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
+					$colaboradoresHistorico->cadastraHistorico($colaborador['id'], 'acessar', NULL, NULL);
 
 					if (isset($post['lembrar'])) {
-						set_cookie('hash', $this->secured_encrypt(md5($post['email'].hash('sha256', $post['senha']))), 60 * 60 * 24 * 7);
+						set_cookie('hash', $this->secured_encrypt(md5($post['email'] . hash('sha256', $post['senha']))), 60 * 60 * 24 * 7);
 					}
 
 					return $retorno->retorno(true, 'Bem-vindo de volta ' . $colaborador['apelido'], true);
@@ -478,21 +647,21 @@ class Site extends BaseController
 		} else {
 			$this->session->remove('colaboradores');
 
-			if(get_cookie('hash') !== null) {
+			if (get_cookie('hash') !== null) {
 				$retorno = $this->logar_cookie();
 				$get = service('request')->getGet();
 				$url = 'colaboradores/perfil';
-				if(!empty($get) && isset($get['url']) && str_contains($get['url'],site_url())) {
+				if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
 					$url = $get['url'];
 				}
-				if($retorno) {
+				if ($retorno) {
 					return redirect()->to($url);
 				}
 			}
 
 			$get = service('request')->getGet();
 			$url = false;
-			if(!empty($get) && isset($get['url']) && str_contains($get['url'],site_url())) {
+			if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
 				$url = $get['url'];
 			}
 			$data['url'] = $url;
@@ -509,8 +678,8 @@ class Site extends BaseController
 		$this->session->remove('colaboradores');
 		$link = base_url() . 'site/login';
 		$get = $this->request->getGet();
-		if(!empty($get)) {
-			$link.='?url='.$get['url'];
+		if (!empty($get)) {
+			$link .= '?url=' . $get['url'];
 		} else {
 			delete_cookie('hash');
 		}
@@ -527,7 +696,9 @@ class Site extends BaseController
 			$post = $this->request->getPost();
 
 			$bloqueio = false;
-			if($post['select-assunto'] == '2') {  $bloqueio = true; }
+			if ($post['select-assunto'] == '2') {
+				$bloqueio = true;
+			}
 			$valida = $validaFormularios->validaFormularioContato($post, $bloqueio);
 			if (empty($valida->getErrors())) {
 				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
@@ -538,13 +709,13 @@ class Site extends BaseController
 					$inserir['id'] = $contatosModel->getNovaUUID();
 					$inserir['email'] = $post['email'];
 					$inserir['contatos_assuntos_id'] = $post['select-assunto'];
-					if($post['select-assunto'] == '2') {  
-						$inserir['descricao'] = "Rede social que sofreu banimento: ".$post['redesocial']."<br/>Perfil banido: ".$post['perfil']."<br/>".$post['mensagem'];
+					if ($post['select-assunto'] == '2') {
+						$inserir['descricao'] = "Rede social que sofreu banimento: " . $post['redesocial'] . "<br/>Perfil banido: " . $post['perfil'] . "<br/>" . $post['mensagem'];
 					} else {
 						$inserir['descricao'] = $post['mensagem'];
 					}
 					$retornoInsert = $contatosModel->insert($inserir);
-					if($retornoInsert !== false) {
+					if ($retornoInsert !== false) {
 						return $retorno->retorno(true, 'Contato enviado com sucesso. Iremos responder assim que possível.', true);
 					} else {
 						return $retorno->retorno(false, 'Erro ao enviar contato, tente novamente.', true);
@@ -559,7 +730,7 @@ class Site extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
-		if(($this->session->has('colaboradores'))) {
+		if (($this->session->has('colaboradores'))) {
 			$data['email'] = $this->session->get('colaboradores')['email'];
 		}
 		$contatosAssuntosModel = new \App\Models\ContatosAssuntosModel();
@@ -567,14 +738,14 @@ class Site extends BaseController
 		return view('contato', $data);
 	}
 
-	public function pagina($url=NULL)
+	public function pagina($url = NULL)
 	{
 		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
 		if ($url === null) {
 			return redirect()->to(base_url() . 'site');
 		}
-		$pagina = $paginasEstaticasModel->where('url_friendly',$url)->get()->getResultArray();
-		if($pagina == NULL || empty($pagina)) {
+		$pagina = $paginasEstaticasModel->where('url_friendly', $url)->get()->getResultArray();
+		if ($pagina == NULL || empty($pagina)) {
 			return redirect()->to(base_url() . 'site');
 		}
 		$data = array();
@@ -590,8 +761,8 @@ class Site extends BaseController
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$apelido = urldecode($apelido);
-		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
-		
+		$colaborador = $colaboradoresModel->where('apelido', $apelido)->get()->getResultArray();
+
 		if ($colaborador === null || empty($colaborador)) {
 			return redirect()->to(base_url() . 'site');
 		}
@@ -600,34 +771,34 @@ class Site extends BaseController
 		$colaborador = $colaborador[0];
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
+		$artigos = $artigosModel->where('escrito_colaboradores_id', $colaborador['id'])->where('descartado', NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
 		$data['contador_artigos'] = 0;
 		if ($artigos !== null && !empty($artigos)) {
 			$data['contador_artigos'] = count($artigos);
 		}
 
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'],false);
+		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'], false);
 		$data['atribuicoes'] = $colaboradoresAtribuicoes;
 
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
 
 		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
-		$data['conquistas'] = $colaboradoresConquistasModel->join('conquistas','conquistas.id = colaboradores_conquistas.conquistas_id')->where('colaboradores_id',$colaborador['id'])->where("(tipo = 'escritor' or tipo is null)")->orderBy('conquistas_id','ASC')->get()->getResultArray();
-		
+		$data['conquistas'] = $colaboradoresConquistasModel->join('conquistas', 'conquistas.id = colaboradores_conquistas.conquistas_id')->where('colaboradores_id', $colaborador['id'])->where("(tipo = 'escritor' or tipo is null)")->orderBy('conquistas_id', 'ASC')->get()->getResultArray();
+
 		return view('escritor', $data);
 	}
 
 	public function escritorList($apelido = NULL)
 	{
-		if($apelido === NULL) {
+		if ($apelido === NULL) {
 			return false;
 		}
 
 		$apelido = urldecode($apelido);
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		$colaborador = $colaboradoresModel->where('apelido', $apelido)->get()->getResultArray();
 		if ($colaborador === null || empty($colaborador)) {
 			return false;
 		}
@@ -640,7 +811,7 @@ class Site extends BaseController
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo, \'artigo\' AS tipo_conteudo');
 		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
-		$artigos = $artigosModel->where('escrito_colaboradores_id',$colaborador['id'])->where('descartado',NULL)->where('publicado IS NOT NULL')->orderBy('publicado','DESC');
+		$artigos = $artigosModel->where('escrito_colaboradores_id', $colaborador['id'])->where('descartado', NULL)->where('publicado IS NOT NULL')->orderBy('publicado', 'DESC');
 		if ($this->request->getMethod() == 'get') {
 			$data['listas'] = [
 				'lista' => $artigos->paginate($config['site_quantidade_listagem'], 'lista'),
@@ -660,8 +831,8 @@ class Site extends BaseController
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$apelido = urldecode($apelido);
-		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
-		
+		$colaborador = $colaboradoresModel->where('apelido', $apelido)->get()->getResultArray();
+
 		if ($colaborador === null || empty($colaborador)) {
 			return redirect()->to(base_url() . 'site');
 		}
@@ -670,32 +841,32 @@ class Site extends BaseController
 		$colaborador = $colaborador[0];
 
 		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->get()->getResultArray();
+		$pautas = $pautasModel->where('colaboradores_id', $colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->get()->getResultArray();
 		$data['contador_pautas'] = 0;
 		if ($pautas !== null && !empty($pautas)) {
 			$data['contador_pautas'] = count($pautas);
 		}
 
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
-		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'],false);
+		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'], false);
 		$data['atribuicoes'] = $colaboradoresAtribuicoes;
 
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
 		$data['classeListaCSS'] = 'listagem-colaborador';
-		
+
 		return view('colaborador', $data);
 	}
 
 	public function colaboradorList($apelido = NULL)
 	{
-		if($apelido === NULL) {
+		if ($apelido === NULL) {
 			return false;
 		}
 
 		$apelido = urldecode($apelido);
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		$colaborador = $colaboradoresModel->where('apelido',$apelido)->get()->getResultArray();
+		$colaborador = $colaboradoresModel->where('apelido', $apelido)->get()->getResultArray();
 		if ($colaborador === null || empty($colaborador)) {
 			return false;
 		}
@@ -707,8 +878,8 @@ class Site extends BaseController
 
 		$pautasModel = new \App\Models\PautasModel();
 		$pautasModel->select('pautas.id AS id, imagem AS imagem, link AS url, titulo AS titulo, apelido AS autor, reservado AS publicacao, texto AS texticulo, \'pauta\' AS tipo_conteudo');
-		$pautasModel->join('colaboradores','pautas.colaboradores_id = colaboradores.id');
-		$pautas = $pautasModel->where('colaboradores_id',$colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado','DESC');
+		$pautasModel->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
+		$pautas = $pautasModel->where('colaboradores_id', $colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado', 'DESC');
 		if ($this->request->getMethod() == 'get') {
 			$data['listas'] = [
 				'lista' => $pautas->paginate($config['site_quantidade_listagem'], 'lista'),
@@ -728,10 +899,10 @@ class Site extends BaseController
 
 	private function verificaCaptcha($captcha_response)
 	{
-		if(getenv('CI_ENVIRONMENT') == 'development') {
+		if (getenv('CI_ENVIRONMENT') == 'development') {
 			return true;
 		}
-		if($captcha_response == NULL || $captcha_response == '') {
+		if ($captcha_response == NULL || $captcha_response == '') {
 			return false;
 		}
 		$data = array(
@@ -756,11 +927,11 @@ class Site extends BaseController
 	private function logar_cookie()
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();
-		if(get_cookie('hash') !== null) {
+		if (get_cookie('hash') !== null) {
 			$colaboradoresModel = new \App\Models\ColaboradoresModel();
-			$colaboradoresModel->where("'".$this->secured_decrypt(get_cookie('hash'))."' = MD5(CONCAT(email,senha))");
+			$colaboradoresModel->where("'" . $this->secured_decrypt(get_cookie('hash')) . "' = MD5(CONCAT(email,senha))");
 			$colaborador = $colaboradoresModel->get()->getResultArray();
-			if(empty($colaborador)) {
+			if (empty($colaborador)) {
 				delete_cookie('hash');
 				return false;
 			}
@@ -784,7 +955,7 @@ class Site extends BaseController
 			$estrutura_session['colaboradores']['permissoes'] = $permissoes;
 
 			$colaboradoresHistorico = new \App\Libraries\ColaboradoresHistoricos();
-			$colaboradoresHistorico->cadastraHistorico($colaborador['id'],'acessar',NULL,NULL);
+			$colaboradoresHistorico->cadastraHistorico($colaborador['id'], 'acessar', NULL, NULL);
 
 			$this->session->set($estrutura_session);
 			return true;
@@ -803,10 +974,10 @@ class Site extends BaseController
 		$iv_length = openssl_cipher_iv_length($method);
 		$iv = openssl_random_pseudo_bytes($iv_length);
 
-		$first_encrypted = openssl_encrypt($string,$method,$first_key, OPENSSL_RAW_DATA ,$iv);    
+		$first_encrypted = openssl_encrypt($string, $method, $first_key, OPENSSL_RAW_DATA, $iv);
 		$second_encrypted = hash_hmac($method_hmac, $first_encrypted, $second_key, TRUE);
 
-		$output = base64_encode($iv.$second_encrypted.$first_encrypted);    
+		$output = base64_encode($iv . $second_encrypted . $first_encrypted);
 		return $output;
 	}
 
@@ -820,18 +991,18 @@ class Site extends BaseController
 		$method_hmac = getenv('METHOD_HMAC');
 
 		$iv_length = openssl_cipher_iv_length($method);
-		$iv = substr($mix,0,$iv_length);
+		$iv = substr($mix, 0, $iv_length);
 
-		$second_encrypted = substr($mix,$iv_length,64);
-		$first_encrypted = substr($mix,$iv_length+64);
+		$second_encrypted = substr($mix, $iv_length, 64);
+		$first_encrypted = substr($mix, $iv_length + 64);
 
-		$data = openssl_decrypt($first_encrypted,$method,$first_key,OPENSSL_RAW_DATA,$iv);
+		$data = openssl_decrypt($first_encrypted, $method, $first_key, OPENSSL_RAW_DATA, $iv);
 		$second_encrypted_new = hash_hmac($method_hmac, $first_encrypted, $second_key, TRUE);
 
-		if (hash_equals($second_encrypted,$second_encrypted_new)) {
+		if (hash_equals($second_encrypted, $second_encrypted_new)) {
 			return $data;
 		}
-		
+
 		return false;
 	}
 
