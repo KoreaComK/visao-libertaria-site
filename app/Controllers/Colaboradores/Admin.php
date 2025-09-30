@@ -14,6 +14,7 @@ use App\Libraries\ArtigosMarcacao;
 class Admin extends BaseController
 {
 	public $verificaPermissao;
+	public $iniciaVariavel;
 	function __construct()
 	{
 		$this->artigosHistoricos = new ArtigosHistoricos;
@@ -922,17 +923,18 @@ class Admin extends BaseController
 		
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
-		$colaboradoresModel->where('atribuicoes_id',1);
+		$colaboradoresModel->whereNotIn('atribuicoes_id', [1, 2]);
 		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		$colaboradoresModel->groupBy('colaboradores.id');
 		$colaboradoresModel->orderBy('apelido','ASC');
 		$data['colaboradores'] = $colaboradoresModel->get()->getResultArray();
 		
-		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
-		$colaboradoresModel->where('atribuicoes_id',2);
-		$colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
-		$colaboradoresModel->orderBy('apelido','ASC');
-		$data['escritores'] = $colaboradoresModel->get()->getResultArray();
+		// $colaboradoresModel = new \App\Models\ColaboradoresModel();
+		// $colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
+		// $colaboradoresModel->where('atribuicoes_id',2);
+		// $colaboradoresModel->where('shadowban','N')->where('colaboradores.excluido',NULL)->where('bloqueado','N');
+		// $colaboradoresModel->orderBy('apelido','ASC');
+		// $data['escritores'] = $colaboradoresModel->get()->getResultArray();
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$colaboradoresModel->join('colaboradores_atribuicoes','colaboradores.id = colaboradores_atribuicoes.colaboradores_id');
@@ -992,8 +994,8 @@ class Admin extends BaseController
 
 		$art = array();
 		$artigosModel = new \App\Models\ArtigosModel();
-		$art['sugerido_colaboradores_id'] = ($post['sugerido_colaboradores_id']=='')?(NULL):($post['sugerido_colaboradores_id']);
-		$art['escrito_colaboradores_id'] = ($post['escrito_colaboradores_id']=='')?(NULL):($post['escrito_colaboradores_id']);
+		// $art['sugerido_colaboradores_id'] = ($post['sugerido_colaboradores_id']=='')?(NULL):($post['sugerido_colaboradores_id']);
+		// $art['escrito_colaboradores_id'] = ($post['escrito_colaboradores_id']=='')?(NULL):($post['escrito_colaboradores_id']);
 		$art['revisado_colaboradores_id'] = ($post['revisado_colaboradores_id']=='')?(NULL):($post['revisado_colaboradores_id']);
 		$art['narrado_colaboradores_id'] = ($post['narrado_colaboradores_id']=='')?(NULL):($post['narrado_colaboradores_id']);
 		$art['produzido_colaboradores_id'] = ($post['produzido_colaboradores_id']=='')?(NULL):($post['produzido_colaboradores_id']);

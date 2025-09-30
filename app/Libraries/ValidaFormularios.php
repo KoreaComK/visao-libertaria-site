@@ -290,7 +290,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'imagem' => [
 				'label' => 'Imagem',
-				'rules' => 'uploaded[imagem]|is_image[imagem]|ext_in[imagem,jpg,png,jpeg]|max_size[imagem,5120]'
+				'rules' => 'uploaded[imagem]|is_image[imagem]|ext_in[imagem,jpg,png,jpeg,avif]|max_size[imagem,5120]'
 			],
 		]);
 		$validation->run();

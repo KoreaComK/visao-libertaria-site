@@ -442,35 +442,6 @@
 										novalidate="yes" method="post">
 										<input type="hidden" name="admin" id="admin" value="true" />
 										<div class="mb-3">
-											<label class="form-label"
-												for="sugerido_colaboradores_id">Colaborador:</label>
-											<div class="input-group">
-												<select class="form-control" name="sugerido_colaboradores_id"
-													id="sugerido_colaboradores_id">
-													<option value="" <?= ($artigo['sugerido_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($colaboradores as $colaborador): ?>
-														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['sugerido_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
-														</option>
-													<?php endforeach; ?>
-												</select>
-											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label" for="escrito_colaboradores_id">Escritor:</label>
-											<div class="input-group">
-												<select class="form-control" name="escrito_colaboradores_id"
-													id="escrito_colaboradores_id">
-													<option value="" <?= ($artigo['escrito_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($escritores as $colaborador): ?>
-														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['escrito_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
-														</option>
-													<?php endforeach; ?>
-												</select>
-											</div>
-										</div>
-										<div class="mb-3">
 											<label class="form-label" for="revisado_colaboradores_id">Revisor:</label>
 											<div class="input-group">
 												<select class="form-control" name="revisado_colaboradores_id"
