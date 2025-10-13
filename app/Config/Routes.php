@@ -32,6 +32,10 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Site::index');
 $routes->get('links', 'Site::links');
 
+// RSS and Sitemap routes
+$routes->get('rss', 'Rss::index');
+$routes->get('sitemap.xml', 'Sitemap::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
