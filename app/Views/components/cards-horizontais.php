@@ -20,7 +20,7 @@ publicacao
         <?php if (isset($dados['link_video_youtube'])): ?>
             <img class="rounded" style="max-width: inherit;" src="<?= 'https://img.youtube.com/vi/'.preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $dados['link_video_youtube']).'/maxresdefault.jpg'; ?>" alt="<?= $dados['titulo']; ?>" alt="">
         <?php else: ?>
-            <img class="rounded" style="max-width: inherit;" src="<?= $dados['imagem'] ?>" alt="<?= $dados['titulo']; ?>" alt="">
+            <!-- <img class="rounded" style="max-width: inherit;" src="<?= $dados['imagem'] ?>" alt="<?= $dados['titulo']; ?>" alt=""> -->
         <?php endif; ?>
         </div>
         <div class="<?= (isset($dados['class-div'])) ? ($dados['class-div']) : ('col-7'); ?>">

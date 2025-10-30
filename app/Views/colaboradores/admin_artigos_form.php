@@ -154,10 +154,9 @@
 												</div>
 											</div>
 
-											<?php if (!$cadastro): ?>
+											<!-- <?php if (!$cadastro): ?>
 												<div class="col-12 mt-4">
 													<div class="mb-3">
-														<!-- Image -->
 														<div class="row align-items-center mb-2">
 															<div class="col-4 col-md-2">
 																<div class="position-relative">
@@ -185,7 +184,7 @@
 														</div>
 													</div>
 												</div>
-											<?php endif; ?>
+											<?php endif; ?> -->
 
 											<!-- Short description -->
 											<div class="col-12">
@@ -385,9 +384,8 @@
 													placeholder="Link do Vídeo no Canal do Visão Libertária" required>
 											</div>
 										</div>
-										<div class="col-12 mt-4">
+										<!-- <div class="col-12 mt-4">
 											<div class="mb-3">
-												<!-- Image -->
 												<div class="row align-items-center mb-2">
 													<div class="col-4 col-md-2">
 														<div class="position-relative">
@@ -413,7 +411,7 @@
 													</div>
 												</div>
 											</div>
-										</div>
+										</div> -->
 										<div class="d-flex justify-content-center">
 											<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_publicacao"
 												type="button">Salvar publicação</button>

@@ -18,9 +18,6 @@
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
 				<tr>
 					<td>
-						<img class="rounded-3" src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
-					</td>
-					<td>
 						<h6 class="mb-0"><a href="<?=site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])?>"><?= $artigo['titulo']; ?></a></h6>
 					</td>
 					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMMM yyyy'); ?>

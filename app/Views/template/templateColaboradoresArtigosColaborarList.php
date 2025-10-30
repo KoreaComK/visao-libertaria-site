@@ -7,9 +7,6 @@
 					class="<?= ($colaborador === $artigo['marcado_colaboradores_id']) ? ('table-primary bg-opacity-10') : (($artigo['marcado_colaboradores_id'] != NULL) ? ('table-danger bg-opacity-10') : ('')); ?>">
 					<!-- Table data -->
 					<td class="d-flex">
-						<div class="flex-shrink-0">
-							<img class="rounded-3 artigo-list-image" src="<?= $artigo['imagem']; ?>" />
-						</div>
 						<div class="text-center flex-grow-1 ms-3">
 							<p class="fs-4 mb-0"><a
 									href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= $artigo['titulo']; ?></a>

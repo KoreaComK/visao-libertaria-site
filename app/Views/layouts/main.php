@@ -293,9 +293,9 @@
 						<li class="nav-item active">
 							<a class="nav-link" href="<?= site_url('site'); ?>">Home</a>
 						</li>
-						<li class="nav-item">
+						<!-- <li class="nav-item">
 							<a class="nav-link" href="<?= site_url('site/artigos'); ?>">Artigos dos colaboradores</a>
-						</li>
+						</li> -->
 						<li class="nav-item dropdown">
 							<a class="nav-link" href="<?= site_url('colaboradores/pautas/'); ?>" role="button"
 								aria-expanded="false">Pautas e Notícias</a>

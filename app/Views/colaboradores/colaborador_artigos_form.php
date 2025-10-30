@@ -150,7 +150,7 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<?php if (!$cadastro): ?>
+							<?php /*if (!$cadastro): ?>
 								<div class="col-12 mt-4">
 									<div class="mb-3">
 										<!-- Image -->
@@ -175,7 +175,7 @@ use CodeIgniter\I18n\Time;
 										</div>
 									</div>
 								</div>
-							<?php endif; ?>
+							<?php endif; */?>
 
 							<!-- Short description -->
 							<div class="col-12">

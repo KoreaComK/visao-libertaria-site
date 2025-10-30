@@ -27,7 +27,7 @@ use CodeIgniter\I18n\Time;
 			<div class="position-relative mb-3">
 				<div class="bg-image hover-zoom rounded-6">
 					<img class="w-100 img-fluid" height="auto" style="max-height:22rem; object-fit: cover;"
-						src="<?= $artigo['imagem'] ?>"></img>
+						src="<?= cria_url_thumb(extrair_id_video_youtube($artigo['link_video_youtube'])); ?>"></img>
 					<a class="text-white" href="<?= $artigo['link_video_youtube'] ?>" target="_blank">
 						<div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
 							<div class="d-flex align-items-center justify-content-center  h-100 m-4">

@@ -256,10 +256,10 @@ class ValidaFormularios extends BaseController
 				'label' => 'Referências',
 				'rules' => 'required'
 			],
-			'imagem' => [
-				'label' => 'Imagem',
-				'rules' => 'required'
-			]
+			// 'imagem' => [
+			// 	'label' => 'Imagem',
+			// 	'rules' => 'required'
+			// ]
 			// 'categorias' => [
 			// 	'label' => 'Categorias',
 			// 	'rules' => 'required',

@@ -3,8 +3,7 @@
 	<!-- Table head -->
 	<thead class="table-dark">
 		<tr style="vertical-align: middle !important;">
-			<th scope="col" class="border-0 rounded-start"></th>
-			<th scope="col" class="border-0">Título</th>
+			<th scope="col" class="border-0 rounded-start">Título</th>
 			<th scope="col" class="border-0">Escritor</th>
 			<th scope="col" class="border-0">Publicado em</th>
 			<th scope="col" class="border-0">Tipo</th>
@@ -18,11 +17,6 @@
 		<?php if ($artigosList['artigos'] !== NULL && !empty($artigosList['artigos'])): ?>
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
 				<tr>
-					<!-- Table data -->
-					<td>
-						<img class="rounded-3" src="<?= $artigo['imagem']; ?>" style="width: 4rem; height auto;" />
-					</td>
-					<!-- Table data -->
 					<td>
 						<h6 class="mb-0"><a
 								href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= $artigo['titulo']; ?></a>
@@ -33,20 +27,20 @@
 								href="<?= site_url('site/escritor/' . urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a>
 						</h6>
 					</td>
-					<!-- Table data -->
+					
 					<td><?= ($artigo['data_publicado'] != NULL) ? (Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
 					</td>
-					<!-- Table data -->
+					
 					<td>
 						<a href="#"
 							class="badge text-bg-<?= ($artigo['tipo_artigo'] == 'T') ? ('primary') : ('danger'); ?> mb-2"><?= ($artigo['tipo_artigo'] == 'T') ? ('Teórico') : ('Notícia'); ?></a>
 					</td>
-					<!-- Table data -->
+					
 					<td>
 						<span
 							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?> mb-2"><?= $artigo['nome']; ?></span>
 					</td>
-					<!-- Table data -->
+					
 					<td>
 						<div class="d-flex gap-2">
 							<?php if (!isset($admin)): ?>
@@ -64,7 +58,7 @@
 			<?php endforeach; ?>
 		<?php else: ?>
 			<tr>
-				<!-- Table data -->
+				
 				<td colspan="6">
 					<h6 class="text-center">Nenhum resultado foi encontrado</h6>
 				</td>
