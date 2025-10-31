@@ -314,29 +314,6 @@
 											placeholder="Link do Vídeo no Canal do Visão Libertária" required>
 									</div>
 								</div>
-								<!-- <div class="col-12 mt-4">
-									<div class="mb-3">
-										<div class="row align-items-center mb-2">
-											<div class="col-4 col-md-2">
-												<div class="position-relative">
-													<img class="img-fluid" id="preview" src="<?= $artigo['imagem']; ?>" />
-												</div>
-											</div>
-											<div class="col-sm-8 col-md-10 position-relative">
-												<h6 class="my-2">Imagem de capa</h6>
-												<label class="w-100" style="cursor:pointer;">
-													<span>
-														<input class="form-control stretched-link" type="file" name="imagem"
-															id="imagem" accept="image/gif, image/jpeg, image/png">
-													</span>
-												</label>
-												<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
-													tamanhos de
-													1.280 x 720. Tamanhos diferentes da proporção 16:9 serão cortadas.</p>
-											</div>
-										</div>
-									</div>
-								</div> -->
 								<div class="d-flex justify-content-center">
 									<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
 										type="button">Salvar publicação</button>
@@ -577,32 +554,6 @@
 				}
 			});
 		})
-
-		imagem.onchange = evt => {
-			const [file] = imagem.files
-			if (file) {
-				preview.src = URL.createObjectURL(file);
-				form = new FormData(artigo_form);
-				$.ajax({
-					url: "<?= site_url('colaboradores/artigos/salvarImagem/') . $artigo['id']; ?>",
-					method: "POST",
-					data: form,
-					processData: false,
-					contentType: false,
-					cache: false,
-					dataType: "json",
-					beforeSend: function () { $('#modal-loading').show(); },
-					complete: function () { $('#modal-loading').hide(); },
-					success: function (retorno) {
-						if (retorno.status) {
-							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						} else {
-							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-						}
-					}
-				});
-			}
-		}
 	<?php endif; ?>
 
 	<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
