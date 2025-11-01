@@ -3,8 +3,7 @@
 	<!-- Table head -->
 	<thead class="table-dark">
 		<tr style="vertical-align: middle !important;">
-			<th scope="col" class="border-0 rounded-start"></th>
-			<th scope="col" class="border-0">Título</th>
+			<th scope="col" class="border-0 rounded-start">Título</th>
 			<th scope="col" class="border-0">Publicado em</th>
 			<th scope="col" class="border-0">Tipo do artigo</th>
 			<th scope="col" class="border-0">Status</th>
