@@ -1034,32 +1034,6 @@
 		});
 	}
 
-	imagem.onchange = evt => {
-		const [file] = imagem.files
-		if (file) {
-			preview.src = URL.createObjectURL(file);
-			form = new FormData(artigo_form);
-			$.ajax({
-				url: "<?= site_url('colaboradores/artigos/salvarImagem/') . $artigo['id']; ?>",
-				method: "POST",
-				data: form,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide(); },
-				success: function (retorno) {
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
-		}
-	}
-
 	$("#btn-comentarios").on("click", function () {
 		getComentarios();
 	});
