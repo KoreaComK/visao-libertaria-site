@@ -431,7 +431,7 @@ use CodeIgniter\I18n\Time;
 			</div>
 			<div class="modal-body">
 				<p>Os pagamentos deste mês não serão enviados, pois todos os seus dados (com exceção do seu e-mail)
-					seram deletados da nossa base de
+					serão deletados da nossa base de
 					dados.</p>
 				<p>Você não conseguirá mais acessar sua conta. Essa ação não pode ser desfeita.</p>
 				<p>Ao clicar em "Excluir minha conta", será enviado um e-mail de confirmação de exclusão.</p>
