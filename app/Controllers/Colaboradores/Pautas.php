@@ -21,11 +21,11 @@ class Pautas extends BaseController
 		$data = array();
 		$data['titulo'] = 'Pautas Cadastradas';
 		$pautasModel = new \App\Models\PautasModel();
-		
+
 		// Obtém parâmetros de filtro
 		$get = $this->request->getGet();
 		$pesquisa = (isset($get['pesquisa']) && $get['pesquisa'] != '') ? $get['pesquisa'] : NULL;
-		
+
 		$pautas = $pautasModel->getPautas(false, false, false, $pesquisa);
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
@@ -49,22 +49,25 @@ class Pautas extends BaseController
 			$data['limiteDiario'] = false;
 			$data['limiteSemanal'] = false;
 			$session = $this->session->get('colaboradores');
-			
-			$time = Time::today();
-			$time = $time->toDateString();
-			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-			if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
-				$data['limiteDiario'] = true;
+
+			if ($session['id'] != null) {
+
+				$time = Time::today();
+				$time = $time->toDateString();
+				$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
+				if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
+					$data['limiteDiario'] = true;
+				}
+
+				$time = new Time('-7 days');
+				$time = $time->toDateString();
+				$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
+				if ($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
+					$data['limiteSemanal'] = true;
+				}
 			}
 
-			$time = new Time('-7 days');
-			$time = $time->toDateString();
-			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-			if ($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
-				$data['limiteSemanal'] = true;
-			}
 
-			
 			return view('colaboradores/pautas_list', $data);
 		}
 	}
@@ -231,7 +234,7 @@ class Pautas extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
-		
+
 		return redirect()->to(base_url() . 'colaboradores/pautas');
 
 		// if ($isAdmin) {
