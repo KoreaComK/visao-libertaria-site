@@ -367,13 +367,15 @@
 		</nav>
 	</header>
 
-	<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+	<?php /*if (isset($_SESSION['colaboradores']['id'])): ?>
+
+		<?php if (strpos($_SERVER['PHP_SELF'], '/colaboradores/pautas') === false): ?>
 		
 		<button type="button" class="btn btn-primary rounded-circle button btn-tooltip" data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
 		data-bs-titulo-modal="Cadastre uma pauta" title="Sugerir Pauta"
 			data-toggle="tooltip" data-placement="right"><i class="h4 bi bi-pen lh-1"></i></button>
 
-		<?php if (strpos($_SERVER['PHP_SELF'], '/colaboradores/pautas') === false): ?>
+		
 			<div class="modal fade" id="modalSugerirPauta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
@@ -589,7 +591,7 @@
 				}
 			</script>
 		<?php endif; ?>
-	<?php endif; ?>
+	<?php endif; */ ?>
 
 	<?= $this->renderSection('content'); ?>
 

@@ -303,7 +303,7 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'audio' => [
 				'label' => 'Arquivo de Áudio',
-				'rules' => 'uploaded[audio]|ext_in[audio,mp3]|max_size[audio,30720]'
+				'rules' => 'uploaded[audio]|ext_in[audio,mp3]|max_size[audio,40960]'
 			],
 		]);
 		$validation->run();

@@ -67,7 +67,7 @@ class PautasModel extends Model
 		return $query->getResult('array');
 	}
 
-	public function getPautas($reservado = false, $excluido = false, $redatores = false)
+	public function getPautas($reservado = false, $excluido = false, $redatores = false, $pesquisa = NULL)
 	{
 		$this->builder()
 			->select('pautas.*, colaboradores.apelido AS apelido')
@@ -87,6 +87,14 @@ class PautasModel extends Model
 		}
 		if ($excluido === true) {
 			$this->withDeleted();
+		}
+		if ($pesquisa !== NULL && $pesquisa !== '') {
+			$pesquisaEscapada = $this->db->escapeLikeString($pesquisa);
+			$this->builder()->groupStart()
+				->like('pautas.link', $pesquisaEscapada)
+				->orLike('pautas.titulo', $pesquisaEscapada)
+				->orLike('pautas.texto', $pesquisaEscapada)
+				->groupEnd();
 		}
 		$this->builder()->orderBy('pautas.criado', 'DESC');
 		return $this;

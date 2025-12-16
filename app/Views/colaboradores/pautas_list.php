@@ -43,10 +43,50 @@ use CodeIgniter\I18n\Time;
 			</div>
 		</div>
 	</section>
+
+	<section class="mb-4">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">
+							<i class="bi bi-funnel pe-2"></i>Filtrar Pautas
+						</h5>
+					</div>
+					<div class="card-body">
+						<form method="get" id="formFiltroPautas" action="<?= site_url('colaboradores/pautas'); ?>">
+							<div class="row g-3">
+								<div class="col-md-9">
+									<label for="pesquisa" class="form-label">Buscar</label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="bi bi-search"></i></span>
+										<input type="text" class="form-control" id="pesquisa" name="pesquisa" 
+											placeholder="Buscar por título, texto ou link..." 
+											value="<?= isset($_GET['pesquisa']) ? esc($_GET['pesquisa']) : ''; ?>">
+									</div>
+								</div>
+								<div class="col-md-3 d-flex align-items-end">
+									<button type="submit" class="btn btn-primary w-100 me-2">
+										<i class="bi bi-search pe-2"></i>Filtrar
+									</button>
+									<a href="<?= site_url('colaboradores/pautas'); ?>" class="btn btn-primary">
+										<i class="bi bi-x-circle"></i>
+									</a>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<?php if (isset($_SESSION['colaboradores']['id'])): ?>
 		<div class="mb-4 text-center">
-			<button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
-				data-bs-titulo-modal="Cadastre uma pauta">
+			<button type="button" class="btn btn-primary btn-tooltip" <?php if ($limiteDiario == false && $limiteSemanal == false): ?>data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Cadastre uma pauta" data-bs-toggle="modal"<?php endif; ?> 
+				data-toggle="tooltip"
+				data-placement="top" id="btn-sugerir-pauta"
+				title="<?php if ($limiteDiario == true): ?>Você atingiu o limite diário de pautas. Tente novamente amanhã. <?php elseif ($limiteSemanal == true): ?>Você atingiu o limite semanal de pautas. Tente novamente outro dia.<?php endif; ?>">
 				Sugerir pauta
 			</button>
 		</div>
@@ -200,6 +240,10 @@ use CodeIgniter\I18n\Time;
 </script>
 
 <script>
+
+	$(function () {
+		$('.btn-tooltip').tooltip();
+	});
 
 	const exampleModal = document.getElementById('modalSugerirPauta');
 	exampleModal.addEventListener('show.bs.modal', event => {

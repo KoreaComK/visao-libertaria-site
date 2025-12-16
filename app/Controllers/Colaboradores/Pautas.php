@@ -21,7 +21,12 @@ class Pautas extends BaseController
 		$data = array();
 		$data['titulo'] = 'Pautas Cadastradas';
 		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->getPautas();
+		
+		// Obtém parâmetros de filtro
+		$get = $this->request->getGet();
+		$pesquisa = (isset($get['pesquisa']) && $get['pesquisa'] != '') ? $get['pesquisa'] : NULL;
+		
+		$pautas = $pautasModel->getPautas(false, false, false, $pesquisa);
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
@@ -41,6 +46,25 @@ class Pautas extends BaseController
 		if ($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
 			return view('template/templatePautasListColaboradores', $data);
 		} else {
+			$data['limiteDiario'] = false;
+			$data['limiteSemanal'] = false;
+			$session = $this->session->get('colaboradores');
+			
+			$time = Time::today();
+			$time = $time->toDateString();
+			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
+			if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
+				$data['limiteDiario'] = true;
+			}
+
+			$time = new Time('-7 days');
+			$time = $time->toDateString();
+			$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
+			if ($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
+				$data['limiteSemanal'] = true;
+			}
+
+			
 			return view('colaboradores/pautas_list', $data);
 		}
 	}
