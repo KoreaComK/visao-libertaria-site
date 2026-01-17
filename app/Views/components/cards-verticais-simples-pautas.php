@@ -4,7 +4,7 @@ use CodeIgniter\I18n\Time;
 
 ?>
 <div class="card col-lg-3 mb-4 shadow-0 p-1">
-	<img src="<?= $dados['imagem']; ?>" alt="" class="card-img-top rounded-6 object-fit-cover">
+	<img src="<?= $dados['imagem']; ?>" onerror="this.onerror = null; this.src='<?= site_url('public/assets/img/default-image.jpg') ?>'" alt="" class="card-img-top rounded-6 object-fit-cover">
 	<div class="card-body p-2">
 		<h5 class="card-title fw-bold">
 			<?php if ($dados['pauta_antiga'] == 'S'): ?>
