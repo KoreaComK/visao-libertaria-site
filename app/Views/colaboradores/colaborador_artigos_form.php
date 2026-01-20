@@ -124,9 +124,9 @@ use CodeIgniter\I18n\Time;
 								<div class="mb-3" for="gancho">
 									<label class="form-label">Gancho </label>
 									<textarea class="form-control" rows="3" placeholder="Texto curto antes da vinheta"
-										id="gancho" maxlength="255"
+										id="gancho" maxlength="600"
 										name="gancho"><?= str_replace('"', "'", $artigo['gancho']); ?></textarea>
-									<small>Uma frase chamativa que cative o telespectador. Máximo 255 caracteres.</small>
+									<small>Um parágrafo chamativo que cative o telespectador. Máximo 600 caracteres.</small>
 								</div>
 							</div>
 

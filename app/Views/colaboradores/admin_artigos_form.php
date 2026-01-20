@@ -123,10 +123,10 @@
 													<label class="form-label">Gancho </label>
 													<textarea class="form-control" rows="3"
 														placeholder="Texto curto antes da vinheta" id="gancho"
-														maxlength="255"
+														maxlength="600"
 														name="gancho"><?= str_replace('"', "'", $artigo['gancho']); ?></textarea>
-													<small>Uma frase chamativa que cative o telespectador. Máximo
-														255
+													<small>Um parágrafo chamativo que cative o telespectador. Máximo
+														600
 														caracteres.</small>
 												</div>
 											</div>

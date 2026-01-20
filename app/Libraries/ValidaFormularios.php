@@ -246,7 +246,7 @@ class ValidaFormularios extends BaseController
 			],
 			'gancho' => [
 				'label' => 'Gancho',
-				'rules' => 'required|max_length[255]|min_length[25]'
+				'rules' => 'required|max_length[600]|min_length[25]'
 			],
 			'texto' => [
 				'label' => 'Texto do Artigo',
