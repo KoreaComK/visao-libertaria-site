@@ -214,7 +214,7 @@ class Admin extends BaseController
 		$contatosModel = new \App\Models\ContatosModel();
 		$contatosAssuntosModel = new  \App\Models\ContatosAssuntosModel();
 
-		$contatos = $contatosModel->findAll();
+		$contatos = $contatosModel->orderBy('criado', 'DESC')->findAll();
 		$data = array();
 		$data['dados'] = $contatos;
 		$data['assuntos'] = $contatosAssuntosModel->findAll();
