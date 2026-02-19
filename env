@@ -24,6 +24,7 @@ FIRSTKEY = AAABBBCCC
 SECONDKEY = DDDEEEFFF
 METHOD = aria-256-ccm
 METHOD_HMAC = aria-128-ofb
+HCAPTCHA_SECRET = 1234567890
 
 #--------------------------------------------------------------------
 # APP
@@ -93,12 +94,6 @@ METHOD_HMAC = aria-128-ofb
 # cookie.httponly = false
 # cookie.samesite = 'Lax'
 # cookie.raw = false
-
-#--------------------------------------------------------------------
-# CAPTCHA
-#--------------------------------------------------------------------
-
-# HCAPTCHA_SECRET =
 
 #--------------------------------------------------------------------
 # ENCRYPTION
