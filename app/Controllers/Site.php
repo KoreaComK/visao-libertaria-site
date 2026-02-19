@@ -906,7 +906,7 @@ class Site extends BaseController
 			return false;
 		}
 		$data = array(
-			'secret' => "ES_99f25bb22874418ea4aff1e104784bb3",
+			'secret' => getenv('HCAPTCHA_SECRET'),
 			'response' => $captcha_response
 		);
 		$verify = curl_init();
