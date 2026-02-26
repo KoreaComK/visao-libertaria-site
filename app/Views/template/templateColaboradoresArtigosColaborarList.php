@@ -9,7 +9,9 @@
 					<td class="d-flex">
 						<div class="text-center flex-grow-1 ms-3">
 							<p class="fs-4 mb-0"><a
-									href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= $artigo['titulo']; ?></a>
+									href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"
+									class="btn-tooltip <?= ($artigo['anti_ia_contador'] >= $antiIaLimiteMax) ? ('text-danger') : (($artigo['anti_ia_contador'] >= $antiIaLimiteMin && $artigo['anti_ia_contador'] < $antiIaLimiteMax) ? ('text-warning') : ('')); ?>"
+									data-toggle="tooltip" data-placement="top" title="<?= ($artigo['anti_ia_contador'] >= $antiIaLimiteMax) ? ('Texto com alto risco de ser escrito por I.A.') : (($artigo['anti_ia_contador'] >= $antiIaLimiteMin && $artigo['anti_ia_contador'] < $antiIaLimiteMax) ? ('Texto possivelmente escrito por I.A.') : ('')); ?>" ><?= $artigo['titulo']; ?></a>
 							</p>
 							<p class="fs-6 mb-0 lh-base align-middle mt-1 mb-1">Escritor - <a
 									href="<?= site_url('site/escritor/' . urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a>

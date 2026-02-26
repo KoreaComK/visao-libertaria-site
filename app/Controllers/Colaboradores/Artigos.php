@@ -1040,6 +1040,8 @@ class Artigos extends BaseController
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$antiIaLimiteMax = (int) $configuracaoModel->find('anti_ia_limite_maximo')['config_valor'];
+		$antiIaLimiteMin = (int) $configuracaoModel->find('anti_ia_limite_minimo')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$data = array();
@@ -1111,6 +1113,8 @@ class Artigos extends BaseController
 			'artigos' => $artigos,
 			'pager' => $artigosModel->pager
 		];
+		$data['antiIaLimiteMax'] = $antiIaLimiteMax;
+		$data['antiIaLimiteMin'] = $antiIaLimiteMin;
 
 		return view('template/templateColaboradoresArtigosColaborarList', $data);
 	}
@@ -1620,6 +1624,9 @@ class Artigos extends BaseController
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
 		$faseProducao = $faseProducaoModel->find($artigo['fase_producao_id']);
 		$artigo['fase_producao_id'] = $faseProducao['etapa_posterior'];
+		if ($faseProducao['etapa_posterior'] == '2') {
+			$artigo = $this->contadorAntiIa($artigo);
+		}
 		if ($faseProducao['etapa_posterior'] == '3') {
 			$artigo['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
 		}
@@ -1844,5 +1851,58 @@ class Artigos extends BaseController
 			return $retorno;
 		}
 		return false;
+	}
+
+	private function contadorAntiIa($artigo)
+	{
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$antiIaTermos = $configuracaoModel->find('anti_ia_termos');
+
+		$termosRaw = $antiIaTermos ? $antiIaTermos['config_valor'] : '';
+
+		$textoOriginal = $artigo['texto'];
+		$termos = $this->parseTermosAntiIa($termosRaw);
+		if (empty($termos)) {
+			return $artigo;
+		}
+
+		$texto = mb_strtolower($textoOriginal, 'UTF-8');
+		$contador = 0;
+
+		$termosOrdenados = $termos;
+		usort($termosOrdenados, function ($a, $b) {
+			return mb_strlen($b, 'UTF-8') - mb_strlen($a, 'UTF-8');
+		});
+
+		foreach ($termosOrdenados as $termo) {
+			$termoEscapado = preg_quote($termo, '/');
+			$pattern = '/' . $termoEscapado . '/iu';
+			$texto = preg_replace_callback($pattern, function ($m) use (&$contador) {
+				$contador++;
+				return str_repeat(' ', strlen($m[0]));
+			}, $texto);
+		}
+
+		// Travessões — (conta como 1 termo se >= 6)
+		$travessoes = preg_match_all('/—/u', $textoOriginal, $m) ? count($m[0]) : 0;
+		if ($travessoes >= 6) {
+			$contador++;
+		}
+
+		$artigo['anti_ia_contador'] = $contador;
+
+		return $artigo;
+	}
+
+	private function parseTermosAntiIa($termosRaw)
+	{
+		if ($termosRaw === '' || $termosRaw === null) {
+			return [];
+		}
+		$lista = preg_split('/[\r\n,]+/u', $termosRaw, -1, PREG_SPLIT_NO_EMPTY);
+		$lista = array_map(function ($t) {
+			return mb_strtolower(trim($t), 'UTF-8');
+		}, $lista);
+		return array_values(array_filter($lista));
 	}
 }
