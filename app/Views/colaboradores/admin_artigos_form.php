@@ -786,7 +786,7 @@
 	});
 	<?php if ($artigo['texto'] !== null): ?>
 		quill.setContents([
-			{ insert: "<?= preg_replace('/\s\s+/', '\n\n', addslashes(htmlspecialchars_decode($artigo['texto']))); ?>" },
+			{ insert: <?= json_encode(preg_replace('/\s\s+/', "\n\n", htmlspecialchars_decode($artigo['texto']))); ?> },
 		])
 	<?php endif; ?>
 
