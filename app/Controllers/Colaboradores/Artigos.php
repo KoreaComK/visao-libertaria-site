@@ -923,7 +923,12 @@ class Artigos extends BaseController
 			}
 
 			if (!is_null($get['texto']) && !empty($get['texto']) && $get['texto'] != '') {
-				$artigosModel->Like('artigos.titulo', $get['texto']);
+				$campoPesquisa = $get['campo_pesquisa'] ?? 'titulo';
+				if ($campoPesquisa === 'texto') {
+					$artigosModel->like('artigos.texto', $get['texto']);
+				} else {
+					$artigosModel->like('artigos.titulo', $get['texto']);
+				}
 			}
 
 			if (!is_null($get['fase_producao']) && !empty($get['fase_producao']) && $get['fase_producao'] != '') {

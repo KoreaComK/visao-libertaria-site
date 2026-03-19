@@ -23,8 +23,14 @@
 						data-np-checked="1" data-np-watching="1">
 						<!-- Search -->
 						<div class="col-12 col-md-3 mt-3">
-							<input class="form-control pe-5" type="search" id="text-pesquisa-publicado"
-								name="text-pesquisa-publicado" placeholder="Pesquisar Título Artigo" aria-label="Pesquisar">
+							<div class="input-group">
+								<select class="form-select" id="select-campo-pesquisa" name="select-campo-pesquisa" aria-label="Buscar em">
+									<option value="titulo" selected>Título</option>
+									<option value="texto">Conteúdo (texto)</option>
+								</select>
+								<input class="form-control" type="search" id="text-pesquisa-publicado"
+									name="text-pesquisa-publicado" placeholder="Pesquisar..." aria-label="Pesquisar">
+							</div>
 						</div>
 						<div class="col-12 col-md-3 mt-3">
 							<select class="form-control form-select select-pesquisa" id="select-pesquisa"
@@ -112,6 +118,7 @@
 			dataType: 'html',
 			data: {
 				texto: $('#text-pesquisa-publicado').val(),
+				campo_pesquisa: $('#select-campo-pesquisa').val(),
 				fase_producao: $('#select-pesquisa').val(),
 				colaborador: $('#text-colaborador').val(),
 				fase_producao_colaborador: $('#select-colaborador').val(),
