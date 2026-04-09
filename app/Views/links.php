@@ -57,7 +57,7 @@ use CodeIgniter\I18n\Time;
 						<a href="https://odysee.com/@wrevolving:1" class="btn-link">Mundo em Revolução.</a>
 					</p>
 					<p>
-						<a href="https://odysee.com/@diariosdaquarentena:0" class="btn-link">Diários da Quarentena.</a>
+						<a href="https://odysee.com/@diariosdaquarentena:0" class="btn-link">Peter Turguniev.</a>
 					</p>
 					<p class="lead">Contas no twitter:</p>
 					<p>
