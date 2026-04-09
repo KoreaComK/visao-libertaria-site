@@ -35,7 +35,7 @@ use CodeIgniter\I18n\Time;
 					</p>
 					<p class="lead">Canais pessoais do Peter Turguniev:</p>
 					<p>
-						<a href="https://www.youtube.com/channel/UCer2dai4fdkruJeq9vVKWKA" class="btn-link">Diários da Quarentena: VLOG aleatório do Peter.</a>
+						<a href="https://www.youtube.com/channel/UCer2dai4fdkruJeq9vVKWKA" class="btn-link">Peter Turguniev: VLOG aleatório do Peter.</a>
 					</p>
 					<p>
 						<a href="https://www.youtube.com/channel/UCAvIp-okEqNNIrISZEm5rag" class="btn-link">Gordão Fitness: Acompanhamento da minha perda de peso.</a>
