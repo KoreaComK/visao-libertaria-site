@@ -97,7 +97,13 @@ $metricas = $metricas ?? array(
 				<h1 class="h3 mb-1"><?= esc($titulo ?? 'Meus artigos'); ?></h1>
 				<p class="text-muted small mb-0">Resumo da sua atividade e listas dos seus artigos</p>
 			</div>
-			<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="btn btn-sm btn-primary mt-2 mt-sm-0">Novo artigo</a>
+			<div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+				<?php if ($nomeEscritorUrl !== ''): ?>
+					<a href="<?= site_url('site/escritor/' . urlencode($nomeEscritorUrl)); ?>"
+						class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener noreferrer">Ver página pública</a>
+				<?php endif; ?>
+				<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="btn btn-sm btn-primary">Novo artigo</a>
+			</div>
 		</div>
 
 		<section class="mb-4" aria-labelledby="heading-meus-artigos-30d">
@@ -362,10 +368,6 @@ $metricas = $metricas ?? array(
 				<div class="card-header bg-body-secondary bg-opacity-25 border-bottom p-3">
 					<div class="d-sm-flex justify-content-between align-items-center gap-2">
 						<h3 class="h6 mb-0">Meus artigos publicados</h3>
-						<?php if ($nomeEscritorUrl !== ''): ?>
-							<a href="<?= site_url('site/escritor/' . urlencode($nomeEscritorUrl)); ?>"
-								class="btn btn-sm btn-outline-primary flex-shrink-0" target="_blank" rel="noopener noreferrer">Ver página pública</a>
-						<?php endif; ?>
 					</div>
 				</div>
 				<div class="card-body p-3">

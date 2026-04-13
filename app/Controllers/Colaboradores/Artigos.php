@@ -285,7 +285,7 @@ class Artigos extends BaseController
 		$db = db_connect();
 		$rowResumo = $db->table('artigos')
 			->select('COUNT(*) AS escritos, COALESCE(SUM(palavras_escritor), 0) AS palavras_totais', false)
-			->select('SUM(CASE WHEN fase_producao_id IN (\'6\',\'7\') THEN 1 ELSE 0 END) AS publicados', false)
+			->select('SUM(CASE WHEN publicado IS NOT NULL THEN 1 ELSE 0 END) AS publicados', false)
 			->where('escrito_colaboradores_id', $usuarioId)
 			->where('descartado', null)
 			->get()
@@ -444,10 +444,7 @@ class Artigos extends BaseController
 				$artigosModel->withDeleted();
 				$artigosModel->groupStart();
 				$artigosModel->whereIn('artigos.fase_producao_id', array('6', '7'));
-				$artigosModel->where('artigos.descartado', null);
-				$artigosModel->groupEnd();
-				$artigosModel->orGroupStart();
-				$artigosModel->where('artigos.descartado IS NOT NULL', null, false);
+				$artigosModel->orWhere('artigos.descartado IS NOT NULL', null, false);
 				$artigosModel->groupEnd();
 			} else {
 				$artigosModel->whereIn('artigos.fase_producao_id', array('6', '7'));

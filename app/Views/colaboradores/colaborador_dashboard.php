@@ -7,7 +7,7 @@
 		<div class="d-sm-flex justify-content-between align-items-center mb-4">
 			<div>
 				<h1 class="h3 mb-1">Dashboard de artigos</h1>
-				<p class="text-muted small mb-0">Visão geral do pipeline e listagem de todos os artigos do site</p>
+				<p class="text-muted small mb-0">Visão geral da trilha de produção e listagem de todos os artigos do site</p>
 			</div>
 			<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="btn btn-sm btn-primary mt-2 mt-sm-0">Novo artigo</a>
 		</div>
