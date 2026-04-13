@@ -4,116 +4,208 @@
 
 <div class="container-fluid py-3">
 	<div class="container">
-		<div class="row g-4">
-			<div class="col-12">
-				<div class="d-flex flex-wrap gap-3">
-					<?php if (in_array('3', $permissoes)): ?>
-						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2"
-								<?= ($primeira['id'] == '2') ? ('checked') : (''); ?>>
-							<label class="btn btn-outline-light w-100" for="revisar">
-								<div class="icon-xl fs-1 rounded-3 text-primary text-center">
-									<i class="fas fa-pen-to-square"></i>
-								</div>
-								<span class="mb-0 text-primary">Revisar</span>
-							</label>
-						</div>
-					<?php endif; ?>
-					<?php if (in_array('4', $permissoes)): ?>
-						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="narrar" value="3"
-								<?= ($primeira['id'] == '3') ? ('checked') : (''); ?>>
-							<label class="btn btn-outline-light w-100" for="narrar">
-								<div class="icon-xl fs-1 rounded-3 text-info text-center">
-									<i class="fas fa-microphone"></i>
-								</div>
-								<span class="mb-0 text-info">Narrar</span>
-							</label>
-						</div>
-					<?php endif; ?>
-					<?php if (in_array('5', $permissoes)): ?>
-						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="produzir" value="4"
-								<?= ($primeira['id'] == '4') ? ('checked') : (''); ?>>
-							<label class="btn btn-outline-light w-100" for="produzir">
-								<div class="icon-xl fs-1 rounded-3 text-secondary text-center">
-									<i class="fas fa-video"></i>
-								</div>
-								<span class="mb-0 text-secondary">Produzir</span>
-							</label>
-						</div>
-					<?php endif; ?>
-					<?php if (in_array('6', $permissoes)): ?>
-						<div class="flex-fill">
-							<input type="radio" class="btn-check radio" name="fase_producao" id="publicar" value="5"
-								<?= ($primeira['id'] == '5') ? ('checked') : (''); ?>>
-							<label class="btn btn-outline-light w-100" for="publicar">
-								<div class="icon-xl fs-1 rounded-3 text-danger text-center">
-									<i class="fab fa-youtube"></i>
-								</div>
-								<span class="mb-0 text-danger">Publicar</span>
-							</label>
-						</div>
-					<?php endif; ?>
-				</div>
+		<div class="d-sm-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="h3 mb-1">Artigos para colaborar</h1>
+				<p class="text-muted small mb-0">Escolha a fase, pesquise e marque artigos para trabalhar nesta etapa</p>
 			</div>
-
 		</div>
 
-		<!-- Post list table START -->
-		<div class="card border bg-transparent rounded-3 mt-4">
-
-			<div class="card-header bg-transparent border-bottom p-3">
-				<div class="d-sm-flex justify-content-between align-items-center">
-					<h5 class="mb-2 mb-sm-0">Artigos para <span class="fase-producao-nome"
-							style="text-transform: lowercase;"></span></h5>
+		<section class="mb-4" aria-labelledby="heading-colab-fase">
+			<h2 id="heading-colab-fase" class="h5 text-body mb-1">Fase de colaboração</h2>
+			<p class="text-muted small mb-0">Selecione a etapa em que pretende colaborar</p>
+			<div class="card border rounded-3 shadow-sm mt-2">
+				<div class="card-body p-2 p-sm-3">
+					<div class="row row-cols-2 row-cols-sm-2 row-cols-lg-4 g-2">
+						<?php if (in_array('3', $permissoes)): ?>
+							<div class="col">
+								<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2"
+									<?= ($primeira['id'] == '2') ? ('checked') : (''); ?>>
+								<label class="colab-fase-label" for="revisar">
+									<span class="colab-fase-icon rounded-2 p-2 bg-primary bg-opacity-10 text-primary flex-shrink-0"><i
+											class="fas fa-pen-to-square" aria-hidden="true"></i></span>
+									<span class="text-start colab-fase-text">
+										<span class="d-block fw-bold lh-sm">Revisar</span>
+										<span class="d-block small text-muted text-truncate">Revisando</span>
+									</span>
+								</label>
+							</div>
+						<?php endif; ?>
+						<?php if (in_array('4', $permissoes)): ?>
+							<div class="col">
+								<input type="radio" class="btn-check radio" name="fase_producao" id="narrar" value="3"
+									<?= ($primeira['id'] == '3') ? ('checked') : (''); ?>>
+								<label class="colab-fase-label" for="narrar">
+									<span class="colab-fase-icon rounded-2 p-2 bg-info bg-opacity-10 text-info flex-shrink-0"><i
+											class="fas fa-microphone" aria-hidden="true"></i></span>
+									<span class="text-start colab-fase-text">
+										<span class="d-block fw-bold lh-sm">Narrar</span>
+										<span class="d-block small text-muted text-truncate">Narrando</span>
+									</span>
+								</label>
+							</div>
+						<?php endif; ?>
+						<?php if (in_array('5', $permissoes)): ?>
+							<div class="col">
+								<input type="radio" class="btn-check radio" name="fase_producao" id="produzir" value="4"
+									<?= ($primeira['id'] == '4') ? ('checked') : (''); ?>>
+								<label class="colab-fase-label" for="produzir">
+									<span class="colab-fase-icon rounded-2 p-2 bg-secondary bg-opacity-10 text-secondary flex-shrink-0"><i
+											class="fas fa-video" aria-hidden="true"></i></span>
+									<span class="text-start colab-fase-text">
+										<span class="d-block fw-bold lh-sm">Produzir</span>
+										<span class="d-block small text-muted text-truncate">Produzindo</span>
+									</span>
+								</label>
+							</div>
+						<?php endif; ?>
+						<?php if (in_array('6', $permissoes)): ?>
+							<div class="col">
+								<input type="radio" class="btn-check radio" name="fase_producao" id="publicar" value="5"
+									<?= ($primeira['id'] == '5') ? ('checked') : (''); ?>>
+								<label class="colab-fase-label" for="publicar">
+									<span class="colab-fase-icon rounded-2 p-2 bg-danger bg-opacity-10 text-danger flex-shrink-0"><i
+											class="fab fa-youtube" aria-hidden="true"></i></span>
+									<span class="text-start colab-fase-text">
+										<span class="d-block fw-bold lh-sm">Publicar</span>
+										<span class="d-block small text-muted text-truncate">Publicando</span>
+									</span>
+								</label>
+							</div>
+						<?php endif; ?>
+					</div>
 				</div>
 			</div>
-			<!-- Card body START -->
+		</section>
+
+		<section class="card border rounded-3 shadow-sm" aria-labelledby="heading-colab-listagem">
+			<div class="card-header bg-body-secondary bg-opacity-25 border-bottom p-3">
+				<div class="d-sm-flex justify-content-between align-items-start gap-2">
+					<div>
+						<h2 id="heading-colab-listagem" class="h5 mb-1">Listagem nesta fase</h2>
+						<p class="small text-muted mb-0">A mostrar artigos para <span class="fase-producao-nome"
+								style="text-transform: lowercase;"></span></p>
+					</div>
+				</div>
+			</div>
 			<div class="card-body p-3">
+				<div class="listagem-site-filtros rounded-3 border bg-body-secondary bg-opacity-50 p-3 mb-0"
+					data-np-autofill-form-type="other" data-np-checked="1" data-np-watching="1">
+					<form class="mb-0" id="form-colaborar-filtros">
+						<div class="row g-2 g-md-3 align-items-end">
+							<div class="col-12 col-md-7 col-lg-8">
+								<label class="form-label small text-muted mb-1" for="text-pesquisa">Pesquisar</label>
+								<input class="form-control form-control-sm" type="search" id="text-pesquisa"
+									name="text-pesquisa" placeholder="Pesquisar…" aria-label="Pesquisar">
+							</div>
+							<div class="col-12 col-md-5 col-lg-4">
+								<label class="form-label small text-muted mb-1" for="select-tipo">Tipo de artigo</label>
+								<select class="form-select form-select-sm select-pesquisa" id="select-tipo" name="select-tipo"
+									aria-label="Tipo de artigo">
+									<option value="">Todos os tipos</option>
+									<option value="T">Teórico</option>
+									<option value="N">Notícia</option>
+								</select>
+							</div>
+						</div>
+						<div class="d-flex justify-content-end mt-2 mt-md-3">
+							<button class="btn btn-primary btn-sm btn-pesquisar" type="submit" aria-label="Pesquisar">
+								<i class="fas fa-magnifying-glass me-1" aria-hidden="true"></i> Pesquisar
+							</button>
+						</div>
+					</form>
+				</div>
 
-				<!-- Search and select START -->
-				<div class="row g-3 align-items-center justify-content-between mb-3" data-np-autofill-form-type="other"
-					data-np-checked="1" data-np-watching="1">
-					<!-- Search -->
-					<div class="col-md-8">
-						<form class="rounded position-relative">
-							<input class="form-control pe-5 bg-transparent" type="search" id="text-pesquisa"
-								name="text-pesquisa" placeholder="Pesquisar" aria-label="Pesquisar">
-							<button
-								class="btn bg-transparent border-0 px-4 py-2 position-absolute top-50 end-0 translate-middle-y btn-pesquisar"
-								type="submit"><i class="fas fa-magnifying-glass"></i></button>
-						</form>
+				<div class="border-top pt-3 mt-3">
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+						<h3 class="h6 mb-0 text-muted">Resultados</h3>
 					</div>
-
-					<!-- Select option -->
-					<div class="col-md-3">
-						<!-- Short by filter -->
-
-						<select class="form-select z-index-9 bg-transparent select-pesquisa" id="select-tipo"
-							name="select-tipo">
-							<option value="">Escolha o Tipo</option>
-							<option value="T">Teórico</option>
-							<option value="N">Notícia</option>
-						</select>
-
+					<div class="table-responsive listagem-site-table-wrap rounded border">
+						<div class="tabela-publicado min-height-listagem"></div>
 					</div>
 				</div>
-				<!-- Search and select END -->
-
-				<!-- Post list table START -->
-				<div class="table-responsive border-0 tabela-publicado">
-
-				</div>
-				<!-- Post list table END -->
-
 			</div>
-		</div>
-		<!-- Post list table END -->
+		</section>
 	</div>
-	<!-- Counter END -->
-
 </div>
+
+<style>
+	.colab-fase-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		width: 100%;
+		margin: 0;
+		padding: 0.5rem;
+		border-radius: var(--bs-border-radius);
+		border: 1px solid transparent;
+		cursor: pointer;
+		color: inherit;
+		background-color: transparent;
+		font: inherit;
+		text-align: left;
+	}
+
+	.colab-fase-label:hover {
+		background-color: var(--bs-secondary-bg);
+		border-color: var(--bs-border-color);
+	}
+
+	.btn-check:checked+.colab-fase-label {
+		background-color: var(--bs-secondary-bg);
+		border-color: var(--bs-border-color);
+		box-shadow: inset 0 0 0 2px var(--bs-primary);
+	}
+
+	.btn-check:focus-visible+.colab-fase-label {
+		outline: 2px solid var(--bs-primary);
+		outline-offset: 2px;
+	}
+
+	.colab-fase-icon {
+		font-size: 1rem;
+		line-height: 1;
+	}
+
+	.colab-fase-text {
+		min-width: 0;
+	}
+
+	.listagem-site-filtros .form-select,
+	.listagem-site-filtros .form-control {
+		font-family: inherit;
+	}
+
+	.listagem-site-table-wrap {
+		max-height: min(70vh, 42rem);
+		overflow: auto;
+	}
+
+	.listagem-site-table-wrap .table thead.listagem-site-thead th {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		background-color: var(--bs-secondary-bg) !important;
+		color: var(--bs-body-color);
+		font-weight: 600;
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		border-bottom: 1px solid var(--bs-border-color) !important;
+		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+		vertical-align: middle;
+	}
+
+	[data-bs-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
+	[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th {
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.min-height-listagem {
+		min-height: 6rem;
+	}
+</style>
+
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalPrevia" aria-hidden="true" id="modalPrevia">
 	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
 		<div class="modal-content">

@@ -1,65 +1,77 @@
-<?php use CodeIgniter\I18n\Time; ?>
-<table class="table align-middle p-4 mb-0 table-hover table-shrink">
-	<!-- Table head -->
-	<thead class="table-dark">
-		<tr style="vertical-align: middle !important;">
-			<th scope="col" class="border-0 rounded-start">Título</th>
-			<th scope="col" class="border-0">Publicado em</th>
-			<th scope="col" class="border-0">Tipo do artigo</th>
-			<th scope="col" class="border-0">Status</th>
-			<th scope="col" class="border-0 rounded-end"></th>
+<?php
+
+use CodeIgniter\I18n\Time;
+
+$pager = $artigosList['pager'] ?? null;
+$artigosPagina = $artigosList['artigos'] ?? [];
+$incluirDescartados = !empty($artigosList['incluir_descartados']);
+$temLinhas = $artigosPagina !== null && !empty($artigosPagina);
+?>
+<table class="table table-sm align-middle mb-0 table-hover">
+	<thead class="listagem-site-thead">
+		<tr>
+			<th scope="col">Título</th>
+			<th scope="col"><?= $incluirDescartados ? 'Publicado / descarte' : 'Publicado em'; ?></th>
+			<th scope="col">Tipo</th>
+			<th scope="col">Status</th>
 		</tr>
 	</thead>
-
-	<!-- Table body START -->
 	<tbody class="border-top-0">
-		<?php if ($artigosList['artigos'] !== NULL && !empty($artigosList['artigos'])): ?>
-			<?php foreach ($artigosList['artigos'] as $artigo): ?>
+		<?php if ($temLinhas): ?>
+			<?php foreach ($artigosPagina as $artigo): ?>
 				<tr>
 					<td>
-						<h6 class="mb-0"><a href="<?=site_url('colaboradores/artigos/detalhamento/'.$artigo['id'])?>"><?= $artigo['titulo']; ?></a></h6>
+						<a class="fw-semibold small text-decoration-none"
+							href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']); ?>"><?= esc($artigo['titulo']); ?></a>
 					</td>
-					<td><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMMM yyyy'); ?>
+					<td class="small">
+						<?php if (!empty($artigo['descartado'])): ?>
+							<span class="text-muted d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.04em;">Descartado</span>
+							<span class="text-nowrap"><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['descartado'])->toLocalizedString('dd MMM yyyy'); ?></span>
+						<?php elseif (!empty($artigo['publicado'])): ?>
+							<span class="text-nowrap"><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?></span>
+						<?php else: ?>
+							<span class="text-muted">—</span>
+						<?php endif; ?>
 					</td>
 					<td>
-					<a href="#" class="badge text-bg-<?= ($artigo['tipo_artigo']=='T')?('primary'):('danger');?> mb-2"><?= ($artigo['tipo_artigo']=='T')?('Teórico'):('Notícia');?></a>
+						<span class="badge text-bg-<?= ($artigo['tipo_artigo'] == 'T') ? ('primary') : ('danger'); ?>">
+							<?= ($artigo['tipo_artigo'] == 'T') ? ('Teórico') : ('Notícia'); ?>
+						</span>
 					</td>
 					<td>
-						<span
-							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?> mb-2"><?= $artigo['nome']; ?></span>
-					</td>
-					<td>
-						<div class="d-flex gap-2">
-							<a href="<?= site_url('site/artigo/' . $artigo['url_friendly']); ?>"
-								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
-								title="Ir para o artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
-						</div>
+						<span class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>">
+							<?= esc($artigo['nome']); ?>
+						</span>
 					</td>
 				</tr>
 			<?php endforeach; ?>
 		<?php else: ?>
 			<tr>
-				<td colspan="6">
-					<h6 class="text-center">Nenhum resultado foi encontrado</h6>
+				<td colspan="4" class="p-0">
+					<div class="text-center py-5 px-3">
+						<i class="fas fa-folder-open fa-2x text-muted mb-3 d-block" aria-hidden="true"></i>
+						<p class="fw-semibold text-body mb-1">Nenhum resultado nesta pesquisa</p>
+						<p class="small text-muted mb-0">Ajuste o título, marque ou desmarque <strong>Incluir artigos descartados</strong> ou veja os artigos em produção no quadro acima.</p>
+					</div>
 				</td>
 			</tr>
 		<?php endif; ?>
 	</tbody>
 </table>
-<div class="mt-3 d-flex justify-content-center">
-	<?php if ($artigosList['pager']): ?>
-		<?= $artigosList['pager']->simpleLinks('artigos', 'default_template') ?>
+<div class="mt-2 mb-0 d-flex justify-content-center py-2 border-top bg-body-secondary bg-opacity-25">
+	<?php if ($pager): ?>
+		<?= $pager->simpleLinks('artigos', 'default_template'); ?>
 	<?php endif; ?>
 </div>
 <script>
-	$(function () {
-		$('.btn-tooltip').tooltip();
-	});
-
-	$(document).ready(function () {
-		$('.page-link').on('click', function (e) {
+	(function () {
+		$('.tabela-meus-publicados .page-link').off('click.meusPublicados').on('click.meusPublicados', function (e) {
 			e.preventDefault();
-			refreshListPublicado(e.target.href);
+			var href = $(this).attr('href');
+			if (href) {
+				refreshMeusPublicados(href);
+			}
 		});
-	});
+	})();
 </script>

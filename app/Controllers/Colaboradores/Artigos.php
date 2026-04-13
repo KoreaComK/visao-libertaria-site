@@ -280,39 +280,30 @@ class Artigos extends BaseController
 		$this->verificaPermissao->PermiteAcesso('2');
 		$data['titulo'] = 'Meus artigos';
 
-		$artigosModel = new \App\Models\ArtigosModel();
 		$usuarioId = $this->session->get('colaboradores')['id'];
-		$artigos = $artigosModel->where('escrito_colaboradores_id', $usuarioId)->get()->getResultArray();
+
+		$db = db_connect();
+		$rowResumo = $db->table('artigos')
+			->select('COUNT(*) AS escritos, COALESCE(SUM(palavras_escritor), 0) AS palavras_totais', false)
+			->select('SUM(CASE WHEN fase_producao_id IN (\'6\',\'7\') THEN 1 ELSE 0 END) AS publicados', false)
+			->where('escrito_colaboradores_id', $usuarioId)
+			->where('descartado', null)
+			->get()
+			->getRowArray();
 
 		$data['resumo'] = array();
-		$data['resumo']['escritos'] = 0;
-		$data['resumo']['publicados'] = 0;
-		$data['resumo']['palavras_totais'] = 0;
-		$data['resumo']['total_mes'] = 0;
-		$data['resumo']['autoral_mes'] = 0;
-		if (!empty($artigos)) {
-			foreach ($artigos as $artigo) {
-				$data['resumo']['palavras_totais'] += $artigo['palavras_escritor'];
-				$data['resumo']['escritos']++;
-				if ($artigo['fase_producao_id'] == '6' || $artigo['fase_producao_id'] == '7') {
-					$data['resumo']['publicados']++;
-				}
-			}
-		}
+		$data['resumo']['escritos'] = (int) ($rowResumo['escritos'] ?? 0);
+		$data['resumo']['publicados'] = (int) ($rowResumo['publicados'] ?? 0);
+		$data['resumo']['palavras_totais'] = (int) ($rowResumo['palavras_totais'] ?? 0);
+		$data['resumo']['descartados'] = 0;
 
-		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->where('fase_producao_id', '6')->get()->getResultArray();
-		if (!empty($artigos)) {
-			foreach ($artigos as $artigo) {
-				$data['resumo']['total_mes']++;
-				if ($artigo['escrito_colaboradores_id'] == $usuarioId) {
-					$data['resumo']['autoral_mes']++;
-				}
-			}
-		}
+		$mDescartados = new \App\Models\ArtigosModel();
+		$mDescartados->withDeleted();
+		$mDescartados->where('escrito_colaboradores_id', $usuarioId);
+		$mDescartados->where('descartado IS NOT NULL', null, false);
+		$data['resumo']['descartados'] = (int) $mDescartados->countAllResults();
 
 		$data['artigos'] = array();
-		$data['pautas'] = array();
 
 		$time_atual = new Time('-30 days');
 		$time_antigo = new Time('-60 days');
@@ -321,136 +312,80 @@ class Artigos extends BaseController
 		$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
 		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
 		$artigosModel->withDeleted();
-		$artigos = $artigosModel->get()->getResultArray();
-		$data['artigos']['atual'] = count($artigos);
-		$data['artigos']['lista'] = $artigos;
+		$data['artigos']['atual'] = (int) $artigosModel->countAllResults();
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
 		$artigosModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
 		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
 		$artigosModel->withDeleted();
-		$artigos = $artigosModel->get()->getResultArray();
-		$data['artigos']['antigo'] = count($artigos);
+		$data['artigos']['antigo'] = (int) $artigosModel->countAllResults();
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->where("publicado >= '" . $time_atual->toDateTimeString() . "'");
 		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
 		$artigosModel->withDeleted();
-		$artigos = $artigosModel->get()->getResultArray();
-		$data['artigos']['publicados_atual'] = count($artigos);
+		$data['artigos']['publicados_atual'] = (int) $artigosModel->countAllResults();
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
 		$artigosModel->where("publicado <= '" . $time_atual->toDateTimeString() . "'");
 		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
 		$artigosModel->withDeleted();
-		$artigos = $artigosModel->get()->getResultArray();
-		$data['artigos']['publicados_antigo'] = count($artigos);
+		$data['artigos']['publicados_antigo'] = (int) $artigosModel->countAllResults();
 
 		$data['artigos']['diferenca'] = $data['artigos']['atual'] - $data['artigos']['antigo'];
 		$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
 
-		$pautasModel = new \App\Models\PautasModel();
-		$pautasModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
-		$pautasModel->where("colaboradores_id", $usuarioId);
-		$pautasModel->withDeleted();
-		$pautas = $pautasModel->get()->getResultArray();
-		$data['pautas']['atual'] = count($pautas);
-		$data['pautas']['lista'] = $pautas;
+		$data['metricas'] = array(
+			'em_producao' => 0,
+			'media_dias_publicar' => null,
+			'media_dias_publicar_n' => 0,
+			'media_palavras_30d' => null,
+			'media_palavras_30d_n' => 0,
+			'media_palavras_historico' => null,
+		);
 
-		$pautasModel = new \App\Models\PautasModel();
-		$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
-		$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
-		$pautasModel->where("colaboradores_id", $usuarioId);
-		$pautasModel->withDeleted();
-		$pautas = $pautasModel->get()->getResultArray();
-		$data['pautas']['antigo'] = count($pautas);
+		$mProd = new \App\Models\ArtigosModel();
+		$mProd->where('escrito_colaboradores_id', $usuarioId);
+		$mProd->whereNotIn('fase_producao_id', array('6', '7'));
+		$mProd->where('descartado', null);
+		$data['metricas']['em_producao'] = (int) $mProd->countAllResults();
 
-		$pautasModel = new \App\Models\PautasModel();
-		$pautasModel->where("reservado >= '" . $time_atual->toDateTimeString() . "'");
-		$pautasModel->where("colaboradores_id", $usuarioId);
-		$pautasModel->withDeleted();
-		$pautas = $pautasModel->get()->getResultArray();
-		$data['pautas']['utilizados_atual'] = count($pautas);
+		$mPub30 = new \App\Models\ArtigosModel();
+		$mPub30->where('escrito_colaboradores_id', $usuarioId);
+		$mPub30->where('descartado', null);
+		$mPub30->where('publicado IS NOT NULL');
+		$mPub30->where('criado IS NOT NULL');
+		$mPub30->where('publicado >=', $time_atual->toDateTimeString());
+		$artigosPub30 = $mPub30->get()->getResultArray();
 
-		$pautasModel = new \App\Models\PautasModel();
-		$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
-		$pautasModel->where("criado <= '" . $time_atual->toDateTimeString() . "'");
-		$pautasModel->where("colaboradores_id", $usuarioId);
-		$pautasModel->withDeleted();
-		$pautas = $pautasModel->get()->getResultArray();
-		$data['pautas']['utilizados_antigo'] = count($pautas);
-
-		$data['pautas']['diferenca'] = $data['pautas']['atual'] - $data['pautas']['antigo'];
-		$data['pautas']['utilizados_diferenca'] = $data['pautas']['utilizados_atual'] - $data['pautas']['utilizados_antigo'];
-
-		$artigosModel = new \App\Models\ArtigosModel();
-		$time_antigo = new Time('-1 years');
-		$artigosModel->where("publicado >= '" . $time_antigo->toDateTimeString() . "'");
-		$artigosModel->where("escrito_colaboradores_id", $usuarioId);
-		$artigosModel->orderBy("publicado", 'ASC');
-		$artigos = $artigosModel->get()->getResultArray();
-
-		$data['graficos'] = array();
-		if ($artigos != NULL && !empty($artigos)) {
-			$data['graficos']['base'] = array();
-			for ($mes_base = 12; $mes_base >= 0; $mes_base--) {
-				$data_base = new Time('-' . $mes_base . ' months');
-				$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
+		$somaDias = 0.0;
+		$somaPalavras30 = 0;
+		$nPub30 = 0;
+		foreach ($artigosPub30 as $row) {
+			try {
+				$tCriado = Time::parse($row['criado']);
+				$tPublicado = Time::parse($row['publicado']);
+			} catch (\Throwable $e) {
+				continue;
 			}
-			foreach ($artigos as $artigo) {
-				if (isset($data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')])) {
-					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
-				}
+			if ($tPublicado->getTimestamp() < $tCriado->getTimestamp()) {
+				continue;
 			}
+			$somaDias += ($tPublicado->getTimestamp() - $tCriado->getTimestamp()) / 86400;
+			$somaPalavras30 += (int) $row['palavras_escritor'];
+			$nPub30++;
 		}
-
-		$data['estrutura_tabela_producao'] = array(
-			'dados' => array(
-				'cabecalho' => array(
-					'titulo' => 'Meus artigos em produção',
-					'sufixo' => 'producao',
-					'botao' => array(
-						'show' => true,
-						'label' => 'Novo artigo',
-						'url' => site_url('colaboradores/artigos/cadastrar'),
-						'target' => '_blank'
-					),
-					'pesquisa' => array(
-						'tipo' => 'simples',
-						'campo' => 'titulo'
-					)
-				),
-				'pesquisa' => array(
-					'ajax_default' => 'tipo=emProducao',
-					'url' => site_url('colaboradores/artigos/meusArtigosList')
-				)
-			)
-		);
-
-		$data['estrutura_tabela_publicados'] = array(
-			'dados' => array(
-				'cabecalho' => array(
-					'titulo' => 'Meus artigos publicados',
-					'sufixo' => 'publicados',
-					'botao' => array(
-						'show' => true,
-						'label' => 'Ver página pública',
-						'url' => site_url('site/escritor/' . urlencode($_SESSION['colaboradores']['nome'])),
-						'target' => '_blank'
-					),
-					'pesquisa' => array(
-						'tipo' => 'simples',
-						'campo' => 'titulo'
-					)
-				),
-				'pesquisa' => array(
-					'ajax_default' => 'tipo=finalizado',
-					'url' => site_url('colaboradores/artigos/meusArtigosList')
-				)
-			)
-		);
+		if ($nPub30 > 0) {
+			$data['metricas']['media_dias_publicar'] = $somaDias / $nPub30;
+			$data['metricas']['media_dias_publicar_n'] = $nPub30;
+			$data['metricas']['media_palavras_30d'] = $somaPalavras30 / $nPub30;
+			$data['metricas']['media_palavras_30d_n'] = $nPub30;
+		}
+		if ($data['resumo']['escritos'] > 0) {
+			$data['metricas']['media_palavras_historico'] = $data['resumo']['palavras_totais'] / $data['resumo']['escritos'];
+		}
 
 		return view('colaboradores/colaborador_artigos_list', $data);
 	}
@@ -493,7 +428,8 @@ class Artigos extends BaseController
 				}
 			}
 			$data['artigos'] = $artigos;
-			return view('template/templateColaboradoresArtigosProducaoList', $data);
+
+			return view('template/templateColaboradoresArtigosProducaoKanban', $data);
 		}
 
 		if ($post['tipo'] == 'finalizado') {
@@ -502,24 +438,43 @@ class Artigos extends BaseController
 			$config = array();
 			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
-			$artigosModel->whereIn('fase_producao_id', array('6', '7'));
+			$incluirDescartados = isset($post['incluir_descartados']) && $post['incluir_descartados'] === '1';
 
-			if (isset($post['titulo']) && $post['titulo'] != "" && $post['titulo'] != NULL) {
-				$artigosModel->like('titulo', $post['titulo'], 'both', null, true);
+			if ($incluirDescartados) {
+				$artigosModel->withDeleted();
+				$artigosModel->groupStart();
+				$artigosModel->whereIn('artigos.fase_producao_id', array('6', '7'));
+				$artigosModel->where('artigos.descartado', null);
+				$artigosModel->groupEnd();
+				$artigosModel->orGroupStart();
+				$artigosModel->where('artigos.descartado IS NOT NULL', null, false);
+				$artigosModel->groupEnd();
+			} else {
+				$artigosModel->whereIn('artigos.fase_producao_id', array('6', '7'));
 			}
 
-			$artigosModel->orderBy('publicado', 'DESC');
+			if (isset($post['titulo']) && $post['titulo'] != "" && $post['titulo'] != NULL) {
+				$artigosModel->like('artigos.titulo', $post['titulo'], 'both', null, true);
+			}
+
+			$artigosModel->orderBy('artigos.atualizado', 'DESC');
 			$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
 			if (!empty($artigos)) {
 				foreach ($artigos as $chave => $artigo) {
-					$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
+					if (!empty($artigo['descartado'])) {
+						$artigos[$chave]['cor'] = 'secondary';
+						$artigos[$chave]['nome'] = 'Descartado';
+					} else {
+						$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
+					}
 				}
 			}
 
-			$data['artigosList'] = [
+			$data['artigosList'] = array(
 				'artigos' => $artigos,
-				'pager' => $artigosModel->pager
-			];
+				'pager' => $artigosModel->pager,
+				'incluir_descartados' => $incluirDescartados,
+			);
 			return view('template/templateColaboradoresArtigosFinalizadoList', $data);
 		}
 	}
@@ -948,15 +903,17 @@ class Artigos extends BaseController
 
 			$artigosModel->orderBy('data_publicado', 'DESC');
 
-			$data['total'] = 1;
-			$contador = $artigosModel;
-
-
 			$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
 			if (!empty($artigos)) {
 				foreach ($artigos as $chave => $artigo) {
 					$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
 				}
+			}
+
+			$pager = $artigosModel->pager;
+			$totalListagem = count($artigos);
+			if ($pager !== null && method_exists($pager, 'getTotal')) {
+				$totalListagem = (int) $pager->getTotal('artigos');
 			}
 
 			$colaborador_permissoes = $this->session->get('colaboradores')['permissoes'];
@@ -968,7 +925,8 @@ class Artigos extends BaseController
 
 			$data['artigosList'] = [
 				'artigos' => $artigos,
-				'pager' => $artigosModel->pager
+				'pager' => $pager,
+				'total' => $totalListagem,
 			];
 		}
 		return view('template/templateColaboradoresArtigosDashboardList', $data);

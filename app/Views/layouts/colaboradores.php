@@ -150,6 +150,26 @@
 				display: none;
 			}
 		}
+
+		.corpo-listar .table thead.listagem-site-thead th {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			background-color: var(--bs-secondary-bg) !important;
+			color: var(--bs-body-color);
+			font-weight: 600;
+			font-size: 0.7rem;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			border-bottom: 1px solid var(--bs-border-color) !important;
+			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+			vertical-align: middle;
+		}
+
+		[data-bs-theme="dark"] .corpo-listar .table thead.listagem-site-thead th,
+		[data-mdb-theme="dark"] .corpo-listar .table thead.listagem-site-thead th {
+			box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+		}
 	</style>
 	<?php
 	if (file_exists('public/assets/estilos.css')):

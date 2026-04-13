@@ -1,88 +1,83 @@
-<?php use CodeIgniter\I18n\Time; ?>
-<table class="table align-middle p-4 mb-0 table-hover table-shrink">
-	<!-- Table head -->
-	<thead class="table-dark">
-		<tr style="vertical-align: middle !important;">
-			<th scope="col" class="border-0 rounded-start">Título</th>
-			<th scope="col" class="border-0">Escritor</th>
-			<th scope="col" class="border-0">Publicado em</th>
-			<th scope="col" class="border-0">Tipo</th>
-			<th scope="col" class="border-0">Status</th>
-			<th scope="col" class="border-0 rounded-end"></th>
+<?php
+
+use CodeIgniter\I18n\Time;
+
+$pager = $artigosList['pager'] ?? null;
+$artigosPagina = $artigosList['artigos'] ?? [];
+$totalRegistros = isset($artigosList['total']) ? (int) $artigosList['total'] : count($artigosPagina);
+$temLinhas = $artigosPagina !== null && !empty($artigosPagina);
+?>
+<table class="table table-sm align-middle mb-0 table-hover table-shrink">
+	<thead class="listagem-site-thead">
+		<tr>
+			<th scope="col">Título</th>
+			<th scope="col">Escritor</th>
+			<th scope="col">Publicado em</th>
+			<th scope="col">Tipo</th>
+			<th scope="col">Status</th>
 		</tr>
 	</thead>
-
-	<!-- Table body START -->
 	<tbody class="border-top-0">
-		<?php if ($artigosList['artigos'] !== NULL && !empty($artigosList['artigos'])): ?>
-			<?php foreach ($artigosList['artigos'] as $artigo): ?>
+		<?php if ($temLinhas): ?>
+			<?php foreach ($artigosPagina as $artigo): ?>
 				<tr>
 					<td>
-						<h6 class="mb-0"><a
-								href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= $artigo['titulo']; ?></a>
-						</h6>
+						<a class="fw-semibold small text-decoration-none"
+							href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= esc($artigo['titulo']); ?></a>
+					</td>
+					<td class="small">
+						<a class="text-decoration-none"
+							href="<?= site_url('site/escritor/' . urlencode($artigo['escrito'])); ?>"><?= esc($artigo['escrito']); ?></a>
+					</td>
+					<td class="small text-nowrap">
+						<?= ($artigo['data_publicado'] != null)
+							? Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMM yyyy')
+							: '—'; ?>
 					</td>
 					<td>
-						<h6 class="mb-0"><a
-								href="<?= site_url('site/escritor/' . urlencode($artigo['escrito'])); ?>"><?= $artigo['escrito']; ?></a>
-						</h6>
+						<span class="badge text-bg-<?= ($artigo['tipo_artigo'] == 'T') ? ('primary') : ('danger'); ?>">
+							<?= ($artigo['tipo_artigo'] == 'T') ? ('Teórico') : ('Notícia'); ?>
+						</span>
 					</td>
-					
-					<td><?= ($artigo['data_publicado'] != NULL) ? (Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMMM yyyy')) : (''); ?>
-					</td>
-					
 					<td>
-						<a href="#"
-							class="badge text-bg-<?= ($artigo['tipo_artigo'] == 'T') ? ('primary') : ('danger'); ?> mb-2"><?= ($artigo['tipo_artigo'] == 'T') ? ('Teórico') : ('Notícia'); ?></a>
-					</td>
-					
-					<td>
-						<span
-							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?> mb-2"><?= $artigo['nome']; ?></span>
-					</td>
-					
-					<td>
-						<div class="d-flex gap-2">
-							<?php if (!isset($admin)): ?>
-							<a href="<?= (in_array($artigo['fase_producao_id'], array('6', '7'))) ? (site_url('site/artigo/' . $artigo['url_friendly'])) : (site_url('colaboradores/artigos/detalhamento/' . $artigo['id'])); ?>"
-								class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
-								title="Ir para o artigo"><i class="fas fa-arrow-up-right-from-square"></i></i></a>
-							<?php else: ?>
-								<a href="<?= site_url('colaboradores/admin/artigoEditar/' . $artigo['id']); ?>"
-									class="btn btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip" data-placement="top"
-									title="Editar artigo"><i class="fas fa-pencil"></i></i></a>
-							<?php endif; ?>
-						</div>
+						<span class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>">
+							<?= esc($artigo['nome']); ?>
+						</span>
 					</td>
 				</tr>
 			<?php endforeach; ?>
 		<?php else: ?>
 			<tr>
-				
-				<td colspan="6">
-					<h6 class="text-center">Nenhum resultado foi encontrado</h6>
+				<td colspan="5" class="p-0">
+					<div class="text-center py-5 px-3">
+						<i class="far fa-folder-open fa-2x text-muted mb-2 d-block" aria-hidden="true"></i>
+						<p class="fw-semibold text-body mb-1">Nenhum artigo encontrado</p>
+						<p class="small text-muted mb-0">Ajuste os filtros ou limpe a pesquisa para ver mais resultados.</p>
+					</div>
 				</td>
 			</tr>
 		<?php endif; ?>
 	</tbody>
-	<!-- Table body END -->
 </table>
-<div class="mt-3 d-flex justify-content-center">
-	<?php if ($artigosList['pager']): ?>
-		<?= $artigosList['pager']->simpleLinks('artigos', 'default_template') ?>
+<div class="mt-2 mb-0 d-flex justify-content-center py-2 border-top bg-body-secondary bg-opacity-25">
+	<?php if ($pager): ?>
+		<?= $pager->simpleLinks('artigos', 'default_template') ?>
 	<?php endif; ?>
 </div>
 <script>
-	$(function () {
-		$('.btn-tooltip').tooltip();
-	});
+	(function () {
+		var total = <?= (int) $totalRegistros; ?>;
+		var label = total === 0
+			? 'Nenhum artigo no total'
+			: (total === 1 ? '1 artigo no total' : total + ' artigos no total');
+		$('.listagem-site-contador').text(label);
 
-	$(document).ready(function () {
-		$('.page-link').on('click', function (e) {
+		$('.tabela-publicado .page-link').off('click.listagemSite').on('click.listagemSite', function (e) {
 			e.preventDefault();
-			refreshListPublicado(e.target.href);
+			var href = $(this).attr('href');
+			if (href) {
+				refreshListPublicado(href);
+			}
 		});
-	});
-
-	$('.contador').html('<?= $total; ?>');
+	})();
 </script>
