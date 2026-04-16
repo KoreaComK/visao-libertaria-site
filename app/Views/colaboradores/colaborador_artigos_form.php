@@ -9,53 +9,101 @@ use CodeIgniter\I18n\Time;
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-
 <style>
-	/* Set default font-family */
-	#editor {
-		font-family: 'roboto';
-		font-size: 16px;
-		height: 250px;
+	#editor .ql-container {
+		min-height: 320px;
+		font-size: 0.875rem;
 	}
+
+	#editor .ql-editor {
+		min-height: 320px;
+		cursor: text;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	@media (min-width: 992px) {
+		.painel-lateral-sticky {
+			position: sticky;
+			top: 1rem;
+		}
+	}
+
+	/* Corpo do histórico: conteúdo em <div> (HTML do Quill tem <p> — não pode ficar dentro de <p>) */
+	.modal-artigo-corpo-historico p {
+		margin-bottom: 0.75rem;
+	}
+
+	.modal-artigo-corpo-historico p:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Comentários: mesma escala que form-control-sm / dashboard */
+	#accordionHistoricoArtigo .accordion-button {
+		font-size: 0.875rem;
+	}
+
+	#accordionHistoricoArtigo .accordion-body {
+		font-size: 0.875rem;
+	}
+
+	.div-list-comentarios .card-body,
+	.div-list-comentarios .card-text {
+		font-size: 0.875rem;
+	}
+
+	.div-list-comentarios .badge {
+		font-size: 0.7rem;
+		font-weight: 500;
+	}
+
 </style>
 
-<div class="container w-auto">
-	<div class="row py-4">
-		<div class="col-12">
-			<h1 class="mb-0 h2"><?= $titulo; ?></h1>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-12">
-			<div class="mb-5">
-				<?php if ($artigo['fase_producao_id'] == '1'): ?>
-					<?= $config['artigo_regras_escrever']; ?>
-				<?php endif; ?>
-				<?php if ($artigo['fase_producao_id'] == '2'): ?>
-					<?= $config['artigo_regras_revisar']; ?>
-				<?php endif; ?>
-				<?php if ($artigo['fase_producao_id'] == '3'): ?>
-					<?= $config['artigo_regras_narrar']; ?>
-				<?php endif; ?>
-				<?php if ($artigo['fase_producao_id'] == '4'): ?>
-					<?= $config['artigo_regras_produzir']; ?>
-				<?php endif; ?>
+<div class="container-fluid py-3">
+	<div class="container">
+
+		<section class="mb-4" aria-labelledby="heading-regras-artigo">
+			<h2 id="heading-regras-artigo" class="h3 text-body mb-1">Regras e orientações</h2>
+			<p class="text-muted small mb-0">Leia antes de salvar ou enviar o texto</p>
+			<div class="card border rounded-3 shadow-sm mt-2">
+				<div class="card-body p-2 p-sm-3">
+					<div class="mb-0">
+						<?php if ($artigo['fase_producao_id'] == '1'): ?>
+							<?= $config['artigo_regras_escrever']; ?>
+						<?php endif; ?>
+						<?php if ($artigo['fase_producao_id'] == '2'): ?>
+							<?= $config['artigo_regras_revisar']; ?>
+						<?php endif; ?>
+						<?php if ($artigo['fase_producao_id'] == '3'): ?>
+							<?= $config['artigo_regras_narrar']; ?>
+						<?php endif; ?>
+						<?php if ($artigo['fase_producao_id'] == '4'): ?>
+							<?= $config['artigo_regras_produzir']; ?>
+						<?php endif; ?>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="col-12">
-			<!-- Chart START -->
-			<div class="card border">
-				<!-- Card body -->
-				<div class="card-body">
-					<!-- Form START -->
+		</section>
+
+		<?php
+		$mostrarPainelLateral = (
+			(!$cadastro && isset($artigo['fase_producao_id']) && ($artigo['fase_producao_id'] == '1' || $artigo['fase_producao_id'] == '2'))
+			|| !empty($historico ?? [])
+			|| !empty($historicoTexto ?? [])
+			|| (isset($artigo['id']) && $artigo['id'] !== null)
+		);
+		?>
+		<div class="row g-3 align-items-start<?= $mostrarPainelLateral ? '' : ' justify-content-center' ?>">
+			<div class="col-12 col-lg-8">
+			<div class="card border rounded-3 shadow-sm">
+				<div class="card-body p-3">
 					<form class="w-100" novalidate="yes" method="post" id="artigo_form" enctype='multipart/form-data'>
-						<!-- Main form -->
 						<div class="row">
 							<div class="col-12">
 								<div class="mb-3">
-									<label class="form-label" for="tipo_artigo">Tipo de artigo</label>
-									<div class="input-group">
-										<select class="form-control" name="tipo_artigo" id="tipo_artigo">
+									<label class="form-label small text-muted mb-1" for="tipo_artigo">Tipo de artigo</label>
+									<div class="input-group input-group-sm">
+										<select class="form-select form-select-sm" name="tipo_artigo" id="tipo_artigo">
 											<option value="" <?= (isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo'] == "") ? ('selected="true"') : (''); ?>>Escolha o
 												tipo
 												do
@@ -73,23 +121,23 @@ use CodeIgniter\I18n\Time;
 							<div class="col-12">
 								<?php if (!empty($pauta)): ?>
 									<div class="mb-3">
-										<label class="form-label">
+										<div class="form-label small text-muted mb-1">
 											<input type="text" class="form-control d-none" id="link" name="link"
-												value="<?= (isset($pauta['link'])) ? ($pauta['link']) : (''); ?>">
-											<a class="btn btn-sm btn-primary" href="<?= $pauta['link']; ?>"
-												target="_blank">Acessar a notícia</a>
-											<?= $pauta['titulo']; ?>
-										</label>
+												value="<?= (isset($pauta['link'])) ? (esc($pauta['link'])) : (''); ?>">
+											<a class="btn btn-sm btn-primary" href="<?= esc($pauta['link']); ?>"
+												target="_blank" rel="noopener noreferrer">Acessar a notícia</a>
+											<?= esc($pauta['titulo']); ?>
+										</div>
 										<small class="d-block text-danger aviso-pauta"></small>
 									</div>
 								<?php else: ?>
 									<div class="mb-3">
-										<label class="form-label" for="link">Link da Notícia</label>
-										<div class="input-group">
+										<label class="form-label small text-muted mb-1" for="link">Link da Notícia</label>
+										<div class="input-group input-group-sm">
 											<div class="input-group-text"><i class="fas fa-link"></i></div>
-											<input type="text" class="form-control" id="link"
+											<input type="text" class="form-control form-control-sm" id="link"
 												placeholder="Link da notícia para pauta" name="link"
-												value="<?= (isset($artigo['link'])) ? ($artigo['link']) : (''); ?>">
+												value="<?= (isset($artigo['link'])) ? (esc($artigo['link'])) : (''); ?>">
 										</div>
 										<small class="d-block text-danger aviso-pauta"></small>
 									</div>
@@ -110,39 +158,35 @@ use CodeIgniter\I18n\Time;
 								</div> -->
 
 							<div class="col-12">
-								<!-- Post name -->
 								<div class="mb-3">
-									<label class="form-label" for="titulo">Título</label>
-									<input type="text" class="form-control" id="titulo" name="titulo"
+									<label class="form-label small text-muted mb-1" for="titulo">Título</label>
+									<input type="text" class="form-control form-control-sm" id="titulo" name="titulo"
 										placeholder="Título do artigo" maxlength="100"
-										value="<?= str_replace('"', "'", $artigo['titulo']); ?>">
+										value="<?= esc($artigo['titulo']); ?>">
 									<small>O título deve ser chamativo. Deixe as palavras-chave em maiúsculo</small>
 								</div>
 							</div>
-							<!-- Short description -->
 							<div class="col-12">
-								<div class="mb-3" for="gancho">
-									<label class="form-label">Gancho </label>
-									<textarea class="form-control" rows="3" placeholder="Texto curto antes da vinheta"
+								<div class="mb-3">
+									<label class="form-label small text-muted mb-1" for="gancho">Gancho </label>
+									<textarea class="form-control form-control-sm" rows="3" placeholder="Texto curto antes da vinheta"
 										id="gancho" maxlength="600"
-										name="gancho"><?= str_replace('"', "'", $artigo['gancho']); ?></textarea>
+										name="gancho"><?= esc($artigo['gancho']); ?></textarea>
 									<small>Um parágrafo chamativo que cative o telespectador. Máximo 600 caracteres.</small>
 								</div>
 							</div>
 
-							<!-- Main toolbar -->
 							<div class="col-md-12">
-								<!-- Subject -->
 								<div class="mb-3">
-									<label class="form-label" for="texto">Corpo do artigo</label>
-									<div class="rounded-3" id="editor">
+									<label class="form-label small text-muted mb-1" for="texto">Corpo do artigo</label>
+									<div class="rounded-3 border" id="editor">
 									</div>
-									<textarea id="texto" name="texto" class="d-none"><?= $artigo['texto']; ?></textarea>
+									<textarea id="texto" name="texto" class="d-none"><?= esc($artigo['texto']); ?></textarea>
 									<div class="col-md-12 d-flex justify-content-between">
 										<small class="ps-1">
 											<span class="">Artigo deve ter entre
-												<?= $config['artigo_tamanho_minimo']; ?> e
-												<?= $config['artigo_tamanho_maximo']; ?> palavras.</span>
+												<?= esc($config['artigo_tamanho_minimo']); ?> e
+												<?= esc($config['artigo_tamanho_maximo']); ?> palavras.</span>
 										</small>
 										<small class="pe-1"> <span class="pull-right label label-default"
 												id="count_message"></span></small>
@@ -150,113 +194,194 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
-							<?php /*if (!$cadastro): ?>
-								<div class="col-12 mt-4">
-									<div class="mb-3">
-										<!-- Image -->
-										<div class="row align-items-center mb-2">
-											<div class="col-4 col-md-2">
-												<div class="position-relative">
-													<img class="img-fluid" id="preview" src="<?= $artigo['imagem']; ?>" />
-												</div>
-											</div>
-											<div class="col-sm-8 col-md-10 position-relative">
-												<h6 class="my-2">Imagem de capa</h6>
-												<label class="w-100" style="cursor:pointer;">
-													<span>
-														<input class="form-control stretched-link" type="file" name="imagem"
-															id="imagem" accept="image/gif, image/jpeg, image/png">
-													</span>
-												</label>
-												<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG. Sugerimos
-													tamanhos de
-													1.280 x 720. Tamanhos diferentes da proporção 16:9 serão cortadas.</p>
-											</div>
-										</div>
-									</div>
-								</div>
-							<?php endif; */?>
-
-							<!-- Short description -->
 							<div class="col-12">
-								<div class="mb-3" for="referencias">
-									<label class="form-label">Referências </label>
-									<textarea class="form-control" rows="3"
+								<div class="mb-3">
+									<label class="form-label small text-muted mb-1" for="referencias">Referências </label>
+									<textarea class="form-control form-control-sm" rows="3"
 										placeholder="Referências para embasar seu texto" id="referencias"
-										name="referencias"><?= str_replace('"', "'", $artigo['referencias']); ?></textarea>
+										name="referencias"><?= esc($artigo['referencias']); ?></textarea>
 									<small>Todos os links utilizados para dar embasamento para escrever o artigo, menos
 										a pauta.</small>
 								</div>
 							</div>
 
-							<!--
-						<div class="col-lg-7">
-							
-							<div class="mb-3">
-								<label class="form-label">Tags</label>
-								<textarea class="form-control" rows="1" placeholder="business, sports ..."
-									data-np-intersection-state="visible"></textarea>
-								<small>Maximum of 14 keywords. Keywords should all be in lowercase and separated
-									by commas. e.g. javascript, react, marketing.</small>
-							</div>
-						</div>
-						<div class="col-lg-5">
-							
-							<div class="mb-3">
-								<label class="form-label">Category</label>
-								<select class="form-select" aria-label="Default select example"
-									data-np-intersection-state="visible">
-									<option selected="">Lifestyle</option>
-									<option value="1">Technology</option>
-									<option value="2">Travel</option>
-									<option value="3">Business</option>
-									<option value="4">Sports</option>
-									<option value="5">Marketing</option>
-								</select>
-							</div>
-						</div>
-						<div class="col-12">
-							<div class="form-check mb-3">
-								<input class="form-check-input" type="checkbox" value="" id="postCheck">
-								<label class="form-check-label" for="postCheck">
-									Make this post featured?
-								</label>
-							</div>
-						</div> -->
-
 							<div class="d-flex justify-content-center">
-								<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
+								<button class="btn btn-primary btn-sm w-100 mb-3" id="enviar_artigo"
 									type="button">Salvar artigo</button>
 							</div>
 						</div>
 					</form>
 				</div>
 			</div>
+		</div>
+		<?php if ($mostrarPainelLateral): ?>
+		<div class="col-12 col-lg-4">
+			<div class="painel-lateral-sticky">
+				<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
+					<div class="card border rounded-3 shadow-sm mb-3">
+						<div class="card-body">
+							<h6 class="card-title fw-semibold mb-2">Submeter para revisão</h6>
+							<p class="card-text small text-muted mb-2">Ao submeter para revisão aceito os seguintes termos:</p>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-1">
+								<label class="form-check-label small" for="aceito-fase1-1">
+									Aceito o texto ser alterado parcial ou completamente para atender o
+									padrão
+									do Visão
+									Libertária.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-2">
+								<label class="form-check-label small" for="aceito-fase1-2">
+									Entendo que não poderei mais descartar o texto após enviá-lo para a
+									revisão.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-3">
+								<label class="form-check-label small" for="aceito-fase1-3">
+									Caso o texto esteja muito fora do padrão do projeto ele poderá ser
+									descartado a
+									qualquer
+									momento.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-4">
+								<label class="form-check-label small" for="aceito-fase1-4">
+									Verifiquei <a class="btn-link listagem-artigos-produzindo" data-bs-toggle="modal"
+										data-bs-target="#modalListagem">NESTA
+										LISTAGEM</a> os artigos que estão sendo
+									produzidos
+									e este assunto
+									não foi encontrado
+								</label>
+							</div>
+							<div class="text-end">
+								<button type="button" disabled="" class="btn btn-primary btn-sm mt-2 submeter-revisao">Enviar
+									para
+									revisão</button>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
+				<?php if (!$cadastro && $artigo['fase_producao_id'] == '2'): ?>
+					<div class="card border rounded-3 shadow-sm mb-3">
+						<div class="card-body">
+							<h6 class="card-title fw-semibold mb-2">Submeter para narração</h6>
+							<p class="card-text small text-muted mb-2">Ao submeter para narração aceito os seguintes termos:</p>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase2" type="checkbox" id="aceito-fase2-1">
+								<label class="form-check-label small" for="aceito-fase2-1">
+									Foi revisado com atenção, tendo portanto uma visão libertária nítida,
+									não se
+									mostrando
+									apoiadora de nenhum
+									político ou do estado, sendo totalmente aderente as ideias do projeto.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase2" type="checkbox" id="aceito-fase2-2">
+								<label class="form-check-label small" for="aceito-fase2-2">
+									Garanto que o texto não possui erros grosseiros de português, está bem
+									escrito e com
+									boa
+									fluência para narração.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-submeter-fase2" type="checkbox" id="aceito-fase2-3">
+								<label class="form-check-label small" for="aceito-fase2-3">
+									Usei a ferramenta <a class="btn-link" href="https://www.duplichecker.com/"
+										target="_blank" rel="noopener noreferrer">Dupli
+										Checker</a> e <a class="btn-link" href="https://www.zerogpt.com/"
+										target="_blank" rel="noopener noreferrer">ZeroGPT</a>
+									e em conjunto com a revisão não foi encontrado nenhum indício de plágio
+									ou
+									que o
+									texto
+									seja de IA.
+								</label>
+							</div>
+							<div class="text-end">
+								<button type="button" disabled="" class="btn btn-success btn-sm mt-2 submeter-revisao">Enviar
+									para
+									narração</button>
+							</div>
+						</div>
+					</div>
 
-			<?php if ($historico !== NULL && !empty($historico)): ?>
-				<div class="col-12 mb-3 mt-3">
-					<!-- Chart START -->
-					<div class="card border">
+					<div class="card border rounded-3 shadow-sm mb-3">
+						<div class="card-body">
+							<h6 class="card-title fw-semibold mb-2">Reverter artigo</h6>
+							<p class="card-text small text-muted mb-2">Ao reverter o artigo confirmo os seguintes termos:</p>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-reverter" type="checkbox" id="reverter-fase2-1">
+								<label class="form-check-label small" for="reverter-fase2-1">
+									O artigo será revertido para a etapa anterior para ajustes.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-reverter" type="checkbox" id="reverter-fase2-2">
+								<label class="form-check-label small" for="reverter-fase2-2">
+									Deixei um comentário no artigo informando o motivo da reversão para o
+									escritor.
+								</label>
+							</div>
+							<div class="text-center">
+								<button type="button" disabled="" data-historico-texto-id=""
+									class="btn btn-warning btn-sm mt-2 reverter-artigo">Reverter
+									artigo</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="card border rounded-3 shadow-sm mb-3">
+						<div class="card-body">
+							<h6 class="card-title fw-semibold mb-2">Descartar artigo</h6>
+							<p class="card-text small text-muted mb-2">Ao descartar o artigo confirmo os seguintes termos:</p>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-descarte" type="checkbox" id="descarte-fase2-1">
+								<label class="form-check-label small" for="descarte-fase2-1">
+									O texto será descartado e não irá mais seguir a trilha de produção.
+								</label>
+							</div>
+							<div class="form-check form-switch">
+								<input class="form-check-input aceite-descarte" type="checkbox" id="descarte-fase2-2">
+								<label class="form-check-label small" for="descarte-fase2-2">
+									Deixei um comentário no artigo informando o motivo do descarte para o
+									escritor.
+								</label>
+							</div>
+							<div class="text-start">
+								<button type="button" disabled="" class="btn btn-danger btn-sm mt-2 descartar-artigo">Descartar
+									artigo</button>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
+				<?php if ($historico !== NULL && !empty($historico)): ?>
+					<div class="card border rounded-3 shadow-sm mb-3">
 						<div class="">
 							<div class="accordion" id="accordionHistorico">
 								<div class="accordion-item border-0">
 									<h2 class="accordion-header">
-										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										<button class="accordion-button" type="button" data-bs-toggle="collapse"
 											data-bs-target="#historicoList" aria-expanded="true"
 											aria-controls="historicoList">
 											Histórico do artigo:
 										</button>
 									</h2>
-									<div id="historicoList" class="accordion-collapse collapse"
+									<div id="historicoList" class="accordion-collapse collapse show"
 										data-bs-parent="#accordionHistorico">
 										<div class="accordion-body">
-
 											<ul class="list-group fw-light lista-historico">
 												<?php foreach ($historico as $h): ?>
 													<li class="list-group-item p-1 border-0">
 														<small>
-															<?= $h['apelido']; ?>
-															<?= $h['acao']; ?>
+															<?= esc($h['apelido']); ?>
+															<?= esc($h['acao']); ?>
 															<span class="badge badge-pill badge-secondary fw-light">
 																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
@@ -270,36 +395,31 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 					</div>
-				</div>
-			<?php endif; ?>
+				<?php endif; ?>
 
-			<?php if ($historicoTexto !== NULL && !empty($historicoTexto)): ?>
-				<div class="col-12 mb-3 mt-3">
-					<!-- Chart START -->
-					<div class="card border">
+				<?php if ($historicoTexto !== NULL && !empty($historicoTexto)): ?>
+					<div class="card border rounded-3 shadow-sm mb-3">
 						<div class="">
-							<div class="accordion" id="accordionHistoricoArtigo">
+							<div class="accordion" id="accordionHistoricoTexto">
 								<div class="accordion-item border-0">
 									<h2 class="accordion-header">
-										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										<button class="accordion-button" type="button" data-bs-toggle="collapse"
 											data-bs-target="#historicoArtigoList" aria-expanded="true"
 											aria-controls="historicoArtigoList">
 											Histórico do texto:
 										</button>
 									</h2>
-									<div id="historicoArtigoList" class="accordion-collapse collapse"
-										data-bs-parent="#accordionHistoricoArtigo">
+									<div id="historicoArtigoList" class="accordion-collapse collapse show"
+										data-bs-parent="#accordionHistoricoTexto">
 										<div class="accordion-body">
 											<ul class="list-group fw-light lista-historico-artigo">
 												<?php foreach ($historicoTexto as $h): ?>
 													<li class="list-group-item p-1 border-0">
-														<small><a class="btn-link btn-texto-historico"
-																href="javascript:void(0);" onclick="mostraHistoricoTexto(this);"
-																data-bs-toggle="modal" data-bs-target="#modalVerTextoHistorico"
-																id="btn-historico" data-historico-texto-id="<?= $h['id']; ?>">
+														<small><button type="button" class="btn btn-link btn-texto-historico p-0 border-0 align-baseline"
+																data-historico-texto-id="<?= esc($h['id']); ?>">
 																Ver texto de
 																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
-															</a></small>
+															</button></small>
 													</li>
 												<?php endforeach; ?>
 											</ul>
@@ -309,50 +429,49 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 					</div>
-				</div>
-			<?php endif; ?>
+				<?php endif; ?>
 
-			<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
-				<div class="col-12 mb-3 mt-3">
-					<div class="card border">
+				<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+					<div class="card border rounded-3 shadow-sm mb-3">
 						<div class="">
 							<div class="accordion" id="accordionHistoricoArtigo">
 								<div class="accordion-item border-0">
 									<h2 class="accordion-header">
-										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										<button class="accordion-button" type="button" data-bs-toggle="collapse"
 											data-bs-target="#comentarios" aria-expanded="true" aria-controls="comentarios">
 											Comentários do artigo:
 										</button>
 									</h2>
-									<div id="comentarios" class="accordion-collapse collapse"
+									<div id="comentarios" class="accordion-collapse collapse show"
 										data-bs-parent="#accordionHistoricoArtigo">
-										<div class="accordion-body">
-											<div class="row">
-												<div class="col-12 text-center">
-													<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+										<div class="accordion-body pt-2 px-2 px-sm-3 pb-3">
+											<div class="row g-2">
+												<div class="col-12">
+													<button class="btn btn-primary btn-sm w-100 mb-2"
 														id="btn-comentarios" type="button">Atualizar
-														Comentários</button>
+														comentários</button>
 												</div>
-												<div class="col-12 d-flex justify-content-center">
-
-													<div class="col-12 div-comentarios">
-														<div class="col-12">
-															<div class="mb-3">
-																<input type="hidden" id="id_comentario"
-																	name="id_comentario" />
-																<textarea id="comentario" name="comentario"
-																	class="form-control" rows="5"
-																	placeholder="Digite seu comentário aqui"></textarea>
-															</div>
-															<div class="mb-3 text-center">
-																<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-																	id="enviar-comentario" type="button">Enviar
-																	comentário</button>
-															</div>
+												<div class="col-12">
+													<div class="div-comentarios">
+														<div class="mb-2">
+															<input type="hidden" id="id_comentario"
+																name="id_comentario" />
+															<label class="form-label small text-muted mb-1"
+																for="comentario">Novo comentário</label>
+															<textarea id="comentario" name="comentario"
+																class="form-control form-control-sm" rows="4"
+																placeholder="Digite seu comentário aqui"></textarea>
 														</div>
-														<div class="card m-3 div-list-comentarios"></div>
+														<div class="mb-2">
+															<button class="btn btn-primary btn-sm w-100"
+																id="enviar-comentario" type="button">Enviar
+																comentário</button>
+														</div>
+														<div
+															class="card border rounded-3 shadow-sm mt-2 mb-0 div-list-comentarios">
+														</div>
 													</div>
-												</diV>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -360,166 +479,22 @@ use CodeIgniter\I18n\Time;
 							</div>
 						</div>
 					</div>
-				</div>
-			<?php endif; ?>
-
-			<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
-				<div class="card border mt-4">
-					<div class="card-body">
-						<h5 class="card-title">Submeter para revisão</h5>
-						<p class="card-text">Ao submeter para revisão aceito os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito1">
-							<label class="form-check-label" for="aceito1">
-								Aceito o texto ser alterado parcial ou completamente para atender o
-								padrão
-								do Visão
-								Libertária.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito2">
-							<label class="form-check-label" for="aceito2">
-								Entendo que não poderei mais descartar o texto após enviá-lo para a
-								revisão.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito3">
-							<label class="form-check-label" for="aceito3">
-								Caso o texto esteja muito fora do padrão do projeto ele poderá ser
-								descartado a
-								qualquer
-								momento.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito4">
-							<label class="form-check-label" for="aceito4">
-								Verifiquei <a class="btn-link listagem-artigos-produzindo" data-bs-toggle="modal"
-									data-bs-target="#modalListagem">NESTA
-									LISTAGEM</a> os artigos que estão sendo
-								produzidos
-								e este assunto
-								não foi encontrado
-							</label>
-						</div>
-						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar
-								para
-								revisão</button>
-						</div>
-					</div>
-				</div>
-			<?php endif; ?>
-			<?php if (!$cadastro && $artigo['fase_producao_id'] == '2'): ?>
-				<div class="card border mt-4">
-					<div class="card-body">
-						<h5 class="card-title">Submeter para narração</h5>
-						<p class="card-text">Ao submeter para narração aceito os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito1">
-							<label class="form-check-label" for="aceito1">
-								Foi revisado com atenção, tendo portanto uma visão libertária nítida,
-								não se
-								mostrando
-								apoiadora de nenhum
-								político ou do estado, sendo totalmente aderente as ideias do projeto.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito2">
-							<label class="form-check-label" for="aceito2">
-								Garanto que o texto não possui erros grosseiros de português, está bem
-								escrito e com
-								boa
-								fluência para narração.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito3">
-							<label class="form-check-label" for="aceito3">
-								Usei a ferramenta <a class="btn-link" href="https://www.duplichecker.com/"
-									target="_blank">Dupli
-									Checker</a> e <a class="btn-link" href="https://www.zerogpt.com/"
-									target="_blank">ZeroGPT</a>
-								e em conjunto com a revisão não foi encontrado nenhum indício de plágio
-								ou
-								que o
-								texto
-								seja de IA.
-							</label>
-						</div>
-						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-success mt-2 submeter-revisao">Enviar
-								para
-								narração</button>
-						</div>
-					</div>
-				</div>
-
-
-				<div class="card border mt-4">
-					<div class="card-body">
-						<h5 class="card-title">Reverter artigo</h5>
-						<p class="card-text">Ao reverter o artigo confirmo os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="reverter1">
-							<label class="form-check-label" for="reverter1">
-								O artigo será revertido para a etapa anterior para ajustes.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="reverter2">
-							<label class="form-check-label" for="reverter2">
-								Deixei um comentário no artigo informando o motivo da reversão para o
-								escritor.
-							</label>
-						</div>
-						<div class="text-center">
-							<button type="button" disabled="" data-historico-texto-id=""
-								class="btn btn-warning mt-2 reverter-artigo">Reverter
-								artigo</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="card border mt-4">
-					<div class="card-body">
-						<h5 class="card-title">Descartar artigo</h5>
-						<p class="card-text">Ao descartar o artigo confirmo os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="descarte1">
-							<label class="form-check-label" for="descarte1">
-								O texto será descartado e não irá mais seguir a trilha de produção.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="descarte2">
-							<label class="form-check-label" for="descarte2">
-								Deixei um comentário no artigo informando o motivo do descarte para o
-								escritor.
-							</label>
-						</div>
-						<div class="text-start">
-							<button type="button" disabled="" class="btn btn-danger mt-2 descartar-artigo">Descartar
-								artigo</button>
-						</div>
-					</div>
-				</div>
-			<?php endif; ?>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php endif; ?>
 		</div>
 	</div>
 </div>
 
 
-<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="modalListagemLabel"
 	aria-hidden="true">
 	<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Artigos em produção</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<h5 class="modal-title" id="modalListagemLabel">Artigos em produção</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body corpo-listar">
 			</div>
@@ -530,13 +505,13 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalVerTextoHistorico" aria-hidden="true"
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalVerTextoHistoricoLabel" aria-hidden="true"
 	id="modalVerTextoHistorico">
 	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Histórico do artigo</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<h5 class="modal-title" id="modalVerTextoHistoricoLabel">Histórico do artigo</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body">
 				<div class="col-lg-12">
@@ -545,9 +520,9 @@ use CodeIgniter\I18n\Time;
 					<div class="position-relative mb-3">
 						<div class="pt-3 pb-3">
 							<div>
-								<p id="modal-artigo-texto"></p>
+								<div id="modal-artigo-texto" class="modal-artigo-corpo-historico"></div>
 								<h4 class="mb-3">Referências:</h4>
-								<p id="modal-artigo-referencias"></p>
+								<div id="modal-artigo-referencias" class="modal-artigo-corpo-historico"></div>
 							</div>
 						</div>
 					</div>
@@ -569,7 +544,7 @@ use CodeIgniter\I18n\Time;
 			<div class="modal-content">
 				<div class="modal-header">
 					<h3 class="modal-title">ATENÇÃO!</h3>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 				</div>
 				<div class="modal-body">
 					<p>Seu artigo está salvo, mas não foi submetido para revisão.</p>
@@ -583,35 +558,33 @@ use CodeIgniter\I18n\Time;
 	</div>
 
 	<script type="text/javascript">
-		var myModal = new bootstrap.Modal($('#modalAvisoCadastro'))
-		myModal.show();
+		const avisoCadastroEl = document.getElementById('modalAvisoCadastro');
+		if (avisoCadastroEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+			const myModal = bootstrap.Modal.getOrCreateInstance(avisoCadastroEl);
+			myModal.show();
+		}
 	</script>
 
 <?php endif; ?>
 
 <script type="text/javascript">
 	function contapalavras() {
-		var texto = $("#texto").val().replaceAll('\n', " ");
+		let texto = $("#texto").val().replaceAll('\n', " ");
 		texto = texto.replace(/[0-9]/gi, "");
-		var matches = texto.split(" ");
-		number = matches.filter(function (word) {
+		const matches = texto.split(" ");
+		const number = matches.filter(function (word) {
 			return word.length > 0;
 		}).length;
-		var s = "";
-		if (number > 1) {
-			s = 's'
-		} else {
-			s = '';
-		}
+		const s = number > 1 ? 's' : '';
 		$('#count_message').html(number + " palavra" + s)
 	}
 
 	function verificaPautaEscrita() {
-		form = new FormData(artigo_form);
+		const formData = new FormData(artigo_form);
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/verificaPautaEscrita' . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id']))); ?>",
 			method: "POST",
-			data: form,
+			data: formData,
 			processData: false,
 			contentType: false,
 			cache: false,
@@ -628,9 +601,6 @@ use CodeIgniter\I18n\Time;
 		});
 	}
 
-	const Font = Quill.import('formats/font');
-	Font.whitelist = ['roboto'];
-	Quill.register(Font, true);
 	const options = {
 		modules: {
 			toolbar: null,
@@ -640,35 +610,48 @@ use CodeIgniter\I18n\Time;
 	};
 	const quill = new Quill('#editor', options);
 	quill.on('text-change', () => {
-		$('#texto').html(quill.getText(0, quill.getLength()));
+		$('#texto').val(quill.getText(0, quill.getLength()));
 		contapalavras();
 	});
 	<?php if ($artigo['texto'] !== null): ?>
-		quill.setContents([
-			{ insert: <?= json_encode(preg_replace('/\s\s+/', "\n\n", htmlspecialchars_decode($artigo['texto']))); ?> },
-		])
+		quill.setText(<?= json_encode(preg_replace('/\s\s+/', "\n\n", htmlspecialchars_decode($artigo['texto']))); ?>);
 	<?php endif; ?>
 
 	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
 		contapalavras();
 		verificaPautaEscrita();
-	})
+	});
 
-	$('#link').on('change', function (e) {
+	$('#modalVerTextoHistorico').on('hidden.bs.modal', function () {
+		const tituloInput = document.getElementById('titulo');
+		if (tituloInput) {
+			tituloInput.focus();
+		}
+	});
+
+	$('#link').on('change', function () {
 		verificaPautaEscrita();
 	});
 
+	const salvarOuRevisarUrl = <?= json_encode(
+		($artigo['fase_producao_id'] == '1')
+			? site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? '' : ('/' . $artigo['id']))
+			: (($artigo['fase_producao_id'] == '2')
+				? site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? '' : ('/' . $artigo['id']))
+				: null)
+	); ?>;
+
 	$('#enviar_artigo').on('click', function () {
-		form = new FormData(artigo_form);
+		if (!salvarOuRevisarUrl) {
+			popMessage('ATENÇÃO', 'Não foi possível identificar a ação de salvamento para esta fase.', TOAST_STATUS.DANGER);
+			return;
+		}
+		const formData = new FormData(artigo_form);
 		$.ajax({
-			<?php if ($artigo['fase_producao_id'] == '1'): ?>
-																	url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
-			<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-																	url: "<?= site_url('colaboradores/artigos/revisar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
-			<?php endif; ?>
+			url: salvarOuRevisarUrl,
 			method: "POST",
-			data: form,
+			data: formData,
 			processData: false,
 			contentType: false,
 			cache: false,
@@ -699,21 +682,12 @@ use CodeIgniter\I18n\Time;
 
 		<?php if ($artigo['fase_producao_id'] == '1'): ?>
 
-			$('#aceito1').on('change', function (e) {
-				submeterRevisao();
-			});
-			$('#aceito2').on('change', function (e) {
-				submeterRevisao();
-			});
-			$('#aceito3').on('change', function (e) {
-				submeterRevisao();
-			});
-			$('#aceito4').on('change', function (e) {
+			$('.aceite-submeter-fase1').on('change', function () {
 				submeterRevisao();
 			});
 
 			function submeterRevisao() {
-				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked') && $('#aceito4').is(':checked')) {
+				if ($('.aceite-submeter-fase1:checked').length === $('.aceite-submeter-fase1').length) {
 					$('.submeter-revisao').removeAttr('disabled');
 				} else {
 					$('.submeter-revisao').attr('disabled', '');
@@ -721,33 +695,24 @@ use CodeIgniter\I18n\Time;
 			}
 
 		<?php elseif ($artigo['fase_producao_id'] == '2'): ?>
-			$('#aceito1').on('change', function (e) {
-				submeterRevisao();
-			});
-			$('#aceito2').on('change', function (e) {
-				submeterRevisao();
-			});
-			$('#aceito3').on('change', function (e) {
+			$('.aceite-submeter-fase2').on('change', function () {
 				submeterRevisao();
 			});
 
 			function submeterRevisao() {
-				if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
+				if ($('.aceite-submeter-fase2:checked').length === $('.aceite-submeter-fase2').length) {
 					$('.submeter-revisao').removeAttr('disabled');
 				} else {
 					$('.submeter-revisao').attr('disabled', '');
 				}
 			}
 
-			$('#descarte1').on('change', function (e) {
-				descartarArtigo();
-			});
-			$('#descarte2').on('change', function (e) {
+			$('.aceite-descarte').on('change', function () {
 				descartarArtigo();
 			});
 
 			function descartarArtigo() {
-				if ($('#descarte1').is(':checked') && $('#descarte2').is(':checked')) {
+				if ($('.aceite-descarte:checked').length === $('.aceite-descarte').length) {
 					$('.descartar-artigo').removeAttr('disabled');
 				} else {
 					$('.descartar-artigo').attr('disabled', '');
@@ -785,15 +750,12 @@ use CodeIgniter\I18n\Time;
 			});
 
 
-			$('#reverter1').on('change', function (e) {
-				reverterArtigo();
-			});
-			$('#reverter2').on('change', function (e) {
+			$('.aceite-reverter').on('change', function () {
 				reverterArtigo();
 			});
 
 			function reverterArtigo() {
-				if ($('#reverter1').is(':checked') && $('#reverter2').is(':checked')) {
+				if ($('.aceite-reverter:checked').length === $('.aceite-reverter').length) {
 					$('.reverter-artigo').removeAttr('disabled');
 				} else {
 					$('.reverter-artigo').attr('disabled', '');
@@ -867,7 +829,6 @@ use CodeIgniter\I18n\Time;
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>",
 				method: "GET",
-				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -884,7 +845,6 @@ use CodeIgniter\I18n\Time;
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/historicos/') . $artigo['id']; ?>",
 				method: "GET",
-				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -901,7 +861,6 @@ use CodeIgniter\I18n\Time;
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/artigosTextoHistoricosList/') . $artigo['id']; ?>",
 				method: "GET",
-				data: form,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -933,19 +892,19 @@ use CodeIgniter\I18n\Time;
 		}
 
 		$("#enviar-comentario").on("click", function () {
-			form = new FormData();
-			form.append('comentario', $('#comentario').val());
+			const formData = new FormData();
+			formData.append('comentario', $('#comentario').val());
 			if ($('#id_comentario').val() == '') {
-				form.append('metodo', 'inserir');
+				formData.append('metodo', 'inserir');
 			} else {
-				form.append('metodo', 'alterar');
-				form.append('id_comentario', $('#id_comentario').val());
+				formData.append('metodo', 'alterar');
+				formData.append('id_comentario', $('#id_comentario').val());
 			}
 
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
 				method: "POST",
-				data: form,
+				data: formData,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -967,14 +926,14 @@ use CodeIgniter\I18n\Time;
 		});
 
 		function excluirComentario(id_comentario) {
-			form = new FormData();
-			form.append('id_comentario', id_comentario);
-			form.append('metodo', 'excluir');
+			const formData = new FormData();
+			formData.append('id_comentario', id_comentario);
+			formData.append('metodo', 'excluir');
 
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
 				method: "POST",
-				data: form,
+				data: formData,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -992,13 +951,44 @@ use CodeIgniter\I18n\Time;
 			});
 		}
 
+		$(document).on('click', '.btn-texto-historico', function () {
+			mostraHistoricoTexto(this);
+		});
+
+		function escapeHtmlHistorico(s) {
+			const d = document.createElement('div');
+			d.textContent = s;
+			return d.innerHTML;
+		}
+
+		function htmlCorpoHistoricoArtigo(texto) {
+			if (texto == null || texto === '') {
+				return '';
+			}
+			const t = String(texto);
+			if (/<[a-z][\s\S]*>/i.test(t)) {
+				return t;
+			}
+			return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
+		}
+
+		function htmlReferenciasHistorico(ref) {
+			if (ref == null || ref === '') {
+				return '';
+			}
+			const t = String(ref);
+			if (/<[a-z][\s\S]*>/i.test(t)) {
+				return t;
+			}
+			return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
+		}
+
 		function mostraHistoricoTexto(e) {
-			console.log(e.dataset.historicoTextoId);
-			form = new FormData();
+			const formData = new FormData();
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/artigos/artigosTextoHistorico/'); ?>" + e.dataset.historicoTextoId,
 				method: "POST",
-				data: form,
+				data: formData,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -1008,11 +998,20 @@ use CodeIgniter\I18n\Time;
 				success: function (retorno) {
 
 					if (retorno.status) {
-						$('#modal-artigo-titulo').html(retorno.parametros.titulo);
-						$('#modal-artigo-gancho').html(retorno.parametros.gancho);
-						$('#modal-artigo-texto').html(retorno.parametros.texto);
-						$('#modal-artigo-referencias').html(retorno.parametros.referencias);
+						const parametros = retorno.parametros || null;
+						if (!parametros) {
+							popMessage('ATENÇÃO', 'Não foi possível carregar o texto histórico deste item.', TOAST_STATUS.DANGER);
+							return;
+						}
+						$('#modal-artigo-titulo').html(parametros.titulo || '');
+						$('#modal-artigo-gancho').html(parametros.gancho || '');
+						$('#modal-artigo-texto').html(htmlCorpoHistoricoArtigo(parametros.texto));
+						$('#modal-artigo-referencias').html(htmlReferenciasHistorico(parametros.referencias));
 						$('.btn-reverter').attr('data-historico-texto-id', e.dataset.historicoTextoId);
+						const modalHistoricoEl = document.getElementById('modalVerTextoHistorico');
+						if (modalHistoricoEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+							bootstrap.Modal.getOrCreateInstance(modalHistoricoEl).show();
+						}
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
@@ -1021,10 +1020,11 @@ use CodeIgniter\I18n\Time;
 		}
 
 		$(".btn-reverter").on("click", function (e) {
+			const formData = new FormData();
 			$.ajax({
 				url: "<?php echo base_url('colaboradores/artigos/artigosTextoHistorico/'); ?>" + e.currentTarget.dataset.historicoTextoId,
 				method: "POST",
-				data: form,
+				data: formData,
 				processData: false,
 				contentType: false,
 				cache: false,
@@ -1033,12 +1033,15 @@ use CodeIgniter\I18n\Time;
 				complete: function () { $('#modal-loading').hide() },
 				success: function (retorno) {
 					if (retorno.status) {
-						$('#titulo').val(retorno.parametros.titulo);
-						$('#gancho').val(retorno.parametros.gancho);
-						$('#referencias').html(retorno.parametros.referencias);
-						quill.setContents([
-							{ insert: retorno.parametros.texto },
-						])
+						const parametros = retorno.parametros || null;
+						if (!parametros) {
+							popMessage('ATENÇÃO', 'Não foi possível reverter para o texto histórico selecionado.', TOAST_STATUS.DANGER);
+							return;
+						}
+						$('#titulo').val(parametros.titulo || '');
+						$('#gancho').val(parametros.gancho || '');
+						$('#referencias').html(parametros.referencias || '');
+						quill.setText(parametros.texto || '');
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}

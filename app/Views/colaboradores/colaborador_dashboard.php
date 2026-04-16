@@ -21,8 +21,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="1" data-modal-fase-titulo="Escrevendo" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="1"
+								aria-label="Filtrar listagem por fase Escrevendo">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-success bg-opacity-10 text-success flex-shrink-0"><i class="far fa-file-lines" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['escrevendo'] < 10) ? ('0' . $resumo['escrevendo']) : ($resumo['escrevendo']); ?></span>
@@ -33,8 +33,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="2" data-modal-fase-titulo="Revisando" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="2"
+								aria-label="Filtrar listagem por fase Revisando">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-primary bg-opacity-10 text-primary flex-shrink-0"><i class="fas fa-pen-to-square" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['revisando'] < 10) ? ('0' . $resumo['revisando']) : ($resumo['revisando']); ?></span>
@@ -45,8 +45,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="3" data-modal-fase-titulo="Narrando" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="3"
+								aria-label="Filtrar listagem por fase Narrando">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-info bg-opacity-10 text-info flex-shrink-0"><i class="fas fa-microphone" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['narrando'] < 10) ? ('0' . $resumo['narrando']) : ($resumo['narrando']); ?></span>
@@ -57,8 +57,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="4" data-modal-fase-titulo="Produzindo" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="4"
+								aria-label="Filtrar listagem por fase Produzindo">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-secondary bg-opacity-10 text-secondary flex-shrink-0"><i class="fas fa-video" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['produzindo'] < 10) ? ('0' . $resumo['produzindo']) : ($resumo['produzindo']); ?></span>
@@ -69,8 +69,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="5" data-modal-fase-titulo="Publicando" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="5"
+								aria-label="Filtrar listagem por fase Publicando">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-danger bg-opacity-10 text-danger flex-shrink-0"><i class="fab fa-youtube" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['publicando'] < 10) ? ('0' . $resumo['publicando']) : ($resumo['publicando']); ?></span>
@@ -81,8 +81,8 @@
 						<div class="col">
 							<button type="button"
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
-								data-fase-producao="6" data-modal-fase-titulo="Pagando" data-bs-toggle="modal"
-								data-bs-target="#modalListagem" aria-haspopup="dialog" aria-controls="modalListagem">
+								data-fase-producao="6"
+								aria-label="Filtrar listagem por fase Pagando">
 								<span class="pipeline-fase-icon rounded-2 p-2 bg-warning bg-opacity-10 text-warning flex-shrink-0"><i class="fab fa-bitcoin" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['pagando'] < 10) ? ('0' . $resumo['pagando']) : ($resumo['pagando']); ?></span>
@@ -121,8 +121,7 @@
 				max-height: min(70vh, 42rem);
 				overflow: auto;
 			}
-			.listagem-site-table-wrap .table thead.listagem-site-thead th,
-			.dashboard-limites-table .table thead.listagem-site-thead th {
+			.listagem-site-table-wrap .table thead.listagem-site-thead th {
 				position: sticky;
 				top: 0;
 				z-index: 2;
@@ -137,9 +136,7 @@
 				vertical-align: middle;
 			}
 			[data-bs-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
-			[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
-			[data-bs-theme="dark"] .dashboard-limites-table .table thead.listagem-site-thead th,
-			[data-mdb-theme="dark"] .dashboard-limites-table .table thead.listagem-site-thead th {
+			[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th {
 				box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 			}
 			#listagem-site-resultados-heading:focus,
@@ -155,56 +152,6 @@
 				min-height: 6rem;
 			}
 		</style>
-
-		<div class="accordion mb-4" id="accordionLimitesDashboard">
-			<div class="accordion-item border rounded-3 overflow-hidden shadow-sm">
-				<h2 class="accordion-header" id="headingLimitesDashboard">
-					<button class="accordion-button collapsed py-3" type="button" data-bs-toggle="collapse"
-						data-bs-target="#collapseLimitesDashboard" aria-expanded="false" aria-controls="collapseLimitesDashboard">
-						Tempos e limites para colaborar
-					</button>
-				</h2>
-				<div id="collapseLimitesDashboard" class="accordion-collapse collapse" data-bs-parent="#accordionLimitesDashboard"
-					aria-labelledby="headingLimitesDashboard">
-					<div class="accordion-body py-3 small">
-						<p class="text-muted mb-2 mb-md-3">
-							<strong class="text-body">Atenção:</strong> fora do prazo, o artigo é desmarcado; para marcar de novo o mesmo artigo, é preciso esperar o <strong>bloqueio</strong> de <strong><?= esc($limite['bloqueio']); ?></strong>.
-							Desmarcação automática por prazo: <strong><?= ($limite['ativo'] == '1') ? ('ativa') : ('inativa'); ?></strong>.
-						</p>
-						<div class="table-responsive rounded border dashboard-limites-table mb-2 mb-md-3" style="max-width: 28rem">
-							<table class="table table-sm align-middle mb-0 table-bordered">
-								<thead class="listagem-site-thead">
-									<tr>
-										<th scope="col" class="text-nowrap">Tipo</th>
-										<th scope="col" class="text-nowrap">Revisão</th>
-										<th scope="col" class="text-nowrap">Narração</th>
-										<th scope="col" class="text-nowrap">Produção</th>
-									</tr>
-								</thead>
-								<tbody class="border-top-0">
-									<tr>
-										<th scope="row" class="text-uppercase fw-normal">Teórico</th>
-										<td><?= esc($limite['teoria']['revisao']); ?></td>
-										<td><?= esc($limite['teoria']['narracao']); ?></td>
-										<td><?= esc($limite['teoria']['producao']); ?></td>
-									</tr>
-									<tr>
-										<th scope="row" class="text-uppercase fw-normal">Notícia</th>
-										<td><?= esc($limite['noticia']['revisao']); ?></td>
-										<td><?= esc($limite['noticia']['narracao']); ?></td>
-										<td><?= esc($limite['noticia']['producao']); ?></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<p class="text-muted mb-0">
-							<strong class="text-body">Descarte por atraso:</strong> regra <strong><?= ($limite['descartar']['ativo'] == '1') ? ('ativa') : ('inativa'); ?></strong>
-							— sem produzir em <strong><?= esc($limite['descartar']['tempo']); ?></strong>, o artigo é descartado.
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<section class="card border rounded-3 shadow-sm" aria-labelledby="heading-listagem-site">
 			<div class="card-header bg-body-secondary bg-opacity-25 border-bottom p-3">
@@ -253,10 +200,12 @@
 									<label class="form-label small text-muted mb-1" for="select-fase-listagem-site">Fase de produção</label>
 									<select class="form-select form-select-sm" id="select-fase-listagem-site" name="fase_producao" aria-label="Fase de produção">
 										<option value="">Todas as fases</option>
+										<option value="1">Escrevendo</option>
 										<option value="2">Revisando</option>
 										<option value="3">Narrando</option>
 										<option value="4">Produzindo</option>
 										<option value="5">Publicando</option>
+										<option value="6">Pagando</option>
 									</select>
 								</div>
 								<div class="col-12 col-md-5">
@@ -294,29 +243,7 @@
 	</div>
 </div>
 
-<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="modalListagemTitulo"
-	aria-hidden="true">
-	<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modalListagemTitulo">Artigos em produção</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-			</div>
-			<div class="modal-body corpo-listar"></div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-			</div>
-		</div>
-	</div>
-</div>
-
 <script>
-	var modalListagemTituloDefault = 'Artigos em produção';
-
-	$('#modalListagem').on('hidden.bs.modal', function () {
-		$('#modalListagemTitulo').text(modalListagemTituloDefault);
-	});
-
 	var listagemSiteLoadingHtml = '<div class="listagem-site-loading d-flex align-items-center justify-content-center gap-2 p-4 text-muted small">' +
 		'<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>' +
 		'<span>Carregando resultados…</span></div>';
@@ -396,25 +323,25 @@
 	});
 
 	$('.listagem-artigos-produzindo').on('click', function (e) {
-		var faseproducaoid = e.currentTarget.getAttribute('data-fase-producao');
-		var tituloFase = e.currentTarget.getAttribute('data-modal-fase-titulo');
-		if (tituloFase) {
-			$('#modalListagemTitulo').text('Artigos — ' + tituloFase);
+		e.preventDefault();
+		var faseId = e.currentTarget.getAttribute('data-fase-producao');
+		if (!faseId) {
+			return;
 		}
-		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>/" + faseproducaoid,
-			method: "GET",
-			data: {},
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide(); },
-			success: function (retorno) {
-				$('.corpo-listar').html(retorno);
-			}
-		});
+		$('#select-campo-pesquisa').val('titulo');
+		$('#text-pesquisa-publicado').val('');
+		$('#text-colaborador').val('');
+		$('#select-colaborador-listagem-site').val('B');
+		$('#select-fase-listagem-site').val(faseId);
+		var elCol = document.getElementById('filtrosAvancadosListagem');
+		if (elCol && typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+			bootstrap.Collapse.getOrCreateInstance(elCol).show();
+		}
+		$('#form-listagem-site-artigos').trigger('submit');
+		var secListagem = document.getElementById('heading-listagem-site');
+		if (secListagem && secListagem.scrollIntoView) {
+			secListagem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
 	});
 </script>
 

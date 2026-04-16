@@ -13,6 +13,14 @@
 		font-size: 16px;
 		height: 250px;
 	}
+
+	.modal-artigo-corpo-historico p {
+		margin-bottom: 0.75rem;
+	}
+
+	.modal-artigo-corpo-historico p:last-child {
+		margin-bottom: 0;
+	}
 </style>
 
 <div class="container w-auto">
@@ -712,9 +720,9 @@
 					<div class="position-relative mb-3">
 						<div class="pt-3 pb-3">
 							<div>
-								<p id="modal-artigo-texto"></p>
+								<div id="modal-artigo-texto" class="modal-artigo-corpo-historico"></div>
 								<h4 class="mb-3">Referências:</h4>
-								<p id="modal-artigo-referencias"></p>
+								<div id="modal-artigo-referencias" class="modal-artigo-corpo-historico"></div>
 							</div>
 						</div>
 					</div>
@@ -1112,6 +1120,34 @@
 		});
 	}
 
+	function escapeHtmlHistorico(s) {
+		const d = document.createElement('div');
+		d.textContent = s;
+		return d.innerHTML;
+	}
+
+	function htmlCorpoHistoricoArtigo(texto) {
+		if (texto == null || texto === '') {
+			return '';
+		}
+		const t = String(texto);
+		if (/<[a-z][\s\S]*>/i.test(t)) {
+			return t;
+		}
+		return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
+	}
+
+	function htmlReferenciasHistorico(ref) {
+		if (ref == null || ref === '') {
+			return '';
+		}
+		const t = String(ref);
+		if (/<[a-z][\s\S]*>/i.test(t)) {
+			return t;
+		}
+		return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
+	}
+
 	function mostraHistoricoTexto(e) {
 		console.log(e.dataset.historicoTextoId);
 		form = new FormData();
@@ -1130,8 +1166,8 @@
 				if (retorno.status) {
 					$('#modal-artigo-titulo').html(retorno.parametros.titulo);
 					$('#modal-artigo-gancho').html(retorno.parametros.gancho);
-					$('#modal-artigo-texto').html(retorno.parametros.texto);
-					$('#modal-artigo-referencias').html(retorno.parametros.referencias);
+					$('#modal-artigo-texto').html(htmlCorpoHistoricoArtigo(retorno.parametros.texto));
+					$('#modal-artigo-referencias').html(htmlReferenciasHistorico(retorno.parametros.referencias));
 					$('.btn-reverter').attr('data-historico-texto-id', e.dataset.historicoTextoId);
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);

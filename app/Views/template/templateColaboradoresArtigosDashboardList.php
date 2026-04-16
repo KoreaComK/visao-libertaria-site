@@ -22,8 +22,12 @@ $temLinhas = $artigosPagina !== null && !empty($artigosPagina);
 			<?php foreach ($artigosPagina as $artigo): ?>
 				<tr>
 					<td>
-						<a class="fw-semibold small text-decoration-none"
-							href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= esc($artigo['titulo']); ?></a>
+						<?php if ((string) ($artigo['fase_producao_id'] ?? '') === '1'): ?>
+							<span class="fw-semibold small text-body"><?= esc($artigo['titulo']); ?></span>
+						<?php else: ?>
+							<a class="fw-semibold small text-decoration-none"
+								href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']) ?>"><?= esc($artigo['titulo']); ?></a>
+						<?php endif; ?>
 					</td>
 					<td class="small">
 						<a class="text-decoration-none"

@@ -11,6 +11,56 @@
 			</div>
 		</div>
 
+		<div class="accordion mb-4" id="accordionLimitesColaborar">
+			<div class="accordion-item border rounded-3 overflow-hidden shadow-sm">
+				<h2 class="accordion-header" id="headingLimitesColaborar">
+					<button class="accordion-button collapsed py-3" type="button" data-bs-toggle="collapse"
+						data-bs-target="#collapseLimitesColaborar" aria-expanded="false" aria-controls="collapseLimitesColaborar">
+						Tempos e limites para colaborar
+					</button>
+				</h2>
+				<div id="collapseLimitesColaborar" class="accordion-collapse collapse" data-bs-parent="#accordionLimitesColaborar"
+					aria-labelledby="headingLimitesColaborar">
+					<div class="accordion-body py-3 small">
+						<p class="text-muted mb-2 mb-md-3">
+							<strong class="text-body">Atenção:</strong> fora do prazo, o artigo é desmarcado; para marcar de novo o mesmo artigo, é preciso esperar o <strong>bloqueio</strong> de <strong><?= esc($limite['bloqueio']); ?></strong>.
+							Desmarcação automática por prazo: <strong><?= ($limite['ativo'] == '1') ? ('ativa') : ('inativa'); ?></strong>.
+						</p>
+						<div class="table-responsive rounded border colab-limites-table mb-2 mb-md-3" style="max-width: 28rem">
+							<table class="table table-sm align-middle mb-0 table-bordered">
+								<thead class="listagem-site-thead">
+									<tr>
+										<th scope="col" class="text-nowrap">Tipo</th>
+										<th scope="col" class="text-nowrap">Revisão</th>
+										<th scope="col" class="text-nowrap">Narração</th>
+										<th scope="col" class="text-nowrap">Produção</th>
+									</tr>
+								</thead>
+								<tbody class="border-top-0">
+									<tr>
+										<th scope="row" class="text-uppercase fw-normal">Teórico</th>
+										<td><?= esc($limite['teoria']['revisao']); ?></td>
+										<td><?= esc($limite['teoria']['narracao']); ?></td>
+										<td><?= esc($limite['teoria']['producao']); ?></td>
+									</tr>
+									<tr>
+										<th scope="row" class="text-uppercase fw-normal">Notícia</th>
+										<td><?= esc($limite['noticia']['revisao']); ?></td>
+										<td><?= esc($limite['noticia']['narracao']); ?></td>
+										<td><?= esc($limite['noticia']['producao']); ?></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<p class="text-muted mb-0">
+							<strong class="text-body">Descarte por atraso:</strong> regra <strong><?= ($limite['descartar']['ativo'] == '1') ? ('ativa') : ('inativa'); ?></strong>
+							— sem produzir em <strong><?= esc($limite['descartar']['tempo']); ?></strong>, o artigo é descartado.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<section class="mb-4" aria-labelledby="heading-colab-fase">
 			<h2 id="heading-colab-fase" class="h5 text-body mb-1">Fase de colaboração</h2>
 			<p class="text-muted small mb-0">Selecione a etapa em que pretende colaborar</p>
@@ -181,7 +231,8 @@
 		overflow: auto;
 	}
 
-	.listagem-site-table-wrap .table thead.listagem-site-thead th {
+	.listagem-site-table-wrap .table thead.listagem-site-thead th,
+	.colab-limites-table .table thead.listagem-site-thead th {
 		position: sticky;
 		top: 0;
 		z-index: 2;
@@ -197,7 +248,9 @@
 	}
 
 	[data-bs-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
-	[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th {
+	[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
+	[data-bs-theme="dark"] .colab-limites-table .table thead.listagem-site-thead th,
+	[data-mdb-theme="dark"] .colab-limites-table .table thead.listagem-site-thead th {
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
