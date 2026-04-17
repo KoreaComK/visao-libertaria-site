@@ -1326,6 +1326,12 @@ class Artigos extends BaseController
 		}
 
 		$data['permitido'] = $permitido;
+		$data['colaborador_id'] = (int) $colaborador;
+		$data['is_colaborador_marcado'] = ((int) $artigo['marcado_colaboradores_id'] === (int) $colaborador);
+		$data['pode_narrar'] = $permitido && ((int) $artigo['fase_producao_id'] === 3) && $data['is_colaborador_marcado'];
+		$data['pode_produzir'] = $permitido && ((int) $artigo['fase_producao_id'] === 4) && $data['is_colaborador_marcado'];
+		$data['pode_publicar'] = $permitido && ((int) $artigo['fase_producao_id'] === 5);
+		$data['pode_reverter_ou_descartar'] = $permitido && $data['is_colaborador_marcado'];
 
 		if (!$permitido && ($artigo['fase_producao_id'] == '6' || $artigo['fase_producao_id'] == '7')) {
 			return redirect()->to(base_url() . 'site/artigo/' . $artigo['url_friendly']);
@@ -1526,7 +1532,7 @@ class Artigos extends BaseController
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o comentário do artigo', $idArtigo, true);
 					return $retorno->retorno(true, 'Comentário atualizado com sucesso.', true);
 				}
-				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+				return $retorno->retorno(false, 'Erro ao alterar o comentário.', true);
 			}
 			return $retorno->retorno(false, 'Erro ao salvar comentário', true);
 		} else {

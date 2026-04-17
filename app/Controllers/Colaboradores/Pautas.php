@@ -541,7 +541,7 @@ class Pautas extends BaseController
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'pautas', 'o comentário na pauta', $idPauta, true);
 					return $retorno->retorno(true, 'Comentário alterado com sucesso.', true);
 				}
-				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+				return $retorno->retorno(false, 'Erro ao alterar o comentário.', true);
 			}
 			return $retorno->retorno(false, 'Erro ao salvar comentário', true);
 		} else {

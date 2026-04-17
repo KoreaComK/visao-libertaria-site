@@ -892,6 +892,11 @@ use CodeIgniter\I18n\Time;
 		}
 
 		$("#enviar-comentario").on("click", function () {
+			var textoComentario = ($('#comentario').val() || '').trim();
+			if (textoComentario === '') {
+				popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
+				return;
+			}
 			const formData = new FormData();
 			formData.append('comentario', $('#comentario').val());
 			if ($('#id_comentario').val() == '') {
@@ -943,6 +948,10 @@ use CodeIgniter\I18n\Time;
 				success: function (retorno) {
 					if (retorno.status) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						if ($('#id_comentario').val() === id_comentario) {
+							$('#id_comentario').val('');
+							$('#comentario').val('');
+						}
 						getComentarios()
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);

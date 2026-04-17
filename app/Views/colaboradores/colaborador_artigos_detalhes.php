@@ -4,22 +4,22 @@
 
 <?= $this->section('content'); ?>
 
-<div class="container-fluid py-3">
-	<div class="container d-flex justify-content-center">
-		<div class="col-lg-8 col-sm-12">
-			<div class="col-12">
-				<div class="mb-5">
-					<?php if ($artigo['fase_producao_id'] == '3'): ?>
-						<?= $config['artigo_regras_narrar']; ?>
-					<?php endif; ?>
-					<?php if ($artigo['fase_producao_id'] == '4'): ?>
-						<?= $config['artigo_regras_produzir']; ?>
-					<?php endif; ?>
-				</div>
-			</div>
-			<h1 class="display-2"><?= $artigo['titulo']; ?></h1>
-			<div class="position-relative mb-3">
-				<div class="pt-3 pb-3">
+<div class="container-fluid py-2">
+	<div class="container">
+		<div class="mb-3">
+			<?php if ($artigo['fase_producao_id'] == '3'): ?>
+				<?= $config['artigo_regras_narrar']; ?>
+			<?php endif; ?>
+			<?php if ($artigo['fase_producao_id'] == '4'): ?>
+				<?= $config['artigo_regras_produzir']; ?>
+			<?php endif; ?>
+		</div>
+
+		<div class="row g-3 justify-content-center">
+			<div class="col-lg-8 col-sm-12">
+			<h1 class="display-5 mb-3"><?= esc($artigo['titulo']); ?></h1>
+			<div class="position-relative mb-2">
+				<div class="py-2">
 					<!-- <div class="mb-3">
 							<?php //foreach($artigo['categorias'] as $categoria): ?>
 								<span class="badge vl-bg-c m-1 p-1">
@@ -28,13 +28,15 @@
 							<?php //endforeach; ?>
 						</div> -->
 					<div>
-						<div><?= str_replace("\n", '<br/>', $artigo['texto_producao']); ?></div>
+						<div><?= $artigo['texto_producao'] ?? ''; ?></div>
 						<h4 class="mb-3">Referências:</h4>
-						<p style="line-break:anywhere;"><?= str_replace("\n", '<br/>', $artigo['referencias']); ?></p>
+						<p style="line-break:anywhere;"><?= nl2br(esc($artigo['referencias'] ?? '')); ?></p>
 					</div>
 				</div>
 			</div>
 
+			</div>
+			<div class="col-lg-4 col-sm-12">
 			<?php if ($historico !== NULL && !empty($historico)): ?>
 				<div class="col-12 mb-3 mt-3">
 					<!-- Chart START -->
@@ -57,8 +59,8 @@
 												<?php foreach ($historico as $h): ?>
 													<li class="list-group-item p-1 border-0">
 														<small>
-															<?= $h['apelido']; ?>
-															<?= $h['acao']; ?>
+															<?= esc($h['apelido']); ?>
+															<?= esc($h['acao']); ?>
 															<span class="badge badge-pill badge-secondary fw-light">
 																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
@@ -92,7 +94,7 @@
 										<div class="accordion-body">
 											<div class="row">
 												<div class="col-12 text-center">
-													<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+													<button class="btn btn-primary mb-3 col-md-6 col-lg-7"
 														id="btn-comentarios" type="button">Atualizar
 														Comentários</button>
 												</div>
@@ -108,14 +110,14 @@
 																	placeholder="Digite seu comentário aqui"></textarea>
 															</div>
 															<div class="mb-3 text-center">
-																<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
+																<button class="btn btn-primary mb-3 col-md-6 col-lg-7"
 																	id="enviar-comentario" type="button">Enviar
 																	comentário</button>
 															</div>
 														</div>
 														<div class="card m-3 div-list-comentarios"></div>
 													</div>
-												</diV>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -126,7 +128,7 @@
 				</div>
 			<?php endif; ?>
 
-			<?php if ($permitido && $artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if ($pode_narrar): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -147,7 +149,7 @@
 									class="d-block mb-2 text-left <?= ($artigo['arquivo_audio'] == NULL) ? ('d-none') : (''); ?> player">
 									<audio controls class="w-100 rounded-3 bg-primary audioplayer">
 										<source
-											src="<?= ($artigo['arquivo_audio'] != NULL) ? ($artigo['arquivo_audio']) : (''); ?>"
+											src="<?= ($artigo['arquivo_audio'] != NULL) ? (esc($artigo['arquivo_audio'], 'attr')) : (''); ?>"
 											type="audio/mp3" class="source-player">
 									</audio>
 								</div>
@@ -155,37 +157,18 @@
 						</div>
 					</div>
 				</div>
-				<div class="card border mt-4">
+				<div class="card border mt-3">
 					<div class="card-body">
 						<h5 class="card-title">Submeter para produção</h5>
-						<p class="card-text">Ao submeter para produção confirmo que:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito1">
-							<label class="form-check-label" for="aceito1">
-								O áudio está com uma boa qualidade, está sem ruído de fundo e com um bom volume.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito2">
-							<label class="form-check-label" for="aceito2">
-								O áudio não está estourado, e foi editado para atender a qualidade do projeto.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito3">
-							<label class="form-check-label" for="aceito3">
-								A dicção do narrador está boa, e não há erros na narração
-							</label>
-						</div>
-						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
-								produção</button>
+						<div class="d-grid">
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+								data-bs-target="#modalSubmeter">Enviar para produção</button>
 						</div>
 					</div>
 				</div>
 			<?php endif; ?>
 
-			<?php if ($permitido && $artigo['fase_producao_id'] == '4' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if ($pode_produzir): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -193,7 +176,7 @@
 						<div class="card-body">
 							<!-- Form START -->
 							<audio controls class="w-100 rounded-3 bg-primary">
-								<source src="<?= $artigo['arquivo_audio']; ?>" type="audio/mpeg">
+								<source src="<?= esc($artigo['arquivo_audio'], 'attr'); ?>" type="audio/mpeg">
 							</audio>
 							<form class="w-100" novalidate="yes" method="post" id="artigo_form">
 								<div class="mb-3">
@@ -201,7 +184,7 @@
 									<div class="input-group">
 										<span class="input-group-text"><i class="fas fa-link"></i></span>
 										<input type="text" class="form-control" id="video_link" name="video_link"
-											placeholder="Link do Vídeo no YouTube" value="<?= $artigo['link_produzido']; ?>"
+											placeholder="Link do Vídeo no YouTube" value="<?= esc($artigo['link_produzido'], 'attr'); ?>"
 											required>
 									</div>
 								</div>
@@ -210,7 +193,7 @@
 									<div class="input-group">
 										<span class="input-group-text"><i class="fas fa-link"></i></span>
 										<input type="text" class="form-control" id="shorts_link"
-											value="<?= $artigo['link_shorts']; ?>" name="shorts_link"
+											value="<?= esc($artigo['link_shorts'], 'attr'); ?>" name="shorts_link"
 											placeholder="Link do Shorts no YouTube" required>
 									</div>
 								</div>
@@ -222,76 +205,40 @@
 						</div>
 					</div>
 				</div>
-				<div class="card border mt-4">
+				<div class="card border mt-3">
 					<div class="card-body">
 						<h5 class="card-title">Submeter para publicação</h5>
-						<p class="card-text">Ao submeter para publicação confirmo que:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito1">
-							<label class="form-check-label" for="aceito1">
-								O vídeo foi upado no YouTube e está como não listado.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito2">
-							<label class="form-check-label" for="aceito2">
-								Não possui nenhum tipo de aviso de direito autoral, a qualidade está em
-								alta
-								definição e o áudio está com um bom volume.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito3">
-							<label class="form-check-label" for="aceito3">
-								O shorts está com o tamanho correto para ser visto no celular e
-								apresenta menos
-								de 60 segundos de duração.
-							</label>
-						</div>
-						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
-								publicação</button>
+						<div class="d-grid">
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+								data-bs-target="#modalSubmeter">Enviar para publicação</button>
 						</div>
 					</div>
 				</div>
 
 			<?php endif; ?>
 
-			<?php if ($permitido && $artigo['fase_producao_id'] == '5'): ?>
+			<?php if ($pode_publicar): ?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
 						<!-- Card body -->
 						<div class="card-body">
-							<div class="row">
-								<div class="col-4">
-									<div class="d-flex justify-content-center">
-										<a href="<?= $artigo['link_produzido']; ?>" target="_blank"
-											class="btn btn-secondary btn-lg btn-block mb-3">Vídeo do Youtube</a>
-									</div>
-								</div>
-								<div class="col-4">
-									<div class="d-flex justify-content-center">
-										<a href="<?= $artigo['link_shorts']; ?>" target="_blank"
-											class="btn btn-secondary btn-lg btn-block mb-3">Vídeo do Shorts</a>
-									</div>
-								</div>
-								<div class="col-4">
-									<div class="d-flex justify-content-center">
-										<a href="<?= site_url('colaboradores/artigos/cadastrar/') . $artigo['id']; ?>"
-											target="_blank" class="btn btn-danger btn-lg btn-block mb-3">Editar artigo</a>
-									</div>
-								</div>
+							<div class="d-grid gap-2 mb-3">
+								<a href="<?= esc($artigo['link_produzido'], 'attr'); ?>" target="_blank"
+									class="btn btn-secondary btn-lg">Vídeo do Youtube</a>
+								<a href="<?= esc($artigo['link_shorts'], 'attr'); ?>" target="_blank"
+									class="btn btn-secondary btn-lg">Vídeo do Shorts</a>
+								<a href="<?= site_url('colaboradores/artigos/cadastrar/') . $artigo['id']; ?>"
+									target="_blank" class="btn btn-danger btn-lg">Editar artigo</a>
 							</div>
 							<form class="needs-validation w-100" id="artigo_form" novalidate="yes" method="post">
 								<div class="mb-3">
-									<label for="username">Tags do Vídeo no YouTube <span class="text-muted">(colocar #
-											na frente
-											da tag, e separá-las com espaço)</span></label>
+									<label for="tags_video_youtube">Tags do Vídeo no YouTube</label>
 									<div class="input-group">
 										<input type="text" class="form-control" id="tags_video_youtube"
 											name="tags_video_youtube" placeholder="Tags do Vídeo" required>
 									</div>
+									<small class="form-text text-muted">Coloque # na frente da tag e separe as tags com espaço.</small>
 								</div>
 
 								<div class="d-flex justify-content-center mb-3">
@@ -310,7 +257,7 @@
 									<div class="input-group">
 										<span class="input-group-text"><i class="fas fa-link"></i></span>
 										<input type="text" class="form-control" id="link_video_youtube"
-											name="link_video_youtube" value="<?= $artigo['link_video_youtube']; ?>"
+											name="link_video_youtube" value="<?= esc($artigo['link_video_youtube'], 'attr'); ?>"
 											placeholder="Link do Vídeo no Canal do Visão Libertária" required>
 									</div>
 								</div>
@@ -322,81 +269,26 @@
 						</div>
 					</div>
 				</div>
-				<div class="card border mt-4">
+				<div class="card border mt-3">
 					<div class="card-body">
 						<h5 class="card-title">Submeter para pagamento</h5>
-						<p class="card-text">Ao submeter para pagamento confirmo que:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito1">
-							<label class="form-check-label" for="aceito1">
-								O vídeo foi upado no YouTube e está com a descrição correta.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito2">
-							<label class="form-check-label" for="aceito2">
-								Foi feito a thumb do vídeo e a imagem foi atualizada no site.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="aceito3">
-							<label class="form-check-label" for="aceito3">
-								Foram colocadas tags sobre temas que são abordados no vídeo.
-							</label>
-						</div>
-						<div class="text-end">
-							<button type="button" disabled="" class="btn btn-primary mt-2 submeter-revisao">Enviar para
-								pagamento</button>
+						<div class="d-grid">
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+								data-bs-target="#modalSubmeter">Enviar para pagamento</button>
 						</div>
 					</div>
 				</div>
 			<?php endif; ?>
 
-			<?php if ($permitido && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
-
-
-				<div class="card border mt-4">
+			<?php if ($pode_reverter_ou_descartar): ?>
+				<div class="card border mt-3">
 					<div class="card-body">
-						<h5 class="card-title">Reverter artigo</h5>
-						<p class="card-text">Ao reverter o artigo confirmo os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="reverter1">
-							<label class="form-check-label" for="reverter1">
-								O artigo será revertido para a etapa anterior para ajustes.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="reverter2">
-							<label class="form-check-label" for="reverter2">
-								Deixei um comentário no artigo informando o motivo da reversão para o escritor.
-							</label>
-						</div>
-						<div class="text-center">
-							<button type="button" disabled="" class="btn btn-warning mt-2 reverter-artigo">Reverter
-								artigo</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="card border mt-4">
-					<div class="card-body">
-						<h5 class="card-title">Descartar artigo</h5>
-						<p class="card-text">Ao descartar o artigo confirmo os seguintes termos:</p>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="descarte1">
-							<label class="form-check-label" for="descarte1">
-								O texto será descartado e não irá mais seguir a trilha de produção.
-							</label>
-						</div>
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="descarte2">
-							<label class="form-check-label" for="descarte2">
-								Deixei um comentário no artigo informando o motivo do descarte para o escritor.
-							</label>
-						</div>
-						<div class="text-start">
-							<button type="button" disabled="" class="btn btn-danger mt-2 descartar-artigo">Descartar
-								artigo</button>
+						<h5 class="card-title mb-3">Ações avançadas</h5>
+						<div class="d-grid gap-2">
+							<button type="button" class="btn btn-warning" data-bs-toggle="modal"
+								data-bs-target="#modalReverterArtigo">Reverter artigo</button>
+							<button type="button" class="btn btn-danger" data-bs-toggle="modal"
+								data-bs-target="#modalDescartarArtigo">Descartar artigo</button>
 						</div>
 					</div>
 				</div>
@@ -404,30 +296,126 @@
 		</div>
 	</div>
 </div>
+
+<button type="button" id="btn-topo" class="btn btn-primary position-fixed d-none"
+	style="right: 20px; bottom: 20px; z-index: 1050; width: 44px; height: 44px; border-radius: 50%; padding: 0; font-size: 1.2rem; line-height: 1;"
+	aria-label="Voltar ao topo" title="Voltar ao topo">
+	<i class="fas fa-chevron-up" aria-hidden="true"></i>
+</button>
+
+<div class="modal fade" id="modalSubmeter" tabindex="-1" aria-labelledby="modalSubmeterLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalSubmeterLabel">Confirmar submissão</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+			</div>
+			<div class="modal-body">
+				<p class="mb-2">Ao submeter, confirmo que:</p>
+				<?php if ($pode_narrar): ?>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter1"><label class="form-check-label" for="submeter1">O áudio está com boa qualidade, sem ruído de fundo e com bom volume.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter2"><label class="form-check-label" for="submeter2">O áudio não está estourado e foi editado conforme o projeto.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter3"><label class="form-check-label" for="submeter3">A dicção do narrador está boa e não há erros na narração.</label></div>
+				<?php elseif ($pode_produzir): ?>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter1"><label class="form-check-label" for="submeter1">O vídeo foi enviado ao YouTube como não listado.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter2"><label class="form-check-label" for="submeter2">Não há aviso de direitos autorais e a qualidade está adequada.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter3"><label class="form-check-label" for="submeter3">O shorts está no formato correto e possui menos de 60 segundos.</label></div>
+				<?php elseif ($pode_publicar): ?>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter1"><label class="form-check-label" for="submeter1">O vídeo foi publicado com a descrição correta.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter2"><label class="form-check-label" for="submeter2">A thumb foi produzida e a imagem atualizada no site.</label></div>
+					<div class="form-check"><input class="form-check-input confirm-submeter-check" type="checkbox" id="submeter3"><label class="form-check-label" for="submeter3">As tags de tema foram adicionadas corretamente.</label></div>
+				<?php endif; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" id="btn-confirmar-submeter" disabled>Confirmar envio</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalReverterArtigo" tabindex="-1" aria-labelledby="modalReverterArtigoLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalReverterArtigoLabel">Confirmar reversão</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="form-check"><input class="form-check-input confirm-reverter-check" type="checkbox" id="reverter1"><label class="form-check-label" for="reverter1">O artigo será revertido para a etapa anterior para ajustes.</label></div>
+				<div class="form-check"><input class="form-check-input confirm-reverter-check" type="checkbox" id="reverter2"><label class="form-check-label" for="reverter2">Deixei um comentário com o motivo da reversão.</label></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-warning" id="btn-confirmar-reverter" disabled>Reverter artigo</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalDescartarArtigo" tabindex="-1" aria-labelledby="modalDescartarArtigoLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalDescartarArtigoLabel">Confirmar descarte</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="form-check"><input class="form-check-input confirm-descartar-check" type="checkbox" id="descarte1"><label class="form-check-label" for="descarte1">O texto será descartado e não seguirá a trilha de produção.</label></div>
+				<div class="form-check"><input class="form-check-input confirm-descartar-check" type="checkbox" id="descarte2"><label class="form-check-label" for="descarte2">Deixei um comentário com o motivo do descarte.</label></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-danger" id="btn-confirmar-descartar" disabled>Descartar artigo</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
-
-	$('#aceito1').on('change', function (e) {
-		submeterRevisao();
-	});
-	$('#aceito2').on('change', function (e) {
-		submeterRevisao();
-	});
-	$('#aceito3').on('change', function (e) {
-		submeterRevisao();
-	});
-
-	<?php if ($artigo['fase_producao_id'] == '3' && $artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
-
-		function submeterRevisao() {
-			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
-				$('.submeter-revisao').removeAttr('disabled');
-			} else {
-				$('.submeter-revisao').attr('disabled', '');
-			}
+	function tratarErroAjax(xhr, status, error) {
+		let mensagem = 'Não foi possível concluir a operação. Tente novamente.';
+		if (xhr && xhr.responseJSON && xhr.responseJSON.mensagem) {
+			mensagem = xhr.responseJSON.mensagem;
+		} else if (error) {
+			mensagem = `Erro de comunicação: ${error}`;
 		}
+		popMessage('ATENÇÃO', mensagem, TOAST_STATUS.DANGER);
+	}
 
+	function toggleBotaoTopo() {
+		if (window.scrollY > 300) {
+			$('#btn-topo').removeClass('d-none');
+		} else {
+			$('#btn-topo').addClass('d-none');
+		}
+	}
+
+	$(window).on('scroll', toggleBotaoTopo);
+	toggleBotaoTopo();
+
+	$('#btn-topo').on('click', function () {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	});
+
+	function toggleBotaoConfirmacao(selectorChecks, selectorBotao) {
+		const habilitar = $(selectorChecks).length > 0 && $(selectorChecks).toArray().every(function (el) { return el.checked; });
+		$(selectorBotao).prop('disabled', !habilitar);
+	}
+
+	$(document).on('change', '.confirm-submeter-check', function () {
+		toggleBotaoConfirmacao('.confirm-submeter-check', '#btn-confirmar-submeter');
+	});
+	$(document).on('change', '.confirm-reverter-check', function () {
+		toggleBotaoConfirmacao('.confirm-reverter-check', '#btn-confirmar-reverter');
+	});
+	$(document).on('change', '.confirm-descartar-check', function () {
+		toggleBotaoConfirmacao('.confirm-descartar-check', '#btn-confirmar-descartar');
+	});
+
+	<?php if ($pode_narrar): ?>
 		audio.onchange = evt => {
-			const [file] = audio.files
+			const [file] = audio.files;
 			if (file) {
 				form = new FormData(artigo_form);
 				$.ajax({
@@ -449,27 +437,17 @@
 							audio.pause();
 							audio.load();
 							audio.play();
-
 						} else {
 							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 						}
-					}
+					},
+					error: tratarErroAjax
 				});
 			}
 		}
-
 	<?php endif; ?>
 
-	<?php if ($permitido && $artigo['fase_producao_id'] == '4'): ?>
-
-		function submeterRevisao() {
-			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
-				$('.submeter-revisao').removeAttr('disabled');
-			} else {
-				$('.submeter-revisao').attr('disabled', '');
-			}
-		}
-
+	<?php if ($pode_produzir): ?>
 		$('#enviar_artigo').on('click', function () {
 			form = new FormData(artigo_form);
 			$.ajax({
@@ -488,21 +466,13 @@
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				}
+				},
+				error: tratarErroAjax
 			});
 		})
 	<?php endif; ?>
 
-	<?php if ($permitido && $artigo['fase_producao_id'] == '5'): ?>
-
-		function submeterRevisao() {
-			if ($('#aceito1').is(':checked') && $('#aceito2').is(':checked') && $('#aceito3').is(':checked')) {
-				$('.submeter-revisao').removeAttr('disabled');
-			} else {
-				$('.submeter-revisao').attr('disabled', '');
-			}
-		}
-
+	<?php if ($pode_publicar): ?>
 		$("#btn-tags").on("click", function () {
 			setTags();
 		});
@@ -529,7 +499,8 @@
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				}
+				},
+				error: tratarErroAjax
 			});
 		}
 
@@ -551,29 +522,14 @@
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				}
+				},
+				error: tratarErroAjax
 			});
 		})
 	<?php endif; ?>
 
-	<?php if ($artigo['marcado_colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
-
-		$('#descarte1').on('change', function (e) {
-			descartarArtigo();
-		});
-		$('#descarte2').on('change', function (e) {
-			descartarArtigo();
-		});
-
-		function descartarArtigo() {
-			if ($('#descarte1').is(':checked') && $('#descarte2').is(':checked')) {
-				$('.descartar-artigo').removeAttr('disabled');
-			} else {
-				$('.descartar-artigo').attr('disabled', '');
-			}
-		}
-
-		$('.descartar-artigo').on('click', function () {
+	<?php if ($pode_reverter_ou_descartar): ?>
+		$('#btn-confirmar-descartar').on('click', function () {
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/descartar/') . $artigo['id']; ?>",
 				method: "POST",
@@ -586,7 +542,7 @@
 				success: function (retorno) {
 					if (retorno.status) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$('.descartar-artigo').attr('disabled', '');
+						$('#btn-confirmar-descartar').prop('disabled', true);
 
 						setTimeout(function () {
 							window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
@@ -595,26 +551,12 @@
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				}
+				},
+				error: tratarErroAjax
 			});
 		});
 
-		$('#reverter1').on('change', function (e) {
-			reverterArtigo();
-		});
-		$('#reverter2').on('change', function (e) {
-			reverterArtigo();
-		});
-
-		function reverterArtigo() {
-			if ($('#reverter1').is(':checked') && $('#reverter2').is(':checked')) {
-				$('.reverter-artigo').removeAttr('disabled');
-			} else {
-				$('.reverter-artigo').attr('disabled', '');
-			}
-		}
-
-		$('.reverter-artigo').on('click', function () {
+		$('#btn-confirmar-reverter').on('click', function () {
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/reverter/') . $artigo['id']; ?>",
 				method: "POST",
@@ -627,7 +569,7 @@
 				success: function (retorno) {
 					if (retorno.status) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$('.descartar-artigo').attr('disabled', '');
+						$('#btn-confirmar-reverter').prop('disabled', true);
 
 						setTimeout(function () {
 							window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
@@ -636,7 +578,8 @@
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-				}
+				},
+				error: tratarErroAjax
 			});
 		});
 
@@ -658,11 +601,28 @@
 			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				$('.div-list-comentarios').html(retorno);
-			}
+				const temComentarios = $('.div-list-comentarios')
+					.find('p[class^="comentario-"], p[class*=" comentario-"]').length > 0;
+				const comentariosEl = document.getElementById('comentarios');
+				if (comentariosEl && window.bootstrap && bootstrap.Collapse) {
+					const collapseComentarios = bootstrap.Collapse.getOrCreateInstance(comentariosEl, { toggle: false });
+					if (temComentarios) {
+						collapseComentarios.show();
+					} else {
+						collapseComentarios.hide();
+					}
+				}
+			},
+			error: tratarErroAjax
 		});
 	}
 
 	$("#enviar-comentario").on("click", function () {
+		var textoComentario = ($('#comentario').val() || '').trim();
+		if (textoComentario === '') {
+			popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
+			return;
+		}
 		form = new FormData();
 		form.append('comentario', $('#comentario').val());
 		if ($('#id_comentario').val() == '') {
@@ -692,7 +652,8 @@
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
-			}
+			},
+			error: tratarErroAjax
 		});
 	});
 
@@ -714,15 +675,20 @@
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					if ($('#id_comentario').val() === id_comentario) {
+						$('#id_comentario').val('');
+						$('#comentario').val('');
+					}
 					getComentarios()
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
-			}
+			},
+			error: tratarErroAjax
 		});
 	}
 
-	$('.submeter-revisao').on('click', function () {
+	$('#btn-confirmar-submeter').on('click', function () {
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/submeter/') . $artigo['id']; ?>",
 			method: "POST",
@@ -735,7 +701,7 @@
 			success: function (retorno) {
 				if (retorno.status) {
 					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					$('.submeter-revisao').attr('disabled', '');
+					$('#btn-confirmar-submeter').prop('disabled', true);
 
 					setTimeout(function () {
 						window.location.href = "<?= site_url('colaboradores/artigos/artigosColaborar/'); ?>";
@@ -744,7 +710,8 @@
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
-			}
+			},
+			error: tratarErroAjax
 		});
 	});
 </script>
