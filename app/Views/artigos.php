@@ -61,7 +61,7 @@ use CodeIgniter\I18n\Time;
 			</div>
 		</section>
 
-		<div class="row list-artigos" data-masonry='{"percentPosition": true }'>
+		<div class="row list-artigos">
 			<?php foreach ($artigosList['artigos'] as $artigo): ?>
 				<?= view_cell('\App\Libraries\Cards::cardsVerticaisSimples', $artigo); ?>
 			<?php endforeach; ?>
@@ -88,8 +88,10 @@ use CodeIgniter\I18n\Time;
 <script>
 	$(document).ready(function () {
 		var $grid = $('.list-artigos').masonry({
-			// Masonry options...
-			itemSelector: '.card',
+			itemSelector: '.vl-card-vertical-col',
+			columnWidth: '.vl-card-vertical-col',
+			percentPosition: true,
+			gutter: 0,
 			horizontalOrder: true
 		});
 
@@ -98,7 +100,7 @@ use CodeIgniter\I18n\Time;
 		$grid.infiniteScroll({
 			// Infinite Scroll options...
 			path: '.next_page',
-			append: '.card',
+			append: '.vl-card-vertical-col',
 			history: false,
 			outlayer: msnry,
 			status: '.page-load-status'

@@ -51,12 +51,16 @@
                <div class="item">
                   <div class="movie-card">
                      <div class="movie-card-img-container">
-                     <img src="<?= cria_url_thumb(extrair_id_video_youtube($ua['link_video_youtube'])) ?>"
+                     <?php
+						$ytUa = extrair_id_video_youtube($ua['link_video_youtube'] ?? null);
+						$ytUaThumb = $ytUa !== null ? cria_url_thumb($ytUa) : base_url('public/assets/imagem-default.png');
+						?>
+                     <img src="<?= esc($ytUaThumb, 'attr') ?>"
                         alt="<?= esc($ua['titulo']) ?>">
                         <div class="movie-card-overlay">
                            <i class="bi bi-play-circle-fill play-icon"></i>
                            <!-- O link do popup envolve tudo para ser clicável -->
-                        <a href="<?= cria_link_watch(extrair_id_video_youtube($ua['link_video_youtube'])); ?>"
+                        <a href="<?= $ytUa !== null ? esc(cria_link_watch($ytUa), 'attr') : esc($ua['link_video_youtube'] ?? '#', 'attr') ?>"
                            class="gen-video-popup"
                               style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>
                         </div>
@@ -148,7 +152,11 @@
                <div class="item">
                   <div class="movie-card">
                      <div class="movie-card-img-container">
-                        <img src="<?= cria_url_thumb(extrair_id_video_youtube($v['video_id'])) ?>"
+                        <?php
+						$ytV = extrair_id_video_youtube($v['video_id'] ?? null);
+						$thumbV = $ytV !== null ? cria_url_thumb($ytV) : base_url('public/assets/imagem-default.png');
+						?>
+                        <img src="<?= esc($thumbV, 'attr') ?>"
                            alt="<?= esc($v['titulo']) ?>">
                         <div class="movie-card-overlay">
                            <i class="bi bi-play-circle-fill play-icon"></i>

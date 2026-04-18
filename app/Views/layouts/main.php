@@ -111,6 +111,73 @@
 			line-height: 1.5;
 		}
 
+		/* Cards verticais: thumb 16:9 (padrão YouTube) + zoom no hover */
+		.vl-card-vertical .vl-card-vertical-thumb {
+			background-color: var(--bs-secondary-bg);
+		}
+
+		.vl-card-vertical .vl-card-vertical-thumb-link {
+			display: block;
+			line-height: 0;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+		}
+
+		.vl-card-vertical .vl-card-vertical-thumb-img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: center center;
+			transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.vl-card-vertical .vl-card-vertical-thumb-link:hover .vl-card-vertical-thumb-img,
+		.vl-card-vertical .vl-card-vertical-thumb-link:focus-visible .vl-card-vertical-thumb-img {
+			transform: scale(1.08);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+
+			.vl-card-vertical .vl-card-vertical-thumb-img {
+				transition: none;
+			}
+
+			.vl-card-vertical .vl-card-vertical-thumb-link:hover .vl-card-vertical-thumb-img,
+			.vl-card-vertical .vl-card-vertical-thumb-link:focus-visible .vl-card-vertical-thumb-img {
+				transform: none;
+			}
+		}
+
+		/* Espaçamento lateral entre cards (gutter da row costuma ser neutralizado pelo MDB/Masonry) */
+		.row.listagem-escritor,
+		.row.list-artigos,
+		.row.listagem-colaborador {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+			--bs-gutter-x: 0;
+			--bs-gutter-y: 0;
+		}
+
+		.row.listagem-escritor>.vl-card-vertical-col,
+		.row.list-artigos>.vl-card-vertical-col,
+		.row.listagem-colaborador>.vl-card-vertical-col {
+			padding-left: 0.875rem;
+			padding-right: 0.875rem;
+			margin-bottom: 1.25rem;
+		}
+
+		@media (min-width: 768px) {
+
+			.row.listagem-escritor>.vl-card-vertical-col,
+			.row.list-artigos>.vl-card-vertical-col,
+			.row.listagem-colaborador>.vl-card-vertical-col {
+				padding-left: 1.125rem;
+				padding-right: 1.125rem;
+			}
+		}
+
 		.pointer+.pointer:before {
 			content: "\2022";
 			color: inherit;
@@ -128,6 +195,28 @@
 
 		.vl-bg-c-opaco {
 			background-color: rgba(244, 203, 41, 0.4)
+		}
+
+		/* Fundo suave do cartão de perfil (escritor, colaborador, etc.) — #f3c921 da marca */
+		.vl-perfil-hero {
+			background-color: rgba(243, 201, 33, 0.18);
+		}
+
+		[data-mdb-theme=dark] .vl-perfil-hero {
+			background-color: rgba(243, 201, 33, 0.12);
+		}
+
+		.vl-conquista-destaque-img {
+			width: 8.25rem;
+			height: 8.25rem;
+			object-fit: cover;
+		}
+
+		@media (min-width: 992px) {
+			.vl-conquista-destaque-img {
+				width: 9.25rem;
+				height: 9.25rem;
+			}
 		}
 
 		.btn-primary {

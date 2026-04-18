@@ -312,7 +312,7 @@ use CodeIgniter\I18n\Time;
 										<?= $chave + 1 ?>
 									</th>
 									<td><a
-											href="<?= site_url('/site/artigo/' . $artigo['url_friendly']); ?>"><?= $artigo['titulo']; ?></a>
+											href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']); ?>"><?= $artigo['titulo']; ?></a>
 									</td>
 									<td>
 										<?php if ($artigo['escrito'] == $colaboradores['id']): ?>

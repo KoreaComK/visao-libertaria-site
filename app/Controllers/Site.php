@@ -274,8 +274,11 @@ class Site extends BaseController
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo,\'artigo\' AS tipo_conteudo');
-		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
+		$artigosModel->select('artigos.id AS id, imagem AS imagem, artigos.link_video_youtube AS link_video_youtube, url_friendly AS url, titulo AS titulo, B.apelido AS autor, C.apelido AS revisor, D.apelido AS narrador, E.apelido AS produtor, publicado AS publicacao, gancho AS texticulo,\'artigo\' AS tipo_conteudo');
+		$artigosModel->join('colaboradores B', 'B.id = artigos.escrito_colaboradores_id');
+		$artigosModel->join('colaboradores C', 'C.id = artigos.revisado_colaboradores_id', 'left');
+		$artigosModel->join('colaboradores D', 'D.id = artigos.narrado_colaboradores_id', 'left');
+		$artigosModel->join('colaboradores E', 'E.id = artigos.produzido_colaboradores_id', 'left');
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
 
@@ -300,60 +303,6 @@ class Site extends BaseController
 		];
 
 		return view('artigos', $data);
-	}
-
-	/*DETALHE DO ARTIGO*/
-	public function artigo($url_friendly = null)
-	{
-		if ($url_friendly === null) {
-			return redirect()->to(base_url() . 'site/artigos');
-		}
-
-		$data = array();
-
-		$artigosModel = new \App\Models\ArtigosModel();
-		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		//$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-
-		$artigosModel->where('url_friendly', $url_friendly);
-		$query = $artigosModel->get();
-
-		if ($artigosModel->countAllResults() > 0) {
-			$data['artigo'] = $query->getRowArray();
-
-
-
-			$data['artigo']['colaboradores'] = array();
-			$data['artigo']['colaboradores']['sugerido'] = ($data['artigo']['sugerido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['sugerido_colaboradores_id'])) : (NULL);
-			$data['artigo']['colaboradores']['escrito'] = ($data['artigo']['escrito_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['escrito_colaboradores_id'])) : (NULL);
-			$data['artigo']['colaboradores']['revisado'] = ($data['artigo']['revisado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['revisado_colaboradores_id'])) : (NULL);
-			$data['artigo']['colaboradores']['narrado'] = ($data['artigo']['narrado_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['narrado_colaboradores_id'])) : (NULL);
-			$data['artigo']['colaboradores']['produzido'] = ($data['artigo']['produzido_colaboradores_id'] !== NULL) ? ($colaboradoresModel->find($data['artigo']['produzido_colaboradores_id'])) : (NULL);
-
-			$data['meta'] = array();
-			$data['meta']['title'] = $data['artigo']['titulo'];
-			$data['meta']['image'] = $data['artigo']['imagem'];
-			$data['meta']['description'] = addslashes(substr($data['artigo']['texto'], 0, 250)) . '...';
-
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->whereIn('fase_producao_id', array(6, 7));
-			$artigosModel->where('publicado > ', $data['artigo']['publicado']);
-			$artigosModel->orderBy('publicado', 'ASC');
-			$artigosModel->limit(1);
-			$data['artigo']['proximo'] = $artigosModel->get()->getResultArray();
-			unset($artigosModel);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->whereIn('fase_producao_id', array(6, 7));
-			$artigosModel->where('publicado < ', $data['artigo']['publicado']);
-			$artigosModel->orderBy('publicado', 'DESC');
-			$artigosModel->limit(1);
-			$data['artigo']['anterior'] = $artigosModel->get()->getResultArray();
-
-
-			return view('artigo', $data);
-		} else {
-			return redirect()->to(base_url() . 'site/artigos');
-		}
 	}
 
 	/*DETALHE DA PAUTA*/
@@ -777,6 +726,37 @@ class Site extends BaseController
 			$data['contador_artigos'] = count($artigos);
 		}
 
+		$cid = (int) $colaborador['id'];
+		$contarArtigosPublicadosPapel = static function (string $colunaColaborador, int $colaboradorId): int {
+			$m = new \App\Models\ArtigosModel();
+			$m->where('descartado', null)->where('publicado IS NOT NULL', null, false)->where($colunaColaborador, $colaboradorId);
+
+			return (int) $m->countAllResults();
+		};
+		$data['contagem_papeis'] = [
+			'escrito' => $data['contador_artigos'],
+			'revisado' => $contarArtigosPublicadosPapel('revisado_colaboradores_id', $cid),
+			'narrado' => $contarArtigosPublicadosPapel('narrado_colaboradores_id', $cid),
+			'produzido' => $contarArtigosPublicadosPapel('produzido_colaboradores_id', $cid),
+		];
+
+		$artigosUltimo = new \App\Models\ArtigosModel();
+		$rowUltimo = $artigosUltimo->selectMax('publicado', 'ultimo')
+			->where('descartado', null)
+			->where('publicado IS NOT NULL', null, false)
+			->groupStart()
+			->where('escrito_colaboradores_id', $cid)
+			->orWhere('revisado_colaboradores_id', $cid)
+			->orWhere('narrado_colaboradores_id', $cid)
+			->orWhere('produzido_colaboradores_id', $cid)
+			->groupEnd()
+			->first();
+		$ultimoRaw = (is_array($rowUltimo) && isset($rowUltimo['ultimo'])) ? $rowUltimo['ultimo'] : null;
+		$data['ultima_publicacao_participacao_formatada'] = null;
+		if ($ultimoRaw !== null && $ultimoRaw !== '') {
+			$data['ultima_publicacao_participacao_formatada'] = Time::parse($ultimoRaw, 'America/Sao_Paulo')->toLocalizedString('dd MMMM yyyy');
+		}
+
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'], false);
 		$data['atribuicoes'] = $colaboradoresAtribuicoes;
@@ -785,7 +765,14 @@ class Site extends BaseController
 		$data['colaborador'] = $colaborador;
 
 		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
-		$data['conquistas'] = $colaboradoresConquistasModel->join('conquistas', 'conquistas.id = colaboradores_conquistas.conquistas_id')->where('colaboradores_id', $colaborador['id'])->where("(tipo = 'escritor' or tipo is null)")->orderBy('conquistas_id', 'ASC')->get()->getResultArray();
+		$data['conquistaDestaque'] = $colaboradoresConquistasModel
+			->select('conquistas.imagem, conquistas.pontuacao, conquistas.nome')
+			->join('conquistas', 'conquistas.id = colaboradores_conquistas.conquistas_id')
+			->where('colaboradores_conquistas.colaboradores_id', $colaborador['id'])
+			->where("(conquistas.tipo = 'escritor' OR conquistas.tipo IS NULL)", null, false)
+			->orderBy('conquistas.pontuacao', 'DESC')
+			->orderBy('conquistas.id', 'DESC')
+			->first();
 
 		return view('escritor', $data);
 	}
@@ -804,14 +791,43 @@ class Site extends BaseController
 		}
 		$colaborador = $colaborador[0];
 
+		$papel = $this->request->getGet('papel');
+		$papeisPermitidos = ['todos', 'escrito', 'revisado', 'narrado', 'produzido'];
+		if (! is_string($papel) || ! in_array($papel, $papeisPermitidos, true)) {
+			$papel = 'escrito';
+		}
+
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigosModel->select('artigos.id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, apelido AS autor, publicado AS publicacao, gancho AS texticulo, \'artigo\' AS tipo_conteudo');
-		$artigosModel->join('colaboradores', 'colaboradores.id = artigos.escrito_colaboradores_id');
-		$artigos = $artigosModel->where('escrito_colaboradores_id', $colaborador['id'])->where('descartado', NULL)->where('publicado IS NOT NULL')->orderBy('publicado', 'DESC');
+		$artigosModel->select('artigos.id AS id, imagem AS imagem, artigos.link_video_youtube AS link_video_youtube, url_friendly AS url, titulo AS titulo, B.apelido AS autor, C.apelido AS revisor, D.apelido AS narrador, E.apelido AS produtor, publicado AS publicacao, gancho AS texticulo, \'artigo\' AS tipo_conteudo');
+		$artigosModel->join('colaboradores B', 'B.id = artigos.escrito_colaboradores_id');
+		$artigosModel->join('colaboradores C', 'C.id = artigos.revisado_colaboradores_id', 'left');
+		$artigosModel->join('colaboradores D', 'D.id = artigos.narrado_colaboradores_id', 'left');
+		$artigosModel->join('colaboradores E', 'E.id = artigos.produzido_colaboradores_id', 'left');
+		$artigosModel->where('artigos.descartado', NULL)->where('artigos.publicado IS NOT NULL');
+
+		$cid = (int) $colaborador['id'];
+		if ($papel === 'todos') {
+			$artigosModel->groupStart()
+				->where('artigos.escrito_colaboradores_id', $cid)
+				->orWhere('artigos.revisado_colaboradores_id', $cid)
+				->orWhere('artigos.narrado_colaboradores_id', $cid)
+				->orWhere('artigos.produzido_colaboradores_id', $cid)
+				->groupEnd();
+		} elseif ($papel === 'escrito') {
+			$artigosModel->where('artigos.escrito_colaboradores_id', $cid);
+		} elseif ($papel === 'revisado') {
+			$artigosModel->where('artigos.revisado_colaboradores_id', $cid);
+		} elseif ($papel === 'narrado') {
+			$artigosModel->where('artigos.narrado_colaboradores_id', $cid);
+		} else {
+			$artigosModel->where('artigos.produzido_colaboradores_id', $cid);
+		}
+
+		$artigos = $artigosModel->orderBy('publicado', 'DESC');
 		if ($this->request->getMethod() == 'get') {
 			$data['listas'] = [
 				'lista' => $artigos->paginate($config['site_quantidade_listagem'], 'lista'),
@@ -820,6 +836,8 @@ class Site extends BaseController
 		}
 		$data['urlComponente'] = '\App\Libraries\Cards::cardsVerticaisSimples';
 		$data['classeListaCSS'] = 'listagem-escritor';
+		$data['omitPagerAjaxDelegado'] = true;
+
 		return view_cell('\App\Libraries\Listas::listasVerticaisSimples', $data);
 	}
 
@@ -847,6 +865,20 @@ class Site extends BaseController
 			$data['contador_pautas'] = count($pautas);
 		}
 
+		$cid = (int) $colaborador['id'];
+
+		$pautasUltimoCadastro = new \App\Models\PautasModel();
+		$rowUltimaPautaCriada = $pautasUltimoCadastro->selectMax('criado', 'ultimo_criado')
+			->where('colaboradores_id', $cid)
+			->first();
+		$ultimoCriadoRaw = (is_array($rowUltimaPautaCriada) && isset($rowUltimaPautaCriada['ultimo_criado'])) ? $rowUltimaPautaCriada['ultimo_criado'] : null;
+		$data['ultima_pauta_cadastrada_formatada'] = null;
+		if ($ultimoCriadoRaw !== null && $ultimoCriadoRaw !== '') {
+			$data['ultima_pauta_cadastrada_formatada'] = Time::parse($ultimoCriadoRaw, 'America/Sao_Paulo')->toLocalizedString('dd MMMM yyyy');
+		}
+
+		$data['resumo_pautas_periodo'] = $this->resumoPautasColaboradorPeriodo($cid);
+
 		$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
 		$colaboradoresAtribuicoes = $colaboradoresAtribuicoesModel->getNomeAtribuicoesColaborador($colaborador['id'], false);
 		$data['atribuicoes'] = $colaboradoresAtribuicoes;
@@ -854,6 +886,16 @@ class Site extends BaseController
 		$data['tempo'] = Time::parse($colaborador['criado'], 'America/Sao_Paulo')->humanize();
 		$data['colaborador'] = $colaborador;
 		$data['classeListaCSS'] = 'listagem-colaborador';
+
+		$colaboradoresConquistasModel = new \App\Models\ColaboradoresConquistasModel();
+		$data['conquistaDestaque'] = $colaboradoresConquistasModel
+			->select('conquistas.imagem, conquistas.pontuacao, conquistas.nome')
+			->join('conquistas', 'conquistas.id = colaboradores_conquistas.conquistas_id')
+			->where('colaboradores_conquistas.colaboradores_id', $colaborador['id'])
+			->where('conquistas.tipo', 'colaborador')
+			->orderBy('conquistas.pontuacao', 'DESC')
+			->orderBy('conquistas.id', 'DESC')
+			->first();
 
 		return view('colaborador', $data);
 	}
@@ -895,6 +937,56 @@ class Site extends BaseController
 	{
 		$data = array();
 		return view('links', $data);
+	}
+
+	/**
+	 * Pautas cadastradas (criado) e usadas (reservado com tag de fechamento; inclui excluídas após fechamento).
+	 * Semana = segunda 00:00 a domingo 23:59:59 no fuso America/Sao_Paulo.
+	 *
+	 * @return array{cadastradas_semana: int, usadas_semana: int, usadas_mes: int, usadas_ano: int}
+	 */
+	private function resumoPautasColaboradorPeriodo(int $colaboradorId): array
+	{
+		$tz = 'America/Sao_Paulo';
+		$agora = Time::now($tz);
+		$hoje = $agora->setTime(0, 0, 0);
+		$diaSemana = (int) $hoje->format('N');
+		$inicioSemana = $hoje->modify('-' . ($diaSemana - 1) . ' days');
+		$fimSemana = $inicioSemana->modify('+7 days');
+
+		$inicioMes = Time::createFromDate((int) $agora->format('Y'), (int) $agora->format('n'), 1, $tz)->setTime(0, 0, 0);
+		$fimMes = $inicioMes->modify('+1 month');
+
+		$inicioAno = Time::createFromDate((int) $agora->format('Y'), 1, 1, $tz)->setTime(0, 0, 0);
+		$fimAno = $inicioAno->modify('+1 year');
+
+		$countCadastradas = static function (int $cid, Time $ini, Time $fim): int {
+			$m = new \App\Models\PautasModel();
+			$m->where('colaboradores_id', $cid)
+				->where('criado >=', $ini->format('Y-m-d H:i:s'))
+				->where('criado <', $fim->format('Y-m-d H:i:s'));
+
+			return (int) $m->countAllResults();
+		};
+
+		$countUsadas = static function (int $cid, Time $ini, Time $fim): int {
+			$m = new \App\Models\PautasModel();
+			$m->withDeleted()
+				->where('colaboradores_id', $cid)
+				->where('reservado IS NOT NULL', null, false)
+				->where('tag_fechamento IS NOT NULL', null, false)
+				->where('reservado >=', $ini->format('Y-m-d H:i:s'))
+				->where('reservado <', $fim->format('Y-m-d H:i:s'));
+
+			return (int) $m->countAllResults();
+		};
+
+		return [
+			'cadastradas_semana' => $countCadastradas($colaboradorId, $inicioSemana, $fimSemana),
+			'usadas_semana' => $countUsadas($colaboradorId, $inicioSemana, $fimSemana),
+			'usadas_mes' => $countUsadas($colaboradorId, $inicioMes, $fimMes),
+			'usadas_ano' => $countUsadas($colaboradorId, $inicioAno, $fimAno),
+		];
 	}
 
 	private function verificaCaptcha($captcha_response)

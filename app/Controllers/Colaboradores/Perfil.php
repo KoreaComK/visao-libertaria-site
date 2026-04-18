@@ -211,7 +211,7 @@ class Perfil extends BaseController
 							'.($chave + 1).'
 						</th>
 						<td><a
-								href="'.site_url("/site/artigo/".$artigo["url_friendly"]).'">'.$artigo["titulo"].'</a>
+								href="'.site_url('colaboradores/artigos/detalhamento/'.$artigo['artigos_id']).'">'.$artigo["titulo"].'</a>
 						</td>
 						<td>';
 			if ($artigo['escrito_colaboradores_id'] == $session['id']) {

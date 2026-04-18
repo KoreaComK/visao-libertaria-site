@@ -96,6 +96,7 @@ class ArtigosModel extends Model
 
 		$query = $this->db->query("
 		SELECT
+		artigos.id AS id,
 		artigos.titulo AS titulo,
 		artigos.url_friendly AS url_friendly,
 		artigos.palavras_escritor AS pontos_escritor,

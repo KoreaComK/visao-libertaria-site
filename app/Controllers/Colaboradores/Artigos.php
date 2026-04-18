@@ -1359,7 +1359,7 @@ class Artigos extends BaseController
 		$data['pode_reverter_ou_descartar'] = $permitido && $data['is_colaborador_marcado'];
 
 		if (!$permitido && ($artigo['fase_producao_id'] == '6' || $artigo['fase_producao_id'] == '7')) {
-			return redirect()->to(base_url() . 'site/artigo/' . $artigo['url_friendly']);
+			return redirect()->to(base_url() . 'colaboradores/artigos/detalhamento/' . $artigo['id']);
 		}
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
