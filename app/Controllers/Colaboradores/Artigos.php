@@ -27,6 +27,7 @@ class Artigos extends BaseController
 		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
 		helper('url_friendly');
 		helper('gera_hash_artigo');
+		helper('palavras');
 		$this->iniciaVariavel = [
 			'titulo' => null,
 			'pauta' => array(),
@@ -665,6 +666,30 @@ class Artigos extends BaseController
 		}
 	}
 
+	/**
+	 * Contagem de palavras (mesma regra do helper) para o painel — POST campo "texto".
+	 */
+	public function contarPalavrasTexto()
+	{
+		if (!$this->session->has('colaboradores')) {
+			return $this->response->setStatusCode(401)->setJSON([
+				'status'   => false,
+				'mensagem' => 'Não autorizado.',
+			]);
+		}
+
+		helper('palavras');
+		$texto = $this->request->getPost('texto');
+		if (! is_string($texto)) {
+			$texto = '';
+		}
+
+		return $this->response->setJSON([
+			'status'   => true,
+			'palavras' => contar_palavras_texto($texto),
+		]);
+	}
+
 	public function submeter($artigoId = NULL)
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();
@@ -698,7 +723,7 @@ class Artigos extends BaseController
 				$config = array();
 				$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 				$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
+				$palavras = contar_palavras_texto($artigo['texto']);
 				if ($palavras <= $config['artigo_tamanho_maximo'] && $palavras >= $config['artigo_tamanho_minimo']) {
 					$isGravado = $this->artigoProximo($artigoId);
 					if ($isGravado === true) {
@@ -735,7 +760,7 @@ class Artigos extends BaseController
 				$config = array();
 				$config['artigo_tamanho_maximo'] = (int) $configuracaoModel->find('artigo_tamanho_maximo')['config_valor'];
 				$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
-				$palavras = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
+				$palavras = contar_palavras_texto($artigo['texto']);
 				if ($palavras <= $config['artigo_tamanho_maximo'] && $palavras >= $config['artigo_tamanho_minimo']) {
 					$isGravado = $this->artigoProximo($artigoId);
 					if ($isGravado === true) {
@@ -904,7 +929,7 @@ class Artigos extends BaseController
 			$colaborador_permissoes = $this->session->get('colaboradores')['permissoes'];
 			$colaborador = $this->session->get('colaboradores')['id'];
 
-			if (isset($get['admin']) && in_array('7', $colaborador_permissoes)) {
+			if (in_array('7', $colaborador_permissoes)) {
 				$data['admin'] = true;
 			}
 
@@ -1598,11 +1623,11 @@ class Artigos extends BaseController
 		}
 		if ($faseProducao['etapa_posterior'] == '4') {
 			$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-			$artigo['palavras_narrador'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
+			$artigo['palavras_narrador'] = contar_palavras_texto($artigo['texto']);
 		}
 		if ($faseProducao['etapa_posterior'] == '5') {
 			$artigo['produzido_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-			$artigo['palavras_produtor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $artigo['texto']));
+			$artigo['palavras_produtor'] = contar_palavras_texto($artigo['texto']);
 		}
 		if ($faseProducao['etapa_posterior'] == '6') {
 			$artigo['publicado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
@@ -1626,7 +1651,7 @@ class Artigos extends BaseController
 			$gravar['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_revisor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
+			$gravar['palavras_revisor'] = contar_palavras_texto($post['texto']);
 			$gravar['atualizado'] = $artigosModel->getNow();
 			if (!isset($post['admin'])) {
 				$gravar['revisado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
@@ -1670,7 +1695,7 @@ class Artigos extends BaseController
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
 			$gravar['escrito_colaboradores_id'] = $session['id'];
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
+			$gravar['palavras_escritor'] = contar_palavras_texto($post['texto']);
 			$gravar['fase_producao_id'] = 1;
 			$gravar['link'] = $post['link'];
 
@@ -1705,7 +1730,7 @@ class Artigos extends BaseController
 			$gravar['texto'] = htmlspecialchars($post['texto'], ENT_QUOTES, 'UTF-8');
 			$gravar['gancho'] = htmlspecialchars($post['gancho'], ENT_QUOTES, 'UTF-8');
 			$gravar['referencias'] = htmlspecialchars($post['referencias'], ENT_QUOTES, 'UTF-8');
-			$gravar['palavras_escritor'] = str_word_count(preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/", "/(ç|Ç)/"), explode(" ", "a A e E i I o O u U n N c"), $post['texto']));
+			$gravar['palavras_escritor'] = contar_palavras_texto($post['texto']);
 			$gravar['atualizado'] = $artigosModel->getNow();
 
 			$artigo_anterior = $artigosModel->find($idArtigo);

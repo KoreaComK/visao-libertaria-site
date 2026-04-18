@@ -587,106 +587,18 @@
 	<?php endif; ?>
 
 
-	$("#btn-comentarios").on("click", function () {
-		getComentarios();
-	});
-	$('#btn-comentarios').trigger('click');
-
-	function getComentarios() {
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "GET",
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.div-list-comentarios').html(retorno);
-				const temComentarios = $('.div-list-comentarios')
-					.find('p[class^="comentario-"], p[class*=" comentario-"]').length > 0;
-				const comentariosEl = document.getElementById('comentarios');
-				if (comentariosEl && window.bootstrap && bootstrap.Collapse) {
-					const collapseComentarios = bootstrap.Collapse.getOrCreateInstance(comentariosEl, { toggle: false });
-					if (temComentarios) {
-						collapseComentarios.show();
-					} else {
-						collapseComentarios.hide();
-					}
-				}
-			},
-			error: tratarErroAjax
-		});
-	}
-
-	$("#enviar-comentario").on("click", function () {
-		var textoComentario = ($('#comentario').val() || '').trim();
-		if (textoComentario === '') {
-			popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
-			return;
-		}
-		form = new FormData();
-		form.append('comentario', $('#comentario').val());
-		if ($('#id_comentario').val() == '') {
-			form.append('metodo', 'inserir');
-		} else {
-			form.append('metodo', 'alterar');
-			form.append('id_comentario', $('#id_comentario').val());
-		}
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-
-				if (retorno.status) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					getComentarios()
-					$('#comentario').val('');
-					$('#id_comentario').val('');
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			},
-			error: tratarErroAjax
-		});
-	});
-
-	function excluirComentario(id_comentario) {
-		form = new FormData();
-		form.append('id_comentario', id_comentario);
-		form.append('metodo', 'excluir');
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					if ($('#id_comentario').val() === id_comentario) {
-						$('#id_comentario').val('');
-						$('#comentario').val('');
-					}
-					getComentarios()
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			},
-			error: tratarErroAjax
-		});
-	}
+</script>
+<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+	<?= view('template/colaboradores_comentarios_init', [
+		'comentariosConfig' => [
+			'endpoint'            => base_url('colaboradores/artigos/comentarios/' . $artigo['id']),
+			'accordionCollapseId' => 'comentarios',
+			'autoLoad'            => true,
+			'useAjaxError'        => true,
+		],
+	]); ?>
+<?php endif; ?>
+<script>
 
 	$('#btn-confirmar-submeter').on('click', function () {
 		$.ajax({

@@ -7,13 +7,43 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 
 <style>
-	/* Set default font-family */
-	#editor {
-		font-family: 'roboto';
-		font-size: 16px;
-		height: 250px;
+	#editor .ql-container {
+		min-height: 320px;
+		font-size: 0.875rem;
 	}
 
+	#editor .ql-editor {
+		min-height: 320px;
+		cursor: text;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.admin-artigos-form .accordion-item .card {
+		border-radius: var(--bs-border-radius-xl);
+	}
+
+	@media (min-width: 992px) {
+		.admin-artigo-painel-lateral {
+			position: sticky;
+			top: 1rem;
+		}
+	}
+
+	.admin-artigo-painel-lateral .accordion-button {
+		font-size: 0.875rem;
+	}
+
+	.admin-artigo-painel-lateral .accordion-body {
+		font-size: 0.875rem;
+	}
+
+	.admin-artigo-painel-lateral .div-list-comentarios .card-body,
+	.admin-artigo-painel-lateral .div-list-comentarios .card-text {
+		font-size: 0.875rem;
+	}
+
+	/* Painel lateral: recolhido em mobile; visível a partir de lg (Bootstrap collapse + d-lg-block) */
 	.modal-artigo-corpo-historico p {
 		margin-bottom: 0.75rem;
 	}
@@ -23,15 +53,22 @@
 	}
 </style>
 
-<div class="container w-auto">
-	<div class="row py-4">
+<div class="container-fluid py-3 admin-artigos-form">
+	<div class="container">
+	<div class="row py-2">
 		<div class="col-12">
-			<h1 class="mb-0 h2">Atualização de artigos</h1>
+			<h1 class="mb-0 h2" id="heading-admin-artigo-form">Atualização de artigos</h1>
+			<p class="text-muted small mb-0 mt-1">Edição administrativa do conteúdo, mídia, publicação e metadados</p>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-12">
-			<div class="accordion accordion-flush" id="accordionFlushExample">
+	<?php
+	$adminPainelLateralAtivo = (! empty($historico))
+		|| (! empty($historicoTexto))
+		|| (isset($artigo['id']) && $artigo['id'] !== null);
+	?>
+	<div class="row g-3 align-items-start justify-content-center">
+		<div class="<?= $adminPainelLateralAtivo ? 'col-12 col-lg-8' : 'col-12'; ?>">
+			<div class="accordion accordion-flush border rounded-3 shadow-sm overflow-hidden" id="accordionFlushExample">
 				<div class="accordion-item">
 					<h2 class="accordion-header" id="flush-headingOne">
 						<button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -42,21 +79,20 @@
 					<div id="flush-collapseOne" class="accordion-collapse collapse show"
 						aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
 						<div class="accordion-body">
-							<div class="card border">
+							<div class="card border rounded-3 shadow-sm">
 								<!-- Card body -->
-								<div class="card-body">
+								<div class="card-body p-3">
 									<!-- Form START -->
-									<form class="w-100" novalidate="yes" method="post" id="artigo_form"
+									<form class="w-100" novalidate method="post" id="artigo_form"
 										enctype='multipart/form-data'>
-										<input type="hidden" name="admin" id="admin" value="true" />
+										<input type="hidden" name="admin" value="true" />
 										<!-- Main form -->
-										<div class="row">
+										<div class="row g-3">
 											<div class="col-12">
-												<div class="mb-3">
-													<label class="form-label" for="tipo_artigo">Tipo de
-														artigo</label>
-													<div class="input-group">
-														<select class="form-control" name="tipo_artigo"
+												<div class="mb-0">
+													<label class="form-label small text-muted mb-1" for="tipo_artigo">Tipo de artigo</label>
+													<div class="input-group input-group-sm">
+														<select class="form-select form-select-sm" name="tipo_artigo"
 															id="tipo_artigo">
 															<option value="" <?= (isset($artigo) && isset($artigo['tipo_artigo']) && $artigo['tipo_artigo'] == "") ? ('selected="true"') : (''); ?>>Escolha o
 																tipo
@@ -74,27 +110,28 @@
 
 											<div class="col-12">
 												<?php if (!empty($pauta)): ?>
-													<div class="mb-3">
-														<label class="form-label">
-															<input type="text" class="form-control d-none" id="link"
-																name="link"
-																value="<?= (isset($pauta['link'])) ? ($pauta['link']) : (''); ?>">
-															<a class="btn btn-sm btn-primary" href="<?= $pauta['link']; ?>"
-																target="_blank">Acessar a
-																notícia</a>
-															<?= $pauta['titulo']; ?>
-														</label>
+													<div class="mb-0">
+														<label class="form-label small text-muted mb-1 d-block" for="link">Notícia da pauta</label>
+														<input type="text" class="form-control d-none" id="link"
+															name="link"
+															value="<?= (isset($pauta['link'])) ? (esc($pauta['link'])) : (''); ?>"
+															tabindex="-1" autocomplete="off">
+														<p class="mb-2">
+															<a class="btn btn-sm btn-primary" href="<?= esc($pauta['link']); ?>"
+																target="_blank" rel="noopener noreferrer">Acessar a notícia</a>
+														</p>
+														<div class="small text-body"><?= esc($pauta['titulo']); ?></div>
 														<small class="d-block text-danger aviso-pauta"></small>
 													</div>
 												<?php else: ?>
-													<div class="mb-3">
-														<label class="form-label" for="link">Link da Notícia</label>
-														<div class="input-group">
-															<div class="input-group-text"><i class="fas fa-link"></i>
+													<div class="mb-0">
+														<label class="form-label small text-muted mb-1" for="link">Link da Notícia</label>
+														<div class="input-group input-group-sm">
+															<div class="input-group-text"><i class="fas fa-link" aria-hidden="true"></i>
 															</div>
-															<input type="text" class="form-control" id="link"
+															<input type="text" class="form-control form-control-sm" id="link"
 																placeholder="Link da notícia para pauta" name="link"
-																value="<?= (isset($artigo['link'])) ? ($artigo['link']) : (''); ?>">
+																value="<?= esc($artigo['link'] ?? '', 'attr'); ?>">
 														</div>
 														<small class="d-block text-danger aviso-pauta"></small>
 													</div>
@@ -116,136 +153,59 @@
 
 											<div class="col-12">
 												<!-- Post name -->
-												<div class="mb-3">
-													<label class="form-label" for="titulo">Título</label>
-													<input type="text" class="form-control" id="titulo" name="titulo"
+												<div class="mb-0">
+													<label class="form-label small text-muted mb-1" for="titulo">Título</label>
+													<input type="text" class="form-control form-control-sm" id="titulo" name="titulo"
 														placeholder="Título do artigo" maxlength="100"
-														value="<?= str_replace('"', "'", $artigo['titulo']); ?>">
-													<small>O título deve ser chamativo. Deixe as palavras-chave em
-														maiúsculo</small>
+														value="<?= esc($artigo['titulo'] ?? '', 'attr'); ?>">
+													<div class="form-text text-muted small">O título deve ser chamativo. Deixe as palavras-chave em maiúsculo.</div>
 												</div>
 											</div>
 											<!-- Short description -->
 											<div class="col-12">
-												<div class="mb-3" for="gancho">
-													<label class="form-label">Gancho </label>
-													<textarea class="form-control" rows="3"
+												<div class="mb-0">
+													<label class="form-label small text-muted mb-1" for="gancho">Gancho</label>
+													<textarea class="form-control form-control-sm" rows="3"
 														placeholder="Texto curto antes da vinheta" id="gancho"
 														maxlength="600"
-														name="gancho"><?= str_replace('"', "'", $artigo['gancho']); ?></textarea>
-													<small>Um parágrafo chamativo que cative o telespectador. Máximo
-														600
-														caracteres.</small>
+														name="gancho"><?= esc($artigo['gancho'] ?? ''); ?></textarea>
+													<div class="form-text text-muted small">Um parágrafo chamativo que cative o telespectador. Máximo 600 caracteres.</div>
 												</div>
 											</div>
 
 											<!-- Main toolbar -->
-											<div class="col-md-12">
+											<div class="col-12">
 												<!-- Subject -->
-												<div class="mb-3">
-													<label class="form-label" for="texto">Corpo do artigo</label>
-													<div class="rounded-3" id="editor">
+												<div class="mb-0">
+													<label class="form-label small text-muted mb-1" for="texto" id="label-corpo-artigo-admin">Corpo do artigo</label>
+													<div class="rounded-3 border" id="editor" role="textbox" aria-multiline="true" aria-labelledby="label-corpo-artigo-admin">
 													</div>
 													<textarea id="texto" name="texto"
-														class="d-none"><?= $artigo['texto']; ?></textarea>
-													<div class="col-md-12 d-flex justify-content-between">
-														<small class="ps-1">
-															<span class="">Artigo deve ter entre
-																<?= $config['artigo_tamanho_minimo']; ?> e
-																<?= $config['artigo_tamanho_maximo']; ?>
-																palavras.</span>
-														</small>
-														<small class="pe-1"> <span
-																class="pull-right label label-default"
-																id="count_message"></span></small>
+														class="d-none"><?= esc($artigo['texto'] ?? ''); ?></textarea>
+													<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 pt-1">
+														<span id="artigo-tamanho-help" class="form-text text-muted small mb-0">Artigo deve ter entre
+															<?= (int) ($config['artigo_tamanho_minimo'] ?? 0); ?> e
+															<?= (int) ($config['artigo_tamanho_maximo'] ?? 0); ?>
+															palavras.</span>
+														<span class="form-text text-muted small mb-0 ms-auto flex-shrink-0" id="count_message" role="status"></span>
 													</div>
 												</div>
 											</div>
-
-											<!-- <?php if (!$cadastro): ?>
-												<div class="col-12 mt-4">
-													<div class="mb-3">
-														<div class="row align-items-center mb-2">
-															<div class="col-4 col-md-2">
-																<div class="position-relative">
-																	<img class="img-fluid" id="preview"
-																		src="<?= $artigo['imagem']; ?>" />
-																</div>
-															</div>
-															<div class="col-sm-8 col-md-10 position-relative">
-																<h6 class="my-2">Imagem de capa</h6>
-																<label class="w-100" style="cursor:pointer;">
-																	<span>
-																		<input class="form-control stretched-link"
-																			type="file" name="imagem" id="imagem"
-																			accept="image/gif, image/jpeg, image/png">
-																	</span>
-																</label>
-																<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG,
-																	JPEG e
-																	PNG. Sugerimos
-																	tamanhos de
-																	1.280 x 720. Tamanhos diferentes da proporção 16:9
-																	serão
-																	cortadas.</p>
-															</div>
-														</div>
-													</div>
-												</div>
-											<?php endif; ?> -->
 
 											<!-- Short description -->
 											<div class="col-12">
-												<div class="mb-3" for="referencias">
-													<label class="form-label">Referências </label>
-													<textarea class="form-control" rows="3"
+												<div class="mb-0">
+													<label class="form-label small text-muted mb-1" for="referencias">Referências</label>
+													<textarea class="form-control form-control-sm" rows="3"
 														placeholder="Referências para embasar seu texto"
 														id="referencias"
-														name="referencias"><?= str_replace('"', "'", $artigo['referencias']); ?></textarea>
-													<small>Todos os links utilizados para dar embasamento para
-														escrever
-														o artigo, menos
-														a pauta.</small>
+														name="referencias"><?= esc($artigo['referencias'] ?? ''); ?></textarea>
+													<div class="form-text text-muted small">Todos os links utilizados para dar embasamento ao texto, exceto a pauta.</div>
 												</div>
 											</div>
 
-											<!--
-						<div class="col-lg-7">
-							
-							<div class="mb-3">
-								<label class="form-label">Tags</label>
-								<textarea class="form-control" rows="1" placeholder="business, sports ..."
-									data-np-intersection-state="visible"></textarea>
-								<small>Maximum of 14 keywords. Keywords should all be in lowercase and separated
-									by commas. e.g. javascript, react, marketing.</small>
-							</div>
-						</div>
-						<div class="col-lg-5">
-							
-							<div class="mb-3">
-								<label class="form-label">Category</label>
-								<select class="form-select" aria-label="Default select example"
-									data-np-intersection-state="visible">
-									<option selected="">Lifestyle</option>
-									<option value="1">Technology</option>
-									<option value="2">Travel</option>
-									<option value="3">Business</option>
-									<option value="4">Sports</option>
-									<option value="5">Marketing</option>
-								</select>
-							</div>
-						</div>
-						<div class="col-12">
-							<div class="form-check mb-3">
-								<input class="form-check-input" type="checkbox" value="" id="postCheck">
-								<label class="form-check-label" for="postCheck">
-									Make this post featured?
-								</label>
-							</div>
-						</div> -->
-
 											<div class="d-flex justify-content-center">
-												<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_artigo"
+												<button class="btn btn-primary btn-sm w-100 mb-0" id="enviar_artigo"
 													type="button">Salvar artigo</button>
 											</div>
 										</div>
@@ -265,33 +225,26 @@
 					<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
 						data-bs-parent="#accordionFlushExample">
 						<div class="accordion-body">
-							<div class="col-12">
-								<!-- Chart START -->
-								<div class="card border">
-									<!-- Card body -->
-									<div class="card-body">
-										<!-- Form START -->
-										<form class="w-100" novalidate="yes" method="post" id="artigo_audio"
-											enctype='multipart/form-data'>
-											<input type="hidden" name="admin" id="admin" value="true" />
-											<div class="mb-3">
-												<label for="audio">Arquivo de áudio</label>
-												<div class="custom-file">
-													<input type="file" class="form-control" id="audio" name="audio"
-														required aria-describedby="audio" accept=".mp3">
-													<small class="">O arquivo precisa ser do formato .mp3</small>
-												</div>
-											</div>
-											<div
-												class="d-block mb-2 text-left <?= ($artigo['arquivo_audio'] == NULL) ? ('d-none') : (''); ?> player">
-												<audio controls class="w-100 rounded-3 bg-primary audioplayer">
-													<source
-														src="<?= ($artigo['arquivo_audio'] != NULL) ? ($artigo['arquivo_audio']) : (''); ?>"
-														type="audio/mp3" class="source-player">
-												</audio>
-											</div>
-										</form>
-									</div>
+							<div class="card border rounded-3 shadow-sm">
+								<div class="card-body p-3">
+									<form class="w-100" novalidate method="post" id="artigo_audio"
+										enctype='multipart/form-data'>
+										<input type="hidden" name="admin" value="true" />
+										<div class="mb-3">
+											<label class="form-label small text-muted mb-1" for="audio">Arquivo de áudio</label>
+											<input type="file" class="form-control form-control-sm" id="audio" name="audio"
+												required aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
+											<small id="audio-formato-help" class="text-muted">O arquivo precisa ser do formato .mp3</small>
+										</div>
+										<div
+											class="d-block mb-0 text-start <?= ($artigo['arquivo_audio'] == null) ? ('d-none') : (''); ?> player">
+											<audio controls class="w-100 rounded-3 bg-primary audioplayer">
+												<source
+													src="<?= ($artigo['arquivo_audio'] != null && $artigo['arquivo_audio'] !== '') ? esc($artigo['arquivo_audio'], 'url') : ''; ?>"
+													type="audio/mpeg" class="source-player">
+											</audio>
+										</div>
+									</form>
 								</div>
 							</div>
 						</div>
@@ -308,31 +261,31 @@
 					<div id="flush-collapseThree" class="accordion-collapse collapse"
 						aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
 						<div class="accordion-body">
-							<div class="card border">
+							<div class="card border rounded-3 shadow-sm">
 								<!-- Card body -->
-								<div class="card-body">
-									<form class="w-100" novalidate="yes" method="post" id="artigo_producao">
-										<input type="hidden" name="admin" id="admin" value="true" />
+								<div class="card-body p-3">
+									<form class="w-100" novalidate method="post" id="artigo_producao">
+										<input type="hidden" name="admin" value="true" />
 										<div class="mb-3">
-											<label for="username">Link do Vídeo no YouTube</label>
-											<div class="input-group">
-												<span class="input-group-text"><i class="fas fa-link"></i></span>
-												<input type="text" class="form-control" id="video_link"
+											<label class="form-label small text-muted mb-1" for="video_link">Link do Vídeo no YouTube</label>
+											<div class="input-group input-group-sm">
+												<span class="input-group-text"><i class="fas fa-link" aria-hidden="true"></i></span>
+												<input type="text" class="form-control form-control-sm" id="video_link"
 													name="video_link" placeholder="Link do Vídeo no YouTube"
-													value="<?= $artigo['link_produzido']; ?>" required>
+													value="<?= esc($artigo['link_produzido'] ?? '', 'attr'); ?>" required>
 											</div>
 										</div>
 										<div class="mb-3">
-											<label for="username">Link do Shorts no YouTube</label>
-											<div class="input-group">
-												<span class="input-group-text"><i class="fas fa-link"></i></span>
-												<input type="text" class="form-control" id="shorts_link"
-													value="<?= $artigo['link_shorts']; ?>" name="shorts_link"
+											<label class="form-label small text-muted mb-1" for="shorts_link">Link do Shorts no YouTube</label>
+											<div class="input-group input-group-sm">
+												<span class="input-group-text"><i class="fas fa-link" aria-hidden="true"></i></span>
+												<input type="text" class="form-control form-control-sm" id="shorts_link"
+													value="<?= esc($artigo['link_shorts'] ?? '', 'attr'); ?>" name="shorts_link"
 													placeholder="Link do Shorts no YouTube" required>
 											</div>
 										</div>
 										<div class="d-flex justify-content-center">
-											<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_producao"
+											<button class="btn btn-primary btn-sm w-100 mb-0" id="enviar_producao"
 												type="button">Salvar produção</button>
 										</div>
 									</form>
@@ -352,76 +305,44 @@
 					<div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
 						data-bs-parent="#accordionFlushExample">
 						<div class="accordion-body">
-							<div class="card border">
+							<div class="card border rounded-3 shadow-sm">
 								<!-- Card body -->
-								<div class="card-body">
-									<form class="needs-validation w-100" id="artigo_publicacao" novalidate="yes"
+								<div class="card-body p-3">
+									<form class="needs-validation w-100" id="artigo_publicacao" novalidate
 										method="post">
-										<input type="hidden" name="admin" id="admin" value="true" />
+										<input type="hidden" name="admin" value="true" />
 										<div class="mb-3">
-											<label for="username">Tags do Vídeo no YouTube <span
-													class="text-muted">(colocar
-													#
-													na frente
-													da tag, e separá-las com espaço)</span></label>
-											<div class="input-group">
-												<input type="text" class="form-control" id="tags_video_youtube"
-													name="tags_video_youtube" placeholder="Tags do Vídeo" required>
-											</div>
+											<label class="form-label small text-muted mb-1" for="tags_video_youtube">Tags do Vídeo no YouTube</label>
+											<p id="tags-video-youtube-hint" class="form-text text-muted small mb-2">Coloque <span class="text-nowrap">#</span> na frente de cada tag e separe-as com espaço.</p>
+											<input type="text" class="form-control form-control-sm" id="tags_video_youtube"
+												name="tags_video_youtube" placeholder="Tags do Vídeo"
+												value="<?= esc($artigo['tags_video_youtube'] ?? '', 'attr'); ?>"
+												aria-describedby="tags-video-youtube-hint" required>
 										</div>
 
-										<div class="d-flex justify-content-center mb-3">
-											<button class="btn btn-primary mt-2" id="btn-tags" type="button">Gerar
+										<div class="d-grid mb-3">
+											<button class="btn btn-primary btn-sm" id="btn-tags" type="button">Gerar
 												descrição do vídeo</button>
 										</div>
 
 										<div class="mb-3 div-descricao collapse">
-											<div class="input-group">
-												<textarea class="form-control text-descricao"
-													style="height:100px;"></textarea>
-											</div>
+											<label class="visually-hidden" for="text-descricao-video-youtube">Descrição gerada do vídeo</label>
+											<textarea id="text-descricao-video-youtube" class="form-control form-control-sm text-descricao"
+												rows="4"></textarea>
 										</div>
 
 										<div class="mb-3">
-											<label for="username">Link do Vídeo no YouTube (Visão Libertária)</label>
-											<div class="input-group">
-												<span class="input-group-text"><i class="fas fa-link"></i></span>
-												<input type="text" class="form-control" id="link_video_youtube"
+											<label class="form-label small text-muted mb-1" for="link_video_youtube">Link do Vídeo no YouTube (Visão Libertária)</label>
+											<div class="input-group input-group-sm">
+												<span class="input-group-text"><i class="fas fa-link" aria-hidden="true"></i></span>
+												<input type="text" class="form-control form-control-sm" id="link_video_youtube"
 													name="link_video_youtube"
-													value="<?= $artigo['link_video_youtube']; ?>"
+													value="<?= esc($artigo['link_video_youtube'] ?? '', 'attr'); ?>"
 													placeholder="Link do Vídeo no Canal do Visão Libertária" required>
 											</div>
 										</div>
-										<!-- <div class="col-12 mt-4">
-											<div class="mb-3">
-												<div class="row align-items-center mb-2">
-													<div class="col-4 col-md-2">
-														<div class="position-relative">
-															<img class="img-fluid" id="preview"
-																src="<?= $artigo['imagem']; ?>" />
-														</div>
-													</div>
-													<div class="col-sm-8 col-md-10 position-relative">
-														<h6 class="my-2">Imagem de capa</h6>
-														<label class="w-100" style="cursor:pointer;">
-															<span>
-																<input class="form-control stretched-link" type="file"
-																	name="imagem" id="imagem"
-																	accept="image/gif, image/jpeg, image/png">
-															</span>
-														</label>
-														<p class="small mb-0 mt-2"><b>Aviso:</b> Apenas JPG, JPEG e PNG.
-															Sugerimos
-															tamanhos de
-															1.280 x 720. Tamanhos diferentes da proporção 16:9 serão
-															cortadas.
-														</p>
-													</div>
-												</div>
-											</div>
-										</div> -->
 										<div class="d-flex justify-content-center">
-											<button class="btn btn-primary btn-lg btn-block mb-3" id="enviar_publicacao"
+											<button class="btn btn-primary btn-sm w-100 mb-0" id="enviar_publicacao"
 												type="button">Salvar publicação</button>
 										</div>
 									</form>
@@ -441,111 +362,95 @@
 					<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive"
 						data-bs-parent="#accordionFlushExample">
 						<div class="accordion-body">
-							<div class="card border">
+							<div class="card border rounded-3 shadow-sm">
 								<!-- Card body -->
-								<div class="card-body">
+								<div class="card-body p-3">
 									<form class="needs-validation w-100" id="artigo_informacoes_adicionais"
-										novalidate="yes" method="post">
-										<input type="hidden" name="admin" id="admin" value="true" />
-										<div class="mb-3">
-											<label class="form-label" for="revisado_colaboradores_id">Revisor:</label>
-											<div class="input-group">
-												<select class="form-control" name="revisado_colaboradores_id"
+										novalidate method="post">
+										<input type="hidden" name="admin" value="true" />
+										<div class="row g-3">
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="revisado_colaboradores_id">Revisor</label>
+												<select class="form-select form-select-sm" name="revisado_colaboradores_id"
 													id="revisado_colaboradores_id">
-													<option value="" <?= ($artigo['revisado_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($revisores as $colaborador): ?>
+													<option value="" <?= ($artigo['revisado_colaboradores_id'] == null) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
+													<?php foreach ($revisores as $colaborador) : ?>
 														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['revisado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
+															<?= ($artigo['revisado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= esc($colaborador['apelido']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label" for="narrado_colaboradores_id">Narrador:</label>
-											<div class="input-group">
-												<select class="form-control" name="narrado_colaboradores_id"
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="narrado_colaboradores_id">Narrador</label>
+												<select class="form-select form-select-sm" name="narrado_colaboradores_id"
 													id="narrado_colaboradores_id">
-													<option value="" <?= ($artigo['narrado_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($narradores as $colaborador): ?>
+													<option value="" <?= ($artigo['narrado_colaboradores_id'] == null) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
+													<?php foreach ($narradores as $colaborador) : ?>
 														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['narrado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
+															<?= ($artigo['narrado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= esc($colaborador['apelido']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label" for="produzido_colaboradores_id">Produtor:</label>
-											<div class="input-group">
-												<select class="form-control" name="produzido_colaboradores_id"
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="produzido_colaboradores_id">Produtor</label>
+												<select class="form-select form-select-sm" name="produzido_colaboradores_id"
 													id="produzido_colaboradores_id">
-													<option value="" <?= ($artigo['produzido_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($produtores as $colaborador): ?>
+													<option value="" <?= ($artigo['produzido_colaboradores_id'] == null) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
+													<?php foreach ($produtores as $colaborador) : ?>
 														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['produzido_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
+															<?= ($artigo['produzido_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= esc($colaborador['apelido']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label"
-												for="publicado_colaboradores_id">Publicado:</label>
-											<div class="input-group">
-												<select class="form-control" name="publicado_colaboradores_id"
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="publicado_colaboradores_id">Publicado</label>
+												<select class="form-select form-select-sm" name="publicado_colaboradores_id"
 													id="publicado_colaboradores_id">
-													<option value="" <?= ($artigo['publicado_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($publicadores as $colaborador): ?>
+													<option value="" <?= ($artigo['publicado_colaboradores_id'] == null) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
+													<?php foreach ($publicadores as $colaborador) : ?>
 														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['publicado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
+															<?= ($artigo['publicado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= esc($colaborador['apelido']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label" for="marcado_colaboradores_id">Marcado:</label>
-											<div class="input-group">
-												<select class="form-control" name="marcado_colaboradores_id"
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="marcado_colaboradores_id">Marcado</label>
+												<select class="form-select form-select-sm" name="marcado_colaboradores_id"
 													id="marcado_colaboradores_id">
-													<option value="" <?= ($artigo['marcado_colaboradores_id'] == NULL) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
-													<?php foreach ($colaboradores as $colaborador): ?>
+													<option value="" <?= ($artigo['marcado_colaboradores_id'] == null) ? ('selected="true"') : (''); ?>>DESMARCADO</option>
+													<?php foreach ($colaboradores as $colaborador) : ?>
 														<option value="<?= $colaborador['id']; ?>"
-															<?= ($artigo['marcado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= $colaborador['apelido']; ?>
+															<?= ($artigo['marcado_colaboradores_id'] == $colaborador['id']) ? ('selected="true"') : (''); ?>><?= esc($colaborador['apelido']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-										<div class="mb-3">
-											<label class="form-label" for="descartado">Descartado:</label>
-											<div class="input-group">
-												<select class="form-control" name="descartado" id="descartado">
-													<option value="false" <?= ($artigo['descartado'] == NULL) ? ('selected="true"') : (''); ?>>Ativo</option>
-													<option value="true" <?= ($artigo['descartado'] != NULL) ? ('selected="true"') : (''); ?>>Descartado</option>
+											<div class="col-12 col-md-6">
+												<label class="form-label small text-muted mb-1" for="descartado">Situação</label>
+												<select class="form-select form-select-sm" name="descartado" id="descartado">
+													<option value="false" <?= ($artigo['descartado'] == null) ? ('selected="true"') : (''); ?>>Ativo</option>
+													<option value="true" <?= ($artigo['descartado'] != null) ? ('selected="true"') : (''); ?>>Descartado</option>
 												</select>
 											</div>
-										</div>
-
-										<div class="mb-3">
-											<label class="form-label" for="fase_producao_id">Fase da produção:</label>
-											<div class="input-group">
-												<select class="form-control" name="fase_producao_id"
+											<div class="col-12">
+												<label class="form-label small text-muted mb-1" for="fase_producao_id">Fase da produção</label>
+												<select class="form-select form-select-sm" name="fase_producao_id"
 													id="fase_producao_id">
-													<?php foreach ($fase_producao as $fp): ?>
+													<?php foreach ($fase_producao as $fp) : ?>
 														<option value="<?= $fp['id']; ?>"
-															<?= ($artigo['fase_producao_id'] == $fp['id']) ? ('selected="true"') : (''); ?>><?= $fp['nome']; ?>
+															<?= ($artigo['fase_producao_id'] == $fp['id']) ? ('selected="true"') : (''); ?>><?= esc($fp['nome']); ?>
 														</option>
 													<?php endforeach; ?>
 												</select>
 											</div>
-										</div>
-
-										<div class="d-flex justify-content-center">
-											<button class="btn btn-primary btn-lg btn-block mb-3"
-												id="enviar_informacoes_adicionais" type="button">Salvar informações
-												adicionais</button>
+											<div class="col-12">
+												<button class="btn btn-primary btn-sm w-100 mb-0"
+													id="enviar_informacoes_adicionais" type="button">Salvar informações adicionais</button>
+											</div>
 										</div>
 									</form>
 								</div>
@@ -554,31 +459,38 @@
 					</div>
 				</div>
 			</div>
-			<?php if ($historico !== NULL && !empty($historico)): ?>
-				<div class="col-12 mb-3 mt-3">
-					<!-- Chart START -->
-					<div class="card border">
-						<div class="">
+		</div>
+		<?php if ($adminPainelLateralAtivo) : ?>
+			<div class="col-12 d-lg-none">
+				<button class="btn btn-outline-secondary btn-sm w-100" type="button" data-bs-toggle="collapse"
+					data-bs-target="#adminPainelLateralMobile" aria-expanded="false" aria-controls="adminPainelLateralMobile">
+					Histórico e comentários
+				</button>
+			</div>
+			<aside class="col-12 col-lg-4 admin-artigo-painel-lateral" aria-label="Histórico do artigo, versões do texto e comentários">
+				<div id="adminPainelLateralMobile" class="collapse d-lg-block mt-2 mt-lg-0 pt-lg-0">
+				<?php if ($historico !== null && ! empty($historico)) : ?>
+					<div class="mb-3">
+						<div class="card border rounded-3 shadow-sm">
 							<div class="accordion" id="accordionHistorico">
 								<div class="accordion-item border-0">
-									<h2 class="accordion-header">
+									<h2 class="accordion-header" id="headingHistoricoArtigoAdmin">
 										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-											data-bs-target="#historicoList" aria-expanded="true"
+											data-bs-target="#historicoList" aria-expanded="false"
 											aria-controls="historicoList">
-											Histórico do artigo:
+											Histórico do artigo
 										</button>
 									</h2>
 									<div id="historicoList" class="accordion-collapse collapse"
-										data-bs-parent="#accordionHistorico">
+										aria-labelledby="headingHistoricoArtigoAdmin" data-bs-parent="#accordionHistorico">
 										<div class="accordion-body">
-
 											<ul class="list-group fw-light lista-historico">
-												<?php foreach ($historico as $h): ?>
+												<?php foreach ($historico as $h) : ?>
 													<li class="list-group-item p-1 border-0">
 														<small>
-															<?= $h['apelido']; ?>
-															<?= $h['acao']; ?>
-															<span class="badge badge-pill badge-secondary fw-light">
+															<?= esc($h['apelido']); ?>
+															<?= esc($h['acao']); ?>
+															<span class="badge rounded-pill text-bg-secondary fw-light">
 																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
 														</small>
@@ -591,33 +503,30 @@
 							</div>
 						</div>
 					</div>
-				</div>
-			<?php endif; ?>
+				<?php endif; ?>
 
-			<?php if ($historicoTexto !== NULL && !empty($historicoTexto)): ?>
-				<div class="col-12 mb-3 mt-3">
-					<!-- Chart START -->
-					<div class="card border">
-						<div class="">
-							<div class="accordion" id="accordionHistoricoArtigo">
+				<?php if ($historicoTexto !== null && ! empty($historicoTexto)) : ?>
+					<div class="mb-3">
+						<div class="card border rounded-3 shadow-sm">
+							<div class="accordion" id="accordionHistoricoTextoAdmin">
 								<div class="accordion-item border-0">
-									<h2 class="accordion-header">
+									<h2 class="accordion-header" id="headingHistoricoTextoAdmin">
 										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-											data-bs-target="#historicoArtigoList" aria-expanded="true"
+											data-bs-target="#historicoArtigoList" aria-expanded="false"
 											aria-controls="historicoArtigoList">
-											Histórico do texto:
+											Histórico do texto
 										</button>
 									</h2>
 									<div id="historicoArtigoList" class="accordion-collapse collapse"
-										data-bs-parent="#accordionHistoricoArtigo">
+										aria-labelledby="headingHistoricoTextoAdmin" data-bs-parent="#accordionHistoricoTextoAdmin">
 										<div class="accordion-body">
 											<ul class="list-group fw-light lista-historico-artigo">
-												<?php foreach ($historicoTexto as $h): ?>
+												<?php foreach ($historicoTexto as $h) : ?>
 													<li class="list-group-item p-1 border-0">
 														<small><a class="btn-link btn-texto-historico"
 																href="javascript:void(0);" onclick="mostraHistoricoTexto(this);"
 																data-bs-toggle="modal" data-bs-target="#modalVerTextoHistorico"
-																id="btn-historico" data-historico-texto-id="<?= $h['id']; ?>">
+																data-historico-texto-id="<?= esc((string) $h['id'], 'attr'); ?>">
 																Ver texto de
 																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</a></small>
@@ -630,50 +539,37 @@
 							</div>
 						</div>
 					</div>
-				</div>
-			<?php endif; ?>
+				<?php endif; ?>
 
-			<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
-				<div class="col-12 mb-3 mt-3">
-					<div class="card border">
-						<div class="">
-							<div class="accordion" id="accordionHistoricoArtigo">
+				<?php if (isset($artigo['id']) && $artigo['id'] !== null) : ?>
+					<div class="mb-0">
+						<div class="card border rounded-3 shadow-sm">
+							<div class="accordion" id="accordionComentariosArtigoAdmin">
 								<div class="accordion-item border-0">
-									<h2 class="accordion-header">
+									<h2 class="accordion-header" id="headingComentariosArtigoAdmin">
 										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-											data-bs-target="#comentarios" aria-expanded="true" aria-controls="comentarios">
-											Comentários do artigo:
+											data-bs-target="#collapseComentariosArtigoAdmin" aria-expanded="false" aria-controls="collapseComentariosArtigoAdmin">
+											Comentários
 										</button>
 									</h2>
-									<div id="comentarios" class="accordion-collapse collapse"
-										data-bs-parent="#accordionHistoricoArtigo">
+									<div id="collapseComentariosArtigoAdmin" class="accordion-collapse collapse"
+										aria-labelledby="headingComentariosArtigoAdmin" data-bs-parent="#accordionComentariosArtigoAdmin">
 										<div class="accordion-body">
-											<div class="row">
-												<div class="col-12 text-center">
-													<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-														id="btn-comentarios" type="button">Atualizar
-														Comentários</button>
+											<button class="btn btn-primary btn-sm w-100 mb-2" id="btn-comentarios" type="button">
+												Atualizar comentários
+											</button>
+											<div class="div-comentarios">
+												<div class="mb-2">
+													<input type="hidden" id="id_comentario" name="id_comentario" />
+													<label class="visually-hidden" for="comentario">Novo comentário</label>
+													<textarea id="comentario" name="comentario"
+														class="form-control form-control-sm" rows="4"
+														placeholder="Digite seu comentário…"></textarea>
 												</div>
-												<div class="col-12 d-flex justify-content-center">
-
-													<div class="col-12 div-comentarios">
-														<div class="col-12">
-															<div class="mb-3">
-																<input type="hidden" id="id_comentario"
-																	name="id_comentario" />
-																<textarea id="comentario" name="comentario"
-																	class="form-control" rows="5"
-																	placeholder="Digite seu comentário aqui"></textarea>
-															</div>
-															<div class="mb-3 text-center">
-																<button class="btn btn-primary mb-3 col-md-3 mr-3 ml-3"
-																	id="enviar-comentario" type="button">Enviar
-																	comentário</button>
-															</div>
-														</div>
-														<div class="card m-3 div-list-comentarios"></div>
-													</div>
-												</diV>
+												<button class="btn btn-primary btn-sm w-100 mb-2" id="enviar-comentario" type="button">
+													Enviar comentário
+												</button>
+												<div class="card border rounded-2 shadow-sm mb-0 div-list-comentarios"></div>
 											</div>
 										</div>
 									</div>
@@ -681,37 +577,39 @@
 							</div>
 						</div>
 					</div>
+				<?php endif; ?>
 				</div>
-			<?php endif; ?>
-		</div>
+			</aside>
+		<?php endif; ?>
+	</div>
 	</div>
 </div>
 
 
-<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="modalListagem" tabindex="-1" role="dialog" aria-labelledby="modalListagemTitulo"
 	aria-hidden="true">
 	<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Artigos em produção</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<h5 class="modal-title" id="modalListagemTitulo">Artigos em produção</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body corpo-listar">
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary text-left" data-bs-dismiss="modal">Fechar</button>
+				<button type="button" class="btn btn-secondary text-start" data-bs-dismiss="modal">Fechar</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalVerTextoHistorico" aria-hidden="true"
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalVerTextoHistoricoTitulo" aria-hidden="true"
 	id="modalVerTextoHistorico">
 	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Histórico do artigo</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<h5 class="modal-title" id="modalVerTextoHistoricoTitulo">Histórico do artigo</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body">
 				<div class="col-lg-12">
@@ -731,7 +629,7 @@
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="me-auto btn btn-outline-danger btn-reverter">Reverter
 					artigo</button>
-				<button type="button" class="btn btn-default" data-bs-dismiss="modal"
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
 					id="modal-btn-close">Fechar</button>
 			</div>
 		</div>
@@ -739,24 +637,8 @@
 </div>
 
 <script type="text/javascript">
-	function contapalavras() {
-		var texto = $("#texto").val().replaceAll('\n', " ");
-		texto = texto.replace(/[0-9]/gi, "");
-		var matches = texto.split(" ");
-		number = matches.filter(function (word) {
-			return word.length > 0;
-		}).length;
-		var s = "";
-		if (number > 1) {
-			s = 's'
-		} else {
-			s = '';
-		}
-		$('#count_message').html(number + " palavra" + s)
-	}
-
 	function verificaPautaEscrita() {
-		form = new FormData(artigo_form);
+		var form = new FormData(document.getElementById('artigo_form'));
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/verificaPautaEscrita' . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id']))); ?>",
 			method: "POST",
@@ -769,9 +651,9 @@
 			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status === false) {
-					$('.aviso-pauta').html(retorno.mensagem);
+					$('.aviso-pauta').text(retorno.mensagem || '');
 				} else {
-					$('.aviso-pauta').html('');
+					$('.aviso-pauta').text('');
 				}
 			}
 		});
@@ -788,19 +670,32 @@
 		theme: 'snow'
 	};
 	const quill = new Quill('#editor', options);
-	quill.on('text-change', () => {
-		$('#texto').html(quill.getText(0, quill.getLength()));
-		contapalavras();
+	window.quill = quill;
+	quill.on('text-change', function () {
+		$('#texto').val(quill.getText(0, quill.getLength()));
 	});
 	<?php if ($artigo['texto'] !== null): ?>
 		quill.setContents([
 			{ insert: <?= json_encode(preg_replace('/\s\s+/', "\n\n", htmlspecialchars_decode($artigo['texto']))); ?> },
-		])
+		]);
 	<?php endif; ?>
+	$('#texto').val(quill.getText(0, quill.getLength()));
+</script>
+<?= view('template/colaboradores_contagem_palavras_init', [
+	'contagemPalavrasConfig' => [
+		'endpoint'            => site_url('colaboradores/artigos/contarPalavrasTexto'),
+		'textareaSelector'    => '#texto',
+		'outputSelector'      => '#count_message',
+		'debounceMs'          => 200,
+		'bindQuillWindowName' => 'quill',
+	],
+]); ?>
+<script type="text/javascript">
+	if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
+		window.VL_CONTAGEM_PALAVRAS_INIT();
+	}
 
-	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
-		contapalavras();
 		verificaPautaEscrita();
 	})
 
@@ -809,7 +704,7 @@
 	});
 
 	$('#enviar_artigo').on('click', function () {
-		form = new FormData(artigo_form);
+		var form = new FormData(document.getElementById('artigo_form'));
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/salvar') . (($artigo['id'] == NULL) ? ('') : ('/' . $artigo['id'])); ?>",
 			method: "POST",
@@ -832,10 +727,12 @@
 		});
 	})
 
-	audio.onchange = evt => {
-		const [file] = audio.files
+	var elAudioInput = document.getElementById('audio');
+	if (elAudioInput) {
+	elAudioInput.addEventListener('change', function (evt) {
+		var file = evt.target.files && evt.target.files[0];
 		if (file) {
-			form = new FormData(artigo_audio);
+			var form = new FormData(document.getElementById('artigo_audio'));
 			$.ajax({
 				url: "<?= site_url('colaboradores/artigos/salvarAudio/') . $artigo['id']; ?>",
 				method: "POST",
@@ -851,10 +748,12 @@
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 						$('.player').removeClass('d-none');
 						$('.source-player').attr('src', retorno.parametros.audio);
-						var audio = $(".audioplayer")[0];
-						audio.pause();
-						audio.load();
-						audio.play();
+						var elAudio = document.querySelector('.audioplayer');
+						if (elAudio) {
+							elAudio.pause();
+							elAudio.load();
+							elAudio.play();
+						}
 
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
@@ -862,10 +761,11 @@
 				}
 			});
 		}
+	});
 	}
 
 	$('#enviar_informacoes_adicionais').on('click', function () {
-		form = new FormData(artigo_informacoes_adicionais);
+		var form = new FormData(document.getElementById('artigo_informacoes_adicionais'));
 		$.ajax({
 			url: "<?= site_url('colaboradores/admin/artigoInformacoesAdicionais/' . $artigo['id']); ?>",
 			method: "POST",
@@ -887,7 +787,7 @@
 	})
 
 	$('#enviar_producao').on('click', function () {
-		form = new FormData(artigo_producao);
+		var form = new FormData(document.getElementById('artigo_producao'));
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/produzir/' . $artigo['id']); ?>",
 			method: "POST",
@@ -909,7 +809,7 @@
 	})
 
 	$('#enviar_publicacao').on('click', function () {
-		form = new FormData(artigo_publicacao);
+		var form = new FormData(document.getElementById('artigo_publicacao'));
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/publicar/' . $artigo['id']); ?>",
 			method: "POST",
@@ -934,8 +834,21 @@
 		setTags();
 	});
 
+	function copiarTextoAreaFallback(texto) {
+		var ta = document.getElementById('text-descricao-video-youtube');
+		if (!ta) {
+			return;
+		}
+		ta.value = texto;
+		ta.focus();
+		ta.select();
+		try {
+			document.execCommand('copy');
+		} catch (e) { /* ignorar */ }
+	}
+
 	function setTags() {
-		form = new FormData();
+		var form = new FormData();
 		form.append('tags', $('#tags_video_youtube').val());
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/artigos/geraDescricaoVideo/' . $artigo['id']); ?>",
@@ -949,10 +862,17 @@
 			complete: function () { $('#modal-loading').hide() },
 			success: function (retorno) {
 				if (retorno.status == true) {
-					$('.text-descricao').html(retorno.descricao);
-					$('.div-descricao').show();
-					$('.text-descricao').select();
-					document.execCommand('copy');
+					var desc = retorno.descricao || '';
+					$('.text-descricao').val(desc);
+					$('.div-descricao').addClass('show');
+					var ta = document.getElementById('text-descricao-video-youtube');
+					if (ta && navigator.clipboard && navigator.clipboard.writeText) {
+						navigator.clipboard.writeText(desc).catch(function () {
+							copiarTextoAreaFallback(desc);
+						});
+					} else {
+						copiarTextoAreaFallback(desc);
+					}
 				} else {
 					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 				}
@@ -995,9 +915,6 @@
 		$.ajax({
 			url: "<?= site_url('colaboradores/artigos/artigosProduzindo'); ?>",
 			method: "GET",
-			data: form,
-			processData: false,
-			contentType: false,
 			cache: false,
 			dataType: "html",
 			beforeSend: function () { $('#modal-loading').show(); },
@@ -1008,184 +925,26 @@
 		});
 	});
 
-	function atualizaHistorico() {
-		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/historicos/') . $artigo['id']; ?>",
-			method: "GET",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.lista-historico').html(retorno);
-			}
-		});
-	}
-
-	function atualizaArtigoHistorico() {
-		$.ajax({
-			url: "<?= site_url('colaboradores/artigos/artigosTextoHistoricosList/') . $artigo['id']; ?>",
-			method: "GET",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.lista-historico-artigo').html(retorno);
-			}
-		});
-	}
-
-	$("#btn-comentarios").on("click", function () {
-		getComentarios();
-	});
-	$('#btn-comentarios').trigger('click');
-
-	function getComentarios() {
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "GET",
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.div-list-comentarios').html(retorno);
-			}
-		});
-	}
-
-	$("#enviar-comentario").on("click", function () {
-		var textoComentario = ($('#comentario').val() || '').trim();
-		if (textoComentario === '') {
-			popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
-			return;
-		}
-		form = new FormData();
-		form.append('comentario', $('#comentario').val());
-		if ($('#id_comentario').val() == '') {
-			form.append('metodo', 'inserir');
-		} else {
-			form.append('metodo', 'alterar');
-			form.append('id_comentario', $('#id_comentario').val());
-		}
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-
-				if (retorno.status) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					getComentarios()
-					$('#comentario').val('');
-					$('#id_comentario').val('');
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	});
-
-	function excluirComentario(id_comentario) {
-		form = new FormData();
-		form.append('id_comentario', id_comentario);
-		form.append('metodo', 'excluir');
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-					if ($('#id_comentario').val() === id_comentario) {
-						$('#id_comentario').val('');
-						$('#comentario').val('');
-					}
-					getComentarios()
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	}
-
-	function escapeHtmlHistorico(s) {
-		const d = document.createElement('div');
-		d.textContent = s;
-		return d.innerHTML;
-	}
-
-	function htmlCorpoHistoricoArtigo(texto) {
-		if (texto == null || texto === '') {
-			return '';
-		}
-		const t = String(texto);
-		if (/<[a-z][\s\S]*>/i.test(t)) {
-			return t;
-		}
-		return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
-	}
-
-	function htmlReferenciasHistorico(ref) {
-		if (ref == null || ref === '') {
-			return '';
-		}
-		const t = String(ref);
-		if (/<[a-z][\s\S]*>/i.test(t)) {
-			return t;
-		}
-		return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
-	}
-
-	function mostraHistoricoTexto(e) {
-		console.log(e.dataset.historicoTextoId);
-		form = new FormData();
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/artigos/artigosTextoHistorico/'); ?>" + e.dataset.historicoTextoId,
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-
-				if (retorno.status) {
-					$('#modal-artigo-titulo').html(retorno.parametros.titulo);
-					$('#modal-artigo-gancho').html(retorno.parametros.gancho);
-					$('#modal-artigo-texto').html(htmlCorpoHistoricoArtigo(retorno.parametros.texto));
-					$('#modal-artigo-referencias').html(htmlReferenciasHistorico(retorno.parametros.referencias));
-					$('.btn-reverter').attr('data-historico-texto-id', e.dataset.historicoTextoId);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	}
-
 </script>
+<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+	<?= view('template/colaboradores_comentarios_init', [
+		'comentariosConfig' => [
+			'endpoint'              => base_url('colaboradores/artigos/comentarios/' . $artigo['id']),
+			'autoLoad'              => true,
+			'accordionCollapseId'   => 'collapseComentariosArtigoAdmin',
+		],
+	]); ?>
+	<?= view('template/colaboradores_historico_artigo_init', [
+		'historicoArtigoConfig' => [
+			'historicosUrl'               => site_url('colaboradores/artigos/historicos/' . $artigo['id']),
+			'textoHistoricosListUrl'      => site_url('colaboradores/artigos/artigosTextoHistoricosList/' . $artigo['id']),
+			'textoHistoricoItemUrlPrefix' => base_url('colaboradores/artigos/artigosTextoHistorico/'),
+			'delegarCliqueHistoricoTexto' => false,
+			'openModalProgrammatically'   => false,
+			'bindReverterEditor'          => true,
+		],
+	]); ?>
+<?php endif; ?>
 
 
 <?= $this->endSection(); ?>

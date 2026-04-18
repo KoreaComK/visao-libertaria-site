@@ -141,8 +141,6 @@ use CodeIgniter\I18n\Time;
 		$('#preview_imagem').attr('src', $('#imagem').val());
 	})
 
-	$('#texto').keyup(contapalavras);
-
 	<?php if(!isset($readOnly)) : ?>
 
 		<?php if(in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
@@ -206,7 +204,9 @@ use CodeIgniter\I18n\Time;
 					$('#imagem').val(retorno.imagem);
 					$('#preview_imagem').attr('src', retorno.imagem);
 					$('.preview_imagem_div').show();
-					contapalavras()
+					if (window.VL_contagemPalavrasAtualizar) {
+						window.VL_contagemPalavrasAtualizar();
+					}
 					if(retorno.mensagem == null) {
 						$('#pauta_antiga').val('N');
 					} else {
@@ -299,130 +299,36 @@ use CodeIgniter\I18n\Time;
 
 	<?php else: ?>
 
-		$("#btn-comentarios").on("click", function() {
-			getComentarios();
-		});
+	</script>
+	<?= view('template/colaboradores_comentarios_init', [
+		'comentariosConfig' => [
+			'endpoint'           => base_url('colaboradores/pautas/comentarios/' . $post['id']),
+			'autoLoad'           => true,
+			'useInlineMessage'   => true,
+		],
+	]); ?>
+	<script type="text/javascript">
 
-		$('#btn-comentarios').trigger('click');
-
-		function getComentarios() {
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
-				method: "GET",
-				dataType: "html",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function(retorno) {
-					$('.div-list-comentarios').html(retorno);
-				}
-			});
-		}
-
-		$("#enviar-comentario").on("click", function() {
-			var textoComentario = ($('#comentario').val() || '').trim();
-			if (textoComentario === '') {
-				$('.mensagem-comentario').show();
-				$('.mensagem-comentario').html('É necessário preencher o comentário antes de enviar.');
-				$('.mensagem-comentario').addClass('bg-danger');
-				return;
-			}
-			form = new FormData();
-			form.append('comentario', $('#comentario').val());
-			if($('#id_comentario').val()==''){
-				form.append('metodo', 'inserir');
-			} else {
-				form.append('metodo', 'alterar');
-				form.append('id_comentario', $('#id_comentario').val());
-			}
-			
-
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
-				method: "POST",
-				data: form,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function(retorno) {
-					if (retorno.status) {
-						getComentarios()
-						$('.mensagem-comentario').hide();
-						$('#comentario').val('');
-						$('#id_comentario').val('');
-						$('.mensagem-comentario').removeClass('bg-danger');
-					} else {
-						$('.mensagem-comentario').show();
-						$('.mensagem-comentario').html(retorno.mensagem);
-						$('.mensagem-comentario').addClass('bg-danger');
-					}
-				}
-			});
-		});
-
-		function excluirComentario(id_comentario)
-		{
-			form = new FormData();
-			form.append('id_comentario', id_comentario);
-			form.append('metodo', 'excluir');
-
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/pautas/comentarios/' . $post['id']); ?>",
-				method: "POST",
-				data: form,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function(retorno) {
-					if (retorno.status) {
-						if ($('#id_comentario').val() === id_comentario) {
-							$('#id_comentario').val('');
-							$('#comentario').val('');
-						}
-						getComentarios()
-						$('mensagem-comentario').hide();
-					} else {
-						$('mensagem-comentario').show();
-						$('mensagem-comentario').html(status.mensagem);
-						$('.mensagem-comentario').addClass('bg-danger');
-					}
-				}
-			});
-		}
 	<?php endif; ?>
 
-	$(document).ready(function() {
-		contapalavras();
-	})
-
-	function contapalavras() {
-		var texto = $("#texto").val().replaceAll('\n', " ");
-		texto = texto.replace(/[0-9]/gi,"");
-		var matches = texto.split(" ");
-		number = matches.filter(function(word) {
-			return word.length > 0;
-		}).length;
-		var s = "";
-		if (number > 1) {
-			s = 's'
-		} else {
-			s = '';
-		}
-		<?php if(!in_array('7',$_SESSION['colaboradores']['permissoes'])): ?>
-			if (number > <?=$config['pauta_tamanho_maximo']; ?> || number < <?=$config['pauta_tamanho_minimo']; ?>) {
-				$(".enviar_pauta").prop('disabled', true);
-			} else {
-				$(".enviar_pauta").prop('disabled', false);
-			}
-		<?php else: ?>
-			$(".enviar_pauta").prop('disabled', false);
-		<?php endif; ?>
-		$('#count_message').html(number + " palavra" + s)
+</script>
+<?php
+$pautaAdminPermissao7 = in_array('7', $_SESSION['colaboradores']['permissoes'] ?? [], false);
+$pautaAplicaLimites   = ! isset($readOnly) && ! $pautaAdminPermissao7;
+$contagemPalavrasPauta = [
+	'endpoint'         => site_url('colaboradores/artigos/contarPalavrasTexto'),
+	'textareaSelector' => '#texto',
+	'outputSelector'   => '#count_message',
+	'debounceMs'       => 200,
+	'submitSelector'   => $pautaAplicaLimites ? '.enviar_pauta' : null,
+	'minPalavras'      => $pautaAplicaLimites ? (int) $config['pauta_tamanho_minimo'] : null,
+	'maxPalavras'      => $pautaAplicaLimites ? (int) $config['pauta_tamanho_maximo'] : null,
+];
+echo view('template/colaboradores_contagem_palavras_init', ['contagemPalavrasConfig' => $contagemPalavrasPauta]);
+?>
+<script type="text/javascript">
+	if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
+		window.VL_CONTAGEM_PALAVRAS_INIT();
 	}
 </script>
 

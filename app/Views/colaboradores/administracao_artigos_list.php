@@ -5,88 +5,151 @@
 <div class="container-fluid py-3">
 	<div class="container">
 
-		<!-- Post list table START -->
-		<div class="card border bg-transparent rounded-3 mt-4">
+		<style>
+			.listagem-site-table-wrap {
+				max-height: min(70vh, 42rem);
+				overflow: auto;
+			}
+			.listagem-site-table-wrap .table thead.listagem-site-thead th {
+				position: sticky;
+				top: 0;
+				z-index: 2;
+				background-color: var(--bs-secondary-bg) !important;
+				color: var(--bs-body-color);
+				font-weight: 600;
+				font-size: 0.7rem;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+				border-bottom: 1px solid var(--bs-border-color) !important;
+				box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+				vertical-align: middle;
+			}
+			[data-bs-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th,
+			[data-mdb-theme="dark"] .listagem-site-table-wrap .table thead.listagem-site-thead th {
+				box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+			}
+			#listagem-site-resultados-heading:focus,
+			#listagem-site-resultados-heading:focus-visible {
+				outline: none !important;
+				box-shadow: none !important;
+			}
+			.listagem-site-filtros .form-select,
+			.listagem-site-filtros .form-control {
+				font-family: inherit;
+			}
+			.min-height-listagem {
+				min-height: 6rem;
+			}
+		</style>
 
-			<div class="card-header bg-transparent border-bottom p-3">
-				<div class="d-sm-flex justify-content-between align-items-center">
-					<h5 class="mb-2 mb-sm-0">Listagem de artigos do site</h5>
-				</div>
+		<section class="card border rounded-3 shadow-sm mt-4" aria-labelledby="heading-listagem-site-admin">
+			<div class="card-header bg-body-secondary bg-opacity-25 border-bottom p-3">
+				<h2 id="heading-listagem-site-admin" class="h5 mb-1">Listagem de artigos do site</h2>
 			</div>
-			<!-- Card body START -->
 			<div class="card-body p-3">
-
-				<!-- Search and select START -->
-				<div class="row g-3 align-items-center justify-content-between mb-3" data-np-autofill-form-type="other"
-					data-np-checked="1" data-np-watching="1">
-					<form class="rounded position-relative row mt-3" data-np-autofill-form-type="other"
-						data-np-checked="1" data-np-watching="1">
-						<!-- Search -->
-						<div class="col-12 col-md-3 mt-3">
-							<div class="input-group">
-								<select class="form-select" id="select-campo-pesquisa" name="select-campo-pesquisa" aria-label="Buscar em">
+				<div class="listagem-site-filtros rounded-3 border bg-body-secondary bg-opacity-50 p-3 mb-0">
+					<form id="form-filtro-artigos-site" method="get" action="#">
+						<div class="row g-2 g-md-3 align-items-end">
+							<div class="col-12 col-md-6 col-lg-2">
+								<label class="form-label small text-muted mb-1" for="select-campo-pesquisa">Buscar em</label>
+								<select class="form-select form-select-sm" id="select-campo-pesquisa" name="select-campo-pesquisa"
+									aria-label="Buscar em">
 									<option value="titulo" selected>Título</option>
 									<option value="texto">Conteúdo (texto)</option>
 								</select>
-								<input class="form-control" type="search" id="text-pesquisa-publicado"
-									name="text-pesquisa-publicado" placeholder="Pesquisar..." aria-label="Pesquisar">
+							</div>
+							<div class="col-12 col-md-6 col-lg-4">
+								<label class="form-label small text-muted mb-1" for="text-pesquisa-publicado">Texto</label>
+								<input class="form-control form-control-sm" type="search" id="text-pesquisa-publicado"
+									name="text-pesquisa-publicado" placeholder="Pesquisar…" autocomplete="off"
+									aria-label="Termo de pesquisa">
+							</div>
+							<div class="col-12 col-lg-6 d-flex flex-wrap gap-2 align-items-end">
+								<button class="btn btn-primary btn-sm btn-pesquisar-publicado flex-grow-1 flex-lg-grow-0" type="submit">
+									<i class="fas fa-magnifying-glass me-1" aria-hidden="true"></i> Pesquisar
+								</button>
+								<button class="btn btn-primary btn-sm flex-grow-1 flex-lg-grow-0" type="button" id="btn-limpar-filtros-listagem-admin">
+									<i class="fas fa-rotate-left me-1" aria-hidden="true"></i> Limpar filtros
+								</button>
 							</div>
 						</div>
-						<div class="col-12 col-md-3 mt-3">
-							<select class="form-control form-select select-pesquisa" id="select-pesquisa"
-								name="select-pesquisa">
-								<option value="">Fase de Produção</option>
-								<option value="2">Revisando</option>
-								<option value="3">Narrando</option>
-								<option value="4">Produzindo</option>
-								<option value="5">Publicando</option>
-							</select>
+						<div class="mt-2">
+							<button class="btn btn-link btn-sm text-decoration-none p-0 collapsed" type="button"
+								data-bs-toggle="collapse" data-bs-target="#filtrosAvancadosListagemAdmin" aria-expanded="false"
+								aria-controls="filtrosAvancadosListagemAdmin" id="btn-toggle-filtros-avancados-admin">
+								<span class="filtros-avancados-admin-when-collapsed">Mostrar filtros avançados</span>
+								<span class="filtros-avancados-admin-when-expanded d-none">Ocultar filtros avançados</span>
+								<i class="fas fa-chevron-down small ms-1" aria-hidden="true"></i>
+							</button>
 						</div>
-						<div class="col-12 col-md-3 mt-3">
-							<select class="form-control form-select select-tipo" id="select-tipo" name="select-tipo">
-								<option value="">Tipo</option>
-								<option value="T">Teórico</option>
-								<option value="N">Notícia</option>
-							</select>
+						<div class="collapse mt-3" id="filtrosAvancadosListagemAdmin">
+							<div class="row g-2 g-md-3 align-items-end">
+								<div class="col-12 col-md-4">
+									<label class="form-label small text-muted mb-1" for="select-pesquisa">Fase de produção</label>
+									<select class="form-select form-select-sm" id="select-pesquisa" name="select-pesquisa"
+										aria-label="Fase de produção">
+										<option value="">Todas as fases</option>
+										<option value="1">Escrevendo</option>
+										<option value="2">Revisando</option>
+										<option value="3">Narrando</option>
+										<option value="4">Produzindo</option>
+										<option value="5">Publicando</option>
+										<option value="6">Pagando</option>
+									</select>
+								</div>
+								<div class="col-12 col-md-5">
+									<label class="form-label small text-muted mb-1" for="text-colaborador">Colaborador (apelido)</label>
+									<input class="form-control form-control-sm" type="search" id="text-colaborador"
+										name="text-colaborador" placeholder="Filtrar por colaborador…" autocomplete="off"
+										aria-label="Pesquisar colaborador">
+								</div>
+								<div class="col-12 col-md-3">
+									<label class="form-label small text-muted mb-1" for="select-colaborador">Papel</label>
+									<select class="form-select form-select-sm" id="select-colaborador" name="select-colaborador"
+										aria-label="Papel do colaborador">
+										<option value="A">Sugestor</option>
+										<option value="B" selected>Escritor</option>
+										<option value="C">Revisor</option>
+										<option value="D">Narrador</option>
+										<option value="E">Produtor</option>
+									</select>
+								</div>
+							</div>
+							<div class="row g-2 g-md-3 align-items-end mt-2">
+								<div class="col-12 col-md-6">
+									<label class="form-label small text-muted mb-1" for="select-tipo">Tipo</label>
+									<select class="form-select form-select-sm select-tipo" id="select-tipo" name="select-tipo"
+										aria-label="Tipo de artigo">
+										<option value="">Todos</option>
+										<option value="T">Teórico</option>
+										<option value="N">Notícia</option>
+									</select>
+								</div>
+								<div class="col-12 col-md-6">
+									<label class="form-label small text-muted mb-1" for="select-descartado">Situação</label>
+									<select class="form-select form-select-sm select-descartado" id="select-descartado"
+										name="select-descartado" aria-label="Ativos ou descartados">
+										<option value="N">Ativos</option>
+										<option value="S">Descartados</option>
+									</select>
+								</div>
+							</div>
 						</div>
-						<div class="col-12 col-md-3 mt-3">
-							<select class="form-control form-select select-descartado" id="select-descartado" name="select-descartado">
-								<option value="N">Ativo</option>
-								<option value="S">Descartado</option>
-							</select>
-						</div>
-						
-						<div class="col-12 col-md-8 mt-3">
-							<input class="form-control pe-5" type="search" id="text-colaborador"
-								name="text-pesquisa-publicado" placeholder="Pesquisar Colaborador" aria-label="Pesquisar">
-						</div>
-						<div class="col-12 col-md-3 mt-3">
-							<select class="form-control form-select select-pesquisa" id="select-colaborador"
-								name="select-pesquisa">
-								<option value="A">Sugestor</option>
-								<option value="B" selected>Escritor</option>
-								<option value="C">Revisor</option>
-								<option value="D">Narrador</option>
-								<option value="E">Produtor</option>
-							</select>
-						</div>
-						<div class="col-12 col-md-1 mt-3"><button class="btn border-0 btn-pesquisar-publicado"
-								type="submit"><i class="fas fa-magnifying-glass"></i></button></div>
 					</form>
 				</div>
-				<!-- Search and select END -->
 
-				<!-- Post list table START -->
-				<div class="table-responsive border-0 tabela-publicado">
-
+				<div class="border-top pt-3 mt-3">
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+						<h3 class="h6 mb-0 text-muted" id="listagem-site-resultados-heading" tabindex="-1">Resultados</h3>
+						<span class="listagem-site-contador small text-muted" aria-live="polite"></span>
+					</div>
+					<div class="table-responsive listagem-site-table-wrap rounded border">
+						<div class="tabela-publicado min-height-listagem"></div>
+					</div>
 				</div>
-				<!-- Post list table END -->
-
 			</div>
-		</div>
-		<!-- Post list table END -->
+		</section>
 	</div>
-	<!-- Counter END -->
 
 </div>
 
@@ -122,6 +185,7 @@
 				fase_producao: $('#select-pesquisa').val(),
 				colaborador: $('#text-colaborador').val(),
 				fase_producao_colaborador: $('#select-colaborador').val(),
+				tipo: $('#select-tipo').val(),
 				descartado: $('#select-descartado').val(),
 				admin: true
 			},
@@ -133,12 +197,35 @@
 		});
 	}
 
-	$("form").on("submit", function (e) {
+	function limparFiltrosListagemAdmin() {
+		$('#select-campo-pesquisa').val('titulo');
+		$('#text-pesquisa-publicado').val('');
+		$('#select-pesquisa').val('');
+		$('#select-tipo').val('');
+		$('#select-descartado').val('N');
+		$('#text-colaborador').val('');
+		$('#select-colaborador').val('B');
+		var elCol = document.getElementById('filtrosAvancadosListagemAdmin');
+		if (elCol && typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+			bootstrap.Collapse.getOrCreateInstance(elCol).hide();
+		}
+		refreshListPublicado(false);
+	}
+
+	$('#form-filtro-artigos-site').on('submit', function (e) {
 		e.preventDefault();
+		refreshListPublicado(false);
 	});
 
-	$('.btn-pesquisar-publicado').on('click', function (e) {
-		refreshListPublicado(false);
+	$('#btn-limpar-filtros-listagem-admin').on('click', function () {
+		limparFiltrosListagemAdmin();
+	});
+
+	$('#filtrosAvancadosListagemAdmin').on('shown.bs.collapse hidden.bs.collapse', function (e) {
+		var open = e.type === 'shown';
+		$('.filtros-avancados-admin-when-collapsed').toggleClass('d-none', open);
+		$('.filtros-avancados-admin-when-expanded').toggleClass('d-none', !open);
+		$('#btn-toggle-filtros-avancados-admin').find('i.fas').toggleClass('fa-chevron-down', !open).toggleClass('fa-chevron-up', open);
 	});
 
 	$(document).ready(function () {

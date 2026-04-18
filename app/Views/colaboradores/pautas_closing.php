@@ -166,93 +166,15 @@
 		$(".btn-submeter").click();
 	});
 
-	//Comentários
-
-	$("#btn-comentarios").on("click", function () {
-		getComentarios();
-	});
-
-	function getComentarios() {
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "GET",
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.div-list-comentarios').html(retorno);
-			}
-		});
-	}
-
-	$("#enviar-comentario").on("click", function () {
-		var textoComentario = ($('#comentario').val() || '').trim();
-		if (textoComentario === '') {
-			popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
-			return;
-		}
-		form = new FormData();
-		form.append('comentario', $('#comentario').val());
-		if ($('#id_comentario').val() == '') {
-			form.append('metodo', 'inserir');
-		} else {
-			form.append('metodo', 'alterar');
-			form.append('id_comentario', $('#id_comentario').val());
-		}
-
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					getComentarios()
-					$('#comentario').val('');
-					$('#id_comentario').val('');
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	});
-
-	function excluirComentario(id_comentario) {
-		form = new FormData();
-		form.append('id_comentario', id_comentario);
-		form.append('metodo', 'excluir');
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					if ($('#id_comentario').val() === id_comentario) {
-						$('#id_comentario').val('');
-						$('#comentario').val('');
-					}
-					getComentarios()
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	}
+</script>
+<?= view('template/colaboradores_comentarios_init', [
+	'comentariosConfig' => [
+		'endpointPrefix'     => base_url('colaboradores/pautas/comentarios/'),
+		'entityIdSelector'   => '#idPauta',
+		'autoLoad'           => false,
+	],
+]); ?>
+<script>
 
 	const modalComentarios = document.getElementById('modalComentariosPauta');
 	modalComentarios.addEventListener('show.bs.modal', event => {

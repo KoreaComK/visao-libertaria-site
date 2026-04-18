@@ -276,7 +276,7 @@ use CodeIgniter\I18n\Time;
 						$('#imagem').val(retorno.imagem);
 						$('#pauta_antiga').val(retorno.pauta_antiga);
 						$('#imagem').trigger('change');
-						$('#texto').trigger('keyup');
+						$('#texto').trigger('input');
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
@@ -366,9 +366,10 @@ use CodeIgniter\I18n\Time;
 		$('.img-preview-modal').attr('src', '');
 		$('.preview_imagem_div').hide();
 		$('#id_pauta').val('');
+		if (window.VL_contagemPalavrasAtualizar) {
+			window.VL_contagemPalavrasAtualizar();
+		}
 	})
-
-	$('#texto').keyup(contapalavras);
 
 	$('.btn-enviar').on('click', function () {
 		form = new FormData(pautas_form);
@@ -400,26 +401,6 @@ use CodeIgniter\I18n\Time;
 		});
 	})
 
-	$(document).ready(function () {
-		contapalavras();
-	})
-
-	function contapalavras() {
-		var texto = $("#texto").val().replaceAll('\n', " ");
-		texto = texto.replace(/[0-9]/gi, "");
-		var matches = texto.split(" ");
-		number = matches.filter(function (word) {
-			return word.length > 0;
-		}).length;
-		var s = "";
-		if (number > 1) {
-			s = 's'
-		} else {
-			s = '';
-		}
-		$('#count_message').html(number + " palavra" + s)
-	}
-
 	function getInformationLink(link) {
 		$('#pautas_form').trigger("reset");
 
@@ -448,7 +429,9 @@ use CodeIgniter\I18n\Time;
 					$('#texto').val(retorno.texto);
 					$('#preview_imagem').attr('src', retorno.imagem);
 					$('.preview_imagem_div').show();
-					contapalavras()
+					if (window.VL_contagemPalavrasAtualizar) {
+						window.VL_contagemPalavrasAtualizar();
+					}
 					if (retorno.mensagem == null) {
 						$('#pauta_antiga').val('N');
 					} else {
@@ -468,95 +451,33 @@ use CodeIgniter\I18n\Time;
 		});
 	}
 
-
-	//Comentários
-
-	$("#btn-comentarios").on("click", function () {
-		getComentarios();
-	});
-
-	function getComentarios() {
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "GET",
-			dataType: "html",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				$('.div-list-comentarios').html(retorno);
-			}
-		});
-	}
-
-	$("#enviar-comentario").on("click", function () {
-		var textoComentario = ($('#comentario').val() || '').trim();
-		if (textoComentario === '') {
-			popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
-			return;
-		}
-		form = new FormData();
-		form.append('comentario', $('#comentario').val());
-		if ($('#id_comentario').val() == '') {
-			form.append('metodo', 'inserir');
-		} else {
-			form.append('metodo', 'alterar');
-			form.append('id_comentario', $('#id_comentario').val());
-		}
-
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					getComentarios()
-					$('#comentario').val('');
-					$('#id_comentario').val('');
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	});
-
-	function excluirComentario(id_comentario) {
-		form = new FormData();
-		form.append('id_comentario', id_comentario);
-		form.append('metodo', 'excluir');
-
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/comentarios/'); ?>" + $('#idPauta').val(),
-			method: "POST",
-			data: form,
-			processData: false,
-			contentType: false,
-			cache: false,
-			dataType: "json",
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status) {
-					if ($('#id_comentario').val() === id_comentario) {
-						$('#id_comentario').val('');
-						$('#comentario').val('');
-					}
-					getComentarios()
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	}
-
 </script>
+<?php
+$pautaListAdminPerm7 = in_array('7', $_SESSION['colaboradores']['permissoes'] ?? [], false);
+$pautaListAplicaLimites = ! $pautaListAdminPerm7;
+$contagemPalavrasListModal = [
+	'endpoint'         => site_url('colaboradores/artigos/contarPalavrasTexto'),
+	'textareaSelector' => '#texto',
+	'outputSelector'   => '#count_message',
+	'debounceMs'       => 200,
+	'submitSelector'   => $pautaListAplicaLimites ? '.btn-enviar' : null,
+	'minPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_minimo'] : null,
+	'maxPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_maximo'] : null,
+];
+echo view('template/colaboradores_contagem_palavras_init', ['contagemPalavrasConfig' => $contagemPalavrasListModal]);
+?>
+<script type="text/javascript">
+	if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
+		window.VL_CONTAGEM_PALAVRAS_INIT();
+	}
+</script>
+<?= view('template/colaboradores_comentarios_init', [
+	'comentariosConfig' => [
+		'endpointPrefix'     => base_url('colaboradores/pautas/comentarios/'),
+		'entityIdSelector'   => '#idPauta',
+		'autoLoad'           => false,
+	],
+]); ?>
+
 
 <?= $this->endSection(); ?>

@@ -568,17 +568,6 @@ use CodeIgniter\I18n\Time;
 <?php endif; ?>
 
 <script type="text/javascript">
-	function contapalavras() {
-		let texto = $("#texto").val().replaceAll('\n', " ");
-		texto = texto.replace(/[0-9]/gi, "");
-		const matches = texto.split(" ");
-		const number = matches.filter(function (word) {
-			return word.length > 0;
-		}).length;
-		const s = number > 1 ? 's' : '';
-		$('#count_message').html(number + " palavra" + s)
-	}
-
 	function verificaPautaEscrita() {
 		const formData = new FormData(artigo_form);
 		$.ajax({
@@ -609,17 +598,30 @@ use CodeIgniter\I18n\Time;
 		theme: 'snow'
 	};
 	const quill = new Quill('#editor', options);
+	window.quill = quill;
 	quill.on('text-change', () => {
 		$('#texto').val(quill.getText(0, quill.getLength()));
-		contapalavras();
 	});
 	<?php if ($artigo['texto'] !== null): ?>
 		quill.setText(<?= json_encode(preg_replace('/\s\s+/', "\n\n", htmlspecialchars_decode($artigo['texto']))); ?>);
 	<?php endif; ?>
+	$('#texto').val(quill.getText(0, quill.getLength()));
+</script>
+<?= view('template/colaboradores_contagem_palavras_init', [
+	'contagemPalavrasConfig' => [
+		'endpoint'            => site_url('colaboradores/artigos/contarPalavrasTexto'),
+		'textareaSelector'    => '#texto',
+		'outputSelector'      => '#count_message',
+		'debounceMs'          => 200,
+		'bindQuillWindowName' => 'quill',
+	],
+]); ?>
+<script type="text/javascript">
+	if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
+		window.VL_CONTAGEM_PALAVRAS_INIT();
+	}
 
-	$('#count_message').html('0 palavra');
 	$(document).ready(function () {
-		contapalavras();
 		verificaPautaEscrita();
 	});
 
@@ -676,9 +678,12 @@ use CodeIgniter\I18n\Time;
 				}
 			}
 		});
-	})
+	});
+</script>
 
 	<?php if (!$cadastro): ?>
+
+	<script type="text/javascript">
 
 		<?php if ($artigo['fase_producao_id'] == '1'): ?>
 
@@ -841,227 +846,30 @@ use CodeIgniter\I18n\Time;
 			});
 		});
 
-		function atualizaHistorico() {
-			$.ajax({
-				url: "<?= site_url('colaboradores/artigos/historicos/') . $artigo['id']; ?>",
-				method: "GET",
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "html",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					$('.lista-historico').html(retorno);
-				}
-			});
-		}
-
-		function atualizaArtigoHistorico() {
-			$.ajax({
-				url: "<?= site_url('colaboradores/artigos/artigosTextoHistoricosList/') . $artigo['id']; ?>",
-				method: "GET",
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "html",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					$('.lista-historico-artigo').html(retorno);
-				}
-			});
-		}
-
-		$("#btn-comentarios").on("click", function () {
-			getComentarios();
-		});
-		$('#btn-comentarios').trigger('click');
-
-		function getComentarios() {
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-				method: "GET",
-				dataType: "html",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					$('.div-list-comentarios').html(retorno);
-				}
-			});
-		}
-
-		$("#enviar-comentario").on("click", function () {
-			var textoComentario = ($('#comentario').val() || '').trim();
-			if (textoComentario === '') {
-				popMessage('ATENÇÃO', 'É necessário preencher o comentário antes de enviar.', TOAST_STATUS.DANGER);
-				return;
-			}
-			const formData = new FormData();
-			formData.append('comentario', $('#comentario').val());
-			if ($('#id_comentario').val() == '') {
-				formData.append('metodo', 'inserir');
-			} else {
-				formData.append('metodo', 'alterar');
-				formData.append('id_comentario', $('#id_comentario').val());
-			}
-
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-				method: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						getComentarios()
-						$('#comentario').val('');
-						$('#id_comentario').val('');
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
-		});
-
-		function excluirComentario(id_comentario) {
-			const formData = new FormData();
-			formData.append('id_comentario', id_comentario);
-			formData.append('metodo', 'excluir');
-
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/comentarios/' . $artigo['id']); ?>",
-				method: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						if ($('#id_comentario').val() === id_comentario) {
-							$('#id_comentario').val('');
-							$('#comentario').val('');
-						}
-						getComentarios()
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
-		}
-
-		$(document).on('click', '.btn-texto-historico', function () {
-			mostraHistoricoTexto(this);
-		});
-
-		function escapeHtmlHistorico(s) {
-			const d = document.createElement('div');
-			d.textContent = s;
-			return d.innerHTML;
-		}
-
-		function htmlCorpoHistoricoArtigo(texto) {
-			if (texto == null || texto === '') {
-				return '';
-			}
-			const t = String(texto);
-			if (/<[a-z][\s\S]*>/i.test(t)) {
-				return t;
-			}
-			return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
-		}
-
-		function htmlReferenciasHistorico(ref) {
-			if (ref == null || ref === '') {
-				return '';
-			}
-			const t = String(ref);
-			if (/<[a-z][\s\S]*>/i.test(t)) {
-				return t;
-			}
-			return '<p class="mb-0 text-break" style="white-space: pre-wrap;">' + escapeHtmlHistorico(t) + '</p>';
-		}
-
-		function mostraHistoricoTexto(e) {
-			const formData = new FormData();
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/artigosTextoHistorico/'); ?>" + e.dataset.historicoTextoId,
-				method: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-
-					if (retorno.status) {
-						const parametros = retorno.parametros || null;
-						if (!parametros) {
-							popMessage('ATENÇÃO', 'Não foi possível carregar o texto histórico deste item.', TOAST_STATUS.DANGER);
-							return;
-						}
-						$('#modal-artigo-titulo').html(parametros.titulo || '');
-						$('#modal-artigo-gancho').html(parametros.gancho || '');
-						$('#modal-artigo-texto').html(htmlCorpoHistoricoArtigo(parametros.texto));
-						$('#modal-artigo-referencias').html(htmlReferenciasHistorico(parametros.referencias));
-						$('.btn-reverter').attr('data-historico-texto-id', e.dataset.historicoTextoId);
-						const modalHistoricoEl = document.getElementById('modalVerTextoHistorico');
-						if (modalHistoricoEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-							bootstrap.Modal.getOrCreateInstance(modalHistoricoEl).show();
-						}
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
-		}
-
-		$(".btn-reverter").on("click", function (e) {
-			const formData = new FormData();
-			$.ajax({
-				url: "<?php echo base_url('colaboradores/artigos/artigosTextoHistorico/'); ?>" + e.currentTarget.dataset.historicoTextoId,
-				method: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
-				success: function (retorno) {
-					if (retorno.status) {
-						const parametros = retorno.parametros || null;
-						if (!parametros) {
-							popMessage('ATENÇÃO', 'Não foi possível reverter para o texto histórico selecionado.', TOAST_STATUS.DANGER);
-							return;
-						}
-						$('#titulo').val(parametros.titulo || '');
-						$('#gancho').val(parametros.gancho || '');
-						$('#referencias').html(parametros.referencias || '');
-						quill.setText(parametros.texto || '');
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
-			$('#modal-btn-close').trigger("click");
-		});
+	</script>
+	<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+		<?= view('template/colaboradores_historico_artigo_init', [
+			'historicoArtigoConfig' => [
+				'historicosUrl'               => site_url('colaboradores/artigos/historicos/' . $artigo['id']),
+				'textoHistoricosListUrl'      => site_url('colaboradores/artigos/artigosTextoHistoricosList/' . $artigo['id']),
+				'textoHistoricoItemUrlPrefix' => base_url('colaboradores/artigos/artigosTextoHistorico/'),
+				'delegarCliqueHistoricoTexto' => true,
+				'openModalProgrammatically'   => true,
+				'bindReverterEditor'          => true,
+			],
+		]); ?>
+	<?php endif; ?>
 
 	<?php endif; ?>
 
-</script>
+	<?php if (isset($artigo['id']) && $artigo['id'] !== null): ?>
+		<?= view('template/colaboradores_comentarios_init', [
+			'comentariosConfig' => [
+				'endpoint'   => base_url('colaboradores/artigos/comentarios/' . $artigo['id']),
+				'autoLoad'   => true,
+			],
+		]); ?>
+	<?php endif; ?>
 
 
 <?= $this->endSection(); ?>
