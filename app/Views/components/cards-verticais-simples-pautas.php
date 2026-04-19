@@ -30,15 +30,21 @@ use CodeIgniter\I18n\Time;
 			<p class="card-text"><?= $dados['texto']; ?></p>
 			<a href="<?= $dados['link']; ?>" target="_blank" class="btn btn-outline-success btn-sm mb-1">Ler
 				Notícia</a>
-			<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+			<?php if (isset($_SESSION['colaboradores']['id'])):
+				$nComentarios = (int) ($dados['qtde_comentarios'] ?? 0);
+				$comentariosAria = $nComentarios === 1
+					? 'Comentários, 1 comentário'
+					: 'Comentários, ' . $nComentarios . ' comentários';
+				?>
 				<a href="" data-bs-titulo="<?= $dados['titulo']; ?>" data-bs-texto="<?= $dados['texto']; ?>"
 					data-bs-pautas-id="<?= $dados['id']; ?>" data-bs-imagem="<?= $dados['imagem']; ?>"
 					class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
-					data-bs-target="#modalComentariosPauta">Comentários</a>
+					data-bs-target="#modalComentariosPauta"
+					aria-label="<?= esc($comentariosAria, 'attr'); ?>">Comentários (<?= $nComentarios; ?>)</a>
 				<a href="<?= site_url('colaboradores/artigos/cadastrar?pauta=' . $dados['id']); ?>"
 					class="btn btn-outline-primary btn-sm mb-1">Escrever artigo</a>
 			<?php endif; ?>
-			<?php if ($dados['colaboradores_id'] == $_SESSION['colaboradores']['id']): ?>
+			<?php if (isset($_SESSION['colaboradores']['id']) && (int) ($dados['colaboradores_id'] ?? 0) === (int) $_SESSION['colaboradores']['id']): ?>
 				<a href="<?= site_url('colaboradores/pautas/cadastrar/' . $dados['id']); ?>"
 					data-bs-pautas-id="<?= $dados['id']; ?>" data-bs-toggle="modal" data-bs-target="#modalSugerirPauta"
 					data-bs-titulo-modal="Alterar a pauta" class="btn btn-warning btn-sm mb-1">Editar</a>

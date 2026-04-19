@@ -583,61 +583,6 @@ class Artigos extends BaseController
 		return $retorno->retorno(true, 'Artigo revertido com sucesso.', true);
 	}
 
-	public function salvarImagem($artigoId = NULL)
-	{
-		$this->verificaPermissao->PermiteAcesso('2');
-		$artigosModel = new \App\Models\ArtigosModel();
-		$retorno = new \App\Libraries\RetornoPadrao();
-		if ($artigoId == NULL) {
-			return $retorno->retorno(false, 'Artigo não informado.', true);
-		} else {
-			$artigo = $artigosModel->find($artigoId);
-			if ($artigo === NULL || empty($artigo)) {
-				return $retorno->retorno(false, 'Artigo não encontrado.', true);
-			}
-			$permitido = false;
-			$colaborador_permissoes = $this->session->get('colaboradores')['permissoes'];
-			$colaborador = $this->session->get('colaboradores')['id'];
-			if (in_array('7', $colaborador_permissoes)) {
-				$permitido = true;
-			}
-			if ($artigo['fase_producao_id'] == '1' && in_array('2', $colaborador_permissoes) && $artigo['escrito_colaboradores_id'] == $colaborador) {
-				$permitido = true;
-			}
-			if ($artigo['fase_producao_id'] == '2' && in_array('3', $colaborador_permissoes)) {
-				$permitido = true;
-			}
-			if ($permitido) {
-				if ($this->request->getMethod() == 'post') {
-					$validaFormularios = new \App\Libraries\ValidaFormularios();
-					$imagem = $this->request->getFile('imagem');
-					$valida = $validaFormularios->validaFormularioArtigoImagem();
-					if (empty($valida->getErrors())) {
-						if ($imagem->getName() != '') {
-							$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
-							if ($imagem->move('public/assets/imagem', $nome_arquivo, true)) {
-								$artigo['imagem'] = base_url('public/assets/imagem/' . $nome_arquivo);
-								$isAtualizado = $this->gravarArtigos('update', $artigo, $artigoId);
-								$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o artigo', $artigoId);
-								$this->artigosHistoricos->cadastraHistorico($artigoId, 'alterou', $this->session->get('colaboradores')['id']);
-								if ($isAtualizado === true) {
-									return $retorno->retorno(true, 'Imagem atualizada.', true);
-								} else {
-									return $retorno->retorno(false, 'Ocorreu um erro ao atualizar a imagem.', true);
-								}
-							}
-						}
-					} else {
-						return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
-					}
-				} else {
-					return $retorno->retorno(false, 'Imagem não enviada.', true);
-				}
-			}
-			return $retorno->retorno(false, 'Imagem não atualizada. Você não tem permissão para alterar este artigo.', true);
-		}
-	}
-
 	public function verificaPautaEscrita($artigoId = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('2');
@@ -1316,7 +1261,8 @@ class Artigos extends BaseController
 
 	public function detalhamento($artigoId = null)
 	{
-		$this->verificaPermissao->PermiteAcesso('1');
+		// Qualquer papel da área de colaboração (1–11); antes só '1' bloqueava quem era só Escritor ('2') ou outros papéis.
+		$this->verificaPermissao->PermiteAcesso(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']);
 		if ($artigoId === null) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
 		}

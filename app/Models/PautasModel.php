@@ -42,8 +42,8 @@ class PautasModel extends Model
 	public function isPautaCadastrada($link, $id = null)
 	{
 		$where = '';
-		if ($id != null) {
-			$where = " AND id <> '$id'";
+		if ($id !== null && $id !== '') {
+			$where = " AND id <> '" . $this->db->escapeString((string) $id) . "'";
 		}
 		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE link = '" . $this->db->escapeString($link) . "' $where");
 		return $query->getResultArray()[0]['contador'];
@@ -70,7 +70,12 @@ class PautasModel extends Model
 	public function getPautas($reservado = false, $excluido = false, $redatores = false, $pesquisa = NULL)
 	{
 		$this->builder()
-			->select('pautas.*, colaboradores.apelido AS apelido')
+			->select(
+				'pautas.*, colaboradores.apelido AS apelido, '
+				. '(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id '
+				. 'and pautas_comentarios.excluido is null) as qtde_comentarios',
+				false
+			)
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
 			$this->builder()->where('colaboradores.shadowban','N');
 		if ($redatores === true) {

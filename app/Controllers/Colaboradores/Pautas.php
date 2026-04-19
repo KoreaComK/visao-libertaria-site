@@ -16,88 +16,6 @@ class Pautas extends BaseController
 		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
 	}
 
-	public function index(): string
-	{
-		$data = array();
-		$data['titulo'] = 'Pautas Cadastradas';
-		$pautasModel = new \App\Models\PautasModel();
-
-		// Obtém parâmetros de filtro
-		$get = $this->request->getGet();
-		$pesquisa = (isset($get['pesquisa']) && $get['pesquisa'] != '') ? $get['pesquisa'] : NULL;
-
-		$pautas = $pautasModel->getPautas(false, false, false, $pesquisa);
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-
-		$data['config']['pauta_tamanho_maximo'] = $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'];
-		$data['config']['pauta_tamanho_minimo'] = $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'];
-		$data['config']['limite_pautas_diario'] = $configuracaoModel->find('limite_pautas_diario')['config_valor'];
-		$data['config']['limite_pautas_semanal'] = $configuracaoModel->find('limite_pautas_semanal')['config_valor'];
-
-
-		$data['pautasList'] = [
-			'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-			'pager' => $pautas->pager
-		];
-
-		if ($this->request->getMethod() == 'get' && isset(service('request')->getGet()['page_pautas'])) {
-			return view('template/templatePautasListColaboradores', $data);
-		} else {
-			$data['limiteDiario'] = false;
-			$data['limiteSemanal'] = false;
-			$session = $this->session->get('colaboradores');
-
-			if ($session['id'] != null) {
-
-				$time = Time::today();
-				$time = $time->toDateString();
-				$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-				if ($quantidade_pautas >= $data['config']['limite_pautas_diario']) {
-					$data['limiteDiario'] = true;
-				}
-
-				$time = new Time('-7 days');
-				$time = $time->toDateString();
-				$quantidade_pautas = $pautasModel->getPautasPorUsuario($time, $session['id'])[0]['contador'];
-				if ($quantidade_pautas >= $data['config']['limite_pautas_semanal']) {
-					$data['limiteSemanal'] = true;
-				}
-			}
-
-
-			return view('colaboradores/pautas_list', $data);
-		}
-	}
-
-	// public function redatores(): string
-	// {
-	// 	$verifica = new verificaPermissao();
-	// 	$verifica->PermiteAcesso('11');
-
-	// 	$data = array();
-	// 	$data['titulo'] = 'Pautas Sugeridas para Redatores';
-	// 	$pautasModel = new \App\Models\PautasModel();
-
-	// 	$permissoes = $this->session->get('colaboradores')['permissoes'];
-	// 	if (in_array('7', $permissoes)) {
-	// 		$pautas = $pautasModel->getPautas(false, false, true);
-	// 	} else {
-	// 		$pautas = $pautasModel->getPautas(false, false, $this->session->get('colaboradores')['id']);
-	// 	}
-
-	// 	$configuracaoModel = new \App\Models\ConfiguracaoModel();
-	// 	$config = array();
-	// 	$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-	// 	$data['pautasList'] = [
-	// 		'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-	// 		'pager' => $pautas->pager
-	// 	];
-	// 	return view('colaboradores/pautas_list', $data);
-	// }
-
 	public function verificaPautaCadastrada()
 	{
 		$verifica = new verificaPermissao();
@@ -118,7 +36,8 @@ class Pautas extends BaseController
 			$post = service('request')->getPost();
 
 			if (isset($post['link_pauta'])) {
-				$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta']);
+				$idIgnorar = isset($post['id_pauta']) && $post['id_pauta'] !== '' ? $post['id_pauta'] : null;
+				$countPautas = $pautasModel->isPautaCadastrada($post['link_pauta'], $idIgnorar);
 
 				if ($isAdmin || $countPautas == 0) {
 					return $this->getInformacaoLink($post);
@@ -196,8 +115,9 @@ class Pautas extends BaseController
 					return $retorno->retorno(false, 'O tamanho do texto está fora dos limites.', true);
 				}
 
-				$countPautas = $pautasModel->isPautaCadastrada($post['link']);
-				if ($countPautas != 0 && $idPautas == NULL) {
+				// Impede URL duplicada (insert: qualquer existente; update: outro registo com o mesmo link)
+				$countPautas = $pautasModel->isPautaCadastrada($post['link'], $idPautas);
+				if ($countPautas != 0) {
 					return $retorno->retorno(false, 'Pauta já cadastrada', true);
 				}
 
@@ -221,10 +141,14 @@ class Pautas extends BaseController
 				}
 
 				if ($pautas) {
-					return $retorno->retorno(true, 'Pauta cadastrada com sucesso', true);
-				} else {
-					return $retorno->retorno(false, 'Ocorreu um erro ao cadastrar a pauta', true);
+					$msgOk = ($idPautas !== null && $idPautas !== '') ? 'Pauta alterada com sucesso.' : 'Pauta cadastrada com sucesso.';
+
+					return $retorno->retorno(true, $msgOk, true);
 				}
+
+				$msgErro = ($idPautas !== null && $idPautas !== '') ? 'Ocorreu um erro ao alterar a pauta.' : 'Ocorreu um erro ao cadastrar a pauta.';
+
+				return $retorno->retorno(false, $msgErro, true);
 			} else {
 				$erros = $valida->getErrors();
 				$string_erros = '';
@@ -235,23 +159,7 @@ class Pautas extends BaseController
 			}
 		}
 
-		return redirect()->to(base_url() . 'colaboradores/pautas');
-
-		// if ($isAdmin) {
-		// 	$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		// 	$colaboradoresModel->join('colaboradores_atribuicoes', 'colaboradores.id = colaboradores_atribuicoes.colaboradores_id')
-		// 		->where('colaboradores_atribuicoes.atribuicoes_id', '11');
-		// 	$colaboradores = $colaboradoresModel->get()->getResultArray();
-		// 	$data['redatores'] = $colaboradores;
-		// }
-
-		// if ($idPautas != null) {
-		// 	$data['post'] = $pautasModel->find($idPautas);
-		// 	if ($data['post'] == NULL || $data['post']['colaboradores_id'] != $this->session->get('colaboradores')['id']) {
-		// 		return redirect()->to(base_url() . 'colaboradores/pautas');
-		// 	}
-		// }
-		// return view('colaboradores/pautas_form', $data);
+		return redirect()->to(base_url() . 'site/noticias');
 	}
 
 	public function verificaImagem()
@@ -320,7 +228,7 @@ class Pautas extends BaseController
 				return view('colaboradores/colaborador_pautas_detalhes', $data);
 			}
 		}
-		return redirect()->to(base_url() . 'colaboradores/pautas');
+		return redirect()->to(base_url() . 'site/noticias');
 	}
 
 	public function excluir($idPauta = null)

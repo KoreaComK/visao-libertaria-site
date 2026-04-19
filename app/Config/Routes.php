@@ -31,6 +31,8 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Site::index');
 $routes->get('links', 'Site::links');
+$routes->get('site/noticias', 'Site::noticias');
+$routes->get('colaboradores/pautas', static fn () => redirect()->to(site_url('site/noticias')));
 
 /*
  * --------------------------------------------------------------------

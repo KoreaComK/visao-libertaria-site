@@ -80,7 +80,7 @@ $urlListaColaborador = site_url('site/colaboradorList/' . rawurlencode($colabora
 				<div class="col-lg-5">
 					<h3 class="h6 text-dark mb-3">Veja também</h3>
 					<div class="d-flex flex-wrap gap-2">
-						<a href="<?= esc(site_url('colaboradores/pautas'), 'attr'); ?>" class="btn btn-sm btn-outline-secondary">Pautas</a>
+						<a href="<?= esc(site_url('site/noticias'), 'attr'); ?>" class="btn btn-sm btn-outline-secondary">Notícias</a>
 						<a href="<?= esc(site_url('site/escritor/' . rawurlencode($colaborador['apelido'])), 'attr'); ?>" class="btn btn-sm btn-outline-secondary">Perfil de escritor</a>
 					</div>
 					<p class="small text-body-secondary mt-3 mb-0">Em <span class="text-dark fw-semibold">Pautas</span> cadastre e acompanhe sugestões de tema. O perfil de escritor mostra <span class="text-dark fw-semibold">artigos publicados</span> e a participação em cada papel.</p>

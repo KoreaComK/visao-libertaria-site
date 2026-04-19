@@ -10,7 +10,7 @@ use CodeIgniter\I18n\Time;
 	<div class="container">
 		<nav class="breadcrumb bg-transparent m-0 p-0">
 			<a class="breadcrumb-item" href="<?=base_url() . 'site/';?>">Principal</a>
-			<a class="breadcrumb-item" href="<?=base_url() . 'colaboradores/pautas/'?>">Pautas</a>
+			<a class="breadcrumb-item" href="<?=base_url() . 'site/noticias/'?>">Pautas</a>
 			<span class="breadcrumb-item active"><?= $pauta['titulo'];?></span>
 		</nav>
 	</div>

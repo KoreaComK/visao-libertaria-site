@@ -5,6 +5,6 @@
 </div>
 <div class="d-none">
 	<?php if ($pautasList['pager']): ?>
-		<?= $pautasList['pager']->simpleLinks('pautas', 'default_template') ?>
+		<?= $pautasList['pager']->simpleLinks('noticias', 'default_template') ?>
 	<?php endif; ?>
 </div>

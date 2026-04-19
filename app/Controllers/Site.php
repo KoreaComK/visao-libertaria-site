@@ -25,93 +25,6 @@ class Site extends BaseController
 		$this->artigosModel = new ArtigosModel();
 	}
 
-	/*HOME PAGE*/
-	// public function index(): string
-	// {
-	// 	$data = array();
-	// 	$configuracaoModel = new \App\Models\ConfiguracaoModel();
-	// 	$data['config'] = array();
-	// 	$data['config']['home_banner'] = (int)$configuracaoModel->find('home_banner')['config_valor'];
-	// 	$data['config']['home_banner_mostrar'] = $configuracaoModel->find('home_banner_mostrar')['config_valor'];
-	// 	$data['config']['home_newsletter_mostrar'] = $configuracaoModel->find('home_newsletter_mostrar')['config_valor'];
-	// 	$data['config']['home_talvez_goste'] = (int)$configuracaoModel->find('home_talvez_goste')['config_valor'];
-	// 	$data['config']['home_talvez_goste_mostrar'] = $configuracaoModel->find('home_talvez_goste_mostrar')['config_valor'];
-	// 	$data['config']['home_ultimos_videos'] = (int)$configuracaoModel->find('home_ultimos_videos')['config_valor'];
-	// 	$data['config']['home_ultimos_videos_mostrar'] = $configuracaoModel->find('home_ultimos_videos_mostrar')['config_valor'];
-
-	// 	$data['colaboradores'] = $this->session->get('colaboradores');
-
-	// 	$widgets = new WidgetsSite();
-
-	// 	//$data['widgetCategorias'] = $widgets->widgetCategorias();
-	// 	$data['widgetEsteiraProducao'] = $widgets->widgetArtigosByFaseProducaoCount();
-	// 	$artigosModel = new \App\Models\ArtigosModel();
-
-	// 	$inicial = 4;
-	// 	$quantidade_artigos = $inicial;
-	// 	if($data['config']['home_banner_mostrar'] == '1') {
-	// 		$quantidade_artigos += $data['config']['home_banner'];
-	// 	}
-	// 	if($data['config']['home_ultimos_videos_mostrar'] == '1') {
-	// 		$quantidade_artigos += $data['config']['home_ultimos_videos'];
-	// 	}
-
-	// 	$artigos = $artigosModel->getArtigosHome($quantidade_artigos);
-	// 	if ($artigos === null || empty($artigos)) {
-	// 		$data['artigos'] = false;
-	// 	} else {
-	// 		$data['banner'] = [];
-	// 		$data['artigos'] = [];
-	// 		for ($i = 0; $i < count($artigos); $i++) {
-	// 			if (isset($artigos[$i]) && count($data['banner']) < ($data['config']['home_banner'])+$inicial) {
-	// 				$data['banner'][] = $artigos[$i];
-	// 			} else {
-	// 				$data['artigos'][] = $artigos[$i];
-	// 			}
-	// 		}
-	// 	}
-
-	// 	$quantidade_artigos = 0;
-	// 	if($data['config']['home_talvez_goste_mostrar'] == '1') {
-	// 		$quantidade_artigos += $data['config']['home_talvez_goste'];
-	// 	}
-	// 	$artigos = $artigosModel->getArtigosHomeRand($quantidade_artigos);
-	// 	if ($artigos === null || empty($artigos)) {
-	// 		$data['rand'] = false;
-	// 	} else {
-	// 		$data['rand'] = $artigos;
-	// 	}
-
-	// 	$data['avisos'] = false;
-	// 	$avisosModel = new \App\Models\AvisosModel();
-	// 	$avisosModel->orWhere('(fim IS NULL AND inicio IS NULL)');
-	// 	$avisosModel->orWhere('(inicio <= NOW() AND fim IS NULL)');
-	// 	$avisosModel->orWhere('(inicio IS NULL AND fim >= NOW())');
-	// 	$avisosModel->orWhere('(inicio IS NOT NULL AND fim IS NOT NULL AND NOW() BETWEEN inicio and fim)');
-
-
-
-	// 	$avisos = $avisosModel->get()->getResultArray();
-	// 	$data['avisos'] = $avisos;
-
-	// 	// Busca os últimos 7 vídeos de cada projeto
-	// 	$projetosModel = new \App\Models\ProjetosModel();
-	// 	$projetosVideosModel = new \App\Models\ProjetosVideosModel();
-
-	// 	$projetos = $projetosModel->findAll();
-	// 	$data['videos_projetos'] = [];
-
-	// 	foreach ($projetos as $projeto) {
-	// 		$videos = $projetosVideosModel->where('projetos_id', $projeto['id'])
-	// 									->orderBy('publicado', 'DESC')
-	// 									->limit(value: 7)->get()->getResultArray();
-	// 		$data['videos_projetos'][$projeto['nome']] = $videos;
-	// 	}
-
-	// 	helper('colors_helper');
-	// 	return view('home', $data);
-	// }
-
 	public function index()
 	{
 		// Buscar todos os projetos
@@ -157,6 +70,66 @@ class Site extends BaseController
 		$data['active_menu'] = 'home';
 
 		return view('_home', $data);
+	}
+
+	/**
+	 * Listagem pública de pautas/notícias (layout _main + site-public-layout.css).
+	 */
+	public function noticias(): string
+	{
+		$pautasModel = new \App\Models\PautasModel();
+		$get         = $this->request->getGet();
+		$pesquisa    = (isset($get['pesquisa']) && $get['pesquisa'] !== '') ? $get['pesquisa'] : null;
+		$pautas       = $pautasModel->getPautas(false, false, false, $pesquisa);
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$perPage           = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$data['pautasList'] = [
+			'pautas' => $pautas->paginate($perPage, 'noticias'),
+			'pager'  => $pautas->pager,
+		];
+
+		$listaSomente = $this->request->getMethod() === 'get'
+			&& (
+				isset($get['page_noticias'])
+				|| (
+					($get['partial'] ?? '') === '1'
+					&& $this->request->isAJAX()
+				)
+			);
+
+		if ($listaSomente) {
+			return view('template/templatePautasListSite', $data);
+		}
+
+		$data['config'] = [
+			'pauta_tamanho_maximo'   => $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'],
+			'pauta_tamanho_minimo'   => $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'],
+			'limite_pautas_diario'   => $configuracaoModel->find('limite_pautas_diario')['config_valor'],
+			'limite_pautas_semanal'  => $configuracaoModel->find('limite_pautas_semanal')['config_valor'],
+		];
+
+		$data['limiteDiario']  = false;
+		$data['limiteSemanal'] = false;
+		$session               = $this->session->get('colaboradores');
+		if (! empty($session['id'])) {
+			$hoje = Time::today()->toDateString();
+			$qDia = $pautasModel->getPautasPorUsuario($hoje, $session['id'])[0]['contador'] ?? 0;
+			if ($qDia >= (int) $data['config']['limite_pautas_diario']) {
+				$data['limiteDiario'] = true;
+			}
+			$desde = (new Time('-7 days'))->toDateString();
+			$qSem  = $pautasModel->getPautasPorUsuario($desde, $session['id'])[0]['contador'] ?? 0;
+			if ($qSem >= (int) $data['config']['limite_pautas_semanal']) {
+				$data['limiteSemanal'] = true;
+			}
+		}
+
+		$data['active_menu']   = 'noticias';
+		$data['colaboradores'] = $this->session->get('colaboradores');
+
+		return view('_noticias', $data);
 	}
 
 	public function videos($projeto = null)

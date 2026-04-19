@@ -1,0 +1,1063 @@
+/**
+ * Layout público (/site, /site/videos) — rosto do site (`layouts/_main`).
+ * Carregar após `public/css/style.css`. Usa `var(--primary-color)` do tema.
+ */
+@keyframes slideInUp {
+			from {
+				opacity: 0;
+				transform: translateY(50px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.banner-section .text-white>*,
+		.banner-section .d-flex.flex-column>* {
+			opacity: 0;
+		}
+
+		.owl-item.active .text-white>*,
+		.owl-item.active .d-flex.flex-column>* {
+			animation: slideInUp 0.9s ease-out forwards;
+		}
+
+		.owl-item.active .text-white h5 {
+			animation-delay: 0.4s;
+		}
+
+		.owl-item.active .text-white h1 {
+			animation-delay: 0.6s;
+		}
+
+		.owl-item.active .text-white .d-flex {
+			animation-delay: 0.8s;
+		}
+
+		.owl-item.active .text-white p:nth-of-type(1) {
+			animation-delay: 1.0s;
+		}
+
+		.owl-item.active .text-white p:nth-of-type(2) {
+			animation-delay: 1.1s;
+		}
+
+		.owl-item.active .text-white p:nth-of-type(3) {
+			animation-delay: 1.2s;
+		}
+
+		.owl-item.active .text-white .btn {
+			animation-delay: 1.4s;
+		}
+
+		.owl-item.active .d-flex.flex-column .gen-video-popup {
+			animation-delay: 1.2s;
+		}
+
+		.owl-item.active .d-flex.flex-column h4 {
+			animation-delay: 1.3s;
+		}
+
+		.owl-item .container {
+			opacity: 0;
+			padding-top: 0rem;
+		}
+
+		.owl-item.active .container {
+			animation: slideInUp 1s ease-out 0.5s;
+			animation-fill-mode: both;
+		}
+
+		#gen-header {
+			position: absolute;
+			width: 100%;
+			z-index: 999;
+		}
+
+		#gen-header .gen-bottom-header {
+			background: transparent;
+		}
+
+		.gen-account-menu {
+			display: block !important;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease, visibility 0s 0.3s;
+			pointer-events: none;
+		}
+
+		.gen-account-menu.gen-form-show {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: 0s;
+			pointer-events: auto;
+		}
+
+		/* Efeito de clique no ícone de usuário */
+		#gen-user-btn {
+			display: inline-flex;
+			/* Garante que a transformação funcione e permite flexbox */
+			align-items: center;
+			/* Centraliza verticalmente */
+			justify-content: center;
+			/* Centraliza horizontalmente */
+			transition: transform 0.2s ease;
+		}
+
+		#gen-user-btn:active {
+			transform: scale(0.9);
+			transition-duration: 0.05s;
+		}
+
+		/* Estilo para o logo e texto na navbar, igual ao loader */
+		.navbar-brand {
+			display: flex;
+			align-items: center;
+			user-select: none;
+			/* Impede a seleção */
+		}
+
+		.navbar-brand .logo {
+			border-radius: 50%;
+		}
+
+		.navbar-brand div {
+			font-size: 1.5rem;
+			/* Tamanho similar ao loader, mas ajustado para a navbar */
+			font-weight: bold;
+			color: #fff;
+			margin-left: 15px;
+		}
+
+		/* Overlay para escurecer a imagem de fundo do banner */
+		.banner-section .item {
+			position: relative;
+		}
+
+		.banner-section .item::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.9);
+			/* Overlay preto com 50% de opacidade */
+			z-index: 1;
+		}
+
+		.banner-section .item>.container {
+			position: relative;
+			z-index: 2;
+			/* Garante que o conteúdo fique na frente do overlay */
+		}
+
+		/* Classe de utilidade para usar a cor primária do tema */
+		.text-primary-color {
+			color: var(--primary-color) !important;
+		}
+
+		.btn-primary-color {
+			background-color: var(--primary-color) !important;
+			border-color: var(--primary-color) !important;
+		}
+
+		.btn-primary-color:hover {
+			background-color: #fff !important;
+			color: var(--primary-color) !important;
+		}
+
+		/* Estilos para a nova seção de carrossel de vídeos */
+		.video-carousel-section {
+			position: relative;
+			/* Necessário para posicionar os botões de navegação */
+		}
+
+		.video-carousel-section .section-title-holder {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 1.5rem;
+		}
+
+		.video-carousel-section .section-title-holder h2 {
+			color: #fff;
+			font-weight: bold;
+			margin: 0;
+		}
+
+		.video-carousel-section .movie-card .movie-card-img-container {
+			position: relative;
+			overflow: hidden;
+			border-radius: 5px;
+		}
+
+		/* Adicionado para transição suave da imagem */
+		.video-carousel-section .movie-card-img-container img {
+			transition: transform 0.4s ease;
+		}
+
+		/* Efeito de zoom na imagem ao passar o mouse */
+		.video-carousel-section .movie-card:hover .movie-card-img-container img {
+			transform: scale(1.1);
+		}
+
+		.video-carousel-section .movie-card-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			/* Overlay preto para escurecer */
+			opacity: 0;
+			transition: opacity 0.4s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.video-carousel-section .movie-card:hover .movie-card-overlay {
+			opacity: 1;
+		}
+
+		/* Ícone de Play que aparece no centro */
+		.video-carousel-section .play-icon {
+			font-size: 4rem;
+			color: white;
+			transform: scale(0.7);
+			opacity: 0;
+			transition: transform 0.3s ease 0.1s, opacity 0.3s ease 0.1s;
+		}
+
+		.video-carousel-section .movie-card:hover .play-icon {
+			transform: scale(1);
+			opacity: 1;
+		}
+
+		.video-carousel-section .movie-card-info h5 {
+			color: #fff;
+			font-size: 1.1rem;
+			margin-top: 0.75rem;
+			margin-bottom: 0.25rem;
+		}
+
+		.video-carousel-section .movie-card-info p {
+			font-size: 0.9rem;
+			color: #a0a0a0;
+		}
+
+		/* Posicionamento dos botões de navegação do carrossel */
+		.video-carousel-section .owl-nav button.owl-prev,
+		.video-carousel-section .owl-nav button.owl-next {
+			position: absolute;
+			top: 40%;
+			/* Alinha ao meio da altura da imagem */
+			transform: translateY(-50%);
+			background: rgba(0, 0, 0, 0.5) !important;
+			color: #fff !important;
+			border-radius: 50%;
+			width: 50px;
+			height: 50px;
+			transition: all 0.3s ease;
+			display: flex !important;
+			align-items: center;
+			justify-content: center;
+			padding: 0 !important;
+		}
+
+		.video-carousel-section .owl-nav button.owl-prev span,
+		.video-carousel-section .owl-nav button.owl-next span {
+			font-size: 48px;
+			line-height: 1 !important;
+			/* Reseta a altura da linha para um alinhamento preciso */
+		}
+
+		.video-carousel-section .owl-nav button.owl-prev {
+			left: -40px;
+			background: transparent !important;
+		}
+
+		.video-carousel-section .owl-nav button.owl-next {
+			right: -40px;
+			background: transparent !important;
+		}
+
+		/* Esconde o botão de navegação quando está desativado (início/fim) */
+		.video-carousel-section .owl-nav button.disabled {
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.tag-primary {
+			background-color: var(--primary-color);
+			color: #fff;
+			padding: 3px 10px;
+			border-radius: 5px;
+			font-size: 0.8rem;
+			font-weight: bold;
+		}
+
+		/* Animação de zoom para o texto 'Assista ao video' */
+		.zoom-parent {
+			cursor: pointer;
+			position: relative;
+		}
+
+		.zoom-on-hover {
+			transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+		}
+
+		.zoom-parent:hover .zoom-on-hover,
+		.zoom-on-hover:hover {
+			transform: scale(1.12) !important;
+		}
+
+		/* Animação da borda do botão de play */
+		.zoom-parent .bi-play-fill.zoom-on-hover {
+			transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+			border: 2px solid transparent;
+			border-color: #fff;
+		}
+
+		.zoom-parent:hover .bi-play-fill.zoom-on-hover,
+		.bi-play-fill.zoom-on-hover:hover {
+			box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.15);
+
+		}
+
+		/* Garante que o overlay e o popup do Magnific Popup fiquem acima de tudo */
+		.mfp-bg,
+		.mfp-wrap,
+		.mfp-container,
+		.mfp-content,
+		.mfp-ready {
+			z-index: 99999 !important;
+		}
+
+		.mfp-bg,
+		.mfp-wrap,
+		.mfp-container {
+			position: fixed !important;
+			top: 0 !important;
+			left: 0 !important;
+			width: 100vw !important;
+			height: 100vh !important;
+		}
+
+		/* Garante que os dots do OwlCarousel do slider customizado fiquem visíveis e destacados */
+		#custom-slider-owl .owl-dots {
+			position: absolute;
+			left: 40px;
+			bottom: 30px;
+			z-index: 10;
+			display: flex !important;
+			gap: 10px;
+		}
+
+		#custom-slider-owl .owl-dot span {
+			width: 32px;
+			height: 6px;
+			background: #fff;
+			border-radius: 3px;
+			display: block;
+			transition: background 0.3s;
+			opacity: 0.5;
+		}
+
+		#custom-slider-owl .owl-dot.active span {
+			background: var(--primary-color);
+			opacity: 1;
+		}
+
+		/* Centraliza os ícones de navegação do OwlCarousel em telas menores */
+		@media (max-width: 768px) {
+
+			/* Esconde completamente a seção custom-slider-section em dispositivos móveis */
+			.custom-slider-section {
+				display: none !important;
+			}
+
+			#custom-slider-owl .owl-nav {
+				width: 100% !important;
+				display: flex !important;
+				justify-content: space-between !important;
+				align-items: center !important;
+				position: absolute !important;
+				top: 50% !important;
+				left: 0 !important;
+				transform: translateY(-50%) !important;
+				padding: 0 0 !important;
+				z-index: 20 !important;
+			}
+
+			#custom-slider-owl .owl-nav button.owl-prev,
+			#custom-slider-owl .owl-nav button.owl-next {
+				position: absolute !important;
+				top: 50% !important;
+				transform: translateY(-50%) !important;
+				margin: 0 !important;
+				display: flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				width: 48px !important;
+				height: 48px !important;
+				background: rgba(0, 0, 0, 0.4) !important;
+				border-radius: 50% !important;
+				z-index: 21 !important;
+			}
+
+			#custom-slider-owl .owl-nav button.owl-prev {
+				left: 8px !important;
+				right: auto !important;
+				position: absolute !important;
+				top: 50% !important;
+				transform: translateY(-50%) !important;
+			}
+
+			#custom-slider-owl .owl-nav button.owl-next {
+				right: 8px !important;
+				left: auto !important;
+			}
+
+			#custom-slider-owl .owl-nav button span {
+				display: flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				width: 100% !important;
+				height: 100% !important;
+				font-size: 2rem !important;
+			}
+
+			#custom-slider-owl .owl-item {
+				max-width: 100vw;
+				width: 100vw !important;
+				margin: 0 !important;
+				box-sizing: border-box;
+			}
+
+			#custom-slider-owl .row.align-items-center {
+				min-height: 320px !important;
+				margin-left: 0 !important;
+				margin-right: 0 !important;
+				width: 100vw !important;
+				box-sizing: border-box;
+			}
+
+			.custom-slider-section.container,
+			.custom-slider-wrapper {
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+				margin-left: 0 !important;
+				margin-right: 0 !important;
+				width: 100vw !important;
+				max-width: 100vw !important;
+				box-sizing: border-box;
+			}
+
+			body {
+				overflow-x: hidden !important;
+			}
+		}
+
+		@media (max-width: 1024px) {
+
+			html,
+			body {
+				overflow-x: hidden !important;
+				width: 100vw !important;
+				max-width: 100vw !important;
+			}
+
+			.custom-slider-section.container,
+			.custom-slider-wrapper,
+			#custom-slider-owl,
+			#custom-slider-owl .owl-stage-outer,
+			#custom-slider-owl .owl-stage,
+			#custom-slider-owl .owl-item,
+			#custom-slider-owl .row.align-items-center {
+				width: 100vw !important;
+				max-width: 100vw !important;
+				min-width: 0 !important;
+				margin: 0 !important;
+				padding: 0 !important;
+				box-sizing: border-box !important;
+			}
+		}
+
+		/* Esconde todos os controles (setas e dots) de todos os carousels */
+		.owl-nav,
+		.owl-dots {
+			display: none !important;
+		}
+
+		/* Navbar fixa ao rolar */
+		#gen-header.fixed-navbar {
+			position: fixed !important;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			z-index: 9999;
+			box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.25);
+			animation: fadeInDown 0.4s;
+		}
+
+		@keyframes fadeInDown {
+			from {
+				transform: translateY(-40px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		/* Back to Top Button */
+		#back-to-top-btn {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			width: 50px;
+			height: 50px;
+			background: var(--primary-color);
+			color: #fff;
+			border-radius: 50%;
+			display: none;
+			/* Hidden by default */
+			justify-content: center;
+			align-items: center;
+			font-size: 1.5rem;
+			z-index: 1000;
+			cursor: pointer;
+			transition: opacity 0.3s, visibility 0.3s, background-color 0.3s;
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		#back-to-top-btn.show {
+			display: flex;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		#back-to-top-btn:hover {
+			background: #fff;
+			color: var(--primary-color);
+		}
+
+		@media (max-width: 400px) {
+			.navbar-brand div {
+				margin-left: 10px;
+				font-size: 1.0rem;
+			}
+
+			header#gen-header .gen-bottom-header .navbar .navbar-brand img {
+				height: 20px;
+			}
+		}
+
+/* --------------------------------------------------------------------------
+ * /site/videos — listagem em grade (Masonry + infinite scroll)
+ * -------------------------------------------------------------------------- */
+
+.vl-site-videos .page-load-status {
+	display: none;
+	width: 100%;
+	text-align: center;
+}
+
+.vl-site-videos .list-videos {
+	width: 100%;
+}
+
+.vl-site-videos .list-videos .col-lg-3 {
+	width: 25%;
+}
+
+.vl-site-videos .margin-top-ultra {
+	padding-top: 4.5rem !important;
+}
+
+@media (max-width: 991px) {
+	.vl-site-videos .list-videos .col-lg-3 {
+		width: 33.333%;
+	}
+
+	.vl-site-videos .margin-top-ultra {
+		padding-top: 0.5rem !important;
+	}
+}
+
+@media (max-width: 767px) {
+	.vl-site-videos .list-videos .col-lg-3 {
+		width: 50%;
+	}
+}
+
+@media (max-width: 575px) {
+	.vl-site-videos .list-videos .col-lg-3 {
+		width: 100%;
+	}
+}
+
+.vl-site-videos {
+	--vl-video-card-bg: #1a1a1a;
+	--vl-video-card-border: #333;
+	--vl-video-card-text: #fff;
+	--vl-video-card-muted: #ccc;
+}
+
+.vl-site-videos .video-card {
+	transition: transform 0.3s ease;
+	background: var(--vl-video-card-bg) !important;
+	border: 1px solid var(--vl-video-card-border) !important;
+}
+
+.vl-site-videos .video-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.vl-site-videos .video-card .card-body {
+	background: var(--vl-video-card-bg) !important;
+	color: var(--vl-video-card-text) !important;
+}
+
+.vl-site-videos .video-card .card-title {
+	color: var(--vl-video-card-text) !important;
+}
+
+.vl-site-videos .video-card .card-text {
+	color: var(--vl-video-card-muted) !important;
+}
+
+.vl-site-videos a {
+	text-decoration: none !important;
+}
+
+.vl-site-videos a:hover {
+	text-decoration: none !important;
+}
+
+/* Breadcrumb (páginas públicas que usam .custom-breadcrumb) */
+.custom-breadcrumb {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+}
+
+.custom-breadcrumb .breadcrumb {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	counter-reset: none;
+}
+
+.custom-breadcrumb .breadcrumb-item {
+	color: #666;
+	list-style: none;
+	counter-increment: none;
+}
+
+.custom-breadcrumb .breadcrumb-item::before {
+	content: none;
+}
+
+.custom-breadcrumb .breadcrumb-item::after {
+	content: none;
+}
+
+.custom-breadcrumb .breadcrumb-item a {
+	color: var(--primary-color);
+	text-decoration: none;
+}
+
+.custom-breadcrumb .breadcrumb-item.active {
+	color: #999;
+}
+
+.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+	content: ">";
+	color: #666;
+	margin: 0 8px;
+}
+
+.vl-site-videos .infinite-scroll-request {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem 0;
+	width: 100%;
+}
+
+.vl-site-videos .spinner-border {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+.vl-site-videos .video-thumbnail {
+	position: relative;
+	overflow: hidden;
+	border-radius: 8px;
+}
+
+.vl-site-videos .video-thumbnail img {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	transition: transform 0.3s ease;
+}
+
+.vl-site-videos .video-card:hover .video-thumbnail img {
+	transform: scale(1.05);
+}
+
+.vl-site-videos .play-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transition: opacity 0.4s ease;
+}
+
+.vl-site-videos .video-card:hover .play-overlay {
+	opacity: 1;
+}
+
+.vl-site-videos .video-card .play-icon {
+	font-size: 4rem;
+	color: white;
+	transform: scale(0.7);
+	opacity: 0;
+	transition: transform 0.3s ease 0.1s, opacity 0.3s ease 0.1s;
+}
+
+.vl-site-videos .video-card:hover .play-icon {
+	transform: scale(1);
+	opacity: 1;
+}
+
+.vl-site-videos .project-badge {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	background: var(--primary-color);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 0.8rem;
+	font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+ * /site/noticias — grade de pautas (Masonry + infinite scroll, rosto público)
+ * -------------------------------------------------------------------------- */
+
+.vl-site-noticias {
+	--vl-noticias-card-bg: #1a1a1a;
+	--vl-noticias-card-border: #3d3d3d;
+	--vl-noticias-card-text: #ececec;
+	--vl-noticias-card-muted: #a3a3a3;
+	--vl-noticias-card-body: #c9c9c9;
+	/* Deve coincidir com gutter do Masonry em _noticias.php (4 colunas em lg+) */
+	--vl-noticias-masonry-gutter: 16px;
+	--vl-noticias-masonry-cols: 4;
+}
+
+/* Mesmo respiro do breadcrumb que em /site/videos (.margin-top-ultra) */
+.vl-site-noticias .margin-top-ultra {
+	padding-top: 4.5rem !important;
+}
+
+@media (max-width: 991px) {
+	.vl-site-noticias .margin-top-ultra {
+		padding-top: 0.5rem !important;
+	}
+}
+
+/* Filtrar / Sugerir pauta: ouro do tema (sem hover azul do .btn-primary) */
+.vl-site-noticias .vl-noticias-btn-filtro {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+	color: #1a1408;
+	font-weight: 600;
+}
+
+.vl-site-noticias .vl-noticias-btn-filtro:hover,
+.vl-site-noticias .vl-noticias-btn-filtro:focus {
+	background-color: #d4a82a;
+	border-color: #d4a82a;
+	color: #1a1408;
+}
+
+.vl-site-noticias .vl-noticias-btn-filtro:active {
+	background-color: #a67f10;
+	border-color: #a67f10;
+	color: #1a1408;
+}
+
+.vl-site-noticias .vl-noticias-btn-filtro:focus-visible {
+	box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.45);
+}
+
+/* Mesma cor do item ativo do menu (var(--primary-color) em style.css) */
+.vl-site-noticias .vl-noticias-entrar-link {
+	color: var(--primary-color);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.vl-site-noticias .vl-noticias-entrar-link:hover,
+.vl-site-noticias .vl-noticias-entrar-link:focus {
+	color: #d4a82a;
+	text-decoration: underline;
+}
+
+/* Busca em notícias: só o input mais baixo que o .input-group-sm padrão */
+.vl-site-noticias #formFiltroNoticias .form-label {
+	margin-bottom: 0.25rem;
+	font-size: 0.875rem;
+}
+
+.vl-site-noticias #formFiltroNoticias .input-group-sm > .form-control,
+.vl-site-noticias #formFiltroNoticias .input-group-sm > .input-group-text {
+	padding: 0.15rem 0.45rem;
+	font-size: 0.8125rem;
+	line-height: 1.25;
+	min-height: 1.65rem;
+}
+
+.vl-site-noticias #formFiltroNoticias .input-group-sm > .input-group-text {
+	display: flex;
+	align-items: center;
+}
+
+/* Filtrar e Limpar: mesma largura e altura (o <a> herdava altura menor com flex + align-items-end) */
+.vl-site-noticias #formFiltroNoticias .vl-noticias-filtro-botoes > .btn,
+.vl-site-noticias #formFiltroNoticias .vl-noticias-filtro-botoes > a.btn {
+	flex: 1 1 0;
+	min-width: 0;
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.5rem;
+	padding: 0.375rem 0.75rem;
+	box-sizing: border-box;
+}
+
+.vl-site-noticias .page-load-status {
+	display: none;
+	width: 100%;
+	text-align: center;
+}
+
+.vl-site-noticias .infinite-scroll-request {
+	padding: 2rem 0;
+	width: 100%;
+}
+
+.vl-site-noticias .pautas-list .card-img-top {
+	height: 13rem;
+	object-fit: cover;
+}
+
+/* Cards da listagem: tema escuro + respiro (Masonry usa gutter no JS; margem reforça vertical) */
+.vl-site-noticias .pautas-list > .card {
+	background-color: var(--vl-noticias-card-bg) !important;
+	border: 1px solid var(--vl-noticias-card-border) !important;
+	color: var(--vl-noticias-card-text);
+	border-radius: 0.5rem;
+	overflow: hidden;
+	margin-bottom: 1rem;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/*
+ * col-lg-3 = 25% × 4 = 100%, mas o Masonry soma (cols−1)×gutter ao eixo horizontal,
+ * logo só cabiam 3 colunas. Largura efetiva = (100% − 3×gutter) / 4.
+ */
+@media (min-width: 992px) {
+	.vl-site-noticias .pautas-list.row > .card.col-lg-3 {
+		flex: 0 0
+			calc(
+				(100% - (var(--vl-noticias-masonry-cols) - 1) * var(--vl-noticias-masonry-gutter)) /
+					var(--vl-noticias-masonry-cols)
+			);
+		max-width: calc(
+			(100% - (var(--vl-noticias-masonry-cols) - 1) * var(--vl-noticias-masonry-gutter)) /
+				var(--vl-noticias-masonry-cols)
+		);
+		width: calc(
+			(100% - (var(--vl-noticias-masonry-cols) - 1) * var(--vl-noticias-masonry-gutter)) /
+				var(--vl-noticias-masonry-cols)
+		);
+	}
+}
+
+.vl-site-noticias .pautas-list > .card:hover {
+	border-color: var(--primary-color) !important;
+	box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+}
+
+.vl-site-noticias .pautas-list .card-body {
+	background-color: transparent;
+}
+
+.vl-site-noticias .pautas-list .card-title {
+	color: #fff;
+}
+
+.vl-site-noticias .pautas-list .card .text-muted,
+.vl-site-noticias .pautas-list .card .nav-divider .text-muted {
+	color: var(--vl-noticias-card-muted) !important;
+}
+
+.vl-site-noticias .pautas-list .card-text {
+	color: var(--vl-noticias-card-body);
+}
+
+.vl-site-noticias .pautas-list .card .btn-link {
+	color: var(--primary-color);
+}
+
+.vl-site-noticias .pautas-list .card .btn-link:hover {
+	color: #fff;
+}
+
+/*
+ * Ler notícia / Comentários / Escrever artigo: outlined com cor do preenchimento do Editar (.btn-warning).
+ * Usa --bs-warning (mesma base do Bootstrap para .btn-warning).
+ */
+.vl-site-noticias .pautas-list > .card a.btn-outline-success,
+.vl-site-noticias .pautas-list > .card a.btn-outline-info,
+.vl-site-noticias .pautas-list > .card a.btn-outline-primary {
+	background-color: transparent;
+	color: var(--bs-warning);
+	border-color: var(--bs-warning);
+}
+
+.vl-site-noticias .pautas-list > .card a.btn-outline-success:hover,
+.vl-site-noticias .pautas-list > .card a.btn-outline-info:hover,
+.vl-site-noticias .pautas-list > .card a.btn-outline-primary:hover,
+.vl-site-noticias .pautas-list > .card a.btn-outline-success:focus,
+.vl-site-noticias .pautas-list > .card a.btn-outline-info:focus,
+.vl-site-noticias .pautas-list > .card a.btn-outline-primary:focus {
+	background-color: rgba(var(--bs-warning-rgb), 0.14);
+	color: var(--bs-warning);
+	border-color: var(--bs-warning);
+}
+
+.vl-site-noticias .pautas-list > .card a.btn-outline-success:active,
+.vl-site-noticias .pautas-list > .card a.btn-outline-info:active,
+.vl-site-noticias .pautas-list > .card a.btn-outline-primary:active {
+	background-color: rgba(var(--bs-warning-rgb), 0.22);
+	color: var(--bs-warning);
+	border-color: var(--bs-warning);
+}
+
+/* Overlay de carregamento (AJAX) na página notícias */
+.vl-noticias-loading-overlay {
+	background-color: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Spinners (modal AJAX + infinite scroll): ouro do site, não azul Bootstrap */
+.vl-site-noticias .vl-noticias-spinner,
+.vl-noticias-loading-overlay .vl-noticias-spinner {
+	color: var(--primary-color) !important;
+}
+
+/* Modais de pauta na página pública /site/noticias (fora de .vl-site-noticias no DOM) */
+.vl-noticias-pauta-modal .modal-content {
+	background-color: #1e1e1e;
+	color: #ececec;
+}
+
+.vl-noticias-pauta-modal .modal-header,
+.vl-noticias-pauta-modal .modal-footer {
+	background-color: #1a1a1a;
+}
+
+.vl-noticias-pauta-modal .modal-body .form-control,
+.vl-noticias-pauta-modal .modal-body .form-select {
+	background-color: #2a2a2a;
+	border-color: #555;
+	color: #f0f0f0;
+}
+
+.vl-noticias-pauta-modal .modal-body .form-control:focus,
+.vl-noticias-pauta-modal .modal-body .form-select:focus {
+	background-color: #333;
+	border-color: var(--primary-color);
+	color: #fff;
+	box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.35);
+}
+
+.vl-noticias-pauta-modal .modal-body .input-group-text {
+	background-color: #2d2d2d;
+	border-color: #555;
+	color: #ddd;
+}
+
+.vl-noticias-pauta-modal .modal-body .form-text {
+	color: #9a9a9a;
+}
+
+.vl-noticias-pauta-modal .modal-body .form-label {
+	color: #e0e0e0;
+}
+
+.vl-noticias-pauta-modal .modal-body .card {
+	background-color: #252525;
+	border-color: #444;
+	color: #e8e8e8;
+}
+
+.vl-noticias-pauta-modal .modal-body .card .text-muted {
+	color: #a3a3a3 !important;
+}
+
+.vl-noticias-pauta-modal .div-comentarios,
+.vl-noticias-pauta-modal .div-list-comentarios {
+	background-color: transparent;
+	color: inherit;
+}
+
+.vl-noticias-pauta-modal .img-thumbnail {
+	background-color: #2a2a2a;
+	border-color: #555;
+}
+
+/*
+ * Bootstrap .btn-primary nos modais de pauta (ex.: comentários em /site/noticias):
+ * substitui o azul pelo ouro do site (--primary-color).
+ */
+.vl-noticias-pauta-modal .btn-primary {
+	--bs-btn-bg: var(--primary-color);
+	--bs-btn-border-color: var(--primary-color);
+	--bs-btn-color: #1a1408;
+	--bs-btn-hover-bg: #d4a82a;
+	--bs-btn-hover-border-color: #d4a82a;
+	--bs-btn-hover-color: #1a1408;
+	--bs-btn-active-bg: #a67f10;
+	--bs-btn-active-border-color: #a67f10;
+	--bs-btn-active-color: #1a1408;
+	--bs-btn-disabled-bg: #6c5a2a;
+	--bs-btn-disabled-border-color: #6c5a2a;
+	font-weight: 600;
+}
+
+.vl-noticias-pauta-modal .btn-primary:focus-visible {
+	box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.45);
+}
