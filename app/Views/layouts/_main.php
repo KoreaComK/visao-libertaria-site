@@ -4,9 +4,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<title>Visão Libertária</title>
+	<title><?= $_SESSION['site_config']['texto_nome']; ?></title>
 	<link rel="icon" type="image/x-icon"
-		href="https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj">
+		href="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
 	<!-- Favicon -->
 	<link rel="shortcut icon" href="images/favicon.png">
 	<!-- CSS bootstrap-->
@@ -74,9 +74,9 @@
 						<nav class="navbar navbar-expand-lg navbar-light">
 							<a class="navbar-brand" href="<?= site_url('site'); ?>">
 								<img class="img-fluid logo"
-									src="https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj"
-									alt="streamlab-image">
-								<div>Visão Libertária</div>
+									src="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>"
+									alt="<?= $_SESSION['site_config']['texto_nome']; ?>">
+								<div><?= $_SESSION['site_config']['texto_nome']; ?></div>
 							</a>
 							<div class="collapse navbar-collapse" id="navbarSupportedContent">
 								<div id="gen-menu-contain" class="gen-menu-contain">
