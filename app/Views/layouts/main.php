@@ -15,7 +15,9 @@
 		integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
-	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+		<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<?php endif; ?>
 
 
 	<meta property="og:type" content="website" />
@@ -324,7 +326,7 @@
 								<a class="nav-link ps-0" href="<?= site_url('site/cadastre-se'); ?>">Cadastre-se</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="<?= site_url('site/login'); ?>">Acessar</a>
+								<a class="nav-link" href="<?= site_url('site') . '?openLogin=1'; ?>">Acessar</a>
 							</li>
 						<?php endif; ?>
 						<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>

@@ -365,7 +365,7 @@ class Site extends BaseController
 				$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '1']);
 				$colaboradoresAtribuicoesModel->save(['colaboradores_id' => $gravar['id'], 'atribuicoes_id' => '2']);
 			}
-			return redirect()->to(base_url() . 'site/login');
+			return redirect()->to(site_url('site') . '?openLogin=1');
 		}
 	}
 
@@ -586,11 +586,11 @@ class Site extends BaseController
 			if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
 				$url = $get['url'];
 			}
-			$data['url'] = $url;
-			$data['email_form'] = '';
-			$data['senha_form'] = '';
-			$data['lembrar'] = '';
-			return view('login', $data);
+			$params = ['openLogin' => '1'];
+			if ($url !== false) {
+				$params['url'] = $url;
+			}
+			return redirect()->to(site_url('site') . '?' . http_build_query($params));
 		}
 	}
 
@@ -598,7 +598,7 @@ class Site extends BaseController
 	{
 		helper('cookie');
 		$this->session->remove('colaboradores');
-		$link = base_url() . 'site/login';
+		$link = base_url() . 'site';
 		$get = $this->request->getGet();
 		if (!empty($get)) {
 			$link .= '?url=' . $get['url'];
@@ -972,7 +972,8 @@ class Site extends BaseController
 		}
 		$data = array(
 			'secret' => getenv('HCAPTCHA_SECRET'),
-			'response' => $captcha_response
+			'response' => $captcha_response,
+			'remoteip' => $this->request->getIPAddress()
 		);
 		$verify = curl_init();
 		curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
@@ -982,6 +983,26 @@ class Site extends BaseController
 		$response = curl_exec($verify);
 		// var_dump($response);
 		$responseData = json_decode($response);
+		if (!$responseData || !isset($responseData->success)) {
+			return false;
+		}
+		if (!$responseData->success) {
+			$errorCodes = isset($responseData->{'error-codes'}) && is_array($responseData->{'error-codes'})
+				? $responseData->{'error-codes'}
+				: [];
+			$tokensInvalidos = [
+				'missing-input-response',
+				'invalid-input-response',
+				'expired-input-response',
+				'already-seen-response',
+			];
+			foreach ($errorCodes as $errorCode) {
+				if (in_array((string) $errorCode, $tokensInvalidos, true)) {
+					return false;
+				}
+			}
+			return false;
+		}
 		if ($responseData->success) {
 			return true;
 		} else {

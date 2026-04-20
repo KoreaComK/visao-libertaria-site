@@ -47,9 +47,11 @@
 						<textarea id="mensagem" name="mensagem" class="form-control" rows="5"
 							placeholder="Digite sua mensagem aqui."></textarea>
 					</div>
-					<div class="d-grid justify-content-center">
-						<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
-					</div>
+					<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+						<div class="d-grid justify-content-center">
+							<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+						</div>
+					<?php endif; ?>
 					<div class="d-grid gap-2">
 						<button class="btn btn-lg btn-primary btn-block btn-submeter" type="submit">Acessar</button>
 					</div>

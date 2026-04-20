@@ -15,7 +15,9 @@
 	<!--  Style -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/magnific-popup.css" />
-	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+		<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<?php endif; ?>
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/style.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/site-public-layout.css'); ?>">
 	<style>
@@ -338,9 +340,11 @@
 							<div>
 								<input type="password" id="header-login-senha" name="senha" class="form-control" placeholder="Senha" required>
 							</div>
-							<div class="d-flex justify-content-center">
-								<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
-							</div>
+							<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+								<div class="d-flex justify-content-center">
+									<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+								</div>
+							<?php endif; ?>
 							<div class="form-check">
 								<input type="checkbox" id="header-login-lembrar" name="lembrar" class="form-check-input" value="lembrar">
 								<label class="form-check-label" for="header-login-lembrar">Lembre-se de mim</label>
@@ -488,6 +492,22 @@
 
 	<script>
 		$(document).ready(function () {
+			var qs = new URLSearchParams(window.location.search);
+			var deveAbrirLogin = qs.get('openLogin') === '1' || qs.has('url');
+			if (deveAbrirLogin) {
+				var loginModalEl = document.getElementById('header-login-modal');
+				if (loginModalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+					bootstrap.Modal.getOrCreateInstance(loginModalEl).show();
+				}
+
+				if (qs.has('openLogin')) {
+					qs.delete('openLogin');
+					var novaQuery = qs.toString();
+					var novaUrl = window.location.pathname + (novaQuery ? ('?' + novaQuery) : '') + window.location.hash;
+					window.history.replaceState({}, '', novaUrl);
+				}
+			}
+
 			// --- User Account Menu Toggle ---
 			$('.gen-account-holder:not(.gen-account-holder-login) #gen-user-btn').on('click', function (e) {
 				e.stopPropagation();
@@ -523,6 +543,11 @@
 						if (retorno.status === true) {
 							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 							setTimeout(function () {
+								var urlDestino = qs.get('url');
+								if (urlDestino && urlDestino.indexOf('<?= site_url(); ?>') === 0) {
+									window.location.href = urlDestino;
+									return;
+								}
 								window.location.href = '<?= base_url('colaboradores/perfil'); ?>';
 							}, 1000);
 						} else {

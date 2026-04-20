@@ -94,9 +94,11 @@
 									</div>
 								</div>
 
-								<div class="d-flex justify-content-center mt-4">
-									<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
-								</div>
+								<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+									<div class="d-flex justify-content-center mt-4">
+										<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+									</div>
+								<?php endif; ?>
 
 								<div class="d-grid mt-4">
 									<button class="btn vl-noticias-btn-filtro btn-submeter" type="button">Cadastrar</button>

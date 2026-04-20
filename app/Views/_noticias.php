@@ -120,7 +120,7 @@
 		<?php else: ?>
 			<p class="text-center text-white-50 small mb-4">
 				Quer sugerir uma pauta ou colaborar?
-				<a href="<?= site_url('site/login'); ?>" class="vl-noticias-entrar-link">Entrar</a>
+				<a href="<?= site_url('site') . '?openLogin=1'; ?>" class="vl-noticias-entrar-link">Entrar</a>
 			</p>
 		<?php endif; ?>
 
