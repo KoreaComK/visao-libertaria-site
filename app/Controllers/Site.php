@@ -648,12 +648,13 @@ class Site extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
-		if (($this->session->has('colaboradores'))) {
+		$data['email'] = '';
+		if ($this->session->has('colaboradores')) {
 			$data['email'] = $this->session->get('colaboradores')['email'];
 		}
 		$contatosAssuntosModel = new \App\Models\ContatosAssuntosModel();
 		$data['assuntos'] = $contatosAssuntosModel->findAll();
-		return view('contato', $data);
+		return view('_contato', $data);
 	}
 
 	public function pagina($url = NULL)
@@ -905,7 +906,7 @@ class Site extends BaseController
 	public function links(): string
 	{
 		$data = array();
-		return view('links', $data);
+		return view('_links', $data);
 	}
 
 	/**

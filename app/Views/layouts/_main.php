@@ -213,7 +213,7 @@
 			status: TOAST_STATUS.SUCCESS,
 			timeout: 3000
 		};
-		Toast.setTheme(TOAST_THEME.LIGHT);
+		Toast.setTheme(TOAST_THEME.DARK);
 		Toast.enableTimers(TOAST_TIMERS.DISABLED);
 		Toast.setMaxCount(10);
 		Toast.enableQueue(true);
@@ -340,9 +340,11 @@
 							<div>
 								<input type="password" id="header-login-senha" name="senha" class="form-control" placeholder="Senha" required>
 							</div>
-							<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+							<?php
+							$hcSiteKey = config('Hcaptcha')->siteKey ?? '';
+							if (getenv('CI_ENVIRONMENT') !== 'development' && $hcSiteKey !== ''): ?>
 								<div class="d-flex justify-content-center">
-									<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+									<div class="h-captcha" data-sitekey="<?= esc($hcSiteKey, 'attr'); ?>"></div>
 								</div>
 							<?php endif; ?>
 							<div class="form-check">

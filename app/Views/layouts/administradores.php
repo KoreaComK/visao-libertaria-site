@@ -298,9 +298,9 @@
 										class="fas fa-user-group"></i> Colaboradores</a>
 									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuAdministracaoConfiguracao">
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/admin/permissoes'); ?>">Colaboradores cadastrados</a> </li>
+												href="<?= site_url('colaboradores/admin/permissoes'); ?>">Colaboradores</a> </li>
 										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/admin/contatos'); ?>">Contatos</a>
+												href="<?= site_url('colaboradores/admin/contatos'); ?>">Mensagens de contato</a>
 										</li>
 									</ul>
 								</li>

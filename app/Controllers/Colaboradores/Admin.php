@@ -219,27 +219,53 @@ class Admin extends BaseController
 		$data['dados'] = $contatos;
 		$data['assuntos'] = $contatosAssuntosModel->findAll();
 		$data['titulo'] = "Contatos feitos via formulário do site";
-		return view('colaboradores/administracao_contatos_list', $data);
+		return view('colaboradores/administracao_contatos', $data);
 	}
 
-	public function contato($id)
+	/**
+	 * Dados de um contacto para resposta na modal (AJAX JSON).
+	 */
+	public function contatoDetalhe($id)
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
-		$contatosModel = new \App\Models\ContatosModel();
-		$contatosAssuntosModel = new  \App\Models\ContatosAssuntosModel();
-
-		$contatosModel->select("contatos.*, contatos_assuntos.assunto, colaboradores.apelido");
-		$contatosModel->join('colaboradores','colaboradores.email = contatos.email','left');
-		$contatosModel->join('contatos_assuntos','contatos.contatos_assuntos_id = contatos_assuntos.id');
-		$contatosModel->where('contatos.id',$id);
-		$contato = $contatosModel->get()->getResultArray();
-		if(empty($contato)) {
-			return redirect()->to(base_url() . 'colaboradores/admin/contatos');
+		if (!$this->request->isAJAX()) {
+			return $this->response->setStatusCode(400)->setJSON([
+				'status' => false,
+				'mensagem' => 'Ação só possível via AJAX.',
+			]);
 		}
-		$data = array();
-		$data['dados'] = $contato[0];
-		$data['titulo'] = 'Contato feito pelo formulário do site';
-		return view('colaboradores/administracao_contatos_form', $data);
+
+		$contatosModel = new \App\Models\ContatosModel();
+		$contatosModel->select('contatos.*, contatos_assuntos.assunto, colaboradores.apelido');
+		$contatosModel->join('colaboradores', 'colaboradores.email = contatos.email', 'left');
+		$contatosModel->join('contatos_assuntos', 'contatos.contatos_assuntos_id = contatos_assuntos.id');
+		$contatosModel->where('contatos.id', $id);
+		$contato = $contatosModel->get()->getResultArray();
+		if ($contato === []) {
+			return $this->response->setStatusCode(404)->setJSON([
+				'status' => false,
+				'mensagem' => 'Contato não encontrado.',
+			]);
+		}
+
+		$row = $contato[0];
+		$descricao = (string) ($row['descricao'] ?? '');
+		$descricao = html_entity_decode($descricao, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$descricao = preg_replace('/<\s*br\s*\/?>/i', "\n", $descricao);
+		$descricao = strip_tags($descricao);
+
+		return $this->response->setJSON([
+			'status' => true,
+			'contato' => [
+				'id' => $row['id'],
+				'assunto' => $row['assunto'] ?? '',
+				'email' => $row['email'] ?? '',
+				'apelido' => $row['apelido'] ?? null,
+				'descricao' => $descricao,
+				'resposta' => $row['resposta'] ?? '',
+				'criado' => $row['criado'] ?? '',
+			],
+		]);
 	}
 
 	public function contatoResposta($id)
@@ -248,18 +274,26 @@ class Admin extends BaseController
 		$contatosModel = new \App\Models\ContatosModel();
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$contato = $contatosModel->find($id);
-		if($contato == NULL) {
+		if ($contato == null) {
+			if ($this->request->isAJAX()) {
+				return $retorno->retorno(false, 'Contato não encontrado.', true);
+			}
+
 			return redirect()->to(base_url() . 'colaboradores/admin/contatos');
 		}
 		if ($this->request->getMethod() == 'post') {
 			$post = service('request')->getPost();
 		}
 		if ($this->request->getMethod() == 'post') {
-			$contatosModel->update($contato['id'], array('resposta' => $post['resposta']));
+			$respostaTexto = trim((string) ($post['resposta'] ?? ''));
+			if ($respostaTexto === '') {
+				return $retorno->retorno(false, 'Resposta não informada.', true);
+			}
+			$contatosModel->update($contato['id'], array('resposta' => $respostaTexto));
 			$config = array();
 			$contato_email = $contato['email'];
 			$enviaEmail = new \App\Libraries\EnviaEmail();
-			$enviaEmail->enviaEmail($contato_email, 'Re: CONTATO ANCAPSU - VISÃO LIBERTÁRIA', $enviaEmail->getMensagemRepostaContato($contato['descricao'],$post['resposta']));
+			$enviaEmail->enviaEmail($contato_email, 'Re: CONTATO ANCAPSU - VISÃO LIBERTÁRIA', $enviaEmail->getMensagemRepostaContato($contato['descricao'], $respostaTexto));
 			return $retorno->retorno(true, 'Contato respondido com sucesso.', true);
 		}
 		return $retorno->retorno(false, 'Erro ao cadastrar a resposta.', true);
@@ -288,10 +322,20 @@ class Admin extends BaseController
 			if(!empty($get['status'])) {
 				$contatosModel->where(($get['status']=='NR')?('resposta IS NULL'):('resposta IS NOT NULL'));
 			}
-			
+
+			$contatosModel->orderBy('contatos.criado', 'DESC');
+
+			$contatos = $contatosModel->paginate($config['site_quantidade_listagem'], 'contatos');
+			$pager = $contatosModel->pager;
+			$totalRegistros = is_array($contatos) ? count($contatos) : 0;
+			if ($pager !== null && method_exists($pager, 'getTotal')) {
+				$totalRegistros = (int) $pager->getTotal('contatos');
+			}
+
 			$data['contatosList'] = [
-				'contatos' => $contatosModel->paginate($config['site_quantidade_listagem'], 'contatos'),
-				'pager' => $contatosModel->pager
+				'contatos' => $contatos,
+				'pager' => $pager,
+				'total' => $totalRegistros,
 			];
 		}
 		return view('template/templateContatosList', $data);
@@ -319,6 +363,62 @@ class Admin extends BaseController
 		} else {
 			return $retorno->retorno(false, 'Houve um erro ao excluir a contato.', true);
 		}
+	}
+
+	/**
+	 * Exclusão em lote (AJAX POST JSON: { "ids": ["uuid", ...] }).
+	 */
+	public function contatosExcluirLote()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+		if (strtolower($this->request->getMethod()) !== 'post') {
+			return $retorno->retorno(false, 'Método inválido.', true);
+		}
+
+		$payload = $this->request->getJSON(true);
+		if (!is_array($payload)) {
+			$payload = [];
+		}
+		$ids = $payload['ids'] ?? [];
+		if (!is_array($ids) || $ids === []) {
+			return $retorno->retorno(false, 'Nenhum contato selecionado.', true);
+		}
+
+		$ids = array_values(array_unique(array_filter(array_map('trim', $ids))));
+		if ($ids === []) {
+			return $retorno->retorno(false, 'Nenhum contato selecionado.', true);
+		}
+		if (count($ids) > 100) {
+			return $retorno->retorno(false, 'Máximo de 100 contactos por operação.', true);
+		}
+
+		$uuidRe = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
+		$contatosModel = new \App\Models\ContatosModel();
+		$deleted = 0;
+		foreach ($ids as $id) {
+			if (!preg_match($uuidRe, $id)) {
+				continue;
+			}
+			$row = $contatosModel->find($id);
+			if ($row !== null && $contatosModel->delete($id) === true) {
+				$deleted++;
+			}
+		}
+
+		if ($deleted === 0) {
+			return $retorno->retorno(false, 'Nenhum contacto válido foi excluído.', true);
+		}
+
+		$msg = $deleted === 1
+			? '1 contacto excluído com sucesso.'
+			: ($deleted . ' contactos excluídos com sucesso.');
+
+		return $retorno->retorno(true, $msg, true);
 	}
 
 	public function layout()

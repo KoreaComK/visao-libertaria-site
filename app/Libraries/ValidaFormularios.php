@@ -55,7 +55,7 @@ class ValidaFormularios extends BaseController
 			],
 			'mensagem' => [
 				'label' => 'Mensagem',
-				'rules' => 'required'
+				'rules' => 'required|max_length[1000]'
 			],
 		]);
 		if($bloqueio !== false) {
@@ -70,7 +70,7 @@ class ValidaFormularios extends BaseController
 				],
 				'mensagem' => [
 					'label' => 'Mensagem',
-					'rules' => 'required'
+					'rules' => 'required|max_length[1000]'
 				],
 				'redesocial' => [
 					'label' => 'Rede social',

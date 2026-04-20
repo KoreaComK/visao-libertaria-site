@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/_main'); ?>
 
 <?= $this->section('content'); ?>
+<?php $hcSiteKey = config('Hcaptcha')->siteKey ?? ''; ?>
 
 <style>
 	.vl-auth-input::placeholder {
@@ -16,9 +17,6 @@
 		color: #a9adb3 !important;
 	}
 </style>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
 
 <div class="container-fluid py-3 vl-site-noticias">
 	<div class="container">
@@ -94,9 +92,9 @@
 									</div>
 								</div>
 
-								<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
+								<?php if (getenv('CI_ENVIRONMENT') !== 'development' && $hcSiteKey !== ''): ?>
 									<div class="d-flex justify-content-center mt-4">
-										<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+										<div class="h-captcha" data-sitekey="<?= esc($hcSiteKey, 'attr'); ?>"></div>
 									</div>
 								<?php endif; ?>
 
@@ -113,27 +111,6 @@
 </div>
 
 <script>
-	if (typeof popMessage !== 'function') {
-		window.__vlToast = {
-			title: '',
-			message: '',
-			status: TOAST_STATUS.SUCCESS,
-			timeout: 3000
-		};
-
-		Toast.setTheme(TOAST_THEME.LIGHT);
-		Toast.enableTimers(TOAST_TIMERS.DISABLED);
-		Toast.setMaxCount(10);
-		Toast.enableQueue(true);
-
-		window.popMessage = function (titulo, mensagem, status) {
-			window.__vlToast.message = mensagem;
-			window.__vlToast.title = titulo;
-			window.__vlToast.status = status;
-			Toast.create(window.__vlToast);
-		};
-	}
-
 	$('.btn-submeter').on('click', function () {
 		$.ajax({
 			type: 'POST',
