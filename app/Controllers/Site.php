@@ -319,7 +319,7 @@ class Site extends BaseController
 
 			$valida = $validaFormularios->validaFormularioCadastroColaborador($post);
 			if (empty($valida->getErrors())) {
-				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+				if (!$this->verificaCaptcha($post['h-captcha-response'] ?? null)) {
 					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
 					$colaboradoresModel = new \App\Models\ColaboradoresModel();
@@ -386,7 +386,7 @@ class Site extends BaseController
 					if ($colaborador['excluido'] != NULL) {
 						return $retorno->retorno(false, 'Esta conta está excluída e é impossível acessá-la novamente.', true);
 					}
-					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'] ?? null)) {
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					} else {
 						$gravar = array();
@@ -409,7 +409,7 @@ class Site extends BaseController
 			if ($hash != null) {
 				$valida = $validaFormularios->validaFormularioEsqueciSenhaSenhaColaborador($post);
 				if (empty($valida->getErrors())) {
-					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'] ?? null)) {
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					} else {
 						$colaboradoresModel = new \App\Models\ColaboradoresModel();
@@ -519,7 +519,7 @@ class Site extends BaseController
 					if (empty($colaboradoresAtribuicoes)) {
 						return $retorno->retorno(false, 'Atenção! Você não possui nenhuma atribuição. Acesso negado.', true);
 					}
-					if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+					if (!$this->verificaCaptcha($post['h-captcha-response'] ?? null)) {
 						return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 					}
 
@@ -567,21 +567,17 @@ class Site extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		} else {
-			$this->session->remove('colaboradores');
-
-			if (get_cookie('hash') !== null) {
-				$retorno = $this->logar_cookie();
-				$get = service('request')->getGet();
-				$url = 'colaboradores/perfil';
-				if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
-					$url = $get['url'];
-				}
-				if ($retorno) {
-					return redirect()->to($url);
-				}
+			$get = service('request')->getGet();
+			$urlDestino = 'colaboradores/perfil';
+			if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
+				$urlDestino = $get['url'];
 			}
 
-			$get = service('request')->getGet();
+			$colaboradorSession = $this->session->get('colaboradores');
+			if (is_array($colaboradorSession) && !empty($colaboradorSession['id'])) {
+				return redirect()->to($urlDestino);
+			}
+
 			$url = false;
 			if (!empty($get) && isset($get['url']) && str_contains($get['url'], site_url())) {
 				$url = $get['url'];
@@ -623,7 +619,7 @@ class Site extends BaseController
 			}
 			$valida = $validaFormularios->validaFormularioContato($post, $bloqueio);
 			if (empty($valida->getErrors())) {
-				if (!$this->verificaCaptcha($post['h-captcha-response'])) {
+				if (!$this->verificaCaptcha($post['h-captcha-response'] ?? null)) {
 					return $retorno->retorno(false, 'Você não resolveu corretamente o Captcha.', true);
 				} else {
 					$contatosModel = new \App\Models\ContatosModel();

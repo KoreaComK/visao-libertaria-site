@@ -624,6 +624,7 @@ class Admin extends BaseController
 
 	public function pagamentosList()
 	{
+		$this->verificaPermissao->PermiteAcesso('7');
 		$pagamentosModel = new \App\Models\PagamentosModel();
 		$pagamentos = $pagamentosModel->getPagamentos();
 
@@ -664,6 +665,7 @@ class Admin extends BaseController
 
 	public function geraUrlAmigavel()
 	{
+		$this->verificaPermissao->PermiteAcesso('7');
 		$post = $this->request->getPost();
 		helper('url_friendly');
 		$urlamigavel = url_friendly($post['titulo']);

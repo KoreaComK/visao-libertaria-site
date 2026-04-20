@@ -153,6 +153,7 @@ class Artigos extends BaseController
 
 	public function artigosTextoHistorico($idArtigoHistorico = NULL)
 	{
+		$this->verificaPermissao->PermiteAcesso('2');
 		$retorno = new \App\Libraries\RetornoPadrao();
 		if (!$this->request->isAJAX()) {
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
@@ -169,6 +170,7 @@ class Artigos extends BaseController
 
 	public function historicos($artigoId = NULL)
 	{
+		$this->verificaPermissao->PermiteAcesso('2');
 		if ($artigoId === NULL) {
 			return '';
 		}
@@ -192,6 +194,7 @@ class Artigos extends BaseController
 
 	public function artigosTextoHistoricosList($artigoId = NULL)
 	{
+		$this->verificaPermissao->PermiteAcesso('2');
 		if ($artigoId === NULL) {
 			return '';
 		}
@@ -616,6 +619,7 @@ class Artigos extends BaseController
 	 */
 	public function contarPalavrasTexto()
 	{
+		$this->verificaPermissao->PermiteAcesso(array('1', '2'));
 		if (!$this->session->has('colaboradores')) {
 			return $this->response->setStatusCode(401)->setJSON([
 				'status'   => false,
@@ -1085,6 +1089,7 @@ class Artigos extends BaseController
 
 	public function buscaArtigoJSON($artigoId = NULL)
 	{
+		$this->verificaPermissao->PermiteAcesso('2');
 		$retorno = new \App\Libraries\RetornoPadrao();
 
 		$artigosModel = new \App\Models\ArtigosModel();
@@ -1109,6 +1114,7 @@ class Artigos extends BaseController
 
 	public function marcar($idArtigo)
 	{
+		$this->verificaPermissao->PermiteAcesso(array('3', '4', '5', '6'));
 		$retorno = new \App\Libraries\RetornoPadrao();
 		if ($this->request->isAJAX()) {
 			$artigosModel = new \App\Models\ArtigosModel();
@@ -1151,6 +1157,7 @@ class Artigos extends BaseController
 
 	public function desmarcar($idArtigo)
 	{
+		$this->verificaPermissao->PermiteAcesso(array('3', '4', '5', '6', '7'));
 		$retorno = new \App\Libraries\RetornoPadrao();
 		if ($this->request->isAJAX()) {
 			$artigosModel = new \App\Models\ArtigosModel();
@@ -1458,6 +1465,7 @@ class Artigos extends BaseController
 
 	public function comentarios($idArtigo)
 	{
+		$this->verificaPermissao->PermiteAcesso(array('2'));
 		$artigosComentariosModel = new \App\Models\ArtigosComentariosModel();
 		if ($this->request->getMethod() == 'post') {
 			$retorno = new \App\Libraries\RetornoPadrao();

@@ -11,9 +11,11 @@ use CodeIgniter\I18n\Time;
 class Pautas extends BaseController
 {
 	protected $colaboradoresNotificacoes;
+	public $verificaPermissao;
 	function __construct()
 	{
 		$this->colaboradoresNotificacoes = new ColaboradoresNotificacoes();
+		$this->verificaPermissao = new verificaPermissao();
 	}
 
 	public function verificaPautaCadastrada()
@@ -408,6 +410,7 @@ class Pautas extends BaseController
 
 	public function comentarios($idPauta)
 	{
+		$this->verificaPermissao->PermiteAcesso(array('1'));
 		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
 		if ($this->request->getMethod() == 'post') {
 			$retorno = new \App\Libraries\RetornoPadrao();
