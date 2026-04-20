@@ -88,7 +88,7 @@
                <h2 class="fw-bold text-white" style="font-size: 3rem;">ESCREVA E GANHE SATOSHINHOS</h2>
                <p class="text-white-50 mb-4 mt-4" style="max-width: 700px;">Transforme seus artigos em vídeos no Visão
                   Libertária e ganhe satoshinhos por isso!</p>
-            <a href="<?= site_url('site/cadastrar'); ?>" class="custom-slider-btn"
+            <a href="<?= site_url('site/cadastre-se'); ?>" class="custom-slider-btn"
                   style="background: var(--primary-color); color: #fff; padding: 16px 32px; font-weight: bold; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem; display: inline-block; transition: background 0.2s;">CADASTRE-SE
                   AGORA</a>
             </div>
@@ -104,7 +104,7 @@
                <h2 class="fw-bold text-white" style="font-size: 3rem;">SUGIRA PAUTAS</h2>
                <p class="text-white-50 mb-4 mt-4" style="max-width: 600px;">Faça seu cadastro e veja seu apelido sendo
                   falado nos vídeos do Peter</p>
-            <a href="<?= site_url('site/cadastrar'); ?>" class="custom-slider-btn"
+            <a href="<?= site_url('site/cadastre-se'); ?>" class="custom-slider-btn"
                   style="background: var(--primary-color); color: #fff; padding: 16px 32px; font-weight: bold; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem; display: inline-block; transition: background 0.2s;">FAZER
                   CADASTRO</a>
             </div>

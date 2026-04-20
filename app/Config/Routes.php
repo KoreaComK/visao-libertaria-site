@@ -32,6 +32,9 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Site::index');
 $routes->get('links', 'Site::links');
 $routes->get('site/noticias', 'Site::noticias');
+$routes->match(['get', 'post'], 'site/cadastre-se', 'Site::cadastrar');
+$routes->match(['get', 'post'], 'site/esqueci-senha', 'Site::esqueci');
+$routes->match(['get', 'post'], 'site/esqueci-senha/(:any)', 'Site::esqueci/$1');
 $routes->get('colaboradores/pautas', static fn () => redirect()->to(site_url('site/noticias')));
 
 /*

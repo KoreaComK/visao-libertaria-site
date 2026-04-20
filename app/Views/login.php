@@ -42,7 +42,7 @@
 				<button class="btn btn-lg btn-primary btn-block" type="submit">Acessar</button>
 			</div>
 			<div class="col-12 mt-3 mb-3">
-				<a href="<?= site_url('site/esqueci'); ?>">Esqueci minha senha</a>
+				<a href="<?= site_url('site/esqueci-senha'); ?>">Esqueci minha senha</a>
 			</div>
 		</form>
 	</div>

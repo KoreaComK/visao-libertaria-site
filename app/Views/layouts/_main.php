@@ -15,8 +15,144 @@
 	<!--  Style -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/magnific-popup.css" />
+	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/style.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/site-public-layout.css'); ?>">
+	<style>
+		body,
+		p,
+		a,
+		li,
+		span,
+		div,
+		label,
+		input,
+		textarea,
+		select,
+		button {
+			font-family: 'Jost', sans-serif;
+		}
+
+		#header-login-modal .modal-content {
+			background-color: #1f1f1f;
+			border: 1px solid #3a3a3a;
+			color: #f1f1f1;
+		}
+
+		#header-login-modal .modal-header,
+		#header-login-modal .modal-footer {
+			border-color: #3a3a3a;
+		}
+
+		#header-login-form {
+			display: flex;
+			flex-direction: column;
+			row-gap: 1rem;
+		}
+
+		#header-login-form .form-control {
+			height: 44px;
+			line-height: 44px;
+			padding: 0 12px;
+			background-color: #2a2a2a;
+			border-color: #555;
+			color: #f0f0f0;
+		}
+
+		#header-login-form .form-control::placeholder {
+			color: #b8b8b8;
+			opacity: 1;
+		}
+
+		#header-login-form .form-control:focus {
+			background-color: #333;
+			border-color: var(--primary-color);
+			color: #fff;
+			box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.35);
+		}
+
+		#header-login-form .form-check-input {
+			width: 1rem;
+			height: 1.25rem;
+			min-height: 1.25rem;
+			margin-top: 0.2rem;
+			margin-right: 0.5rem;
+			float: none;
+			vertical-align: middle;
+			line-height: normal;
+			padding: 0;
+		}
+
+		#header-login-form .form-check-input:checked {
+			background-color: var(--primary-color);
+			border-color: var(--primary-color);
+		}
+
+		#header-login-form .form-check-input:focus {
+			border-color: var(--primary-color);
+			box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.35);
+		}
+
+		#header-login-form .form-check {
+			display: flex;
+			align-items: center;
+			gap: 0.35rem;
+		}
+
+		#header-login-form .form-check-label {
+			margin-bottom: 0;
+			line-height: 1.2;
+		}
+
+		#header-login-form .h-captcha {
+			max-width: 100%;
+		}
+
+		#header-login-form .gen-login-links a {
+			font-size: 0.9rem;
+			text-decoration: none;
+		}
+
+		#header-login-form .btn-primary {
+			--bs-btn-bg: var(--primary-color);
+			--bs-btn-border-color: var(--primary-color);
+			--bs-btn-color: #1a1408;
+			--bs-btn-hover-bg: #d4a82a;
+			--bs-btn-hover-border-color: #d4a82a;
+			--bs-btn-hover-color: #1a1408;
+			--bs-btn-active-bg: #a67f10;
+			--bs-btn-active-border-color: #a67f10;
+			--bs-btn-active-color: #1a1408;
+		}
+
+		#gen-user-btn-login.vl-access-button-outline {
+			background: transparent !important;
+			border: 1px solid var(--primary-color) !important;
+			color: var(--primary-color) !important;
+		}
+
+		#gen-user-btn-login.vl-access-button-outline .gen-button-block {
+			background: transparent !important;
+		}
+
+		#gen-user-btn-login.vl-access-button-outline .gen-button-text {
+			color: var(--primary-color) !important;
+		}
+
+		#gen-user-btn-login.vl-access-button-outline .gen-button-line-left {
+			background: var(--primary-color);
+		}
+
+		#gen-user-btn-login.vl-access-button-outline:hover {
+			background: rgba(185, 141, 19, 0.14) !important;
+			color: var(--primary-color) !important;
+		}
+
+		#header-login-form .gen-login-links {
+			margin-top: 1.5rem;
+			justify-content: flex-end;
+		}
+	</style>
 
 	<!-- 1. jQuery (DEVE SER O PRIMEIRO) -->
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -65,6 +201,27 @@
 
 <body>
 	<?= view('components/_loader'); ?>
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
+	<script>
+		let toast = {
+			title: '',
+			message: '',
+			status: TOAST_STATUS.SUCCESS,
+			timeout: 3000
+		};
+		Toast.setTheme(TOAST_THEME.LIGHT);
+		Toast.enableTimers(TOAST_TIMERS.DISABLED);
+		Toast.setMaxCount(10);
+		Toast.enableQueue(true);
+		function popMessage(titulo, mensagem, status) {
+			toast.message = mensagem;
+			toast.title = titulo;
+			toast.status = status;
+			Toast.create(toast);
+		}
+	</script>
 
 	<header id="gen-header" class="gen-header-style-1 gen-has-sticky">
 		<div class="gen-bottom-header">
@@ -81,10 +238,10 @@
 							<div class="collapse navbar-collapse" id="navbarSupportedContent">
 								<div id="gen-menu-contain" class="gen-menu-contain">
 									<ul id="gen-main-menu" class="navbar-nav ms-auto">
-										<li class="menu-item <?= $active_menu === 'home' ? 'active' : ''; ?>">
+										<li class="menu-item <?= ($active_menu ?? '') === 'home' ? 'active' : ''; ?>">
 											<a href="<?= site_url('/'); ?>">Home</a>
 										</li>
-										<li class="menu-item <?= $active_menu === 'videos' ? 'active' : ''; ?>">
+										<li class="menu-item <?= ($active_menu ?? '') === 'videos' ? 'active' : ''; ?>">
 											<a href="<?= site_url('site/videos'); ?>">Vídeos</a>
 										</li>
 										<li class="menu-item <?= ($active_menu ?? '') === 'noticias' ? 'active' : ''; ?>">
@@ -105,18 +262,14 @@
 							</div>
 							<div class="gen-header-info-box">
 								<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
-									<div class="gen-account-holder">
-										<a href="javascript:void(0)" id="gen-user-btn"><i class="bi bi-person-fill"
-												style="font-size: 2.5rem;"></i></a>
-										<div class="gen-account-menu">
-											<ul class="gen-account-menu">
-												<li>
-													<a href="<?= site_url('site/login'); ?>"><i
-															class="bi bi-box-arrow-in-right"></i>
-														login </a>
-												</li>
-											</ul>
-										</div>
+									<div class="gen-account-holder gen-account-holder-login">
+										<a href="javascript:void(0)" id="gen-user-btn-login" data-bs-toggle="modal"
+											data-bs-target="#header-login-modal" class="gen-button vl-access-button-outline">
+											<div class="gen-button-block">
+												<span class="gen-button-line-left"></span>
+												<span class="gen-button-text">Acessar</span>
+											</div>
+										</a>
 									</div>
 								<?php endif; ?>
 								<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>
@@ -146,7 +299,7 @@
 								<?php endif; ?>
 								<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
 									<div class="gen-btn-container">
-										<a href="<?= site_url('site/cadastrar'); ?>" class="gen-button">
+										<a href="<?= site_url('site/cadastre-se'); ?>" class="gen-button">
 											<div class="gen-button-block">
 												<span class="gen-button-line-left"></span>
 												<span class="gen-button-text">Cadastre-se</span>
@@ -168,6 +321,42 @@
 	</header>
 
 	<?= $this->renderSection('content'); ?>
+
+	<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
+		<div class="modal fade" id="header-login-modal" tabindex="-1" aria-labelledby="header-login-modal-label" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="header-login-modal-label">Acesse sua conta</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+					</div>
+					<div class="modal-body">
+						<form id="header-login-form" method="post" autocomplete="on">
+							<div>
+								<input type="email" id="header-login-email" name="email" class="form-control" placeholder="E-mail" required>
+							</div>
+							<div>
+								<input type="password" id="header-login-senha" name="senha" class="form-control" placeholder="Senha" required>
+							</div>
+							<div class="d-flex justify-content-center">
+								<div class="h-captcha" data-sitekey="f70c594b-cc97-4440-980b-6b506509df17"></div>
+							</div>
+							<div class="form-check">
+								<input type="checkbox" id="header-login-lembrar" name="lembrar" class="form-check-input" value="lembrar">
+								<label class="form-check-label" for="header-login-lembrar">Lembre-se de mim</label>
+							</div>
+							<div class="d-grid">
+								<button class="btn btn-primary" type="submit">Acessar</button>
+							</div>
+							<div class="d-flex justify-content-end gen-login-links">
+								<a href="<?= site_url('site/esqueci-senha'); ?>">Esqueci minha senha</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	<?php endif; ?>
 
 	<footer class="pb-0">
 		<div class="container">
@@ -300,7 +489,7 @@
 	<script>
 		$(document).ready(function () {
 			// --- User Account Menu Toggle ---
-			$('#gen-user-btn').on('click', function (e) {
+			$('.gen-account-holder:not(.gen-account-holder-login) #gen-user-btn').on('click', function (e) {
 				e.stopPropagation();
 				var menu = $('.gen-account-menu');
 
@@ -320,6 +509,27 @@
 						menu.removeClass('gen-form-show');
 					}
 				}
+			});
+
+			$(document).on('submit', '#header-login-form', function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: 'POST',
+					async: false,
+					url: '<?= base_url() . 'site/login'; ?>',
+					data: $(this).serialize(),
+					dataType: 'json',
+					success: function (retorno) {
+						if (retorno.status === true) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							setTimeout(function () {
+								window.location.href = '<?= base_url('colaboradores/perfil'); ?>';
+							}, 1000);
+						} else {
+							popMessage('ATENCAO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					}
+				});
 			});
 			// --- Fim do script do menu de usuário ---
 

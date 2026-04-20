@@ -321,7 +321,7 @@
 					<ul class="nav">
 						<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
 							<li class="nav-item">
-								<a class="nav-link ps-0" href="<?= site_url('site/cadastrar'); ?>">Cadastre-se</a>
+								<a class="nav-link ps-0" href="<?= site_url('site/cadastre-se'); ?>">Cadastre-se</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link" href="<?= site_url('site/login'); ?>">Acessar</a>

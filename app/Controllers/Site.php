@@ -342,7 +342,7 @@ class Site extends BaseController
 				return $retorno->retorno(false, $string_erros, true);
 			}
 		}
-		return view('cadastrar', $data);
+		return view('_cadastrar', $data);
 	}
 
 	/* CONFIRMAÇÃO DO E-MAIL */
@@ -437,7 +437,7 @@ class Site extends BaseController
 				}
 			}
 		}
-		return view('esqueci', $data);
+		return view('_esqueci-senha', $data);
 	}
 
 	/* EXCLUIR CONTA */

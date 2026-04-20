@@ -41,7 +41,7 @@ class EnviaEmail
 
 	public function getMensagemEsqueciSenha($hash)
 	{
-		$mensagem = "Olá. Você solicitou a redefinição de senha no site Visão Libertária.\r\nPara alterar a senha, clique no link abaixo.\r\n" . site_url('site/esqueci/' . $hash);
+		$mensagem = "Olá. Você solicitou a redefinição de senha no site Visão Libertária.\r\nPara alterar a senha, clique no link abaixo.\r\n" . site_url('site/esqueci-senha/' . $hash);
 		return $mensagem;
 	}
 
