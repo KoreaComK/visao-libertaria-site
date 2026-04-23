@@ -114,12 +114,53 @@ use CodeIgniter\I18n\Time;
 <?php if ($usuarios !== NULL && !empty($usuarios)): ?>
 	<div class="d-flex justify-content-center mb-5 text-left">
 		<div class="w-100" novalidate="yes" method="post" id="pagamentos_form">
-			<label for="titulo">Copie e cole o pagamento na Electrum</label>
-			<textarea class="form-control" <?= isset($pagamentos_id) ? ('disabled') : (''); ?>
+			<div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+				<label class="form-label small text-muted mb-0" for="repasse_electrum">Copie e cole o pagamento na Electrum</label>
+				<button type="button" class="btn btn-primary btn-sm" id="btn-copiar-repasse-electrum">
+					<i class="fas fa-copy me-1" aria-hidden="true"></i>Copiar repasse
+				</button>
+			</div>
+			<textarea id="repasse_electrum" class="form-control form-control-sm" <?= isset($pagamentos_id) ? ('disabled') : (''); ?>
 				rows="10"><?= $repasse_string; ?></textarea>
 		</div>
 
 	</div>
+	<script>
+		$(document).ready(function () {
+			$('#btn-copiar-repasse-electrum').on('click', function () {
+				var valor = ($('#repasse_electrum').val() || '').toString();
+				if (!valor) {
+					if (typeof popMessage === 'function') {
+						popMessage('ATENÇÃO', 'Não há conteúdo para copiar.', TOAST_STATUS.DANGER);
+					}
+					return;
+				}
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(valor).then(function () {
+						if (typeof popMessage === 'function') {
+							popMessage('Sucesso!', 'Repasse copiado.', TOAST_STATUS.SUCCESS);
+						}
+					}).catch(function () {
+						if (typeof popMessage === 'function') {
+							popMessage('ATENÇÃO', 'Não foi possível copiar o repasse.', TOAST_STATUS.DANGER);
+						}
+					});
+					return;
+				}
+				$('#repasse_electrum').trigger('select');
+				try {
+					document.execCommand('copy');
+					if (typeof popMessage === 'function') {
+						popMessage('Sucesso!', 'Repasse copiado.', TOAST_STATUS.SUCCESS);
+					}
+				} catch (e) {
+					if (typeof popMessage === 'function') {
+						popMessage('ATENÇÃO', 'Não foi possível copiar o repasse.', TOAST_STATUS.DANGER);
+					}
+				}
+			});
+		});
+	</script>
 <?php endif; ?>
 
 <?php if ($usuarios == NULL || empty($usuarios)): ?>

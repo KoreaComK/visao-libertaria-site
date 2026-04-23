@@ -4,16 +4,17 @@ use CodeIgniter\I18n\Time;
 
 ?>
 <?php helper('data') ?>
+<div class="d-none" id="permissoes-total-registros" data-total-registros="<?= (int) ($colaboradoresList['total'] ?? 0); ?>"></div>
 <?php if ($colaboradoresList['colaboradores'] !== NULL && !empty($colaboradoresList['colaboradores'])): ?>
-	<table class="table align-middle p-4 mb-0 mt-2 table-hover table-shrink">
+	<table class="table table-sm align-middle mb-0 table-hover table-shrink">
 		<!-- Table head -->
-		<thead class="table-dark">
+		<thead class="listagem-site-thead">
 			<tr>
 
 				<th scope="col" class="border-0 rounded-start">Apelido</th>
 				<th scope="col" class="border-0">E-mail</th>
+				<th scope="col" class="border-0">Atribuições</th>
 				<th scope="col" class="border-0">Cadastrado</th>
-				<th scope="col" class="border-0">Excluído</th>
 				<th scope="col" class="border-0 rounded-end"></th>
 			</tr>
 		</thead>
@@ -23,7 +24,7 @@ use CodeIgniter\I18n\Time;
 				<tr>
 					<th scope="row">
 						<?php if ($colaborador['avatar'] !== NULL && $colaborador['avatar'] !== ''): ?>
-							<img id="avatar_menu" src="<?= $colaborador['avatar']; ?>" width="30" height="30"
+							<img id="avatar_menu" src="<?= $colaborador['avatar']; ?>" width="24" height="24"
 								class="rounded-circle">
 						<?php endif; ?>
 						<?= $colaborador['apelido']; ?>
@@ -32,10 +33,21 @@ use CodeIgniter\I18n\Time;
 						<?= $colaborador['email']; ?>
 					</td>
 					<td>
-						<?= Time::createFromFormat('Y-m-d H:i:s', $colaborador['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+						<?php $nomesAtribuicoes = array_filter(explode(',', (string) ($colaborador['nomes_atribuicoes'] ?? ''))); ?>
+						<div class="d-flex flex-wrap gap-1">
+							<?php if (!empty($nomesAtribuicoes)): ?>
+								<?php foreach ($nomesAtribuicoes as $nomeAtribuicao): ?>
+									<span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
+										<?= trim($nomeAtribuicao); ?>
+									</span>
+								<?php endforeach; ?>
+							<?php else: ?>
+								<span class="text-muted small">Sem atribuições</span>
+							<?php endif; ?>
+						</div>
 					</td>
 					<td>
-						<?= ($colaborador['excluido'] == NULL) ? ('NÃO') : ('SIM'); ?>
+						<?= Time::createFromFormat('Y-m-d H:i:s', $colaborador['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 					</td>
 					<td>
 						<a href="<?= site_url('colaboradores/admin/permissoes/') . $colaborador['id']; ?>"
@@ -75,6 +87,9 @@ use CodeIgniter\I18n\Time;
 					complete: function () { $('#modal-loading').hide() },
 					success: function (data) {
 						$('.permissoes-list').html(data);
+						if (typeof atualizarQuantidadeRegistros === 'function') {
+							atualizarQuantidadeRegistros();
+						}
 					}
 				});
 			});

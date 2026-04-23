@@ -12,9 +12,13 @@ publicacao
 ?class-div?
 }
 */
+$atributosLink = '';
+if (!empty($dados['abrir_nova_aba'])) {
+    $atributosLink = ' target="_blank" rel="noopener noreferrer"';
+}
 ?>
 
-<div class="card shadow-0 col-12 <?= (isset($dados['class'])) ? ($dados['class']) : (''); ?> mb-3">
+<div class="card shadow-0 col-12 <?= (isset($dados['class'])) ? ($dados['class']) : (''); ?> mb-2">
     <div class="row g-3">
         <div class="<?= (isset($dados['class-img'])) ? ($dados['class-img']) : ('col-5'); ?>">
         <?php if (isset($dados['link_video_youtube'])): ?>
@@ -31,11 +35,11 @@ publicacao
                             data-video-id="<?= preg_replace('/^.*(?:youtu\.be\/|watch\?v=)([^&\n]+).*$/', '$1', $dados['link_video_youtube']); ?>">
                     <?php else: ?>
                         <a href="<?= site_url('colaboradores/artigos/detalhamento/' . $dados['id']); ?>"
-                            class="btn-link stretched-link text-reset">
+                            class="btn-link stretched-link text-reset"<?= $atributosLink; ?>>
                     <?php endif; ?>
                         <?php elseif ($dados['tipo_conteudo'] == 'pauta'): ?>
                             <a href="<?= site_url('colaboradores/pautas/detalhamento/' . $dados['id']); ?>"
-                                class="btn-link stretched-link text-reset">
+                                class="btn-link stretched-link text-reset"<?= $atributosLink; ?>>
                             <?php endif; ?>
                             <?= $dados['titulo'] ?></a>
             </h6>

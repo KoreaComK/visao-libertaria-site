@@ -38,8 +38,21 @@ class PagamentosModel extends Model
 	// protected $afterFind      = [];
 	// protected $beforeDelete   = [];
 
-	public function getPagamentos()
+	public function getPagamentos($titulo = '', $quantidadeBitcoinMin = '', $quantidadeBitcoinMax = '', $hashTransacao = '')
 	{
+		$this->select("pagamentos.*, (SELECT COUNT(*) FROM pagamentos_artigos pa WHERE pa.pagamentos_id = pagamentos.id) AS total_artigos");
+		if ($titulo !== '') {
+			$this->like('titulo', $titulo);
+		}
+		if ($quantidadeBitcoinMin !== '') {
+			$this->where('quantidade_bitcoin >=', (float) $quantidadeBitcoinMin);
+		}
+		if ($quantidadeBitcoinMax !== '') {
+			$this->where('quantidade_bitcoin <=', (float) $quantidadeBitcoinMax);
+		}
+		if ($hashTransacao !== '') {
+			$this->like('hash_transacao', $hashTransacao);
+		}
 		$this->builder()->orderBy('atualizado','DESC');
 		return $this;
 	}

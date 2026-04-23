@@ -9,7 +9,7 @@
 		top: 0.5rem;
 		z-index: 1080;
 		padding: 0.5rem 1rem;
-		background: var(--bs-primary);
+		background: var(--bs-warning);
 		color: #fff;
 		border-radius: 0.25rem;
 		text-decoration: none;
@@ -30,19 +30,21 @@
 	}
 
 	.config-page-nav .list-group-item.active {
-		border-left-color: var(--bs-primary);
-		background-color: var(--bs-primary-bg-subtle);
+		border-color: var(--bs-warning-border-subtle) !important;
+		border-left-color: var(--bs-warning);
+		background-color: var(--bs-warning-bg-subtle);
 		color: var(--bs-emphasis-color) !important;
 		font-weight: 600;
 	}
 
 	.config-page-nav .list-group-item.active:hover,
 	.config-page-nav .list-group-item.active:focus-visible {
-		background-color: var(--bs-primary-bg-subtle);
+		background-color: var(--bs-warning-bg-subtle);
 		color: var(--bs-emphasis-color) !important;
 	}
 
 	[data-mdb-theme=dark] .config-page-nav .list-group-item.active {
+		border-color: var(--bs-warning-border-subtle) !important;
 		background-color: var(--bs-tertiary-bg);
 		color: var(--bs-body-color) !important;
 	}
@@ -62,6 +64,21 @@
 		margin-bottom: 1rem;
 		padding-bottom: 0.35rem;
 		border-bottom: 1px solid var(--bs-border-color);
+	}
+
+	#accordionConfiguracoes .accordion-button:not(.collapsed) {
+		color: var(--bs-emphasis-color);
+		background-color: var(--bs-warning-bg-subtle);
+		box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-warning-border-subtle);
+	}
+
+	#accordionConfiguracoes .accordion-button:focus {
+		border-color: var(--bs-warning-border-subtle);
+		box-shadow: 0 0 0 .25rem rgba(var(--bs-warning-rgb), .25);
+	}
+
+	#accordionConfiguracoes .accordion-item {
+		border-color: var(--bs-warning-border-subtle);
 	}
 </style>
 

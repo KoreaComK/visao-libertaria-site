@@ -76,8 +76,9 @@ class ColaboradoresModel extends Model
 
 	public function getTodosColaboradores($apelido = '', $email = '', $atribuicao = '', $status = 'A')
 	{
-		$this->select('*');
+		$this->select("colaboradores.*, (SELECT COUNT(*) FROM colaboradores_atribuicoes ca_total WHERE ca_total.colaboradores_id = colaboradores.id) AS total_atribuicoes, GROUP_CONCAT(DISTINCT atribuicoes.nome ORDER BY atribuicoes.nome SEPARATOR ',') AS nomes_atribuicoes");
 		$this->join('colaboradores_atribuicoes','colaboradores_atribuicoes.colaboradores_id = colaboradores.id');
+		$this->join('atribuicoes', 'atribuicoes.id = colaboradores_atribuicoes.atribuicoes_id', 'left');
 		if($apelido !== ''){
 			$this->like('apelido', $apelido);
 		}

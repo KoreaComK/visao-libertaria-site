@@ -492,6 +492,30 @@ class Admin extends BaseController
 			$artigos = $artigosModel->get()->getResultArray();
 			$data['artigos']['publicados_antigo'] = count($artigos);
 
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->withDeleted();
+			$data['artigos']['total'] = $artigosModel->countAllResults();
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->where("publicado IS NOT NULL", null, false);
+			$artigosModel->withDeleted();
+			$data['artigos']['publicados_total'] = $artigosModel->countAllResults();
+
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
+			$artigosModel->where("descartado IS NOT NULL", null, false);
+			$artigosModel->withDeleted();
+			$data['artigos']['descartados_total'] = $artigosModel->countAllResults();
+
+			$data['artigos']['publicados_percentual'] = 0;
+			$data['artigos']['descartados_percentual'] = 0;
+			if ($data['artigos']['total'] > 0) {
+				$data['artigos']['publicados_percentual'] = round(($data['artigos']['publicados_total'] / $data['artigos']['total']) * 100, 1);
+				$data['artigos']['descartados_percentual'] = round(($data['artigos']['descartados_total'] / $data['artigos']['total']) * 100, 1);
+			}
+
 			$data['artigos']['diferenca'] = $data['artigos']['atual'] - $data['artigos']['antigo'];
 			$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
 
@@ -526,6 +550,12 @@ class Admin extends BaseController
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
 			$data['pautas']['utilizados_antigo'] = count($pautas);
+
+			$pautasModel = new \App\Models\PautasModel();
+			$pautasModel->where("colaboradores_id", $idColaboradores);
+			$pautasModel->where("reservado IS NOT NULL", null, false);
+			$pautasModel->withDeleted();
+			$data['pautas']['utilizados_total'] = $pautasModel->countAllResults();
 
 			$data['pautas']['diferenca'] = $data['pautas']['atual'] - $data['pautas']['antigo'];
 			$data['pautas']['utilizados_diferenca'] = $data['pautas']['utilizados_atual'] - $data['pautas']['utilizados_antigo'];
@@ -596,6 +626,15 @@ class Admin extends BaseController
 				}
 				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
 			}
+			if (isset($post['confirmar_email']) && isset($post['colaborador_id'])) {
+				$confirmacaoRetorno = $colaboradoresModel->update($post['colaborador_id'], array(
+					'confirmado_data' => date('Y-m-d H:i:s')
+				));
+				if ($confirmacaoRetorno) {
+					return $retorno->retorno(true, 'E-mail confirmado com sucesso.', true);
+				}
+				return $retorno->retorno(true, 'Erro ao confirmar o e-mail do colaborador.', true);
+			}
 		}
 
 		$data['titulo'] = 'Listagem de colaboradores';
@@ -615,9 +654,11 @@ class Admin extends BaseController
 		if ($this->request->getMethod() == 'get') {
 			$get = service('request')->getGet();
 			$colaboradores = $colaboradoresModel->getTodosColaboradores($get['apelido'], $get['email'], $get['atribuicao'], $get['status']);
+			$colaboradoresPaginados = $colaboradores->paginate($config['site_quantidade_listagem'], 'colaboradores');
 			$data['colaboradoresList'] = [
-				'colaboradores' => $colaboradores->paginate($config['site_quantidade_listagem'], 'colaboradores'),
-				'pager' => $colaboradores->pager
+				'colaboradores' => $colaboradoresPaginados,
+				'pager' => $colaboradores->pager,
+				'total' => (int) $colaboradores->pager->getTotal('colaboradores')
 			];
 		}
 		return view('template/templatePermissoesList', $data);
@@ -716,7 +757,12 @@ class Admin extends BaseController
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
 		$pagamentosModel = new \App\Models\PagamentosModel();
-		$pagamentos = $pagamentosModel->getPagamentos();
+		$get = service('request')->getGet();
+		$titulo = $get['titulo'] ?? '';
+		$quantidadeBitcoinMin = $get['quantidade_bitcoin_min'] ?? '';
+		$quantidadeBitcoinMax = $get['quantidade_bitcoin_max'] ?? '';
+		$hashTransacao = $get['hash_transacao'] ?? '';
+		$pagamentos = $pagamentosModel->getPagamentos($titulo, $quantidadeBitcoinMin, $quantidadeBitcoinMax, $hashTransacao);
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
