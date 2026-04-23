@@ -396,19 +396,6 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
-	public function validaFormularioAvisos($post)
-	{
-		$validation = \Config\Services::validation();
-		$validation->setRules([
-			'aviso' => [
-				'label' => 'Aviso',
-				'rules' => 'required|max_length[511]|min_length[10]'
-			]
-		]);
-		$validation->run($post);
-		return $validation;
-	}
-
 	public function validaFormularioPaginasEstaticas($post,$id)
 	{
 		$validation = \Config\Services::validation();
