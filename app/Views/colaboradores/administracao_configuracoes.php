@@ -92,8 +92,6 @@
 							data-bs-target="#collapseContato" role="button">Contato</a>
 						<a class="list-group-item list-group-item-action config-section-link py-2 px-3"
 							href="#section-notificacoes" data-bs-target="#collapseNotificacoes" role="button">Notificações</a>
-						<a class="list-group-item list-group-item-action config-section-link py-2 px-3" href="#section-home"
-							data-bs-target="#collapseHome" role="button">Página inicial</a>
 					</div>
 				</nav>
 			</div>
@@ -798,89 +796,6 @@
 							</div>
 						</div>
 
-						<div class="accordion-item" id="section-home">
-							<h2 class="accordion-header">
-								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-									data-bs-target="#collapseHome" aria-expanded="false" aria-controls="collapseHome"
-									id="acc-btn-home">
-									Página inicial
-								</button>
-							</h2>
-							<div id="collapseHome" class="accordion-collapse collapse" data-bs-parent="#accordionConfiguracoes"
-								role="region" aria-labelledby="acc-btn-home">
-								<div class="accordion-body">
-									<div class="card border">
-										<div class="card-body">
-											<form class="col-12" novalidate="yes" method="post" id="home_form">
-												<div class="mb-3">
-													<div class="form-check form-switch">
-														<input class="form-check-input" type="checkbox" id="home_banner_mostrar"
-															name="home_banner_mostrar" value="1" <?= (isset($dados['home_banner_mostrar']) && $dados['home_banner_mostrar'] == '1') ? ('checked') : (''); ?>>
-														<label class="form-check-label" for="home_banner_mostrar">Exibir bloco de
-															banners</label>
-													</div>
-												</div>
-												<div class="mb-3 home_banner_mostrar">
-													<label class="form-label" for="home_banner">Artigos por banner</label>
-													<input type="number" class="form-control form-control-sm" id="home_banner"
-														name="home_banner" required min="1" placeholder="Ex.: 4"
-														value="<?= (isset($dados['home_banner'])) ? ($dados['home_banner']) : (''); ?>">
-												</div>
-												<hr>
-												<div class="mb-3">
-													<div class="form-check form-switch">
-														<input class="form-check-input" type="checkbox" id="home_newsletter_mostrar"
-															name="home_newsletter_mostrar" value="1"
-															<?= (isset($dados['home_newsletter_mostrar']) && $dados['home_newsletter_mostrar'] == '1') ? ('checked') : (''); ?>>
-														<label class="form-check-label" for="home_newsletter_mostrar">Exibir bloco de
-															newsletter</label>
-													</div>
-												</div>
-												<hr>
-												<div class="mb-3">
-													<div class="form-check form-switch">
-														<input class="form-check-input" type="checkbox" id="home_talvez_goste_mostrar"
-															name="home_talvez_goste_mostrar" value="1"
-															<?= (isset($dados['home_talvez_goste_mostrar']) && $dados['home_talvez_goste_mostrar'] == '1') ? ('checked') : (''); ?>>
-														<label class="form-check-label" for="home_talvez_goste_mostrar">Exibir “Talvez
-															goste”</label>
-													</div>
-												</div>
-												<div class="mb-3 home_talvez_goste_mostrar">
-													<label class="form-label" for="home_talvez_goste">Quantidade de artigos</label>
-													<input type="number" class="form-control form-control-sm" id="home_talvez_goste"
-														name="home_talvez_goste" required min="1" placeholder="Ex.: 6"
-														value="<?= (isset($dados['home_talvez_goste'])) ? ($dados['home_talvez_goste']) : (''); ?>">
-												</div>
-												<hr>
-												<div class="mb-3">
-													<div class="form-check form-switch">
-														<input class="form-check-input" type="checkbox" id="home_ultimos_videos_mostrar"
-															name="home_ultimos_videos_mostrar" value="1"
-															<?= (isset($dados['home_ultimos_videos_mostrar']) && $dados['home_ultimos_videos_mostrar'] == '1') ? ('checked') : (''); ?>>
-														<label class="form-check-label" for="home_ultimos_videos_mostrar">Exibir últimos
-															vídeos</label>
-													</div>
-												</div>
-												<div class="mb-3 home_ultimos_videos_mostrar">
-													<label class="form-label" for="home_ultimos_videos">Artigos exibidos por
-														vídeo</label>
-													<input type="number" class="form-control form-control-sm" id="home_ultimos_videos"
-														name="home_ultimos_videos" required min="2" step="2" placeholder="Número par, ex.: 4"
-														value="<?= (isset($dados['home_ultimos_videos'])) ? ($dados['home_ultimos_videos']) : (''); ?>">
-													<small class="form-text text-muted">Use valor par, conforme o layout da home.</small>
-												</div>
-												<div class="d-sm-flex justify-content-end">
-													<button type="button" class="btn btn-sm btn-primary salvar-config-home">Salvar
-														home</button>
-												</div>
-											</form>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
 					</div>
 				</div>
 			</div>
@@ -978,26 +893,9 @@
 		submit(form);
 	});
 
-	$(".salvar-config-home").on("click", function () {
-		form = new FormData(home_form);
-		if (!$('#home_banner_mostrar').is(':checked')) {
-			form.append('home_banner_mostrar', '0');
-		}
-		if (!$('#home_newsletter_mostrar').is(':checked')) {
-			form.append('home_newsletter_mostrar', '0');
-		}
-		if (!$('#home_talvez_goste_mostrar').is(':checked')) {
-			form.append('home_talvez_goste_mostrar', '0');
-		}
-		if (!$('#home_ultimos_videos_mostrar').is(':checked')) {
-			form.append('home_ultimos_videos_mostrar', '0');
-		}
-		submit(form);
-	});
-
 	function submit(form) {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/admin/administracao'); ?>",
+			url: "<?php echo base_url('colaboradores/admin/configuracoes'); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
@@ -1032,18 +930,6 @@
 		if (!this.checked) { $('.cron_notificacoes_status_delete').hide(); } else { $('.cron_notificacoes_status_delete').show(); }
 	})
 
-	$('#home_banner_mostrar').change(function () {
-		if (!this.checked) { $('.home_banner_mostrar').hide(); } else { $('.home_banner_mostrar').show(); }
-	})
-
-	$('#home_talvez_goste_mostrar').change(function () {
-		if (!this.checked) { $('.home_talvez_goste_mostrar').hide(); } else { $('.home_talvez_goste_mostrar').show(); }
-	})
-
-	$('#home_ultimos_videos_mostrar').change(function () {
-		if (!this.checked) { $('.home_ultimos_videos_mostrar').hide(); } else { $('.home_ultimos_videos_mostrar').show(); }
-	})
-
 	$(document).ready(function () {
 		if (!$('#cron_pautas_status_delete').is(':checked')) {
 			$('.cron_pautas_status_delete').hide();
@@ -1056,15 +942,6 @@
 		}
 		if (!$('#cron_notificacoes_status_delete').is(':checked')) {
 			$('.cron_notificacoes_status_delete').hide();
-		}
-		if (!$('#home_banner_mostrar').is(':checked')) {
-			$('.home_banner_mostrar').hide();
-		}
-		if (!$('#home_talvez_goste_mostrar').is(':checked')) {
-			$('.home_talvez_goste_mostrar').hide();
-		}
-		if (!$('#home_ultimos_videos_mostrar').is(':checked')) {
-			$('.home_ultimos_videos_mostrar').hide();
 		}
 	});
 </script>

@@ -73,52 +73,12 @@ final class CadastraConfiguracoes extends Migration
                 'config_valor' => 'Referências:\r\n{referencias}\r\n\r\nVeja nosso site: http://visaolibertaria.com\r\n\r\nCamisas e merchandising: http://pimentanocafe.com.br/visaolibe...\r\n\r\n{tags}\r\n\r\nAjude o canal:\r\n\r\nhttps://picpay.me/ancapsu\r\nhttps://padrim.com.br/ancapsu\r\n16vmNcrA4Mvf7CaRLirAmpnjz1ZH3bWNkQ (Bitcoin)\r\nLSCnrubCVcpuLrGTTLMqpwRTXvYz7vMbbA (Litecoin)\r\n0x28aec946919c70e5e25d7c6785ede7622278b463 (Ethereum)\r\nnano_1s6i6xwujzqnmie8nc3x8rfumdnebpsd6h4cp9wgkcpk4eb1xn5u7n48ok5b (Nano)\r\n0x1302536c28695e47aaedd020aaf39f500cf6c22f (BNB)',
             ],
             [
-                'config' => 'home_banner',
-                'config_valor' => '5',
-            ],
-            [
-                'config' => 'home_banner_mostrar',
-                'config_valor' => '1',
-            ],
-            [
-                'config' => 'home_newsletter_mostrar',
-                'config_valor' => '0',
-            ],
-            [
-                'config' => 'home_talvez_goste',
-                'config_valor' => '3',
-            ],
-            [
-                'config' => 'home_talvez_goste_mostrar',
-                'config_valor' => '1',
-            ],
-            [
-                'config' => 'home_ultimos_videos',
-                'config_valor' => '10',
-            ],
-            [
-                'config' => 'home_ultimos_videos_mostrar',
-                'config_valor' => '1',
-            ],
-            [
                 'config' => 'limite_pautas_diario',
                 'config_valor' => '5',
             ],
             [
                 'config' => 'limite_pautas_semanal',
                 'config_valor' => '20',
-            ],
-            [
-                'config' => 'link_instagram',
-                'config_valor' => 'https://www.instagram.com',
-            ],
-            [
-                'config' => 'link_twitter',
-                'config_valor' => 'https://twitter.com',
-            ],
-            [
-                'config' => 'link_youtube',
-                'config_valor' => 'https://www.youtube.com',
             ],
             [
                 'config' => 'pauta_dias_antigo',
@@ -157,10 +117,6 @@ final class CadastraConfiguracoes extends Migration
                     'wrevolving.com' => 'Mundo Em Revolução',
                     'default' => 'Visão Libertária',
                 ]),
-            ],
-            [
-                'config' => 'texto_informacao_perfil',
-                'config_valor' => 'Leia nossas diretrizes para aceitar artigos no Visão Libertária, clicando aqui.\r\n\r\nVeja as diretrizes e cuidados para ser um revisor, clicando aqui.\r\n\r\nSaiba as configurações e definições para enviar seu arquivo de áudio, clicando aqui.\r\n\r\nEncontre todos os parâmetros e insumos para produzir os vídeos do canal, clicando aqui.',
             ],
             [
                 'config' => 'pauta_bot_hash',

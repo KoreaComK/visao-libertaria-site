@@ -235,7 +235,7 @@ use CodeIgniter\I18n\Time;
 
 	function submit(form) {
 		$.ajax({
-			url: "<?php echo base_url('colaboradores/admin/administracao'); ?>",
+			url: "<?php echo base_url('colaboradores/admin/regras'); ?>",
 			method: "POST",
 			data: form,
 			processData: false,
