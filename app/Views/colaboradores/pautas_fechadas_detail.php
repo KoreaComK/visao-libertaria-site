@@ -68,7 +68,7 @@ use CodeIgniter\I18n\Time;
 					<div class="d-flex flex-wrap align-items-baseline gap-2 px-2 py-1 border border-bottom-0 rounded-top bg-body-secondary bg-opacity-50 small">
 						<span class="badge text-bg-primary"><?= esc($tag); ?></span>
 						<span class="text-muted">Sugerido por</span>
-						<span><?= esc(implode(', ', $pautas['colaboradores'])); ?></span>
+						<span><?= esc(implode(' - ', $pautas['colaboradores'])); ?></span>
 					</div>
 					<div class="table-responsive border rounded-bottom">
 						<table class="table table-sm table-striped table-hover mb-0 pautas-fechadas-detalhe-table">
