@@ -93,7 +93,7 @@
 			form.append('id_comentario', $('#id_comentario').val());
 		}
 		var ep = endpointUrl();
-		$.ajax($.extend({
+		var jq = $.ajax($.extend({
 			url: ep,
 			method: 'POST',
 			data: form,
@@ -120,6 +120,22 @@
 				}
 			}
 		}, ajaxErrorOption()));
+		jq.fail(function (xhr) {
+			var msg = 'Resposta inválida do servidor (esperado JSON). Verifique permissões ou sessão.';
+			if (xhr && xhr.responseText) {
+				try {
+					var j = JSON.parse(xhr.responseText);
+					if (j && j.mensagem) {
+						msg = j.mensagem;
+					}
+				} catch (e) {
+					if (xhr.status === 403 || xhr.status === 401) {
+						msg = 'Sessão expirada ou sem permissão para comentários.';
+					}
+				}
+			}
+			showAttention(msg);
+		});
 	}
 
 	function excluirComentario(idComentario) {
@@ -127,7 +143,7 @@
 		form.append('id_comentario', idComentario);
 		form.append('metodo', 'excluir');
 		var ep = endpointUrl();
-		$.ajax($.extend({
+		var jq = $.ajax($.extend({
 			url: ep,
 			method: 'POST',
 			data: form,
@@ -156,17 +172,30 @@
 				}
 			}
 		}, ajaxErrorOption()));
+		jq.fail(function (xhr) {
+			var msg = 'Não foi possível excluir o comentário.';
+			if (xhr && xhr.responseText) {
+				try {
+					var j = JSON.parse(xhr.responseText);
+					if (j && j.mensagem) {
+						msg = j.mensagem;
+					}
+				} catch (e) { /* manter msg */ }
+			}
+			showAttention(msg);
+		});
 	}
 
 	window.getComentarios = getComentarios;
 	window.excluirComentario = excluirComentario;
 
 	function bind() {
-		$('#btn-comentarios').off('click.vlComentarios').on('click.vlComentarios', function (e) {
+		// Delegação no document: evita falha se o ready correr antes da modal existir no DOM (ex.: ordem de scripts na página).
+		$(document).off('click.vlComentarios', '#btn-comentarios').on('click.vlComentarios', '#btn-comentarios', function (e) {
 			e.preventDefault();
 			getComentarios();
 		});
-		$('#enviar-comentario').off('click.vlComentarios').on('click.vlComentarios', function (e) {
+		$(document).off('click.vlComentarios', '#enviar-comentario').on('click.vlComentarios', '#enviar-comentario', function (e) {
 			e.preventDefault();
 			enviarComentario();
 		});

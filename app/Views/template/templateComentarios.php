@@ -8,13 +8,32 @@ use CodeIgniter\I18n\Time;
 <?php if (!empty($comentarios)): ?>
 	<?php foreach ($comentarios as $chave => $comentario): ?>
 		<?php
-		$dataFmt = Time::createFromFormat('Y-m-d H:i:s', $comentario['atualizado'])->toLocalizedString('dd MMMM yyyy H:mm:ss');
+		$tsRaw = trim((string) ($comentario['atualizado'] ?? ''));
+		if ($tsRaw === '' || $tsRaw === '0000-00-00 00:00:00') {
+			$tsRaw = trim((string) ($comentario['criado'] ?? ''));
+		}
+		$dataFmt = '';
+		$dtAttr = '';
+		if ($tsRaw !== '' && $tsRaw !== '0000-00-00 00:00:00') {
+			$tObj = Time::createFromFormat('Y-m-d H:i:s', $tsRaw);
+			if ($tObj === false) {
+				try {
+					$tObj = Time::parse($tsRaw);
+				} catch (\Throwable $e) {
+					$tObj = false;
+				}
+			}
+			if ($tObj !== false) {
+				$dataFmt = $tObj->toLocalizedString('dd MMMM yyyy H:mm:ss');
+				$dtAttr = $tObj->format('Y-m-d H:i:s');
+			}
+		}
 		?>
 		<div class="card-body py-3 px-3 <?= (count($comentarios) == $chave + 1) ? '' : 'border-bottom border-secondary border-opacity-10'; ?>"
 			id="<?= esc($comentario['id'], 'attr'); ?>">
 			<div class="d-flex gap-3 align-items-start">
 				<div class="flex-shrink-0" style="width: 2.75rem;">
-					<img src="<?= ($comentario['avatar'] != null && $comentario['avatar'] !== '') ? esc($comentario['avatar'], 'url') : esc($avatarPadrao, 'url'); ?>"
+					<img src="<?= ($comentario['avatar'] != null && $comentario['avatar'] !== '') ? esc($comentario['avatar'], 'attr') : esc($avatarPadrao, 'attr'); ?>"
 						onerror="this.onerror=null;this.src='<?= esc($avatarPadrao, 'attr'); ?>';"
 						class="rounded-circle img-fluid border border-light shadow-sm"
 						alt="<?= esc('Avatar de ' . $comentario['apelido'], 'attr'); ?>"
@@ -23,8 +42,10 @@ use CodeIgniter\I18n\Time;
 				<div class="flex-grow-1 min-w-0 text-break">
 					<div class="d-flex flex-wrap align-items-baseline gap-2 mb-1">
 						<span class="fw-semibold small"><?= esc($comentario['apelido']); ?></span>
-						<time class="small text-muted" datetime="<?= esc($comentario['atualizado'], 'attr'); ?>"
-							title="<?= esc($dataFmt, 'attr'); ?>"><?= esc($dataFmt); ?></time>
+						<?php if ($dataFmt !== ''): ?>
+							<time class="small text-muted" datetime="<?= esc($dtAttr, 'attr'); ?>"
+								title="<?= esc($dataFmt, 'attr'); ?>"><?= esc($dataFmt); ?></time>
+						<?php endif; ?>
 					</div>
 					<p class="card-text small mb-0 lh-base text-body comentario-<?= esc($comentario['id']); ?>"><?= esc($comentario['comentario']); ?></p>
 					<?php if ($colaborador == $comentario['colaboradores_id']): ?>

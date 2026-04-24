@@ -41,12 +41,15 @@ class PautasPautasFechadasModel extends Model
 
 	public function getPautasPorPautaFechada($idPautaFechada)
 	{
-		$query = $this->db->query("SELECT pautas.*, colaboradores.apelido AS apelido, 
-		(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id and pautas_comentarios.excluido is null) as qtde_comentarios
-		FROM pautas INNER JOIN pautas_pautas_fechadas ON pautas.id = pautas_pautas_fechadas.pautas_id
-		INNER JOIN colaboradores ON colaboradores.id = pautas.colaboradores_id WHERE pautas_pautas_fechadas.pautas_fechadas_id = ".$this->db->escapeString($idPautaFechada)."
+		$sql = <<<'SQL'
+		SELECT pautas.*, colaboradores.apelido AS apelido
+		FROM pautas
+		INNER JOIN pautas_pautas_fechadas ON pautas.id = pautas_pautas_fechadas.pautas_id
+		INNER JOIN colaboradores ON colaboradores.id = pautas.colaboradores_id
+		WHERE pautas_pautas_fechadas.pautas_fechadas_id = ?
 		ORDER BY pautas.tag_fechamento ASC
-		");
-		return $query->getResult('array');
+		SQL;
+
+		return $this->db->query($sql, [$idPautaFechada])->getResult('array');
 	}
 }

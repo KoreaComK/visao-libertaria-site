@@ -40,25 +40,53 @@ class PautasComentariosModel extends Model
 
 	public function getComentarios($idPauta)
 	{
-		$query = $this->db->query("
+		$sql = <<<'SQL'
 		SELECT
 			A.*,
 			B.apelido AS apelido,
 			B.avatar AS avatar
 		FROM
 			pautas_comentarios A
-		INNER JOIN 
+		INNER JOIN
 			colaboradores B
-		ON 
+		ON
 			A.colaboradores_id = B.id
 		WHERE
 			A.excluido IS NULL
 		AND
-			A.pautas_id = '$idPauta'
+			A.pautas_id = ?
 		ORDER BY
 			A.criado DESC
-		");
-		return $query->getResult('array');
+		SQL;
+
+		return $this->db->query($sql, [$idPauta])->getResult('array');
+	}
+
+	/**
+	 * Contagem alinhada com getComentarios(): só comentários não excluídos com colaborador existente.
+	 *
+	 * @param list<string> $idsPauta pautas.id (CHAR(36) / UUID)
+	 * @return array<string, int> pautas_id => total
+	 */
+	public function contagensVisiveisPorPautasIds(array $idsPauta): array
+	{
+		$idsPauta = array_values(array_unique(array_filter($idsPauta, static fn ($id) => $id !== null && $id !== '')));
+		if ($idsPauta === []) {
+			return [];
+		}
+		$builder = $this->db->table('pautas_comentarios A');
+		$builder->select('A.pautas_id, COUNT(1) AS total', false)
+			->join('colaboradores B', 'B.id = A.colaboradores_id', 'inner')
+			->where('A.excluido IS NULL', null, false)
+			->whereIn('A.pautas_id', $idsPauta)
+			->groupBy('A.pautas_id');
+		$rows = $builder->get()->getResultArray();
+		$map = [];
+		foreach ($rows as $r) {
+			$map[(string) $r['pautas_id']] = (int) $r['total'];
+		}
+
+		return $map;
 	}
 
 	public function getNovaUUID()

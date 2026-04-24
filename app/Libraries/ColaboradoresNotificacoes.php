@@ -38,12 +38,16 @@ class ColaboradoresNotificacoes {
 			return null;
 		}
 
-		if($objeto == 'pautas') {
+		if ($objeto == 'pautas') {
 			$pauta = $this->pautasModel->withDeleted()->find($idObjeto);
-			$notificacao.=' {link}'.$pauta['titulo'].'{/link}';
-		} elseif($objeto == 'artigos') {
-			$artigo = $artigo = $this->artigosModel->withDeleted()->find($idObjeto);
-			$notificacao.=' {link}'.$artigo['titulo'].'{/link}';
+			if (is_array($pauta) && isset($pauta['titulo'])) {
+				$notificacao .= ' {link}' . $pauta['titulo'] . '{/link}';
+			}
+		} elseif ($objeto == 'artigos') {
+			$artigo = $this->artigosModel->withDeleted()->find($idObjeto);
+			if (is_array($artigo) && isset($artigo['titulo'])) {
+				$notificacao .= ' {link}' . $artigo['titulo'] . '{/link}';
+			}
 		}
 
 		foreach($colaboradores_id as $cid) {
@@ -69,10 +73,13 @@ class ColaboradoresNotificacoes {
 		if($idObjeto === false){ return false; }
 
 		$destinatarios = array();
-		if($objeto == 'pautas') {
+		if ($objeto == 'pautas') {
 			$pauta = $this->pautasModel->withDeleted()->find($idObjeto);
+			if (! is_array($pauta)) {
+				return false;
+			}
 			$destinatarios[] = $pauta['colaboradores_id'];
-			if($comentario === true) {
+			if ($comentario === true) {
 				$this->pautasComentariosModel->where("pautas_id",$idObjeto);
 				$this->pautasComentariosModel->where("excluido",null);
 				$pautasComentarios = $this->pautasComentariosModel->get()->getResultArray();
@@ -85,9 +92,12 @@ class ColaboradoresNotificacoes {
 				}
 			}
 		}
-		if($objeto == 'artigos') {
+		if ($objeto == 'artigos') {
 			$artigo = $this->artigosModel->withDeleted()->find($idObjeto);
-			if($artigo['sugerido_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
+			if (! is_array($artigo)) {
+				return false;
+			}
+			if ($artigo['sugerido_colaboradores_id'] !== NULL && $artigo['sugerido_colaboradores_id'] !== '') {
 				if(!in_array($artigo['sugerido_colaboradores_id'],$destinatarios)) {
 					$destinatarios[] = $artigo['sugerido_colaboradores_id'];
 				}

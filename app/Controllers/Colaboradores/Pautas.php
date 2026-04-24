@@ -289,7 +289,11 @@ class Pautas extends BaseController
 				$pautasFechadasModel = new \App\Models\PautasFechadasModel();
 				$pautasPautasFechadasModel = new \App\Models\PautasPautasFechadasModel();
 
-				$gravar['titulo'] = ($post['titulo'] == '') ? ('Pauta do dia ' . Time::now()->toLocalizedString('dd MMMM yyyy')) : ($post['titulo']);
+				$tituloInformado = trim((string) ($post['titulo'] ?? ''));
+				$gravar['titulo'] = $tituloInformado === ''
+					? ('Pauta do dia ' . Time::now()->toLocalizedString('dd MMMM yyyy'))
+					: $tituloInformado;
+				$gravar['titulo'] = $pautasFechadasModel->tituloUnicoParaInsercao($gravar['titulo']);
 
 				$pautas = $pautasModel->getPautasFechamento();
 				if ($pautas == null || empty($pautas)) {
@@ -297,12 +301,17 @@ class Pautas extends BaseController
 				}
 
 				$idPautasFechadas = $pautasFechadasModel->insert($gravar);
+				if ($idPautasFechadas === false) {
+					return $retorno->retorno(false, 'Não foi possível gravar o fechamento. Tente novamente.', true);
+				}
 				foreach ($pautas as $pauta) {
 					$pautasPautasFechadasModel->insert(array('pautas_fechadas_id' => $idPautasFechadas, 'pautas_id' => $pauta['id']));
 					$this->gravarPautas('delete', null, $pauta['id']);
 				}
 
-				return $retorno->retorno(true, 'Fechamento da pauta feita com sucesso. A página será recarregada dentro de instantes.', true);
+				return $retorno->retorno(true, 'Fechamento da pauta feita com sucesso. Redirecionando para o fechamento...', true, [
+					'id_pautas_fechadas' => (int) $idPautasFechadas,
+				]);
 			}
 			return false;
 		}
@@ -310,7 +319,19 @@ class Pautas extends BaseController
 
 		$data = array();
 		$data['titulo'] = 'Fechamento de Pautas';
+		$pautasModel = new \App\Models\PautasModel();
+		$data['pautasReservadas'] = $pautasModel->getReservadasParaPainelFechamento();
 		return view('colaboradores/pautas_closing', $data);
+	}
+
+	public function pautasReservadasResumo()
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('10');
+		$pautasModel = new \App\Models\PautasModel();
+		$data['pautasReservadas'] = $pautasModel->getReservadasParaPainelFechamento();
+
+		return view('template/pautas_reservadas_resumo', $data);
 	}
 
 	public function pautasList()
@@ -355,36 +376,45 @@ class Pautas extends BaseController
 		}
 
 		$data = array();
-		$pautasFechadasModel = new \App\Models\PautasFechadasModel();
 
 		if ($idPautasFechadas == null) {
 			$data['titulo'] = 'Pautas Fechadas';
 			return view('colaboradores/pautas_fechadas_list', $data);
-		} else {
-			$data['titulo'] = 'Informações da Pauta Fechada';
-			$pautasPautasFechadasModel = new \App\Models\PautasPautasFechadasModel();
-			$pautaDetail = $pautasFechadasModel->find($idPautasFechadas);
-			$pautasPautaFechada = $pautasPautasFechadasModel->getPautasPorPautaFechada($idPautasFechadas);
-			$data['pautaDetail'] = $pautaDetail;
-
-			$pautasArray = [];
-			$tag = NULL;
-			foreach ($pautasPautaFechada as $ppf) {
-				if ($tag != $ppf['tag_fechamento']) {
-					$pautasArray[$ppf['tag_fechamento']] = array();
-					$pautasArray[$ppf['tag_fechamento']]['pautas'] = array();
-					$pautasArray[$ppf['tag_fechamento']]['colaboradores'] = array();
-					$tag = $ppf['tag_fechamento'];
-				}
-				$pautasArray[$ppf['tag_fechamento']]['pautas'][] = $ppf;
-				if (!in_array($ppf['apelido'], $pautasArray[$ppf['tag_fechamento']]['colaboradores'])) {
-					$pautasArray[$ppf['tag_fechamento']]['colaboradores'][] = $ppf['apelido'];
-				}
-			}
-
-			$data['pautasList'] = $pautasArray;
-			return view('colaboradores/pautas_fechadas_detail', $data);
 		}
+
+		$pautasFechadasModel = new \App\Models\PautasFechadasModel();
+		$data['titulo'] = 'Informações da Pauta Fechada';
+		$pautasPautasFechadasModel = new \App\Models\PautasPautasFechadasModel();
+		$pautaDetail = $pautasFechadasModel->find($idPautasFechadas);
+		$pautasPautaFechada = $pautasPautasFechadasModel->getPautasPorPautaFechada($idPautasFechadas);
+		$data['pautaDetail'] = $pautaDetail;
+
+		$idsPautasFechamento = array_column($pautasPautaFechada, 'id');
+		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
+		$comentariosPorPauta = $pautasComentariosModel->contagensVisiveisPorPautasIds($idsPautasFechamento);
+		foreach ($pautasPautaFechada as &$linhaPauta) {
+			$pid = isset($linhaPauta['id']) ? trim((string) $linhaPauta['id']) : '';
+			$linhaPauta['vl_qtde_comentarios'] = $pid === '' ? 0 : (int) ($comentariosPorPauta[$pid] ?? 0);
+		}
+		unset($linhaPauta);
+
+		$pautasArray = [];
+		$tag = NULL;
+		foreach ($pautasPautaFechada as $ppf) {
+			if ($tag != $ppf['tag_fechamento']) {
+				$pautasArray[$ppf['tag_fechamento']] = array();
+				$pautasArray[$ppf['tag_fechamento']]['pautas'] = array();
+				$pautasArray[$ppf['tag_fechamento']]['colaboradores'] = array();
+				$tag = $ppf['tag_fechamento'];
+			}
+			$pautasArray[$ppf['tag_fechamento']]['pautas'][] = $ppf;
+			if (!in_array($ppf['apelido'], $pautasArray[$ppf['tag_fechamento']]['colaboradores'])) {
+				$pautasArray[$ppf['tag_fechamento']]['colaboradores'][] = $ppf['apelido'];
+			}
+		}
+
+		$data['pautasList'] = $pautasArray;
+		return view('colaboradores/pautas_fechadas_detail', $data);
 	}
 
 	public function pautasFechadasList()
@@ -394,15 +424,23 @@ class Pautas extends BaseController
 
 		$pautasFechadasModel = new \App\Models\PautasFechadasModel();
 
-		$pautas = $pautasFechadasModel->orderBy('criado', 'DESC');
-
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 		if ($this->request->getMethod() == 'get') {
+			$get = $this->request->getGet();
+			$fechamento = isset($get['fechamento']) ? trim((string) $get['fechamento']) : '';
+			$tema = isset($get['tema']) ? trim((string) $get['tema']) : '';
+
+			$pautasFechadasModel->aplicarSelectListagemComAgregados()
+				->filtroTituloContem($fechamento !== '' ? $fechamento : null)
+				->filtroTema($tema !== '' ? $tema : null)
+				->orderBy('criado', 'DESC');
+
 			$data['pautasList'] = [
-				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-				'pager' => $pautas->pager
+				'pautas' => $pautasFechadasModel->paginate($config['site_quantidade_listagem'], 'pautas'),
+				'pager' => $pautasFechadasModel->pager,
+				'total' => (int) $pautasFechadasModel->pager->getTotal('pautas'),
 			];
 		}
 		return view('template/templatePautasFechadasList', $data);
@@ -410,10 +448,10 @@ class Pautas extends BaseController
 
 	public function comentarios($idPauta)
 	{
-		$this->verificaPermissao->PermiteAcesso(array('1'));
+		// Mesmo perfil que fecha/consulta pautas (10) e colaboradores com permissão de pauta (1).
+		$this->verificaPermissao->PermiteAcesso(array('1', '10'));
 		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
 		if ($this->request->getMethod() == 'post') {
-			$retorno = new \App\Libraries\RetornoPadrao();
 			$post = $this->request->getPost();
 			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
@@ -424,22 +462,41 @@ class Pautas extends BaseController
 					$pautasComentariosModel->delete($comentario['id']);
 					$pautasComentariosModel->db->transComplete();
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'excluiu', 'pautas', 'o comentário na pauta', $idPauta, true);
-					return $retorno->retorno(true, 'Comentário excluído com sucesso', true);
+					return $this->response->setJSON([
+						'status' => true,
+						'mensagem' => 'Comentário excluído com sucesso',
+						'parametros' => false,
+					]);
 				}
-				return $retorno->retorno(false, 'Erro ao excluir o comentário.', true);
+				return $this->response->setJSON([
+					'status' => false,
+					'mensagem' => 'Erro ao excluir o comentário.',
+					'parametros' => false,
+				]);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'inserir' && trim($post['comentario']) !== '') {
 				$comentario = [
 					'id' => $pautasComentariosModel->getNovaUUID(),
 					'colaboradores_id' => $this->session->get('colaboradores')['id'],
 					'pautas_id' => $idPauta,
-					'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8')
+					'comentario' => htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8'),
 				];
 				$pautasComentariosModel->db->transStart();
 				$save = $pautasComentariosModel->insert($comentario);
 				$pautasComentariosModel->db->transComplete();
+				if ($save === false) {
+					return $this->response->setJSON([
+						'status' => false,
+						'mensagem' => implode(' ', $pautasComentariosModel->errors()),
+						'parametros' => false,
+					]);
+				}
 				$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'comentou', 'pautas', 'na pauta', $idPauta, true);
-				return $retorno->retorno(true, 'Comentário feito com sucesso.', true);
+				return $this->response->setJSON([
+					'status' => true,
+					'mensagem' => 'Comentário feito com sucesso.',
+					'parametros' => false,
+				]);
 			}
 			if (isset($post['metodo']) && $post['metodo'] == 'alterar' && trim($post['id_comentario']) !== '') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);
@@ -447,14 +504,33 @@ class Pautas extends BaseController
 					$comentario['atualizado'] = $pautasComentariosModel->getNow();
 					$comentario['comentario'] = htmlspecialchars($post['comentario'], ENT_QUOTES, 'UTF-8');
 					$pautasComentariosModel->db->transStart();
-					$pautasComentariosModel->save($comentario);
+					$ok = $pautasComentariosModel->save($comentario);
 					$pautasComentariosModel->db->transComplete();
+					if ($ok === false) {
+						return $this->response->setJSON([
+							'status' => false,
+							'mensagem' => implode(' ', $pautasComentariosModel->errors()),
+							'parametros' => false,
+						]);
+					}
 					$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'pautas', 'o comentário na pauta', $idPauta, true);
-					return $retorno->retorno(true, 'Comentário alterado com sucesso.', true);
+					return $this->response->setJSON([
+						'status' => true,
+						'mensagem' => 'Comentário alterado com sucesso.',
+						'parametros' => false,
+					]);
 				}
-				return $retorno->retorno(false, 'Erro ao alterar o comentário.', true);
+				return $this->response->setJSON([
+					'status' => false,
+					'mensagem' => 'Erro ao alterar o comentário.',
+					'parametros' => false,
+				]);
 			}
-			return $retorno->retorno(false, 'Erro ao salvar comentário', true);
+			return $this->response->setJSON([
+				'status' => false,
+				'mensagem' => 'Erro ao salvar comentário',
+				'parametros' => false,
+			]);
 		} else {
 			$comentarios = $pautasComentariosModel->getComentarios($idPauta);
 			return view('template/templateComentarios', array('comentarios' => $comentarios, 'colaborador' => $this->session->get('colaboradores')['id']));

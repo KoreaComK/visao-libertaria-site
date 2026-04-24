@@ -67,13 +67,32 @@ class PautasModel extends Model
 		return $query->getResult('array');
 	}
 
+	/**
+	 * Pautas com reservado preenchido (mesmo critério de getPautasFechamento), com apelido do colaborador.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function getReservadasParaPainelFechamento(): array
+	{
+		$query = $this->db->query(
+			'SELECT pautas.*, colaboradores.apelido AS apelido '
+			. 'FROM pautas '
+			. 'INNER JOIN colaboradores ON pautas.colaboradores_id = colaboradores.id '
+			. 'WHERE pautas.reservado IS NOT NULL AND pautas.excluido IS NULL '
+			. 'ORDER BY pautas.tag_fechamento ASC, pautas.criado DESC'
+		);
+
+		return $query->getResultArray();
+	}
+
 	public function getPautas($reservado = false, $excluido = false, $redatores = false, $pesquisa = NULL)
 	{
 		$this->builder()
 			->select(
 				'pautas.*, colaboradores.apelido AS apelido, '
-				. '(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id '
-				. 'and pautas_comentarios.excluido is null) as qtde_comentarios',
+				. '(SELECT COUNT(1) FROM pautas_comentarios pc '
+				. 'INNER JOIN colaboradores co ON co.id = pc.colaboradores_id '
+				. 'WHERE pc.pautas_id = pautas.id AND pc.excluido IS NULL) AS qtde_comentarios',
 				false
 			)
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
@@ -109,7 +128,9 @@ class PautasModel extends Model
 	{
 		$this->builder()
 			->select('pautas.*, colaboradores.apelido AS apelido, pautas_fechadas.titulo AS nome_pauta_fechada,
-			(select count(1) from pautas_comentarios where pautas.id = pautas_comentarios.pautas_id and pautas_comentarios.excluido is null) as qtde_comentarios')
+			(SELECT COUNT(1) FROM pautas_comentarios pc
+			INNER JOIN colaboradores co ON co.id = pc.colaboradores_id
+			WHERE pc.pautas_id = pautas.id AND pc.excluido IS NULL) AS qtde_comentarios')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
 			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
 			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT')
