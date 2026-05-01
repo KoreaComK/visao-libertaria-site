@@ -105,14 +105,16 @@
 
 		<?php if (isset($_SESSION['colaboradores']['id'])): ?>
 			<div class="mb-4 text-center">
+				<?php
+				$mensagemLimitePauta = $limiteDiario === true
+					? 'Você atingiu o limite diário de pautas. Tente novamente amanhã.'
+					: 'Você atingiu o limite semanal de pautas. Tente novamente outro dia.';
+				?>
 				<button type="button" class="btn vl-noticias-btn-filtro" id="btn-sugerir-pauta"
 					<?php if ($limiteDiario === false && $limiteSemanal === false): ?>
 						data-bs-toggle="modal" data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Cadastre uma pauta"
 					<?php else: ?>
-						data-bs-toggle="tooltip" data-bs-placement="top"
-						title="<?= $limiteDiario === true
-							? 'Você atingiu o limite diário de pautas. Tente novamente amanhã.'
-							: 'Você atingiu o limite semanal de pautas. Tente novamente outro dia.'; ?>"
+						data-limite-pauta-msg="<?= esc($mensagemLimitePauta); ?>"
 					<?php endif; ?>>
 					Sugerir pauta
 				</button>
@@ -444,6 +446,12 @@
 </script>
 
 <?php if (isset($_SESSION['colaboradores']['id'])): ?>
+<?php
+$pautaListAdminPerm7Modal = in_array('7', $pautaListPermissoes, false);
+$pautaListAplicaLimitesModal = ! $pautaListAdminPerm7Modal;
+$pautaListMinPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta_tamanho_minimo'] : null;
+$pautaListMaxPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta_tamanho_maximo'] : null;
+?>
 <script>
 (function () {
 	function resetPautaFormUi() {
@@ -558,6 +566,15 @@
 		});
 	});
 
+	$('#btn-sugerir-pauta').on('click', function (e) {
+		var mensagemLimite = $(this).attr('data-limite-pauta-msg');
+		if (!mensagemLimite) {
+			return;
+		}
+		e.preventDefault();
+		popMessage('ATENÇÃO', mensagemLimite, TOAST_STATUS.WARNING);
+	});
+
 	$('#modalSugerirPauta #imagem').on('change', function () {
 		$('#modalSugerirPauta .preview_imagem_div').show();
 		var form = new FormData(document.getElementById('pautas_form'));
@@ -584,6 +601,21 @@
 	});
 
 	$('#modalSugerirPauta .btn-enviar').on('click', function () {
+		var minPalavras = <?= json_encode($pautaListMinPalavrasModal); ?>;
+		var maxPalavras = <?= json_encode($pautaListMaxPalavrasModal); ?>;
+		if (minPalavras !== null || maxPalavras !== null) {
+			var textoPauta = String($('#texto').val() || '').trim();
+			var totalPalavras = textoPauta === '' ? 0 : textoPauta.split(/\s+/).length;
+			if (minPalavras !== null && totalPalavras < minPalavras) {
+				popMessage('ATENÇÃO', 'O texto precisa ter no mínimo ' + minPalavras + ' palavras.', TOAST_STATUS.WARNING);
+				return;
+			}
+			if (maxPalavras !== null && totalPalavras > maxPalavras) {
+				popMessage('ATENÇÃO', 'O texto pode ter no máximo ' + maxPalavras + ' palavras.', TOAST_STATUS.WARNING);
+				return;
+			}
+		}
+
 		var form = new FormData(document.getElementById('pautas_form'));
 		var idPauta = '';
 		if ($('#id_pauta').val() !== '') {
@@ -703,7 +735,7 @@
 		'textareaSelector' => '#texto',
 		'outputSelector'   => '#count_message',
 		'debounceMs'       => 200,
-		'submitSelector'   => $pautaListAplicaLimites ? '#modalSugerirPauta .btn-enviar' : null,
+		'submitSelector'   => null,
 		'minPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_minimo'] : null,
 		'maxPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_maximo'] : null,
 	];
