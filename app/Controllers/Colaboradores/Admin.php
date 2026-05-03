@@ -9,6 +9,7 @@ use CodeIgniter\I18n\Time;
 use App\Libraries\ColaboradoresNotificacoes;
 use App\Libraries\ArtigosHistoricos;
 use App\Libraries\ArtigosMarcacao;
+use CodeIgniter\Database\BaseConnection;
 
 class Admin extends BaseController
 {
@@ -626,6 +627,14 @@ class Admin extends BaseController
 				}
 				return $retorno->retorno(true, 'Erro ao fazer o bloqueio do colaborador.', true);
 			}
+			if (isset($post['contratado'])) {
+				$novoContrato = ($post['contratado'] === 'S') ? 'S' : 'N';
+				$contrato_retorno = $colaboradoresModel->update($post['colaborador_id'], array('contratado' => $novoContrato));
+				if ($contrato_retorno) {
+					return $retorno->retorno(true, 'Status de contrato atualizado com sucesso.', true);
+				}
+				return $retorno->retorno(false, 'Erro ao atualizar o status de contrato.', true);
+			}
 			if (isset($post['confirmar_email']) && isset($post['colaborador_id'])) {
 				$confirmacaoRetorno = $colaboradoresModel->update($post['colaborador_id'], array(
 					'confirmado_data' => date('Y-m-d H:i:s')
@@ -697,6 +706,29 @@ class Admin extends BaseController
 			return view('colaboradores/pagamentos_form', $data);
 		}
 
+		if ($acao === 'buscarColaboradores') {
+			if ($this->request->getMethod() === 'get') {
+				$q = trim((string) ($this->request->getGet('q') ?? ''));
+				if ($q === '') {
+					return $this->response->setJSON([]);
+				}
+				$colaboradoresModel = new \App\Models\ColaboradoresModel();
+				$colaboradoresModel->select('id, apelido, email')
+					->where('shadowban', 'N')
+					->where('colaboradores.excluido', null)
+					->where('bloqueado', 'N')
+					->groupStart()
+					->like('apelido', $q)
+					->orLike('email', $q)
+					->groupEnd()
+					->orderBy('apelido', 'ASC')
+					->limit(20);
+				$lista = $colaboradoresModel->get()->getResultArray();
+				return $this->response->setJSON($lista);
+			}
+			return $this->response->setStatusCode(405)->setJSON(['erro' => 'Método não permitido']);
+		}
+
 		if ($acao == 'preview') {
 			if ($this->request->getMethod() == 'post') {
 				$post = service('request')->getPost();
@@ -715,7 +747,12 @@ class Admin extends BaseController
 				$retorno = new \App\Libraries\RetornoPadrao();
 				$valida = $validaFormularios->validaFormularioCadastroPagamento($post);
 				if (empty($valida->getErrors())) {
-					$data = $this->salvaPagamento($post);
+					try {
+						$data = $this->salvaPagamento($post);
+					} catch (\Throwable $e) {
+						log_message('error', '[financeiro/salvar] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+						return $retorno->retorno(false, 'Erro ao gravar o pagamento: ' . $e->getMessage(), true);
+					}
 					if ($data) {
 						return $retorno->retorno(true, 'Pagamento Salvo', true);
 					} else {
@@ -1038,17 +1075,232 @@ class Admin extends BaseController
 
 	}
 
+	/**
+	 * Colaboradores contratados (contratado = S) para pré-lista em Pagamentos avulsos (novo pagamento).
+	 *
+	 * @return list<array{id: int, apelido: string}>
+	 */
+	private function obterColaboradoresContratadosParaPrelistaAvulsos(): array
+	{
+		$m = new \App\Models\ColaboradoresModel();
+		$m->select('id, apelido')
+			->where('contratado', 'S')
+			->where('shadowban', 'N')
+			->where('colaboradores.excluido', null)
+			->where('bloqueado', 'N')
+			->orderBy('apelido', 'ASC');
+		$rows = $m->get()->getResultArray();
+		$out = [];
+		foreach ($rows as $r) {
+			$out[] = [
+				'id'      => (int) ($r['id'] ?? 0),
+				'apelido' => (string) ($r['apelido'] ?? ''),
+			];
+		}
+		return $out;
+	}
+
+	private function obterPagamentosAvulsosParaPreview(array $postInicial, ?int $pagamentosId): array
+	{
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		if ($pagamentosId !== null) {
+			$pam = new \App\Models\PagamentosAvulsosModel();
+			$rows = $pam->where('pagamentos_id', $pagamentosId)->orderBy('id', 'ASC')->findAll();
+			$out = [];
+			foreach ($rows as $r) {
+				$c = $colaboradoresModel->find((int) $r['colaboradores_id']);
+				if ($c === null) {
+					continue;
+				}
+				$out[] = [
+					'colaboradores_id' => (int) $r['colaboradores_id'],
+					'apelido'          => $c['apelido'],
+					'carteira'         => $c['carteira'],
+					'valor_btc_brl'    => 0.0,
+					'quantidade_reais' => 0.0,
+					'valor_bitcoin'    => (float) $r['valor_bitcoin'],
+				];
+			}
+			return $out;
+		}
+		$raw = $postInicial['pagamentos_avulsos_json'] ?? '[]';
+		if (! is_string($raw)) {
+			return [];
+		}
+		$decoded = json_decode($raw, true);
+		if (! is_array($decoded)) {
+			return [];
+		}
+		$out = [];
+		foreach ($decoded as $row) {
+			if (! is_array($row)) {
+				continue;
+			}
+			$cid = (int) ($row['colaboradores_id'] ?? 0);
+			if ($cid < 1) {
+				continue;
+			}
+			$c = $colaboradoresModel->find($cid);
+			if ($c === null) {
+				continue;
+			}
+			$vBtc = (float) ($row['valor_bitcoin'] ?? 0);
+			if ($vBtc <= 0) {
+				continue;
+			}
+			$out[] = [
+				'colaboradores_id' => $cid,
+				'apelido'          => $c['apelido'],
+				'carteira'         => $c['carteira'],
+				'valor_btc_brl'    => (float) ($row['valor_btc_brl'] ?? 0),
+				'quantidade_reais' => (float) ($row['quantidade_reais'] ?? 0),
+				'valor_bitcoin'    => $vBtc,
+			];
+		}
+		return $out;
+	}
+
+	/**
+	 * Resumo em TSV (tab): colunas Nome, Endereço (carteira), Valor (BTC) — para colar no Excel; repasse + avulsos por id.
+	 */
+	private function montaRepasseStringUnificada(array $usuarios, array $pagamentos_avulsos): string
+	{
+		$porId = [];
+
+		foreach ($usuarios as $cid => $u) {
+			$cid = (int) $cid;
+			if (($u['endereco'] ?? null) === null || $u['endereco'] === '') {
+				continue;
+			}
+			$porId[$cid] = [
+				'apelido'  => (string) ($u['apelido'] ?? ''),
+				'carteira' => (string) $u['endereco'],
+				'btc'      => (float) ($u['repasse'] ?? 0),
+			];
+		}
+
+		foreach ($pagamentos_avulsos as $av) {
+			$cid = (int) ($av['colaboradores_id'] ?? 0);
+			if ($cid < 1) {
+				continue;
+			}
+			$extra = (float) ($av['valor_bitcoin'] ?? 0);
+			if ($extra <= 0) {
+				continue;
+			}
+			if (isset($porId[$cid])) {
+				$porId[$cid]['btc'] += $extra;
+				if (($porId[$cid]['apelido'] ?? '') === '' && ($av['apelido'] ?? '') !== '') {
+					$porId[$cid]['apelido'] = (string) $av['apelido'];
+				}
+				continue;
+			}
+			$cart = $av['carteira'] ?? null;
+			if ($cart === null || $cart === '') {
+				continue;
+			}
+			$porId[$cid] = [
+				'apelido'  => (string) ($av['apelido'] ?? ''),
+				'carteira' => (string) $cart,
+				'btc'      => $extra,
+			];
+		}
+
+		$sanitiza = static function (string $v): string {
+			return str_replace(["\t", "\r", "\n"], [' ', ' ', ' '], $v);
+		};
+
+		$linhasCorpo = [];
+		foreach ($porId as $row) {
+			if (($row['carteira'] ?? '') === '' || ($row['btc'] ?? 0) <= 0) {
+				continue;
+			}
+			$apelido = trim((string) ($row['apelido'] ?? ''));
+			if ($apelido === '') {
+				$apelido = '—';
+			}
+			$btcTxt = number_format((float) $row['btc'], 8, '.', '');
+			$linhasCorpo[] = $sanitiza($apelido) . "\t" . $sanitiza((string) $row['carteira']) . "\t" . $btcTxt;
+		}
+
+		if ($linhasCorpo === []) {
+			return '';
+		}
+
+		return "Nome\tEndereço (carteira)\tValor (BTC)\n" . implode("\n", $linhasCorpo);
+	}
+
+	private function gravaPagamentosAvulsos(BaseConnection $db, int $pagamentosId, array $post): void
+	{
+		if ($pagamentosId < 1) {
+			return;
+		}
+		$raw = $post['pagamentos_avulsos_json'] ?? '[]';
+		if (! is_string($raw)) {
+			return;
+		}
+		$decoded = json_decode($raw, true);
+		if (! is_array($decoded) || $decoded === []) {
+			return;
+		}
+		$pagExiste = $db->table('pagamentos')->select('id')->where('id', $pagamentosId)->get()->getRowArray();
+		if ($pagExiste === null) {
+			throw new \RuntimeException(
+				'pagamentos.id=' . $pagamentosId . ' não encontrado antes de gravar pagamentos_avulsos.'
+			);
+		}
+		$agora = Time::now()->toDateTimeString();
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		foreach ($decoded as $row) {
+			if (! is_array($row)) {
+				continue;
+			}
+			$cid = (int) ($row['colaboradores_id'] ?? 0);
+			if ($cid < 1 || $colaboradoresModel->find($cid) === null) {
+				continue;
+			}
+			$vBtc = (float) ($row['valor_bitcoin'] ?? 0);
+			if ($vBtc <= 0) {
+				continue;
+			}
+			$dadosAvulso = [
+				'pagamentos_id'    => $pagamentosId,
+				'colaboradores_id' => $cid,
+				'valor_bitcoin'    => $vBtc,
+				'criado'           => $agora,
+				'atualizado'       => $agora,
+			];
+			try {
+				$ok = $db->table('pagamentos_avulsos')->insert($dadosAvulso);
+			} catch (\Throwable $e) {
+				throw new \RuntimeException(
+					'Erro SQL em pagamentos_avulsos (pagamentos_id=' . $pagamentosId . ', colaborador ' . $cid . '): ' . $e->getMessage(),
+					0,
+					$e
+				);
+			}
+			if ($ok === false) {
+				$err = $db->error();
+				$msg = isset($err['message']) ? (string) $err['message'] : json_encode($err);
+				throw new \RuntimeException(
+					'Insert em pagamentos_avulsos retornou false (pagamentos_id=' . $pagamentosId . ', colaborador ' . $cid . '): ' . $msg
+				);
+			}
+		}
+	}
+
 	private function geraPreviewPagamento($post)
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('8');
 
 		$data = array();
+		$postInicial = $post;
 		$pagamentos_id = NULL;
 
-		if (isset($post['pagamento_id'])) {
+		if (isset($postInicial['pagamento_id'])) {
 			$pagamentosModel = new \App\Models\PagamentosModel();
-			$pagamentos_id = $post['pagamento_id'];
+			$pagamentos_id = (int) $postInicial['pagamento_id'];
 			$post = $pagamentosModel->find($pagamentos_id);
 		}
 
@@ -1082,13 +1334,15 @@ class Admin extends BaseController
 		if ($data['artigos'] == NULL || empty($data['artigos'])) {
 			$data['artigos'] = NULL;
 			$data['usuarios'] = NULL;
+			$data['pagamentos_avulsos'] = $this->obterPagamentosAvulsosParaPreview($postInicial, $pagamentos_id);
+			$data['repasse_string'] = $this->montaRepasseStringUnificada([], $data['pagamentos_avulsos']);
+			$data['colaboradores_contratados_avulsos'] = $pagamentos_id === null ? $this->obterColaboradoresContratadosParaPrelistaAvulsos() : [];
 			return $data;
 		}
 
 		$usuarios = array();
 		$usuarios_id = array();
 		$pontos_totais = 0;
-		$repasse_string = "";
 		$dados = [
 			'endereco' => null,
 			'apelido' => null,
@@ -1140,11 +1394,12 @@ class Admin extends BaseController
 		foreach ($usuarios as $i => $u) {
 			if ($u['endereco'] != NULL) {
 				$usuarios[$i]['repasse'] = $repasse_bitcoin * ($usuarios[$i]['pontos_total'] / $pontos_totais);
-				$repasse_string .= $usuarios[$i]['endereco'] . ' ' . number_format($usuarios[$i]['repasse'], 8, ',', '.') . "\n";
 			}
 		}
-		$data['repasse_string'] = $repasse_string;
 		$data['usuarios'] = $usuarios;
+		$data['pagamentos_avulsos'] = $this->obterPagamentosAvulsosParaPreview($postInicial, $pagamentos_id);
+		$data['repasse_string'] = $this->montaRepasseStringUnificada($usuarios, $data['pagamentos_avulsos']);
+		$data['colaboradores_contratados_avulsos'] = $pagamentos_id === null ? $this->obterColaboradoresContratadosParaPrelistaAvulsos() : [];
 		return $data;
 	}
 
@@ -1178,81 +1433,105 @@ class Admin extends BaseController
 		$gravar['multiplicador_produzido_noticia'] = $post['multiplicador_produzido_noticia'];
 
 		$gravar['hash_transacao'] = $post['hash_transacao'];
-		//$pagamentosModel->db->transStart();
-		$idPagamentos = $pagamentosModel->insert($gravar);
-		//$pagamentosModel->db->transComplete();
 
-		$faseProducao = $faseProducaoModel->find(6);
-		$faseProducao = $faseProducao['etapa_posterior'];
-		$pontuacaoTotalPagamento = 0;
-		foreach ($artigos as $artigo) {
+		$db = $pagamentosModel->db;
+		$db->transStart();
 
-			$pagamentosArtigosModel->save(
-				array(
-					'artigos_id' => $artigo['id'],
-					'pagamentos_id' => $idPagamentos
-				)
-			);
-
-			$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
-			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_escritor'];
-			if ($colaborador['carteira'] != NULL) {
-				if ($artigo['tipo_artigo'] == 'T') {
-					$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
-				}
-				if ($artigo['tipo_artigo'] == 'N') {
-					$pontos = $gravar['multiplicador_escrito_noticia'] * $artigo['palavras_escritor'] / 100;
-				}
-				$pontuacaoTotalPagamento += $pontos;
-			}
-			$colaboradoresModel->save($colaborador);
-
-			$colaborador = $colaboradoresModel->find($artigo['revisado_colaboradores_id']);
-			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_revisor'];
-			if ($colaborador['carteira'] != NULL) {
-				if ($artigo['tipo_artigo'] == 'T') {
-					$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
-				}
-				if ($artigo['tipo_artigo'] == 'N') {
-					$pontos = $gravar['multiplicador_revisado_noticia'] * $artigo['palavras_escritor'] / 100;
-				}
-				$pontuacaoTotalPagamento += $pontos;
-			}
-			$colaboradoresModel->save($colaborador);
-
-			$colaborador = $colaboradoresModel->find($artigo['narrado_colaboradores_id']);
-			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_narrador'];
-			if ($colaborador['carteira'] != NULL) {
-				if ($artigo['tipo_artigo'] == 'T') {
-					$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
-				}
-				if ($artigo['tipo_artigo'] == 'N') {
-					$pontos = $gravar['multiplicador_narrado_noticia'] * $artigo['palavras_escritor'] / 100;
-				}
-				$pontuacaoTotalPagamento += $pontos;
-			}
-			$colaboradoresModel->save($colaborador);
-
-			$colaborador = $colaboradoresModel->find($artigo['produzido_colaboradores_id']);
-			$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_produtor'];
-			if ($colaborador['carteira'] != NULL) {
-				if ($artigo['tipo_artigo'] == 'T') {
-					$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
-				}
-				if ($artigo['tipo_artigo'] == 'N') {
-					$pontos = $gravar['multiplicador_produzido_noticia'] * $artigo['palavras_escritor'] / 100;
-				}
-
-				$pontuacaoTotalPagamento += $pontos;
-			}
-			$colaboradoresModel->save($colaborador);
-
-			$art = array();
-			$art['atualizado'] = $artigosModel->getNow();
-			$art['fase_producao_id'] = $faseProducao;
-			$artigosModel->update($artigo['id'], $art);
+		// 1. `pagamentos`
+		if (! $pagamentosModel->insert($gravar)) {
+			$db->transRollback();
+			return false;
 		}
-		$pagamentosModel->update($idPagamentos, array('pontuacao_total' => $pontuacaoTotalPagamento));
-		return true;
+		$idPagamentos = (int) $pagamentosModel->getInsertID();
+		if ($idPagamentos < 1) {
+			$idPagamentos = (int) $db->insertID();
+		}
+		if ($idPagamentos < 1) {
+			$db->transRollback();
+			return false;
+		}
+
+		try {
+			// 2. `pagamentos_artigos`, colaboradores, artigos e `pontuacao_total` em `pagamentos`
+			$faseProducao = $faseProducaoModel->find(6);
+			$faseProducao = $faseProducao['etapa_posterior'];
+			$pontuacaoTotalPagamento = 0;
+			foreach ($artigos as $artigo) {
+
+				$pagamentosArtigosModel->save(
+					array(
+						'artigos_id' => $artigo['id'],
+						'pagamentos_id' => $idPagamentos
+					)
+				);
+
+				$colaborador = $colaboradoresModel->find($artigo['escrito_colaboradores_id']);
+				$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_escritor'];
+				if ($colaborador['carteira'] != NULL) {
+					if ($artigo['tipo_artigo'] == 'T') {
+						$pontos = $gravar['multiplicador_escrito'] * $artigo['palavras_escritor'] / 100;
+					}
+					if ($artigo['tipo_artigo'] == 'N') {
+						$pontos = $gravar['multiplicador_escrito_noticia'] * $artigo['palavras_escritor'] / 100;
+					}
+					$pontuacaoTotalPagamento += $pontos;
+				}
+				$colaboradoresModel->save($colaborador);
+
+				$colaborador = $colaboradoresModel->find($artigo['revisado_colaboradores_id']);
+				$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_revisor'];
+				if ($colaborador['carteira'] != NULL) {
+					if ($artigo['tipo_artigo'] == 'T') {
+						$pontos = $gravar['multiplicador_revisado'] * $artigo['palavras_revisor'] / 100;
+					}
+					if ($artigo['tipo_artigo'] == 'N') {
+						$pontos = $gravar['multiplicador_revisado_noticia'] * $artigo['palavras_escritor'] / 100;
+					}
+					$pontuacaoTotalPagamento += $pontos;
+				}
+				$colaboradoresModel->save($colaborador);
+
+				$colaborador = $colaboradoresModel->find($artigo['narrado_colaboradores_id']);
+				$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_narrador'];
+				if ($colaborador['carteira'] != NULL) {
+					if ($artigo['tipo_artigo'] == 'T') {
+						$pontos = $gravar['multiplicador_narrado'] * $artigo['palavras_narrador'] / 100;
+					}
+					if ($artigo['tipo_artigo'] == 'N') {
+						$pontos = $gravar['multiplicador_narrado_noticia'] * $artigo['palavras_escritor'] / 100;
+					}
+					$pontuacaoTotalPagamento += $pontos;
+				}
+				$colaboradoresModel->save($colaborador);
+
+				$colaborador = $colaboradoresModel->find($artigo['produzido_colaboradores_id']);
+				$colaborador['pontuacao_total'] = $colaborador['pontuacao_total'] + $artigo['palavras_produtor'];
+				if ($colaborador['carteira'] != NULL) {
+					if ($artigo['tipo_artigo'] == 'T') {
+						$pontos = $gravar['multiplicador_produzido'] * $artigo['palavras_produtor'] / 100;
+					}
+					if ($artigo['tipo_artigo'] == 'N') {
+						$pontos = $gravar['multiplicador_produzido_noticia'] * $artigo['palavras_escritor'] / 100;
+					}
+
+					$pontuacaoTotalPagamento += $pontos;
+				}
+				$colaboradoresModel->save($colaborador);
+
+				$art = array();
+				$art['atualizado'] = $artigosModel->getNow();
+				$art['fase_producao_id'] = $faseProducao;
+				$artigosModel->update($artigo['id'], $art);
+			}
+			$pagamentosModel->update($idPagamentos, array('pontuacao_total' => $pontuacaoTotalPagamento));
+
+			// 3. Pagamentos avulsos — depois de `pagamentos` e `pagamentos_artigos` (e demais atualizações do laço).
+			$this->gravaPagamentosAvulsos($db, $idPagamentos, $post);
+		} catch (\Throwable $e) {
+			$db->transRollback();
+			throw $e;
+		}
+
+		return (bool) $db->transComplete();
 	}
 }

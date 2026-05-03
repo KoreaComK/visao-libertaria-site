@@ -5,6 +5,7 @@ use CodeIgniter\I18n\Time;
 ?>
 <?php helper('data') ?>
 <?php if ($artigos !== NULL && !empty($artigos)): ?>
+	<div id="pagamento_preview_tem_artigos" class="d-none" aria-hidden="true"></div>
 	<h5>Artigos Pendentes de Pagamento</h5>
 	<table class="table table-striped">
 		<thead>
@@ -111,63 +112,76 @@ use CodeIgniter\I18n\Time;
 	</table>
 <?php endif; ?>
 
-<?php if ($usuarios !== NULL && !empty($usuarios)): ?>
-	<div class="d-flex justify-content-center mb-5 text-left">
-		<div class="w-100" novalidate="yes" method="post" id="pagamentos_form">
-			<div class="d-flex justify-content-between align-items-center gap-2 mb-1">
-				<label class="form-label small text-muted mb-0" for="repasse_electrum">Copie e cole o pagamento na Electrum</label>
-				<button type="button" class="btn btn-primary btn-sm" id="btn-copiar-repasse-electrum">
-					<i class="fas fa-copy me-1" aria-hidden="true"></i>Copiar repasse
-				</button>
-			</div>
-			<textarea id="repasse_electrum" class="form-control form-control-sm" <?= isset($pagamentos_id) ? ('disabled') : (''); ?>
-				rows="10"><?= $repasse_string; ?></textarea>
-		</div>
-
-	</div>
-	<script>
-		$(document).ready(function () {
-			$('#btn-copiar-repasse-electrum').on('click', function () {
-				var valor = ($('#repasse_electrum').val() || '').toString();
-				if (!valor) {
-					if (typeof popMessage === 'function') {
-						popMessage('ATENÇÃO', 'Não há conteúdo para copiar.', TOAST_STATUS.DANGER);
-					}
-					return;
-				}
-				if (navigator.clipboard && navigator.clipboard.writeText) {
-					navigator.clipboard.writeText(valor).then(function () {
-						if (typeof popMessage === 'function') {
-							popMessage('Sucesso!', 'Repasse copiado.', TOAST_STATUS.SUCCESS);
-						}
-					}).catch(function () {
-						if (typeof popMessage === 'function') {
-							popMessage('ATENÇÃO', 'Não foi possível copiar o repasse.', TOAST_STATUS.DANGER);
-						}
-					});
-					return;
-				}
-				$('#repasse_electrum').trigger('select');
-				try {
-					document.execCommand('copy');
-					if (typeof popMessage === 'function') {
-						popMessage('Sucesso!', 'Repasse copiado.', TOAST_STATUS.SUCCESS);
-					}
-				} catch (e) {
-					if (typeof popMessage === 'function') {
-						popMessage('ATENÇÃO', 'Não foi possível copiar o repasse.', TOAST_STATUS.DANGER);
-					}
-				}
-			});
-		});
-	</script>
+<?php if (! isset($pagamentos_id)): ?>
+	<?= view('colaboradores/partials/pagamentos_avulsos_colaboradores_form'); ?>
+	<div id="pagamentos_avulsos_prelista_json" class="d-none" data-json="<?= esc(json_encode($colaboradores_contratados_avulsos ?? []), 'attr'); ?>"></div>
 <?php endif; ?>
 
-<?php if ($usuarios == NULL || empty($usuarios)): ?>
+<?php if (! empty($pagamentos_avulsos ?? [])): ?>
+	<?php $avulsosConsultaSalva = isset($pagamentos_id); ?>
+	<h5 class="mt-4">Pagamentos avulsos</h5>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th scope="col">Colaborador</th>
+				<?php if (! $avulsosConsultaSalva): ?>
+					<th scope="col">Valor do bitcoin em reais</th>
+					<th scope="col">Quantidade em reais</th>
+				<?php endif; ?>
+				<th scope="col">Valor pagamento (BTC)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ($pagamentos_avulsos as $av): ?>
+				<tr>
+					<th scope="row"><?= esc($av['apelido'] ?? ''); ?></th>
+					<?php if (! $avulsosConsultaSalva): ?>
+						<td><?= number_format((float) ($av['valor_btc_brl'] ?? 0), 2, ',', '.'); ?></td>
+						<td><?= number_format((float) ($av['quantidade_reais'] ?? 0), 2, ',', '.'); ?></td>
+					<?php endif; ?>
+					<td><?= number_format((float) ($av['valor_bitcoin'] ?? 0), 8, ',', '.'); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php endif; ?>
+
+<?php
+$temRepasseElectrum = ($usuarios !== null && ! empty($usuarios))
+	|| (isset($repasse_string) && trim((string) $repasse_string) !== '');
+?>
+<?php if ($temRepasseElectrum): ?>
+	<div id="electrum_reveal_wrapper" class="d-none w-100 mb-5">
+		<div class="d-flex justify-content-center text-left">
+			<div class="w-100">
+				<div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+					<label class="form-label small text-muted mb-0" for="repasse_electrum">Resumo de Pagamento</label>
+					<button type="button" class="btn btn-primary btn-sm" id="btn-copiar-repasse-electrum">
+						<i class="fas fa-copy me-1" aria-hidden="true"></i>Copiar resumo
+					</button>
+				</div>
+				<textarea id="repasse_electrum" class="form-control form-control-sm" <?= isset($pagamentos_id) ? ('disabled') : (''); ?>
+					rows="10"><?= $repasse_string; ?></textarea>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
+
+<?php
+$semArtigos = ($artigos === null || empty($artigos));
+$semAvulsos = empty($pagamentos_avulsos ?? []);
+?>
+<?php if ($semArtigos && $semAvulsos): ?>
 	<h5>Não foi encontrado nenhum artigo para ser pago.</h5>
 	<script>
-		$(document).ready(function(){
+		$(document).ready(function () {
 			$('.collapse').hide();
-		})
+		});
+	</script>
+<?php elseif ($semArtigos && ! $semAvulsos): ?>
+	<script>
+		$(document).ready(function () {
+			$('.collapse').show();
+		});
 	</script>
 <?php endif; ?>

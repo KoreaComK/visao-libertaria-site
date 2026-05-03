@@ -269,6 +269,21 @@ use CodeIgniter\I18n\Time;
 											</div>
 										</div>
 									</div>
+									<?php $contratado = ($colaboradores['contratado'] ?? 'N'); ?>
+									<div class="row g-2 mt-2 pt-2 border-top">
+										<div class="col-12">
+											<div class="d-flex align-items-center gap-2 mb-1">
+												<span class="small text-muted">Status de contrato</span>
+												<span class="badge <?= ($contratado === 'S') ? 'bg-primary-subtle text-primary-emphasis border border-primary-subtle' : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; ?> status-contrato-badge">
+													<?= ($contratado === 'S') ? 'Contratado' : 'Não contratado'; ?>
+												</span>
+											</div>
+											<div class="mt-1">
+												<button type="button" class="btn btn-link text-primary p-0 contratado-contratar <?= ($contratado === 'S') ? ('d-none') : (''); ?>">Contratar colaborador</button>
+												<button type="button" class="btn btn-link text-danger p-0 contratado-descontratar <?= ($contratado === 'S') ? ('') : ('d-none'); ?>">Descontratar colaborador</button>
+											</div>
+										</div>
+									</div>
 								</li>
 							</ul>
 						</div>
@@ -667,6 +682,50 @@ use CodeIgniter\I18n\Time;
 							.removeClass('bg-warning-subtle text-warning-emphasis border-warning-subtle')
 							.addClass('bg-success-subtle text-success-emphasis border-success-subtle')
 							.text('Desabilitado');
+					}
+				}
+			});
+		});
+	});
+
+	$('.contratado-contratar').on('click', function () {
+		abrirModalConfirmacao('Tem certeza que deseja marcar este colaborador como contratado?', function () {
+			const form = new FormData();
+			form.append('contratado', 'S');
+			form.append('colaborador_id', colaboradorIdPermissoes);
+			enviarAcaoPermissoes(form, {
+				beforeSend: function () { $('.contratado-contratar, .contratado-descontratar').prop('disabled', true); },
+				complete: function () { $('.contratado-contratar, .contratado-descontratar').prop('disabled', false); },
+				success: function (retorno) {
+					if (retorno.status) {
+						$('.contratado-descontratar').removeClass('d-none');
+						$('.contratado-contratar').addClass('d-none');
+						$('.status-contrato-badge')
+							.removeClass('bg-secondary-subtle text-secondary-emphasis border-secondary-subtle')
+							.addClass('bg-primary-subtle text-primary-emphasis border-primary-subtle')
+							.text('Contratado');
+					}
+				}
+			});
+		});
+	});
+
+	$('.contratado-descontratar').on('click', function () {
+		abrirModalConfirmacao('Tem certeza que deseja descontratar este colaborador?', function () {
+			const form = new FormData();
+			form.append('contratado', 'N');
+			form.append('colaborador_id', colaboradorIdPermissoes);
+			enviarAcaoPermissoes(form, {
+				beforeSend: function () { $('.contratado-contratar, .contratado-descontratar').prop('disabled', true); },
+				complete: function () { $('.contratado-contratar, .contratado-descontratar').prop('disabled', false); },
+				success: function (retorno) {
+					if (retorno.status) {
+						$('.contratado-descontratar').addClass('d-none');
+						$('.contratado-contratar').removeClass('d-none');
+						$('.status-contrato-badge')
+							.removeClass('bg-primary-subtle text-primary-emphasis border-primary-subtle')
+							.addClass('bg-secondary-subtle text-secondary-emphasis border-secondary-subtle')
+							.text('Não contratado');
 					}
 				}
 			});
