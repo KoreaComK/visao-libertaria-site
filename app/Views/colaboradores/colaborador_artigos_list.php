@@ -403,6 +403,28 @@ $metricas = $metricas ?? array(
 	var artigoId = null;
 	var urlMeusArtigosList = '<?= esc(base_url('colaboradores/artigos/meusArtigosList'), 'js'); ?>';
 
+	function miModalInstancia() {
+		var el = document.getElementById('mi-modal');
+		if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+			return null;
+		}
+		return bootstrap.Modal.getOrCreateInstance(el);
+	}
+
+	function miModalAbrir() {
+		var inst = miModalInstancia();
+		if (inst) {
+			inst.show();
+		}
+	}
+
+	function miModalFechar() {
+		var inst = miModalInstancia();
+		if (inst) {
+			inst.hide();
+		}
+	}
+
 	var meusArtigosLoadingHtml = '<div class="d-flex align-items-center justify-content-center gap-2 p-4 text-muted small">' +
 		'<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>' +
 		'<span>Carregando…</span></div>';
@@ -498,8 +520,14 @@ $metricas = $metricas ?? array(
 		refreshMeusPublicados(false);
 	});
 
-	$("#modal-btn-si").on("click", function () {
-		$("#mi-modal").modal('hide');
+	$(document).on('click', '.tabela-meus-producao .btn-descartar', function () {
+		$('.conteudo-modal').html('Deseja realmente descartar este artigo?');
+		artigoId = $(this).attr('data-artigo-id');
+		miModalAbrir();
+	});
+
+	$(document).on('click', '#modal-btn-si', function () {
+		miModalFechar();
 		if (typeof artigoId === 'undefined' || artigoId === null) {
 			return false;
 		}

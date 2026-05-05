@@ -120,15 +120,3 @@ if ($temLinhas) {
 		</div>
 	</div>
 <?php endif; ?>
-<script>
-	(function () {
-		var $root = $('.tabela-meus-producao');
-		$root.find('.btn-tooltip').tooltip();
-
-		$root.find('.btn-descartar').off('click.meusProducao').on('click.meusProducao', function () {
-			$('.conteudo-modal').html('Deseja realmente descartar este artigo?');
-			artigoId = $(this).attr('data-artigo-id');
-			$("#mi-modal").modal('show');
-		});
-	})();
-</script>
