@@ -14,15 +14,13 @@ use CodeIgniter\I18n\Time;
 		</h5>
 		<div>
 			<small>
-				<ul class="nav nav-divider">
-					<li class="nav-item pointer">
-						<div class="d-flex text-muted">
-							<span class="">Sugerido por <a
-									href="<?= site_url('site/colaborador/'); ?><?= urlencode($dados['apelido']); ?>"
-									class="text-muted btn-link"><?= $dados['apelido']; ?></a></span>
-						</div>
+				<ul class="nav align-items-center flex-wrap gap-2 mb-2">
+					<li class="nav-item text-muted">
+						<span>Sugerido por <a
+								href="<?= site_url('site/colaborador/'); ?><?= urlencode($dados['apelido']); ?>"
+								class="text-muted btn-link"><?= $dados['apelido']; ?></a></span>
 					</li>
-					<li class="nav-item pointer text-muted">
+					<li class="nav-item text-muted">
 						<?= Time::createFromFormat('Y-m-d H:i:s', $dados['criado'])->toLocalizedString('dd MMM yyyy'); ?>
 					</li>
 				</ul>

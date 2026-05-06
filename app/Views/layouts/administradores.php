@@ -42,102 +42,46 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 	<!-- MDB -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<?= site_url('public/css/theme-tokens.css'); ?>">
+	<link rel="stylesheet" href="<?= site_url('public/css/theme-dark.css'); ?>">
+	<link rel="stylesheet" href="<?= site_url('public/css/layout-shared.css'); ?>">
 
 	<style type="text/css">
-		.dropdown:hover>.dropdown-menu {
-			display: block;
-			margin-top: -2px;
+		/* Modal de comentários da pauta (template/modal_comentarios_pauta) */
+		#modalComentariosPauta .modal-comentarios-pauta-thumb {
+			width: 112px;
+			height: 84px;
+			object-fit: cover;
+			flex-shrink: 0;
 		}
 
-		.dropdown>.dropdown-toggle:active {
-			/*Without this, clicking will make it sticky*/
-			pointer-events: none;
+		#modalComentariosPauta .modal-comentarios-pauta-texto {
+			max-height: 6.5rem;
+			overflow-y: auto;
+			font-size: 0.875rem;
 		}
 
-		[data-mdb-theme=dark] .card {
-			background-color: var(--mdb-picker-header-bg);
+		#modalComentariosPauta .div-list-comentarios {
+			max-height: min(42vh, 400px);
 		}
 
-		[data-mdb-theme=dark] .text-dark {
-			color: var(--mdb-surface-inverted-color) !important;
+		#modalComentariosPauta #btn-comentarios {
+			color: var(--vl-brand-text);
+			background-color: transparent;
+			border: 2px solid var(--vl-brand-bg);
 		}
 
-		[data-mdb-theme=dark] .bg-dark {
-			background-color: var(--mdb-divider-color) !important;
+		#modalComentariosPauta #btn-comentarios:hover,
+		#modalComentariosPauta #btn-comentarios:focus-visible {
+			background-color: var(--vl-brand-bg);
+			border-color: var(--vl-brand-bg);
+			color: var(--vl-brand-text);
 		}
 
-		[data-mdb-theme=dark] .vl-bg-c {
-			background-color: #d3a901 !important;
-		}
-
-		[data-mdb-theme=dark] a {
-			color: var(--mdb-surface-inverted-color) !important;
-		}
-
-		[data-mdb-theme=dark] .btn-light {
-			background-color: var(--mdb-btn-disabled-color);
-		}
-
-		.btn-link {
-			background: linear-gradient(to right, currentColor 0%, currentColor 100%);
-			background-position-x: 0%;
-			background-position-y: 0%;
-			background-repeat: repeat;
-			background-size: auto;
-			background-size: 0px 6%;
-			background-repeat: no-repeat;
-			background-position: left 100%;
-			-webkit-transition-duration: 0.5s;
-			transition-duration: 0.5s;
-			font-weight: inherit;
-			padding: 0;
-		}
-
-		.btn-link:hover {
-			background-size: 100% 6%;
-		}
-
-		.card-title {
-			line-height: 1.5;
-		}
-
-		.pointer+.pointer:before {
-			content: "\2022";
-			color: inherit;
-			padding-left: .35rem;
-			padding-right: .25rem;
-			opacity: 0.8;
-		}
-
-		.vl-bg-c,
-		.btn-outline-secondary,
-		.btn-primary {
-			background-color: #f3c921 !important;
-			color: #181818;
-		}
-
-		.btn-primary {
-			border-color: #f3c921 !important;
-		}
-
-		a .vl-bg-c:hover {
-			background-color: #e6e6e6 !important;
-		}
-
-		.bg-light {
-			background-color: #e6e6e6;
-			color: #181818;
-		}
-
-		a {
-			color: #4b515c;
-		}
-
-
-		@media screen and (min-width: 600px) {
-			.menu-direita {
-				align-items: start !important;
-			}
+		#modalComentariosPauta #btn-comentarios:active {
+			background-color: var(--vl-brand-bg-dark);
+			border-color: var(--vl-brand-bg-dark);
+			color: var(--vl-brand-text);
 		}
 	</style>
 	<?php
@@ -227,7 +171,7 @@
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg shadow-0 vl-bg-c">
+		<nav class="navbar navbar-expand-lg shadow-0 bg-primary">
 			<div class="container">
 				<div>
 					<a class="navbar-brand mt-2 mt-lg-0" href="<?= site_url('colaboradores/artigos/dashboard'); ?>">
@@ -254,7 +198,7 @@
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
 											class="fas fa-bullhorn"></i> Pautas</a>
-									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuPautasColaboradores">
+									<ul class="dropdown-menu bg-primary" aria-labelledby="menuPautasColaboradores">
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
 										<li> <a class="dropdown-item"
@@ -267,7 +211,7 @@
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" id="menuAdministracaoConfiguracao"><i
 											class="fas fa-wrench"></i> Configurações</a>
-									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuAdministracaoConfiguracao">
+									<ul class="dropdown-menu bg-primary" aria-labelledby="menuAdministracaoConfiguracao">
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/configuracoes'); ?>">Configurações gerais</a> </li>
 										<li> <a class="dropdown-item"
@@ -293,7 +237,7 @@
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" id="menuAdministracaoConfiguracao"><i
 										class="fas fa-user-group"></i> Colaboradores</a>
-									<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuAdministracaoConfiguracao">
+									<ul class="dropdown-menu bg-primary" aria-labelledby="menuAdministracaoConfiguracao">
 										<li> <a class="dropdown-item"
 												href="<?= site_url('colaboradores/admin/permissoes'); ?>">Colaboradores</a> </li>
 										<li> <a class="dropdown-item"
@@ -307,7 +251,7 @@
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#"><i class="far fa-file-lines"></i> 
 									Páginas</a>
-								<ul class="dropdown-menu vl-bg-c" aria-labelledby="menuArtigosColaboradores">
+								<ul class="dropdown-menu bg-primary" aria-labelledby="menuArtigosColaboradores">
 									<?php foreach ($_SESSION['site_config']['paginas']['menu_administrador'] as $pagina): ?>
 										<li> <a class="dropdown-item"
 												href="<?= site_url('site/pagina/' . $pagina['link']); ?>"><?= $pagina['titulo']; ?></a>
@@ -330,7 +274,7 @@
 											<?= $_SESSION['colaboradores']['nome']; ?>
 										</span>
 									</a>
-									<div class="dropdown-menu vl-bg-c" aria-labelledby="navbarDropdownMenuLink">
+									<div class="dropdown-menu bg-primary" aria-labelledby="navbarDropdownMenuLink">
 										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item rounded-top"
 											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
 											Notificações</a>

@@ -47,7 +47,7 @@
 					</td>
 					<td>
 						<span
-							class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>"><?= ($artigo['marcado'] != NULL) ? ($artigo['marcado']) : ('Disponível'); ?></span>
+							class="badge text-bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>"><?= ($artigo['marcado'] != NULL) ? ($artigo['marcado']) : ('Disponível'); ?></span>
 					</td>
 					<td class="small text-muted">
 						<div class="text-nowrap">Últ. Atual.<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMM yyyy'); ?></div>

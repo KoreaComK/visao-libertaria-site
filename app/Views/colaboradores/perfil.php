@@ -15,7 +15,7 @@ use CodeIgniter\I18n\Time;
 					<div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
 							<img src="<?= ($colaboradores['avatar'] != NULL) ? ($colaboradores['avatar']) : (site_url('public/assets/avatar-default.png')); ?>"
-								id="avatar_perfil" class="rounded-circle p-1 bg-primary vl-bg-c" width="110"
+								id="avatar_perfil" class="rounded-circle p-1 bg-primary" width="110"
 								height="110">
 							<div class="mt-3">
 								<h4 class="apelido_colaborador">
@@ -99,6 +99,9 @@ use CodeIgniter\I18n\Time;
 									data-bs-target="#modal-colaboracoes">Ver listagem</a></h6>
 						</div>
 					</div>
+				</div>
+				<div class="mb-3 text-end">
+					<a class="btn btn-outline-secondary" href="<?= site_url('site/noticias'); ?>">Sugerir pauta</a>
 				</div>
 				<div class="row">
 					<div class="col-sm-12 mb-3">

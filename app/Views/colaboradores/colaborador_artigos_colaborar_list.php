@@ -72,7 +72,7 @@
 								<input type="radio" class="btn-check radio" name="fase_producao" id="revisar" value="2"
 									<?= ($primeira['id'] == '2') ? ('checked') : (''); ?>>
 								<label class="colab-fase-label" for="revisar">
-									<span class="colab-fase-icon rounded-2 p-2 bg-primary bg-opacity-10 text-primary flex-shrink-0"><i
+									<span class="colab-fase-icon rounded-2 p-2 text-bg-primary bg-opacity-10 text-primary flex-shrink-0"><i
 											class="fas fa-pen-to-square" aria-hidden="true"></i></span>
 									<span class="text-start colab-fase-text">
 										<span class="d-block fw-bold lh-sm">Revisar</span>
@@ -199,12 +199,22 @@
 	.colab-fase-label:hover {
 		background-color: var(--bs-secondary-bg);
 		border-color: var(--bs-border-color);
+		color: var(--bs-emphasis-color);
+	}
+
+	.colab-fase-label:hover .text-muted {
+		color: var(--bs-emphasis-color) !important;
 	}
 
 	.btn-check:checked+.colab-fase-label {
 		background-color: var(--bs-secondary-bg);
 		border-color: var(--bs-border-color);
 		box-shadow: inset 0 0 0 2px var(--bs-primary);
+		color: var(--bs-emphasis-color);
+	}
+
+	.btn-check:checked+.colab-fase-label .text-muted {
+		color: var(--bs-emphasis-color) !important;
 	}
 
 	.btn-check:focus-visible+.colab-fase-label {

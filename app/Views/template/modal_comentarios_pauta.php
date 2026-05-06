@@ -13,40 +13,6 @@ $comentariosConfig = array_merge([
 ], $comentariosConfig ?? []);
 
 ?>
-<style>
-	/* Resumo compacto à la Fechamento de Pautas, um pouco maior que o thumb 72px da listagem */
-	#modalComentariosPauta .modal-comentarios-pauta-thumb {
-		width: 112px;
-		height: 84px;
-		object-fit: cover;
-		flex-shrink: 0;
-	}
-	#modalComentariosPauta .modal-comentarios-pauta-texto {
-		max-height: 6.5rem;
-		overflow-y: auto;
-		font-size: 0.875rem;
-	}
-	#modalComentariosPauta .div-list-comentarios {
-		max-height: min(42vh, 400px);
-	}
-	/* Outline na cor do tema (administradores: #f3c921) */
-	#modalComentariosPauta #btn-comentarios {
-		color: #181818;
-		background-color: transparent;
-		border: 2px solid #f3c921;
-	}
-	#modalComentariosPauta #btn-comentarios:hover,
-	#modalComentariosPauta #btn-comentarios:focus-visible {
-		background-color: #f3c921;
-		border-color: #f3c921;
-		color: #181818;
-	}
-	#modalComentariosPauta #btn-comentarios:active {
-		background-color: #d3a901;
-		border-color: #d3a901;
-		color: #181818;
-	}
-</style>
 <div class="modal fade" id="modalComentariosPauta" tabindex="-1" aria-labelledby="modalComentariosPautaLabel"
 	aria-hidden="true">
 	<div class="modal-dialog modal-lg modal-dialog-scrollable">

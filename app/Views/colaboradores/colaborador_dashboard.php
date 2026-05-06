@@ -35,7 +35,7 @@
 								class="listagem-artigos-produzindo w-100 d-flex align-items-center gap-2 rounded-2 p-2 border border-transparent text-body pipeline-fase-link"
 								data-fase-producao="2"
 								aria-label="Filtrar listagem por fase Revisando">
-								<span class="pipeline-fase-icon rounded-2 p-2 bg-primary bg-opacity-10 text-primary flex-shrink-0"><i class="fas fa-pen-to-square" aria-hidden="true"></i></span>
+								<span class="pipeline-fase-icon rounded-2 p-2 text-bg-primary bg-opacity-10 text-primary flex-shrink-0"><i class="fas fa-pen-to-square" aria-hidden="true"></i></span>
 								<span class="text-start pipeline-fase-text">
 									<span class="d-block fw-bold lh-sm"><?= ($resumo['revisando'] < 10) ? ('0' . $resumo['revisando']) : ($resumo['revisando']); ?></span>
 									<span class="d-block small text-muted text-truncate">Revisando</span>

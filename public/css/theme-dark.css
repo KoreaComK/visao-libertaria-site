@@ -1,0 +1,32 @@
+/* Overrides compartilhados do tema escuro (MDB/Bootstrap) */
+[data-mdb-theme=dark] .card {
+	background-color: var(--mdb-picker-header-bg);
+}
+
+[data-mdb-theme=dark] .text-dark {
+	color: var(--mdb-surface-inverted-color) !important;
+}
+
+[data-mdb-theme=dark] .bg-dark {
+	background-color: var(--mdb-divider-color) !important;
+}
+
+[data-mdb-theme=dark] .bg-primary {
+	background-color: var(--vl-brand-bg) !important;
+	color: var(--vl-brand-text) !important;
+}
+
+[data-mdb-theme=dark] a {
+	color: var(--mdb-surface-inverted-color) !important;
+}
+
+[data-mdb-theme=dark] .btn-primary,
+[data-mdb-theme=dark] .btn-outline-secondary {
+	background-color: var(--vl-brand-bg) !important;
+	border-color: var(--vl-brand-bg) !important;
+	color: var(--vl-brand-text) !important;
+}
+
+[data-mdb-theme=dark] .btn-light {
+	background-color: var(--mdb-btn-disabled-color);
+}

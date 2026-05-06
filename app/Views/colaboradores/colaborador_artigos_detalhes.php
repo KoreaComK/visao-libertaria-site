@@ -22,7 +22,7 @@
 				<div class="py-2">
 					<!-- <div class="mb-3">
 							<?php //foreach($artigo['categorias'] as $categoria): ?>
-								<span class="badge vl-bg-c m-1 p-1">
+								<span class="badge bg-primary m-1 p-1">
 									<a href="<? //base_url() . 'site/artigos/'.$categoria['id']; ?>"><? //$categoria['nome']; ?></a>
 								</span>
 							<?php //endforeach; ?>

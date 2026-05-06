@@ -1,0 +1,13 @@
+:root {
+	--vl-brand-bg: #f3c921;
+	--vl-brand-bg-hover: #e6e6e6;
+	--vl-brand-bg-dark: #d3a901;
+	--vl-brand-text: #181818;
+	--vl-link-color: #4b515c;
+	--vl-muted-surface: #e6e6e6;
+	--vl-brand-rgb: 243, 201, 33;
+}
+
+[data-mdb-theme=dark] {
+	--vl-brand-bg: var(--vl-brand-bg-dark);
+}

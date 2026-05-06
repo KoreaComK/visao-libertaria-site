@@ -143,7 +143,7 @@
 									<div class="d-flex flex-wrap m-n1">
 										<?php //foreach ($categorias as $categoria) : ?>
 											<div class="btn-group-toggle p-1" data-toggle="buttons">
-												<label class="btn btn-secondary vl-bg-c">
+												<label class="btn btn-secondary bg-primary">
 													<input id="categoria_<? //$categoria['id']; ?>" value="<? //$categoria['id']; ?>" name="categorias[<? //$categoria['id']; ?>]" type="checkbox" <? //in_array($categoria['id'], $categorias_artigo) ? ('checked') : (''); ?>> <? //$categoria['nome']; ?>
 												</label>
 											</div>
