@@ -27,7 +27,7 @@
 	</div>
 
 	<div class="card shadow-sm border-0 mb-4">
-		<div class="card-header bg-white py-3">
+		<div class="card-header py-3">
 			<h5 class="mb-0">Pesquisa de pautas</h5>
 		</div>
 		<div class="card-body">
@@ -48,7 +48,7 @@
 	<div class="row g-4">
 		<div class="col-12 col-lg-8">
 			<div class="card shadow-sm border-0" id="pautas-encontradas-listagem">
-				<div class="card-header bg-white py-3">
+				<div class="card-header py-3">
 					<h5 class="mb-0">Pautas encontradas</h5>
 				</div>
 				<div class="card-body">
@@ -60,7 +60,7 @@
 		</div>
 		<div class="col-12 col-lg-4">
 			<div class="card shadow-sm border-0 sticky-top pautas-closing-resumo-card" style="top: 1rem;">
-				<div class="card-header bg-white py-3">
+				<div class="card-header py-3">
 					<h5 class="mb-0 h6">Reservadas para fechamento</h5>
 					<small class="text-muted d-block mt-1">Estas pautas entram no fechamento ao confirmar “Fechar Pauta”.</small>
 					<div class="d-grid mt-2">

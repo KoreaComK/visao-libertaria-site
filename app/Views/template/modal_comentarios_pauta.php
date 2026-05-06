@@ -56,7 +56,7 @@ $comentariosConfig = array_merge([
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body">
-				<div class="card border-0 bg-light mb-3">
+				<div class="card border-0 bg-body-tertiary mb-3">
 					<div class="card-body py-2 px-3">
 						<div class="d-flex gap-3 align-items-start">
 							<img src="" class="rounded border modalImagem modal-comentarios-pauta-thumb" alt="">
@@ -82,7 +82,7 @@ $comentariosConfig = array_merge([
 					<div class="text-center mb-2">
 						<button class="btn btn-primary btn-sm px-4" id="enviar-comentario" type="button">Enviar comentário</button>
 					</div>
-					<div class="border rounded-2 p-2 bg-white div-list-comentarios overflow-auto small"></div>
+					<div class="border rounded-2 p-2 bg-body-tertiary div-list-comentarios overflow-auto small"></div>
 				</div>
 			</div>
 			<div class="modal-footer">
