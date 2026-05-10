@@ -23,8 +23,7 @@ RUN docker-php-ext-install \
     intl \
     ctype \
     tokenizer \
-    xmlwriter \
-    openssl
+    xmlwriter
 
 # Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug

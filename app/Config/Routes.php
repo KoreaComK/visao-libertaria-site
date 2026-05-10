@@ -75,6 +75,10 @@ $routes->group('colaboradores', ['namespace' => 'App\Controllers\Colaboradores',
     $routes->add('admin/(:any)/(:any)/(:any)', 'Admin::$1/$2/$3');
 });
 
+// RSS and Sitemap routes
+$routes->get('rss', 'Rss::index');
+$routes->get('sitemap.xml', 'Sitemap::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
