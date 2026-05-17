@@ -318,7 +318,7 @@
 	if (localStorage.getItem('dark-mode')) {
 		darkMode = localStorage.getItem('dark-mode');
 	} else {
-		darkMode = 'light';
+		darkMode = 'dark';
 	}
 
 	localStorage.setItem('dark-mode', darkMode);

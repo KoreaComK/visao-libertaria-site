@@ -175,6 +175,7 @@
 		var contatosExcluirLoteUrl = "<?= base_url('colaboradores/admin/contatosExcluirLote'); ?>";
 		var contatoDetalheBase = "<?= base_url('colaboradores/admin/contatoDetalhe/'); ?>";
 		var contatoRespostaBase = "<?= base_url('colaboradores/admin/contatoResposta/'); ?>";
+		var colaboradorPermissoesBase = "<?= rtrim(site_url('colaboradores/admin/permissoes'), '/'); ?>/";
 		var modalContatoIdAtual = null;
 
 		window.contatosId = null;
@@ -422,7 +423,23 @@
 						var c = r.contato;
 						$('#modal-contato-assunto').text(c.assunto || '');
 						$('#modal-contato-email').text(c.email || '');
-						$('#modal-contato-usuario').text(c.apelido ? String(c.apelido) : 'Usuário não cadastrado');
+						var $mu = $('#modal-contato-usuario');
+						$mu.empty();
+						if (c.apelido && c.colaborador_id) {
+							var hrefPerm = colaboradorPermissoesBase + encodeURIComponent(String(c.colaborador_id));
+							$('<a>', {
+								href: hrefPerm,
+								target: '_blank',
+								rel: 'noopener noreferrer',
+								class: 'link-secondary link-underline-opacity-25 link-underline-opacity-100-hover fw-semibold',
+								title: 'Abrir permissões do colaborador numa nova aba'
+							})
+								.append($('<i>', { class: 'fas fa-external-link-alt fa-xs me-1', 'aria-hidden': 'true' }))
+								.append(document.createTextNode(String(c.apelido)))
+								.appendTo($mu);
+						} else {
+							$mu.text(c.apelido ? String(c.apelido) : 'Usuário não cadastrado');
+						}
 						$('#modal-contato-descricao').text(c.descricao || '');
 						$('#modal-contato-resposta').val(c.resposta ? String(c.resposta) : '');
 						var elModal = document.getElementById('modal-resposta-contato');

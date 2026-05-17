@@ -47,7 +47,7 @@ $temLinhas = $artigosPagina !== null && !empty($artigosPagina);
 						</span>
 					</td>
 					<td>
-						<span class="badge bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>">
+						<span class="badge text-bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>">
 							<?= esc($artigo['nome']); ?>
 						</span>
 					</td>

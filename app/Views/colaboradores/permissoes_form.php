@@ -65,7 +65,7 @@ use CodeIgniter\I18n\Time;
 		<div class="col-12">
 			<div class="row g-2 metricas-colaborador">
 				<div class="col-md-6 col-xl-3">
-					<div class="card card-body bg-primary bg-opacity-10 p-3 h-100">
+					<div class="card card-body text-bg-primary bg-opacity-10 p-3 h-100">
 						<h6>Artigos escritos
 							<a tabindex="0" class="hb6 btn-light btn-floating mb-0 btn-tooltip" data-toggle="tooltip"
 								data-placement="top" title="Artigos escritos nos últimos 30 dias">

@@ -158,7 +158,7 @@
 													<input type="text" class="form-control form-control-sm" id="titulo" name="titulo"
 														placeholder="Título do artigo" maxlength="100"
 														value="<?= esc($artigo['titulo'] ?? '', 'attr'); ?>">
-													<div class="form-text text-muted small">O título deve ser chamativo. Deixe as palavras-chave em maiúsculo.</div>
+													<div class="form-text text-muted small">O título deve ser chamativo, com até 100 caracteres. Deixe as palavras-chave em maiúsculo.</div>
 												</div>
 											</div>
 											<!-- Short description -->
@@ -233,8 +233,8 @@
 										<div class="mb-3">
 											<label class="form-label small text-muted mb-1" for="audio">Arquivo de áudio</label>
 											<input type="file" class="form-control form-control-sm" id="audio" name="audio"
-												required aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
-											<small id="audio-formato-help" class="text-muted">O arquivo precisa ser do formato .mp3</small>
+												required aria-describedby="audio-formato-help" accept=".mp3,.mp4,audio/mpeg,video/mp4">
+											<small id="audio-formato-help" class="text-muted">O arquivo precisa ser do formato .mp3 ou .mp4</small>
 										</div>
 										<div
 											class="d-block mb-0 text-start <?= ($artigo['arquivo_audio'] == null) ? ('d-none') : (''); ?> player">

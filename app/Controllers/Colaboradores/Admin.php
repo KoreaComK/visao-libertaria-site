@@ -221,7 +221,7 @@ class Admin extends BaseController
 		}
 
 		$contatosModel = new \App\Models\ContatosModel();
-		$contatosModel->select('contatos.*, contatos_assuntos.assunto, colaboradores.apelido');
+		$contatosModel->select('contatos.*, contatos_assuntos.assunto, colaboradores.apelido, colaboradores.id AS colaborador_id');
 		$contatosModel->join('colaboradores', 'colaboradores.email = contatos.email', 'left');
 		$contatosModel->join('contatos_assuntos', 'contatos.contatos_assuntos_id = contatos_assuntos.id');
 		$contatosModel->where('contatos.id', $id);
@@ -246,6 +246,7 @@ class Admin extends BaseController
 				'assunto' => $row['assunto'] ?? '',
 				'email' => $row['email'] ?? '',
 				'apelido' => $row['apelido'] ?? null,
+				'colaborador_id' => isset($row['colaborador_id']) ? (int) $row['colaborador_id'] : null,
 				'descricao' => $descricao,
 				'resposta' => $row['resposta'] ?? '',
 				'criado' => $row['criado'] ?? '',

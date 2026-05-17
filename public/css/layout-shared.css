@@ -69,3 +69,25 @@ a {
 		align-items: start !important;
 	}
 }
+
+/*
+ * Formulários de artigo (admin + colaborador): MDB pode impor altura em textarea.form-control.
+ * IDs #gancho / #referências só existem nesses formulários (área colaboradores).
+ */
+textarea#gancho.form-control.form-control-sm,
+textarea#gancho.form-control {
+	box-sizing: border-box !important;
+	height: auto !important;
+	min-height: 175px !important;
+	resize: vertical !important;
+	field-sizing: fixed;
+}
+
+textarea#referencias.form-control.form-control-sm,
+textarea#referencias.form-control {
+	box-sizing: border-box !important;
+	height: auto !important;
+	min-height: 200px !important;
+	resize: vertical !important;
+	field-sizing: fixed;
+}

@@ -141,8 +141,8 @@
 									<label for="audio">Arquivo de áudio</label>
 									<div class="custom-file">
 										<input type="file" class="form-control" id="audio" name="audio" required
-											aria-describedby="audio" accept=".mp3">
-										<small class="">O arquivo precisa ser do formato .mp3</small>
+											aria-describedby="audio" accept=".mp3,.mp4,audio/mpeg,video/mp4">
+										<small class="">O arquivo precisa ser do formato .mp3 ou .mp4</small>
 									</div>
 								</div>
 								<div

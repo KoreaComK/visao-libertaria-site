@@ -163,7 +163,7 @@ use CodeIgniter\I18n\Time;
 									<input type="text" class="form-control form-control-sm" id="titulo" name="titulo"
 										placeholder="Título do artigo" maxlength="100"
 										value="<?= esc($artigo['titulo']); ?>">
-									<small>O título deve ser chamativo. Deixe as palavras-chave em maiúsculo</small>
+									<small>O título deve ser chamativo, com até 100 caracteres. Deixe as palavras-chave em maiúsculo</small>
 								</div>
 							</div>
 							<div class="col-12">
