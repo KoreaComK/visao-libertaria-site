@@ -303,10 +303,23 @@ class ValidaFormularios extends BaseController
 		$validation->setRules([
 			'audio' => [
 				'label' => 'Arquivo de Áudio',
-				'rules' => 'uploaded[audio]|ext_in[audio,mp3,mp4]|audio_narracao_tamanho[audio]'
+				'rules' => 'uploaded[audio]|ext_in[audio,mp3]|max_size[audio,40960]'
 			],
 		]);
 		$validation->run();
+		return $validation;
+	}
+
+	public function validaFormularioArtigoNarracaoLink($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'link_mp4' => [
+				'label' => 'Link do MP4',
+				'rules' => 'required|max_length[255]|valid_url_strict'
+			],
+		]);
+		$validation->run($post);
 		return $validation;
 	}
 

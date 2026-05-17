@@ -215,6 +215,19 @@
 						</div>
 					</div>
 				</div>
+				<?php
+				$arquivoAudioAdmin = $artigo['arquivo_audio'] ?? null;
+				$tipoAudioAdmin = 'mp3';
+				$linkMp4Admin = '';
+				if ($arquivoAudioAdmin !== null && $arquivoAudioAdmin !== '') {
+					if (strpos($arquivoAudioAdmin, '/assets/audio/') !== false) {
+						$tipoAudioAdmin = 'mp3';
+					} else {
+						$tipoAudioAdmin = 'link_mp4';
+						$linkMp4Admin = $arquivoAudioAdmin;
+					}
+				}
+				?>
 				<div class="accordion-item">
 					<h2 class="accordion-header" id="flush-headingTwo">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -231,18 +244,49 @@
 										enctype='multipart/form-data'>
 										<input type="hidden" name="admin" value="true" />
 										<div class="mb-3">
+											<label class="form-label small text-muted mb-1 d-block">Como deseja enviar a narração?</label>
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="tipo_audio" id="tipo_audio_mp3_admin"
+													value="mp3" <?= ($tipoAudioAdmin === 'mp3') ? 'checked' : ''; ?>>
+												<label class="form-check-label" for="tipo_audio_mp3_admin">Arquivo .mp3</label>
+											</div>
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="tipo_audio" id="tipo_audio_link_mp4_admin"
+													value="link_mp4" <?= ($tipoAudioAdmin === 'link_mp4') ? 'checked' : ''; ?>>
+												<label class="form-check-label" for="tipo_audio_link_mp4_admin">Link do .mp4</label>
+											</div>
+										</div>
+										<div id="narracao-mp3" class="mb-3 <?= ($tipoAudioAdmin === 'link_mp4') ? 'd-none' : ''; ?>">
 											<label class="form-label small text-muted mb-1" for="audio">Arquivo de áudio</label>
 											<input type="file" class="form-control form-control-sm" id="audio" name="audio"
-												required aria-describedby="audio-formato-help" accept=".mp3,.mp4,audio/mpeg,video/mp4">
-											<small id="audio-formato-help" class="text-muted">O arquivo precisa ser do formato .mp3 ou .mp4</small>
+												aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
+											<small id="audio-formato-help" class="text-muted">O arquivo precisa ser do formato .mp3</small>
+										</div>
+										<div id="narracao-link-mp4" class="mb-3 <?= ($tipoAudioAdmin === 'mp3') ? 'd-none' : ''; ?>">
+											<label class="form-label small text-muted mb-1" for="link_mp4">Link do arquivo .mp4</label>
+											<div class="input-group input-group-sm">
+												<span class="input-group-text"><i class="fas fa-link"></i></span>
+												<input type="url" class="form-control" id="link_mp4" name="link_mp4"
+													placeholder="https://..." value="<?= esc($linkMp4Admin, 'attr'); ?>"
+													aria-describedby="link-mp4-help-admin">
+											</div>
+											<small id="link-mp4-help-admin" class="text-muted">Informe o link público do arquivo .mp4</small>
+											<div class="d-grid mt-2">
+												<button type="button" class="btn btn-primary btn-sm" id="btn_salvar_link_mp4">Salvar link</button>
+											</div>
 										</div>
 										<div
 											class="d-block mb-0 text-start <?= ($artigo['arquivo_audio'] == null) ? ('d-none') : (''); ?> player">
-											<audio controls class="w-100 rounded-3 bg-primary audioplayer">
+											<audio controls class="w-100 rounded-3 bg-primary audioplayer <?= ($tipoAudioAdmin === 'link_mp4') ? 'd-none' : ''; ?>">
 												<source
-													src="<?= ($artigo['arquivo_audio'] != null && $artigo['arquivo_audio'] !== '') ? esc($artigo['arquivo_audio'], 'url') : ''; ?>"
+													src="<?= ($tipoAudioAdmin === 'mp3' && $arquivoAudioAdmin != null && $arquivoAudioAdmin !== '') ? esc($arquivoAudioAdmin, 'url') : ''; ?>"
 													type="audio/mpeg" class="source-player">
 											</audio>
+											<video controls class="w-100 rounded-3 bg-primary videoplayer <?= ($tipoAudioAdmin === 'mp3') ? 'd-none' : ''; ?>">
+												<source
+													src="<?= ($tipoAudioAdmin === 'link_mp4' && $arquivoAudioAdmin != null && $arquivoAudioAdmin !== '') ? esc($arquivoAudioAdmin, 'url') : ''; ?>"
+													type="video/mp4" class="source-player-video">
+											</video>
 										</div>
 									</form>
 								</div>
@@ -727,41 +771,101 @@
 		});
 	})
 
+	var formAudio = document.getElementById('artigo_audio');
 	var elAudioInput = document.getElementById('audio');
-	if (elAudioInput) {
-	elAudioInput.addEventListener('change', function (evt) {
-		var file = evt.target.files && evt.target.files[0];
-		if (file) {
-			var form = new FormData(document.getElementById('artigo_audio'));
-			$.ajax({
-				url: "<?= site_url('colaboradores/artigos/salvarAudio/') . $artigo['id']; ?>",
-				method: "POST",
-				data: form,
-				processData: false,
-				contentType: false,
-				cache: false,
-				dataType: "json",
-				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide(); },
-				success: function (retorno) {
-					if (retorno.status) {
-						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$('.player').removeClass('d-none');
-						$('.source-player').attr('src', retorno.parametros.audio);
-						var elAudio = document.querySelector('.audioplayer');
-						if (elAudio) {
-							elAudio.pause();
-							elAudio.load();
-							elAudio.play();
-						}
+	var btnSalvarLinkMp4 = document.getElementById('btn_salvar_link_mp4');
 
-					} else {
-						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-					}
-				}
-			});
+	function toggleTipoNarracaoAdmin(limparInputs) {
+		var tipo = document.querySelector('#artigo_audio input[name="tipo_audio"]:checked');
+		tipo = tipo ? tipo.value : 'mp3';
+		document.getElementById('narracao-mp3').classList.toggle('d-none', tipo !== 'mp3');
+		document.getElementById('narracao-link-mp4').classList.toggle('d-none', tipo !== 'link_mp4');
+		if (limparInputs) {
+			if (elAudioInput) {
+				elAudioInput.value = '';
+			}
+			var elLinkMp4 = document.getElementById('link_mp4');
+			if (elLinkMp4) {
+				elLinkMp4.value = '';
+			}
 		}
-	});
+	}
+
+	function atualizarPlayerNarracaoAdmin(url, tipo) {
+		document.querySelectorAll('.player').forEach(function (el) { el.classList.remove('d-none'); });
+		var elAudioPlayer = document.querySelector('.audioplayer');
+		var elVideoPlayer = document.querySelector('.videoplayer');
+		var sourceAudio = document.querySelector('.source-player');
+		var sourceVideo = document.querySelector('.source-player-video');
+		if (tipo === 'link_mp4') {
+			elAudioPlayer.classList.add('d-none');
+			elVideoPlayer.classList.remove('d-none');
+			sourceVideo.setAttribute('src', url);
+			elVideoPlayer.pause();
+			elVideoPlayer.load();
+			elVideoPlayer.play();
+		} else {
+			elVideoPlayer.classList.add('d-none');
+			elAudioPlayer.classList.remove('d-none');
+			sourceAudio.setAttribute('src', url);
+			elAudioPlayer.pause();
+			elAudioPlayer.load();
+			elAudioPlayer.play();
+		}
+	}
+
+	function enviarNarracaoAdmin(formData) {
+		$.ajax({
+			url: "<?= site_url('colaboradores/artigos/salvarAudio/') . $artigo['id']; ?>",
+			method: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: "json",
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide(); },
+			success: function (retorno) {
+				if (retorno.status) {
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					atualizarPlayerNarracaoAdmin(retorno.parametros.audio, retorno.parametros.tipo_audio || 'mp3');
+				} else {
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+				}
+			}
+		});
+	}
+
+	if (formAudio) {
+		document.querySelectorAll('#artigo_audio input[name="tipo_audio"]').forEach(function (radio) {
+			radio.addEventListener('change', function () {
+				toggleTipoNarracaoAdmin(true);
+			});
+		});
+		toggleTipoNarracaoAdmin(false);
+	}
+
+	if (elAudioInput && formAudio) {
+		elAudioInput.addEventListener('change', function (evt) {
+			var tipo = document.querySelector('#artigo_audio input[name="tipo_audio"]:checked');
+			if (!tipo || tipo.value !== 'mp3') {
+				return;
+			}
+			var file = evt.target.files && evt.target.files[0];
+			if (file) {
+				enviarNarracaoAdmin(new FormData(formAudio));
+			}
+		});
+	}
+
+	if (btnSalvarLinkMp4 && formAudio) {
+		btnSalvarLinkMp4.addEventListener('click', function () {
+			var tipo = document.querySelector('#artigo_audio input[name="tipo_audio"]:checked');
+			if (!tipo || tipo.value !== 'link_mp4') {
+				return;
+			}
+			enviarNarracaoAdmin(new FormData(formAudio));
+		});
 	}
 
 	$('#enviar_informacoes_adicionais').on('click', function () {

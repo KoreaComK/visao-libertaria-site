@@ -129,6 +129,19 @@
 			<?php endif; ?>
 
 			<?php if ($pode_narrar): ?>
+				<?php
+				$arquivoAudioNarracao = $artigo['arquivo_audio'] ?? null;
+				$tipoAudioNarracao = 'mp3';
+				$linkMp4Narracao = '';
+				if ($arquivoAudioNarracao !== null && $arquivoAudioNarracao !== '') {
+					if (strpos($arquivoAudioNarracao, '/assets/audio/') !== false) {
+						$tipoAudioNarracao = 'mp3';
+					} else {
+						$tipoAudioNarracao = 'link_mp4';
+						$linkMp4Narracao = $arquivoAudioNarracao;
+					}
+				}
+				?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
@@ -138,20 +151,51 @@
 							<form class="w-100" novalidate="yes" method="post" id="artigo_form"
 								enctype='multipart/form-data'>
 								<div class="mb-3">
+									<label class="d-block mb-2">Como deseja enviar a narração?</label>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="tipo_audio" id="tipo_audio_mp3"
+											value="mp3" <?= ($tipoAudioNarracao === 'mp3') ? 'checked' : ''; ?>>
+										<label class="form-check-label" for="tipo_audio_mp3">Arquivo .mp3</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="tipo_audio" id="tipo_audio_link_mp4"
+											value="link_mp4" <?= ($tipoAudioNarracao === 'link_mp4') ? 'checked' : ''; ?>>
+										<label class="form-check-label" for="tipo_audio_link_mp4">Link do .mp4</label>
+									</div>
+								</div>
+								<div id="narracao-mp3" class="mb-3 <?= ($tipoAudioNarracao === 'link_mp4') ? 'd-none' : ''; ?>">
 									<label for="audio">Arquivo de áudio</label>
 									<div class="custom-file">
-										<input type="file" class="form-control" id="audio" name="audio" required
-											aria-describedby="audio" accept=".mp3,.mp4,audio/mpeg,video/mp4">
-										<small class="">O arquivo precisa ser do formato .mp3 ou .mp4</small>
+										<input type="file" class="form-control" id="audio" name="audio"
+											aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
+										<small id="audio-formato-help" class="">O arquivo precisa ser do formato .mp3</small>
+									</div>
+								</div>
+								<div id="narracao-link-mp4" class="mb-3 <?= ($tipoAudioNarracao === 'mp3') ? 'd-none' : ''; ?>">
+									<label for="link_mp4">Link do arquivo .mp4</label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-link"></i></span>
+										<input type="url" class="form-control" id="link_mp4" name="link_mp4"
+											placeholder="https://..." value="<?= esc($linkMp4Narracao, 'attr'); ?>"
+											aria-describedby="link-mp4-help">
+									</div>
+									<small id="link-mp4-help" class="text-muted">Informe o link público do arquivo .mp4</small>
+									<div class="d-grid mt-2">
+										<button type="button" class="btn btn-primary btn-sm" id="btn_salvar_link_mp4">Salvar link</button>
 									</div>
 								</div>
 								<div
 									class="d-block mb-2 text-left <?= ($artigo['arquivo_audio'] == NULL) ? ('d-none') : (''); ?> player">
-									<audio controls class="w-100 rounded-3 bg-primary audioplayer">
+									<audio controls class="w-100 rounded-3 bg-primary audioplayer <?= ($tipoAudioNarracao === 'link_mp4') ? 'd-none' : ''; ?>">
 										<source
-											src="<?= ($artigo['arquivo_audio'] != NULL) ? (esc($artigo['arquivo_audio'], 'attr')) : (''); ?>"
-											type="audio/mp3" class="source-player">
+											src="<?= ($tipoAudioNarracao === 'mp3' && $arquivoAudioNarracao != null) ? esc($arquivoAudioNarracao, 'attr') : ''; ?>"
+											type="audio/mpeg" class="source-player">
 									</audio>
+									<video controls class="w-100 rounded-3 bg-primary videoplayer <?= ($tipoAudioNarracao === 'mp3') ? 'd-none' : ''; ?>">
+										<source
+											src="<?= ($tipoAudioNarracao === 'link_mp4' && $arquivoAudioNarracao != null) ? esc($arquivoAudioNarracao, 'attr') : ''; ?>"
+											type="video/mp4" class="source-player-video">
+									</video>
 								</div>
 							</form>
 						</div>
@@ -169,15 +213,34 @@
 			<?php endif; ?>
 
 			<?php if ($pode_produzir): ?>
+				<?php
+				$arquivoAudioProducao = $artigo['arquivo_audio'] ?? '';
+				$audioProducaoEhLinkMp4 = ($arquivoAudioProducao !== '' && strpos($arquivoAudioProducao, '/assets/audio/') === false);
+				?>
 				<div class="col-12">
 					<!-- Chart START -->
 					<div class="card border">
 						<!-- Card body -->
 						<div class="card-body">
 							<!-- Form START -->
-							<audio controls class="w-100 rounded-3 bg-primary">
-								<source src="<?= esc($artigo['arquivo_audio'], 'attr'); ?>" type="audio/mpeg">
-							</audio>
+							<?php if ($audioProducaoEhLinkMp4): ?>
+								<video controls class="w-100 rounded-3 bg-primary mb-2">
+									<source src="<?= esc($arquivoAudioProducao, 'attr'); ?>" type="video/mp4">
+								</video>
+							<?php else: ?>
+								<audio controls class="w-100 rounded-3 bg-primary mb-2">
+									<source src="<?= esc($arquivoAudioProducao, 'attr'); ?>" type="audio/mpeg">
+								</audio>
+							<?php endif; ?>
+							<?php if ($arquivoAudioProducao !== ''): ?>
+								<div class="d-grid mb-3">
+									<a href="<?= esc($arquivoAudioProducao, 'attr'); ?>" class="btn btn-outline"
+										download="<?= esc($artigo['id'] . ($audioProducaoEhLinkMp4 ? '.mp4' : '.mp3'), 'attr'); ?>"
+										<?= $audioProducaoEhLinkMp4 ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
+										<i class="fas fa-download me-1"></i> Baixar narração
+									</a>
+								</div>
+							<?php endif; ?>
 							<form class="w-100" novalidate="yes" method="post" id="artigo_form">
 								<div class="mb-3">
 									<label for="username">Link do Vídeo no YouTube</label>
@@ -414,37 +477,81 @@
 	});
 
 	<?php if ($pode_narrar): ?>
-		audio.onchange = evt => {
-			const [file] = audio.files;
-			if (file) {
-				form = new FormData(artigo_form);
-				$.ajax({
-					url: "<?= site_url('colaboradores/artigos/salvarAudio/') . $artigo['id']; ?>",
-					method: "POST",
-					data: form,
-					processData: false,
-					contentType: false,
-					cache: false,
-					dataType: "json",
-					beforeSend: function () { $('#modal-loading').show(); },
-					complete: function () { $('#modal-loading').hide(); },
-					success: function (retorno) {
-						if (retorno.status) {
-							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-							$('.player').removeClass('d-none');
-							$('.source-player').attr('src', retorno.parametros.audio);
-							var audio = $(".audioplayer")[0];
-							audio.pause();
-							audio.load();
-							audio.play();
-						} else {
-							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-						}
-					},
-					error: tratarErroAjax
-				});
+		function toggleTipoNarracao(limparInputs) {
+			const tipo = document.querySelector('input[name="tipo_audio"]:checked')?.value || 'mp3';
+			$('#narracao-mp3').toggleClass('d-none', tipo !== 'mp3');
+			$('#narracao-link-mp4').toggleClass('d-none', tipo !== 'link_mp4');
+			if (limparInputs) {
+				$('#audio').val('');
+				$('#link_mp4').val('');
 			}
 		}
+
+		function atualizarPlayerNarracao(url, tipo) {
+			$('.player').removeClass('d-none');
+			if (tipo === 'link_mp4') {
+				$('.audioplayer').addClass('d-none');
+				$('.videoplayer').removeClass('d-none');
+				$('.source-player-video').attr('src', url);
+				const elVideo = $('.videoplayer')[0];
+				elVideo.pause();
+				elVideo.load();
+				elVideo.play();
+			} else {
+				$('.videoplayer').addClass('d-none');
+				$('.audioplayer').removeClass('d-none');
+				$('.source-player').attr('src', url);
+				const elAudioPlayer = $('.audioplayer')[0];
+				elAudioPlayer.pause();
+				elAudioPlayer.load();
+				elAudioPlayer.play();
+			}
+		}
+
+		function enviarNarracao(formData) {
+			$.ajax({
+				url: "<?= site_url('colaboradores/artigos/salvarAudio/') . $artigo['id']; ?>",
+				method: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				cache: false,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide(); },
+				success: function (retorno) {
+					if (retorno.status) {
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						atualizarPlayerNarracao(retorno.parametros.audio, retorno.parametros.tipo_audio || 'mp3');
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				},
+				error: tratarErroAjax
+			});
+		}
+
+		$('input[name="tipo_audio"]').on('change', function () {
+			toggleTipoNarracao(true);
+		});
+		toggleTipoNarracao(false);
+
+		audio.onchange = evt => {
+			if (document.querySelector('input[name="tipo_audio"]:checked')?.value !== 'mp3') {
+				return;
+			}
+			const [file] = audio.files;
+			if (file) {
+				enviarNarracao(new FormData(artigo_form));
+			}
+		};
+
+		$('#btn_salvar_link_mp4').on('click', function () {
+			if (document.querySelector('input[name="tipo_audio"]:checked')?.value !== 'link_mp4') {
+				return;
+			}
+			enviarNarracao(new FormData(artigo_form));
+		});
 	<?php endif; ?>
 
 	<?php if ($pode_produzir): ?>

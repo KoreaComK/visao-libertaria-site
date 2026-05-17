@@ -1334,6 +1334,29 @@ class Artigos extends BaseController
 
 	}
 
+	private function finalizarSalvarAudio(array $artigo, $artigoId, array $post, $retorno, string $mensagemSucesso, string $tipoAudio)
+	{
+		if (!isset($post['admin'])) {
+			$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
+		}
+		$isAtualizado = $this->gravarArtigos('update', $artigo, $artigoId);
+		if (!isset($post['admin'])) {
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
+			$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
+		} else {
+			$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o artigo', $artigoId);
+			$this->artigosHistoricos->cadastraHistorico($artigoId, 'alterou', $this->session->get('colaboradores')['id']);
+		}
+		if ($isAtualizado === true) {
+			return $retorno->retorno(true, $mensagemSucesso, true, [
+				'audio' => $artigo['arquivo_audio'],
+				'tipo_audio' => $tipoAudio,
+			]);
+		}
+
+		return $retorno->retorno(false, 'Ocorreu um erro ao atualizar o áudio.', true);
+	}
+
 	public function salvarAudio($artigoId = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('4');
@@ -1359,34 +1382,38 @@ class Artigos extends BaseController
 				if ($this->request->getMethod() == 'post') {
 					$post = $this->request->getPost();
 					$validaFormularios = new \App\Libraries\ValidaFormularios();
+					$tipoAudio = $post['tipo_audio'] ?? 'mp3';
+
+					if ($tipoAudio === 'link_mp4') {
+						$valida = $validaFormularios->validaFormularioArtigoNarracaoLink($post);
+						if (!empty($valida->getErrors())) {
+							return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+						}
+						$linkMp4 = trim($post['link_mp4'] ?? '');
+						if ($linkMp4 === '') {
+							return $retorno->retorno(false, 'Link do MP4 não informado.', true);
+						}
+						$caminhoMp3 = FCPATH . 'public/assets/audio/' . $artigo['id'] . '.mp3';
+						if (is_file($caminhoMp3)) {
+							@unlink($caminhoMp3);
+						}
+						$artigo['arquivo_audio'] = $linkMp4;
+						return $this->finalizarSalvarAudio($artigo, $artigoId, $post, $retorno, 'Link do MP4 atualizado.', 'link_mp4');
+					}
+
 					$imagem = $this->request->getFile('audio');
 					$valida = $validaFormularios->validaFormularioArtigoNarracaoFile();
-					if (empty($valida->getErrors())) {
-						if ($imagem->getName() != '') {
-							$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
-							if ($imagem->move('public/assets/audio', $nome_arquivo, true)) {
-								$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
-								if (!isset($post['admin'])) {
-									$artigo['narrado_colaboradores_id'] = $this->session->get('colaboradores')['id'];
-								}
-								$isAtualizado = $this->gravarArtigos('update', $artigo, $artigoId);
-								if (!isset($post['admin'])) {
-									$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'narrou', 'artigos', 'o artigo', $artigoId);
-									$this->artigosHistoricos->cadastraHistorico($artigoId, 'narrou', $this->session->get('colaboradores')['id']);
-								} else {
-									$this->colaboradoresNotificacoes->cadastraNotificacao($this->session->get('colaboradores')['id'], 'alterou', 'artigos', 'o artigo', $artigoId);
-									$this->artigosHistoricos->cadastraHistorico($artigoId, 'alterou', $this->session->get('colaboradores')['id']);
-								}
-								if ($isAtualizado === true) {
-									return $retorno->retorno(true, 'Arquivo de áudio atualizado.', true, array('audio' => $artigo['arquivo_audio']));
-								} else {
-									return $retorno->retorno(false, 'Ocorreu um erro ao atualizar o áudio.', true);
-								}
-							}
-						}
-					} else {
+					if (!empty($valida->getErrors())) {
 						return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
 					}
+					if ($imagem->getName() != '') {
+						$nome_arquivo = $artigo['id'] . '.' . $imagem->guessExtension();
+						if ($imagem->move('public/assets/audio', $nome_arquivo, true)) {
+							$artigo['arquivo_audio'] = base_url('public/assets/audio/' . $nome_arquivo);
+							return $this->finalizarSalvarAudio($artigo, $artigoId, $post, $retorno, 'Arquivo de áudio atualizado.', 'mp3');
+						}
+					}
+					return $retorno->retorno(false, 'Áudio não enviado.', true);
 				} else {
 					return $retorno->retorno(false, 'Áudio não enviado.', true);
 				}
