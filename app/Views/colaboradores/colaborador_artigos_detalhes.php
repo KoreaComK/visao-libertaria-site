@@ -191,11 +191,6 @@
 											src="<?= ($tipoAudioNarracao === 'mp3' && $arquivoAudioNarracao != null) ? esc($arquivoAudioNarracao, 'attr') : ''; ?>"
 											type="audio/mpeg" class="source-player">
 									</audio>
-									<video controls class="w-100 rounded-3 bg-primary videoplayer <?= ($tipoAudioNarracao === 'mp3') ? 'd-none' : ''; ?>">
-										<source
-											src="<?= ($tipoAudioNarracao === 'link_mp4' && $arquivoAudioNarracao != null) ? esc($arquivoAudioNarracao, 'attr') : ''; ?>"
-											type="video/mp4" class="source-player-video">
-									</video>
 								</div>
 							</form>
 						</div>
@@ -223,11 +218,7 @@
 						<!-- Card body -->
 						<div class="card-body">
 							<!-- Form START -->
-							<?php if ($audioProducaoEhLinkMp4): ?>
-								<video controls class="w-100 rounded-3 bg-primary mb-2">
-									<source src="<?= esc($arquivoAudioProducao, 'attr'); ?>" type="video/mp4">
-								</video>
-							<?php else: ?>
+							<?php if (!$audioProducaoEhLinkMp4): ?>
 								<audio controls class="w-100 rounded-3 bg-primary mb-2">
 									<source src="<?= esc($arquivoAudioProducao, 'attr'); ?>" type="audio/mpeg">
 								</audio>

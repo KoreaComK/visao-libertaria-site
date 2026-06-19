@@ -282,11 +282,6 @@
 													src="<?= ($tipoAudioAdmin === 'mp3' && $arquivoAudioAdmin != null && $arquivoAudioAdmin !== '') ? esc($arquivoAudioAdmin, 'url') : ''; ?>"
 													type="audio/mpeg" class="source-player">
 											</audio>
-											<video controls class="w-100 rounded-3 bg-primary videoplayer <?= ($tipoAudioAdmin === 'mp3') ? 'd-none' : ''; ?>">
-												<source
-													src="<?= ($tipoAudioAdmin === 'link_mp4' && $arquivoAudioAdmin != null && $arquivoAudioAdmin !== '') ? esc($arquivoAudioAdmin, 'url') : ''; ?>"
-													type="video/mp4" class="source-player-video">
-											</video>
 										</div>
 									</form>
 								</div>
