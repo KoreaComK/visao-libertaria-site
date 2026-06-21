@@ -5,7 +5,7 @@
     "homepage": "https://codeigniter.com",
     "license": "MIT",
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "codeigniter4/framework": "^4.0"
     },
     "require-dev": {
@@ -18,7 +18,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "8.0.30"
+            "php": "8.3.31"
         }
     },
     "autoload": {
