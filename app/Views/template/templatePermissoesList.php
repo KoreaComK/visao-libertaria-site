@@ -47,7 +47,7 @@ use CodeIgniter\I18n\Time;
 						</div>
 					</td>
 					<td>
-						<?= Time::createFromFormat('Y-m-d H:i:s', $colaborador['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+						<?= app_time($colaborador['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 					</td>
 					<td>
 						<a href="<?= site_url('colaboradores/admin/permissoes/') . $colaborador['id']; ?>"

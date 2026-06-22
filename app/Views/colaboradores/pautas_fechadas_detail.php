@@ -83,7 +83,7 @@ use CodeIgniter\I18n\Time;
 							<tbody>
 								<?php foreach ($pautas['pautas'] as $pauta): ?>
 									<?php
-									$tCriado = Time::createFromFormat('Y-m-d H:i:s', $pauta['criado']);
+									$tCriado = app_time($pauta['criado']);
 									$dataCurta = $tCriado ? $tCriado->format('d/m/Y') : '';
 									?>
 									<tr>

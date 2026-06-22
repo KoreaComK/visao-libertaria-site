@@ -27,9 +27,9 @@ $temLinhas = $artigosPagina !== null && !empty($artigosPagina);
 					<td class="small">
 						<?php if (!empty($artigo['descartado'])): ?>
 							<span class="text-muted d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.04em;">Descartado</span>
-							<span class="text-nowrap"><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['descartado'])->toLocalizedString('dd MMM yyyy'); ?></span>
+							<span class="text-nowrap"><?= app_time($artigo['descartado'])->toLocalizedString('dd MMM yyyy'); ?></span>
 						<?php elseif (!empty($artigo['publicado'])): ?>
-							<span class="text-nowrap"><?= Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?></span>
+							<span class="text-nowrap"><?= app_time($artigo['publicado'])->toLocalizedString('dd MMM yyyy'); ?></span>
 						<?php else: ?>
 							<span class="text-muted">—</span>
 						<?php endif; ?>

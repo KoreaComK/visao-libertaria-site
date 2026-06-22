@@ -118,7 +118,7 @@ use CodeIgniter\I18n\Time;
 													<?php if ($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
 														<div class="mt-1 mb-1">
 															Limites serão renovados em
-															<?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+															<?= app_time($limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
 														</div>
 													<?php endif; ?>
 													<div class="progress">
@@ -147,7 +147,7 @@ use CodeIgniter\I18n\Time;
 													<?php if ($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
 														<div class="mt-1 mb-1">
 															Limites serão renovados em
-															<?= Time::createFromFormat('Y-m-d H:i:s', $limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
+															<?= app_time($limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
 														</div>
 													<?php endif; ?>
 													<div class="progress">
@@ -400,7 +400,7 @@ use CodeIgniter\I18n\Time;
 							<?php foreach ($lista_pagamentos as $indice => $pagamento): ?>
 								<tr>
 									<th scope="row">
-										<?= Time::createFromFormat('Y-m-d H:i:s', $pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+										<?= app_time($pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
 										</td>
 									<td>
 										<a href="https://mempool.space/pt/tx/<?= $pagamento['hash_transacao']; ?>"

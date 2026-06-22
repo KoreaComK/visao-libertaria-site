@@ -71,7 +71,7 @@ if ($temLinhas) {
 										</div>
 										<p class="small text-muted mb-2 mb-md-3">
 											<i class="far fa-clock me-1" aria-hidden="true"></i>
-											<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMM yyyy'); ?>
+											<?= app_time($artigo['atualizado'])->toLocalizedString('dd MMM yyyy'); ?>
 										</p>
 										<?php if ($artigo['fase_producao_id'] == '1'): ?>
 											<div class="d-flex gap-1 justify-content-end pt-1 border-top border-opacity-50">

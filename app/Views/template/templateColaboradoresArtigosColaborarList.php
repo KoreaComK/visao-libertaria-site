@@ -50,8 +50,8 @@
 							class="badge text-bg-<?= $artigo['cor']; ?> bg-opacity-10 text-<?= $artigo['cor']; ?>"><?= ($artigo['marcado'] != NULL) ? ($artigo['marcado']) : ('Disponível'); ?></span>
 					</td>
 					<td class="small text-muted">
-						<div class="text-nowrap">Últ. Atual.<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['atualizado'])->toLocalizedString('dd MMM yyyy'); ?></div>
-						<div class="text-nowrap">Data Limite <?= Time::createFromFormat('Y-m-d H:i:s', $artigo['limite'])->toLocalizedString('dd MMM yyyy'); ?></div>
+						<div class="text-nowrap">Últ. Atual.<?= app_time($artigo['atualizado'])->toLocalizedString('dd MMM yyyy'); ?></div>
+						<div class="text-nowrap">Data Limite <?= app_time($artigo['limite'])->toLocalizedString('dd MMM yyyy'); ?></div>
 					</td>
 					<td class="text-end">
 						<div class="d-inline-flex flex-wrap gap-2 justify-content-end">

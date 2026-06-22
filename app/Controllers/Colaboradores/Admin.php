@@ -267,10 +267,10 @@ class Admin extends BaseController
 
 			return redirect()->to(base_url() . 'colaboradores/admin/contatos');
 		}
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$post = service('request')->getPost();
 		}
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$respostaTexto = trim((string) ($post['resposta'] ?? ''));
 			if ($respostaTexto === '') {
 				return $retorno->retorno(false, 'Resposta não informada.', true);
@@ -294,7 +294,7 @@ class Admin extends BaseController
 
 		$this->verificaPermissao->PermiteAcesso('9');
 		$contatosModel = new \App\Models\ContatosModel();
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$contatosModel->select("contatos.*, contatos_assuntos.assunto, colaboradores.apelido");
 			$contatosModel->join('colaboradores','colaboradores.email = contatos.email','left');
@@ -362,7 +362,7 @@ class Admin extends BaseController
 		if (!$this->request->isAJAX()) {
 			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
 		}
-		if (strtolower($this->request->getMethod()) !== 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Método inválido.', true);
 		}
 
@@ -455,7 +455,7 @@ class Admin extends BaseController
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$data['atribuicoes'] = $atribuicoesModel->findall();
 
-		if ($idColaboradores != NULL && $this->request->getMethod() == 'get') {
+		if ($idColaboradores != NULL && $this->request->getMethod() === 'GET') {
 			$data['artigos'] = array();
 			$data['pautas'] = array();
 
@@ -577,7 +577,7 @@ class Admin extends BaseController
 					$data['graficos']['base'][$data_base->toLocalizedString('MMM yyyy')] = 0;
 				}
 				foreach ($artigos as $artigo) {
-					$data['graficos']['base'][Time::createFromFormat('Y-m-d H:i:s', $artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
+					$data['graficos']['base'][app_time($artigo['publicado'])->toLocalizedString('MMM yyyy')]++;
 				}
 			}
 
@@ -593,7 +593,7 @@ class Admin extends BaseController
 			return view('colaboradores/permissoes_form', $data);
 		}
 
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$post = service('request')->getPost();
 			if (isset($post['atribuicoes']) && isset($post['colaborador_id'])) {
 				$colaboradoresAtribuicoesModel->db->transStart();
@@ -661,7 +661,7 @@ class Admin extends BaseController
 
 		$this->verificaPermissao->PermiteAcesso('9');
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$colaboradores = $colaboradoresModel->getTodosColaboradores($get['apelido'], $get['email'], $get['atribuicao'], $get['status']);
 			$colaboradoresPaginados = $colaboradores->paginate($config['site_quantidade_listagem'], 'colaboradores');
@@ -683,7 +683,7 @@ class Admin extends BaseController
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
 
 		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id', $get['apelido'])->orderBy('criado', 'DESC');
 			$data['colaboradoresHistoricosList'] = [
@@ -708,7 +708,7 @@ class Admin extends BaseController
 		}
 
 		if ($acao === 'buscarColaboradores') {
-			if ($this->request->getMethod() === 'get') {
+			if ($this->request->getMethod() === 'GET') {
 				$q = trim((string) ($this->request->getGet('q') ?? ''));
 				if ($q === '') {
 					return $this->response->setJSON([]);
@@ -731,7 +731,7 @@ class Admin extends BaseController
 		}
 
 		if ($acao == 'preview') {
-			if ($this->request->getMethod() == 'post') {
+			if ($this->request->getMethod() === 'POST') {
 				$post = service('request')->getPost();
 				$data = array();
 				$data = $this->geraPreviewPagamento($post);
@@ -740,7 +740,7 @@ class Admin extends BaseController
 		}
 
 		if ($acao == 'salvar') {
-			if ($this->request->getMethod() == 'post') {
+			if ($this->request->getMethod() === 'POST') {
 				$post = service('request')->getPost();
 				$post['hash_transacao'] = preg_replace("/[^a-zA-Z0-9]+/", "", $post['hash_transacao']);
 				$data = array();
@@ -771,7 +771,7 @@ class Admin extends BaseController
 		}
 
 		if ($acao == 'detalhe') {
-			if ($this->request->getMethod() == 'post') {
+			if ($this->request->getMethod() === 'POST') {
 				$post = service('request')->getPost();
 				$data = array();
 				$data = $this->geraPreviewPagamento($post);
@@ -857,7 +857,7 @@ class Admin extends BaseController
 		$this->verificaPermissao->PermiteAcesso('7');
 		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
 		$paginasEstaticasModel->where('criado IS NOT NULL');
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$data['estaticasList'] = [
 				'estaticas' => $paginasEstaticasModel->paginate($config['site_quantidade_listagem'], 'estaticas'),
 				'pager' => $paginasEstaticasModel->pager
@@ -875,7 +875,7 @@ class Admin extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 

@@ -13,7 +13,7 @@ class Ancapsubot extends BaseController
 	public function pauta()
 	{
 		$method = $this->request->getMethod();
-		if ($method == 'post') {
+		if ($method === 'POST') {
 			$post = $this->request->getpost();
 			if ($post === false || !empty($post)) {
 				$configuracaoModel = new \App\Models\ConfiguracaoModel();

@@ -41,7 +41,7 @@ $totalReservadas = count($pautasReservadas);
 							<?php endif; ?>
 							<div class="min-w-0 flex-grow-1" style="max-width: 100%;">
 								<div class="fw-medium text-break" style="overflow-wrap: anywhere;">
-									<?= esc(Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMM yyyy')); ?>
+									<?= esc(app_time($pauta['criado'])->toLocalizedString('dd MMM yyyy')); ?>
 									— <?= esc($pauta['titulo'] ?? ''); ?>
 								</div>
 								<div class="text-muted text-break mt-1" style="overflow-wrap: anywhere;">

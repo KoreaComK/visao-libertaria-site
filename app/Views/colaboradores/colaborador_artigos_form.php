@@ -383,7 +383,7 @@ use CodeIgniter\I18n\Time;
 															<?= esc($h['apelido']); ?>
 															<?= esc($h['acao']); ?>
 															<span class="badge badge-pill badge-secondary fw-light">
-																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+																<?= app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
 														</small>
 													</li>
@@ -418,7 +418,7 @@ use CodeIgniter\I18n\Time;
 														<small><button type="button" class="btn btn-link btn-texto-historico p-0 border-0 align-baseline"
 																data-historico-texto-id="<?= esc($h['id']); ?>">
 																Ver texto de
-																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+																<?= app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</button></small>
 													</li>
 												<?php endforeach; ?>

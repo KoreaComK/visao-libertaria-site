@@ -238,7 +238,7 @@ use CodeIgniter\I18n\Time;
 									<div class="d-flex align-items-center gap-2 mb-1">
 										<span class="small text-muted">Colaborador desde</span>
 										<span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
-											<?= ($colaboradores['criado'] !== NULL) ? Time::createFromFormat('Y-m-d H:i:s', $colaboradores['criado'])->toLocalizedString('dd MMMM yyyy') : (''); ?>
+											<?= ($colaboradores['criado'] !== NULL) ? app_time($colaboradores['criado'])->toLocalizedString('dd MMMM yyyy') : (''); ?>
 										</span>
 									</div>
 								</li>

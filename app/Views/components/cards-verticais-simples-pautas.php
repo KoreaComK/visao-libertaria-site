@@ -21,7 +21,7 @@ use CodeIgniter\I18n\Time;
 								class="text-muted btn-link"><?= $dados['apelido']; ?></a></span>
 					</li>
 					<li class="nav-item text-muted">
-						<?= Time::createFromFormat('Y-m-d H:i:s', $dados['criado'])->toLocalizedString('dd MMM yyyy'); ?>
+						<?= app_time($dados['criado'])->toLocalizedString('dd MMM yyyy'); ?>
 					</li>
 				</ul>
 			</small>

@@ -530,7 +530,7 @@
 															<?= esc($h['apelido']); ?>
 															<?= esc($h['acao']); ?>
 															<span class="badge rounded-pill text-bg-secondary fw-light">
-																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+																<?= app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
 														</small>
 													</li>
@@ -567,7 +567,7 @@
 																data-bs-toggle="modal" data-bs-target="#modalVerTextoHistorico"
 																data-historico-texto-id="<?= esc((string) $h['id'], 'attr'); ?>">
 																Ver texto de
-																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+																<?= app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</a></small>
 													</li>
 												<?php endforeach; ?>

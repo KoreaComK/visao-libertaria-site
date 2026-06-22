@@ -53,7 +53,7 @@ $totalRegistros = (int) ($contatosList['total'] ?? 0);
 					<td class="small text-nowrap">
 						<?php
 						try {
-							echo esc(Time::createFromFormat('Y-m-d H:i:s', $contato['criado'])->toLocalizedString('dd MMM yyyy HH:mm'));
+							echo esc(app_time($contato['criado'])->toLocalizedString('dd MMM yyyy HH:mm'));
 						} catch (\Throwable $e) {
 							echo esc($contato['criado'] ?? '');
 						}

@@ -260,7 +260,7 @@ class Pautas extends BaseController
 
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$post = service('request')->getPost();
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$pautasModel = new \App\Models\PautasModel();
@@ -338,7 +338,7 @@ class Pautas extends BaseController
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$pautasModel = new \App\Models\PautasModel();
 			if (!isset($get['pesquisa']) || $get['pesquisa'] == '') {
@@ -361,7 +361,7 @@ class Pautas extends BaseController
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$post = service('request')->getPost();
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$pautasModel = new \App\Models\PautasModel();
@@ -427,7 +427,7 @@ class Pautas extends BaseController
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$config = array();
 		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = $this->request->getGet();
 			$fechamento = isset($get['fechamento']) ? trim((string) $get['fechamento']) : '';
 			$tema = isset($get['tema']) ? trim((string) $get['tema']) : '';
@@ -451,7 +451,7 @@ class Pautas extends BaseController
 		// Mesmo perfil que fecha/consulta pautas (10) e colaboradores com permissão de pauta (1).
 		$this->verificaPermissao->PermiteAcesso(array('1', '10'));
 		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$post = $this->request->getPost();
 			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
 				$comentario = $pautasComentariosModel->find($post['id_comentario']);

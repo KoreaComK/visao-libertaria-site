@@ -38,7 +38,7 @@ $temLinhas = $artigosPagina !== null && !empty($artigosPagina);
 					</td>
 					<td class="small text-nowrap">
 						<?= ($artigo['data_publicado'] != null)
-							? Time::createFromFormat('Y-m-d H:i:s', $artigo['data_publicado'])->toLocalizedString('dd MMM yyyy')
+							? app_time($artigo['data_publicado'])->toLocalizedString('dd MMM yyyy')
 							: '—'; ?>
 					</td>
 					<td>

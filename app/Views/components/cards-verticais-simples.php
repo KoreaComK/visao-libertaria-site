@@ -32,7 +32,7 @@ if ($tipo === 'artigo') {
 $dataPublicacao = '';
 try {
 	if (! empty($dados['publicacao'])) {
-		$dataPublicacao = Time::createFromFormat('Y-m-d H:i:s', $dados['publicacao'])->toLocalizedString('dd MMM yyyy');
+		$dataPublicacao = app_time($dados['publicacao'])->toLocalizedString('dd MMM yyyy');
 	}
 } catch (\Throwable) {
 	$dataPublicacao = '';

@@ -27,7 +27,7 @@ use CodeIgniter\I18n\Time;
 						<?= $colaboradorHistorico['objeto_id'] ?>
 					</td>
 					<td>
-					<?= Time::createFromFormat('Y-m-d H:i:s', $colaboradorHistorico['criado'])->toLocalizedString('dd MMMM yyyy H:mm:ss'); ?>
+					<?= app_time($colaboradorHistorico['criado'])->toLocalizedString('dd MMMM yyyy H:mm:ss'); ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>

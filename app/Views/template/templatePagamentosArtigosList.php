@@ -27,7 +27,7 @@ use CodeIgniter\I18n\Time;
 						<a href="<?= site_url('colaboradores/artigos/detalhamento/' . rawurlencode((string) $artigo['id'])); ?>" target="_blank"><?= $artigo['titulo']; ?></a>
 					</th>
 					<td>
-						<?= Time::createFromFormat('Y-m-d H:i:s', $artigo['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+						<?= app_time($artigo['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 					</td>
 					<td>
 						<?= $artigo['escrito']; ?>

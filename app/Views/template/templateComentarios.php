@@ -8,22 +8,15 @@ use CodeIgniter\I18n\Time;
 <?php if (!empty($comentarios)): ?>
 	<?php foreach ($comentarios as $chave => $comentario): ?>
 		<?php
-		$tsRaw = trim((string) ($comentario['atualizado'] ?? ''));
-		if ($tsRaw === '' || $tsRaw === '0000-00-00 00:00:00') {
-			$tsRaw = trim((string) ($comentario['criado'] ?? ''));
+		$tsRaw = $comentario['atualizado'] ?? null;
+		if ($tsRaw === null || $tsRaw === '' || (string) $tsRaw === '0000-00-00 00:00:00') {
+			$tsRaw = $comentario['criado'] ?? null;
 		}
 		$dataFmt = '';
 		$dtAttr = '';
-		if ($tsRaw !== '' && $tsRaw !== '0000-00-00 00:00:00') {
-			$tObj = Time::createFromFormat('Y-m-d H:i:s', $tsRaw);
-			if ($tObj === false) {
-				try {
-					$tObj = Time::parse($tsRaw);
-				} catch (\Throwable $e) {
-					$tObj = false;
-				}
-			}
-			if ($tObj !== false) {
+		if ($tsRaw !== null && $tsRaw !== '' && (string) $tsRaw !== '0000-00-00 00:00:00') {
+			$tObj = app_time($tsRaw);
+			if ($tObj !== null) {
 				$dataFmt = $tObj->toLocalizedString('dd MMMM yyyy H:mm:ss');
 				$dtAttr = $tObj->format('Y-m-d H:i:s');
 			}

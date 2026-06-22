@@ -98,7 +98,7 @@ class Artigos extends BaseController
 		$data = $this->iniciaVariavel;
 
 		//Carrega formulário artigo apenas para cadastro
-		if ($artigoId == null && $this->request->getMethod() == 'get' && $this->request->getGet('pauta') !== null) {
+		if ($artigoId == null && $this->request->getMethod() === 'GET' && $this->request->getGet('pauta') !== null) {
 			$pautaId = $this->request->getGet('pauta');
 			$pautasModel = new \App\Models\PautasModel();
 			$pauta = $pautasModel->find($pautaId);
@@ -159,7 +159,7 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
@@ -183,7 +183,7 @@ class Artigos extends BaseController
 					<small>
 						' . $h['apelido'] . ' ' . $h['acao'] .
 				'<span class="badge badge-pill badge-secondary fw-light">'
-				. Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') .
+				. app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') .
 				'</span>
 					</small>
 				</li>
@@ -209,7 +209,7 @@ class Artigos extends BaseController
 						data-bs-toggle="modal" data-bs-target="#modalVerTextoHistorico"
 						id="btn-historico" data-historico-texto-id="' . $h['id'] . '" onclick="mostraHistoricoTexto(this);">
 						Ver texto de
-						' . Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '
+						' . app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '
 					</a></small>
 				</li>
 			';
@@ -230,7 +230,7 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
@@ -806,7 +806,7 @@ class Artigos extends BaseController
 
 		$this->verificaPermissao->PermiteAcesso('2');
 		$artigosModel = new \App\Models\ArtigosModel();
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 
 			$artigosModel
@@ -943,7 +943,7 @@ class Artigos extends BaseController
 		$retorno = new \App\Libraries\RetornoPadrao();
 		$nivel_acesso = false;
 
-		if ($this->request->getMethod() != 'get') {
+		if ($this->request->getMethod() !== 'GET') {
 			return false;
 		}
 		$get = service('request')->getGet();
@@ -1136,7 +1136,7 @@ class Artigos extends BaseController
 				->get()->getResultArray();
 
 			if ($historico !== null && !empty($historico)) {
-				return $retorno->retorno(false, 'Você está impossibilitado de marcar este artigo até ' . Time::createFromFormat('Y-m-d H:i:s', $historico[0]['criado'])->addHours(explode(' ', $config['artigo_tempo_bloqueio'])[0])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '.', true);
+				return $retorno->retorno(false, 'Você está impossibilitado de marcar este artigo até ' . app_time($historico[0]['criado'])->addHours(explode(' ', $config['artigo_tempo_bloqueio'])[0])->toLocalizedString('dd MMMM yyyy HH:mm:ss') . '.', true);
 			}
 
 			if ($artigo === null || empty($artigo)) {
@@ -1195,7 +1195,7 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
@@ -1232,7 +1232,7 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
@@ -1379,7 +1379,7 @@ class Artigos extends BaseController
 				$permitido = true;
 			}
 			if ($permitido) {
-				if ($this->request->getMethod() == 'post') {
+				if ($this->request->getMethod() === 'POST') {
 					$post = $this->request->getPost();
 					$validaFormularios = new \App\Libraries\ValidaFormularios();
 					$tipoAudio = $post['tipo_audio'] ?? 'mp3';
@@ -1458,7 +1458,7 @@ class Artigos extends BaseController
 			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
 		}
 
-		if (!$this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
 		}
 
@@ -1494,7 +1494,7 @@ class Artigos extends BaseController
 	{
 		$this->verificaPermissao->PermiteAcesso(array('2'));
 		$artigosComentariosModel = new \App\Models\ArtigosComentariosModel();
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$retorno = new \App\Libraries\RetornoPadrao();
 			$post = $post = $this->request->getPost();
 			if (isset($post['metodo']) && $post['metodo'] == 'excluir') {
@@ -1618,7 +1618,7 @@ class Artigos extends BaseController
 
 	private function revisarArtigo($idArtigo)
 	{
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$artigosModel = new \App\Models\ArtigosModel();
 
 			$post = $this->request->getPost();
@@ -1658,7 +1658,7 @@ class Artigos extends BaseController
 
 	private function cadastrarArtigo()
 	{
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$artigosModel = new \App\Models\ArtigosModel();
 			$session = $this->session->get('colaboradores');
 			$post = $this->request->getPost();
@@ -1698,7 +1698,7 @@ class Artigos extends BaseController
 
 	private function alterarArtigo($idArtigo)
 	{
-		if ($this->request->getMethod() == 'post') {
+		if ($this->request->getMethod() === 'POST') {
 			$artigosModel = new \App\Models\ArtigosModel();
 			$post = $this->request->getPost();
 

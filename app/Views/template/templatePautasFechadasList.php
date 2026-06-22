@@ -27,7 +27,7 @@ $totalLista = (int) ($pautasList['total'] ?? 0);
 				<tr>
 					<th scope="row"><?= esc($pauta['titulo'] ?? ''); ?></th>
 					<td>
-						<?= esc(Time::createFromFormat('Y-m-d H:i:s', $pauta['criado'])->toLocalizedString('dd MMMM yyyy HH:mm')); ?>
+						<?= esc(app_time($pauta['criado'])->toLocalizedString('dd MMMM yyyy HH:mm')); ?>
 					</td>
 					<td class="text-center">
 						<span class="badge text-bg-secondary"><?= $qtd; ?></span>

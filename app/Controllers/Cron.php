@@ -172,7 +172,7 @@ class Cron extends BaseController
 		$cronDiasEmailCarteira = $configuracaoModel->find('cron_email_carteira_data')['config_valor'];
 		$time = new Time('+' . $cronDiasEmailCarteira);
 		$cron_email_carteira = $configuracaoModel->find('cron_email_carteira')['config_valor'];
-		$cron_email_carteira = Time::createFromFormat('Y-m-d', $cron_email_carteira);
+		$cron_email_carteira = app_time($cron_email_carteira);
 		if ($time->getMonth() != $time->today()->getMonth() && $cron_email_carteira->getMonth() != $time->getMonth()) {
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->select("escrito_colaboradores_id,revisado_colaboradores_id,narrado_colaboradores_id,produzido_colaboradores_id");

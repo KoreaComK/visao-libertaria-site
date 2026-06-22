@@ -62,7 +62,7 @@
 															<?= esc($h['apelido']); ?>
 															<?= esc($h['acao']); ?>
 															<span class="badge badge-pill badge-secondary fw-light">
-																<?= Time::createFromFormat('Y-m-d H:i:s', $h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
+																<?= app_time($h['criado'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'); ?>
 															</span>
 														</small>
 													</li>

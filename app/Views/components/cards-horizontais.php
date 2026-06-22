@@ -47,7 +47,7 @@ if (!empty($dados['abrir_nova_aba'])) {
             <ul class="nav nav-divider align-items-center align-middle mt-1 small">
                 <li class="nav-item">
                     <?php if ($dados['publicacao'] != NULL): ?>
-                        <?= Time::createFromFormat('Y-m-d H:i:s', $dados['publicacao'])->toLocalizedString('dd MMM yyyy'); ?>
+                        <?= app_time($dados['publicacao'])->toLocalizedString('dd MMM yyyy'); ?>
                     <?php else: ?>
                         Não publicado
                     <?php endif; ?>

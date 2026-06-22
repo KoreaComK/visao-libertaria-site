@@ -90,7 +90,7 @@ class Site extends BaseController
 			'pager'  => $pautas->pager,
 		];
 
-		$listaSomente = $this->request->getMethod() === 'get'
+		$listaSomente = $this->request->getMethod() === 'GET'
 			&& (
 				isset($get['page_noticias'])
 				|| (
@@ -510,7 +510,7 @@ class Site extends BaseController
 						return $retorno->retorno(false, 'Sua conta está bloqueada indefinidamente.', true);
 					}
 					if ($colaborador['strike_data'] !== NULL && Time::parse($colaborador['strike_data'])->difference(Time::parse(Time::now()))->seconds < 0) {
-						return $retorno->retorno(false, 'Sua conta está bloqueada até ' . Time::createFromFormat('Y-m-d H:i:s', $colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
+						return $retorno->retorno(false, 'Sua conta está bloqueada até ' . app_time($colaborador['strike_data'])->toLocalizedString('dd MMMM yyyy HH:mm:ss'), true);
 					}
 
 					$colaboradoresAtribuicoesModel = new \App\Models\ColaboradoresAtribuicoesModel();
@@ -798,7 +798,7 @@ class Site extends BaseController
 		}
 
 		$artigos = $artigosModel->orderBy('publicado', 'DESC');
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$data['listas'] = [
 				'lista' => $artigos->paginate($config['site_quantidade_listagem'], 'lista'),
 				'pager' => $artigos->pager
@@ -892,7 +892,7 @@ class Site extends BaseController
 		$pautasModel->select('pautas.id AS id, imagem AS imagem, link AS url, titulo AS titulo, apelido AS autor, reservado AS publicacao, texto AS texticulo, \'pauta\' AS tipo_conteudo');
 		$pautasModel->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
 		$pautas = $pautasModel->where('colaboradores_id', $colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado', 'DESC');
-		if ($this->request->getMethod() == 'get') {
+		if ($this->request->getMethod() === 'GET') {
 			$data['listas'] = [
 				'lista' => $pautas->paginate($config['site_quantidade_listagem'], 'lista'),
 				'pager' => $pautas->pager
