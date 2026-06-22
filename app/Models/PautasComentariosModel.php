@@ -125,15 +125,15 @@ class PautasComentariosModel extends Model
 			$dados_inseridos = $dados;
 		}
 		
-		if(!isset($dados_inseridos['id']) && isset($dados['id'])) {
+		if (!isset($dados_inseridos['id']) && isset($dados['id'])) {
 			$dados_inseridos['id'] = $dados['id'][0];
 		}
 
-		$dados_inseridos['colaboradores_id'] = $this->session->get('colaboradores')['id'];
-
-		if (!isset($dados_inseridos['colaboradores_id'])) {
+		$colaborador = $this->session->get('colaboradores');
+		if (! is_array($colaborador) || ! isset($colaborador['id'])) {
 			return $dados;
 		}
+		$dados_inseridos['colaboradores_id'] = $colaborador['id'];
 
 		$inserirArray = [
 			'id' => $colaboradoresHistoricosModel->getNovaUUID(),

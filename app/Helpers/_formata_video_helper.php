@@ -68,3 +68,23 @@ if (!function_exists('cria_link_watch')) {
 		return 'https://www.youtube.com/watch?v=' . $id_video;
 	}
 }
+
+if (!function_exists('projeto_nome_para_url')) {
+	/**
+	 * Converte o nome do projeto para uso na URL (espaços viram hífen).
+	 */
+	function projeto_nome_para_url(string $nome): string
+	{
+		return str_replace(' ', '-', $nome);
+	}
+}
+
+if (!function_exists('projeto_nome_da_url')) {
+	/**
+	 * Converte o segmento da URL de volta para o nome do projeto no banco.
+	 */
+	function projeto_nome_da_url(string $slug): string
+	{
+		return str_replace('-', ' ', $slug);
+	}
+}

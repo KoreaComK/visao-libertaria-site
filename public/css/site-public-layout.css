@@ -760,6 +760,22 @@
 	font-weight: bold;
 }
 
+.vl-site-videos .short-badge {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 2;
+	background: #dc3545;
+	color: #fff;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 0.65rem;
+	font-weight: 700;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
 /* --------------------------------------------------------------------------
  * /site/noticias — grade de pautas (Masonry + infinite scroll, rosto público)
  * -------------------------------------------------------------------------- */

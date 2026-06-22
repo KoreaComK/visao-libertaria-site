@@ -36,7 +36,11 @@
       <div class="section-title-holder">
          <h2>Visão Libertária</h2>
          <div class="gen-btn-container">
-         <a href="<?= site_url('site/videos/Visão Libertária'); ?>" class="gen-button">
+         <?php if (!empty($visao_libertaria_projeto_slug)): ?>
+         <a href="<?= site_url('site/videos/' . $visao_libertaria_projeto_slug); ?>" class="gen-button">
+         <?php else: ?>
+         <a href="<?= site_url('site/videos'); ?>" class="gen-button">
+         <?php endif; ?>
                <div class="gen-button-block">
                   <span class="gen-button-line-left"></span>
                   <span class="gen-button-text">Mais Vídeos</span>
@@ -137,7 +141,7 @@
       <div class="section-title-holder">
          <h2><?= $indice; ?></h2>
          <div class="gen-btn-container">
-            <a href="<?= site_url('site/videos/'.$indice); ?>" class="gen-button">
+            <a href="<?= site_url('site/videos/' . projeto_nome_para_url($indice)); ?>" class="gen-button">
                <div class="gen-button-block">
                   <span class="gen-button-line-left"></span>
                   <span class="gen-button-text">Mais Vídeos</span>

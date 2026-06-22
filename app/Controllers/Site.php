@@ -29,19 +29,23 @@ class Site extends BaseController
 	{
 		// Buscar todos os projetos
 		$projetos = $this->projetosModel->findAll();
+		$data['visao_libertaria_projeto_slug'] = null;
 
 		// Array para armazenar os vídeos por projeto
 		$data['videos_por_projeto'] = [];
 
 		// Para cada projeto, buscar os últimos 10 vídeos
 		foreach ($projetos as $projeto) {
+			if ($data['visao_libertaria_projeto_slug'] === null && mb_stripos($projeto['nome'], 'visão libertária') !== false) {
+				$data['visao_libertaria_projeto_slug'] = projeto_nome_para_url($projeto['nome']);
+			}
 			if ($projeto['listar'] == 'S') {
 				$videos = $this->projetosVideosModel
 					->where('projetos_id', $projeto['id'])
+					->where('short', 0)
 					->orderBy('publicado', 'DESC')
 					->limit(10)->get()->getResultArray();
 
-				// Adicionar os vídeos ao array com o nome do projeto como chave
 				$data['videos_por_projeto'][$projeto['nome']]['videos'] = $videos;
 			}
 		}
@@ -59,6 +63,7 @@ class Site extends BaseController
 		$subquery = $this->projetosModel->db->table('projetos')
 			->select('projetos.*, projetos_videos.*, ROW_NUMBER() OVER(PARTITION BY projetos_videos.projetos_id ORDER BY projetos_videos.publicado DESC) as rn')
 			->join('projetos_videos', 'projetos_videos.projetos_id = projetos.id')
+			->where('projetos_videos.short', 0)
 			->getCompiledSelect();
 
 		$data['videos_destaque'] = $this->projetosModel->db->table("({$subquery}) as ranked_videos")
@@ -147,11 +152,11 @@ class Site extends BaseController
 		$this->projetosVideosModel->join('projetos', 'projetos.id = projetos_videos.projetos_id');
 		$this->projetosVideosModel->orderBy('projetos_videos.publicado', 'DESC');
 
-		// Se um projeto específico foi solicitado, filtrar
-		if ($projeto !== null) {
-			$projeto_decoded = urldecode($projeto);
-			$this->projetosVideosModel->where('projetos.nome', $projeto_decoded);
-			$data['projeto_atual'] = $projeto_decoded;
+		// Se um projeto específico foi solicitado, filtrar pelo nome (slug na URL)
+		if ($projeto !== null && $projeto !== '') {
+			$projetoNome = projeto_nome_da_url($projeto);
+			$this->projetosVideosModel->where('projetos.nome', $projetoNome);
+			$data['projeto_atual'] = $projetoNome;
 		}
 
 		$data['videosList'] = [
@@ -173,10 +178,10 @@ class Site extends BaseController
 		$this->projetosVideosModel->join('projetos', 'projetos.id = projetos_videos.projetos_id');
 		$this->projetosVideosModel->orderBy('projetos_videos.publicado', 'DESC');
 
-		// Se um projeto específico foi solicitado, filtrar
-		if ($projeto !== null) {
-			$projeto_decoded = urldecode($projeto);
-			$this->projetosVideosModel->where('projetos.nome', $projeto_decoded);
+		// Se um projeto específico foi solicitado, filtrar pelo nome (slug na URL)
+		if ($projeto !== null && $projeto !== '') {
+			$projetoNome = projeto_nome_da_url($projeto);
+			$this->projetosVideosModel->where('projetos.nome', $projetoNome);
 		}
 
 		$videos = $this->projetosVideosModel->paginate(10);
@@ -189,6 +194,7 @@ class Site extends BaseController
 			$projeto_nome = htmlspecialchars($video['projeto_nome'] ?? 'Projeto', ENT_QUOTES, 'UTF-8');
 			$video_id = $video['video_id'] ?? '';
 			$publicado = $video['publicado'] ?? '';
+			$ehShort = !empty($video['short']);
 
 			$html .= '<div class="col-lg-3 col-md-4 col-sm-6 mb-4">';
 			$html .= '<div class="card video-card h-100">';
@@ -198,6 +204,9 @@ class Site extends BaseController
 			$html .= '<i class="bi bi-play-circle-fill play-icon"></i>';
 			$html .= '<a href="' . cria_link_watch($video_id) . '" class="gen-video-popup" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>';
 			$html .= '</div>';
+			if ($ehShort) {
+				$html .= '<span class="short-badge">Short</span>';
+			}
 			$html .= '<div class="project-badge">' . $projeto_nome . '</div>';
 			$html .= '</div>';
 			$html .= '<div class="card-body d-flex flex-column">';

@@ -42,13 +42,12 @@ class Cron extends BaseController
 			$pautasModel->withDeleted();
 			$pautas = $pautasModel->get()->getResultArray();
 			foreach ($pautas as $pauta) {
-				$pautasComentariosModel = new \App\Models\PautasComentariosModel();
-				$pautasComentariosModel->where("pautas_id", $pauta['id']);
-				$comentarios = $pautasComentariosModel->get()->getResultArray();
-				foreach ($comentarios as $comentario) {
-					$pautasComentariosModel->delete($comentario['id'], true);
-				}
-				$pautasModel->delete($pauta['id'], true);
+				$pautasModel->db->table('pautas_comentarios')
+					->where('pautas_id', $pauta['id'])
+					->delete();
+
+				$pautasModelExclusao = new \App\Models\PautasModel();
+				$pautasModelExclusao->delete($pauta['id'], true);
 			}
 
 			/*EXCLUSÃO SOFT DO ARTIGO CRIADO ATRAVÉS DE PAUTA DE REDATOR*/
@@ -280,12 +279,14 @@ class Cron extends BaseController
 						$videoCadastrado = $projetosVideosModel->find($video['id']['videoId']);
 						if($videoCadastrado == NULL) {
 							$dataPublicacao = new \DateTime($video['snippet']['publishedAt']);
+							$videoId = $video['id']['videoId'];
 							$dadosVideo = [
-								'video_id' => $video['id']['videoId'],
+								'video_id' => $videoId,
 								'titulo' => $video['snippet']['title'],
 								'projetos_id' => $projeto['id'],
 								'publicado' => $dataPublicacao->format('Y-m-d H:i:s'),
-								'thumbnail' => $video['snippet']['thumbnails']['high']['url']
+								'thumbnail' => $video['snippet']['thumbnails']['high']['url'],
+								'short' => $this->videoEhShort($client, $youtubeApiKey, $projeto['canal_youtube_id'], $videoId),
 							];
 							$projetosVideosModel->insert($dadosVideo);
 						}
@@ -294,5 +295,34 @@ class Cron extends BaseController
 			}
 		}
 		return 'Cron Finalizado';
+	}
+
+	private function videoEhShort($client, string $youtubeApiKey, string $canalYoutubeId, string $videoId): bool
+	{
+		$canalYoutubeId = trim($canalYoutubeId);
+		if ($canalYoutubeId === '' || ! str_starts_with($canalYoutubeId, 'UC')) {
+			return false;
+		}
+
+		$playlistId = 'UUSH' . substr($canalYoutubeId, 2);
+
+		$response = $client->request('GET', 'https://www.googleapis.com/youtube/v3/playlistItems', [
+			'query' => [
+				'key' => $youtubeApiKey,
+				'part' => 'contentDetails',
+				'playlistId' => $playlistId,
+				'videoId' => $videoId,
+				'maxResults' => 1,
+			],
+			'http_errors' => false,
+		]);
+
+		if ($response->getStatusCode() !== 200) {
+			return false;
+		}
+
+		$body = json_decode($response->getBody(), true);
+
+		return ! empty($body['items']);
 	}
 }

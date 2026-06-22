@@ -47,7 +47,7 @@ use CodeIgniter\I18n\Time;
             </a>
             <?php if (isset($projetos) && is_array($projetos)): ?>
                <?php foreach ($projetos as $proj): ?>
-                  <a href="<?= site_url('site/videos/' . urlencode($proj['nome'])); ?>"
+                  <a href="<?= site_url('site/videos/' . projeto_nome_para_url($proj['nome'])); ?>"
                      class="gen-button <?= (isset($projeto_atual) && $projeto_atual === $proj['nome']) ? '' : 'gen-button-outline'; ?>">
                      <div class="gen-button-block">
                         <span class="gen-button-line-left"></span>
@@ -72,6 +72,9 @@ use CodeIgniter\I18n\Time;
                            <a href="<?= cria_link_watch($video['video_id']); ?>" class="gen-video-popup"
                               style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></a>
                         </div>
+                        <?php if (!empty($video['short'])): ?>
+                           <span class="short-badge">Short</span>
+                        <?php endif; ?>
                         <?php if (!isset($projeto_atual)): ?>
                            <div class="project-badge">
                               <?= esc($video['projeto_nome'] ?? 'Projeto'); ?>
