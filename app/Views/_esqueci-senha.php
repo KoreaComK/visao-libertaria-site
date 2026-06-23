@@ -79,7 +79,11 @@
 	</div>
 </div>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
 <script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function () {
 	$('#esqueci').on('submit', function (e) {
 		e.preventDefault();
 	});
@@ -108,6 +112,6 @@
 			}
 		});
 	});
+	});
 </script>
-
 <?= $this->endSection(); ?>

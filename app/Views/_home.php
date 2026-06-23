@@ -60,7 +60,7 @@
 						$ytUaThumb = $ytUa !== null ? cria_url_thumb($ytUa) : base_url('public/assets/imagem-default.png');
 						?>
                      <img src="<?= esc($ytUaThumb, 'attr') ?>"
-                        alt="<?= esc($ua['titulo']) ?>">
+                        alt="<?= esc($ua['titulo']) ?>" loading="lazy">
                         <div class="movie-card-overlay">
                            <i class="bi bi-play-circle-fill play-icon"></i>
                            <!-- O link do popup envolve tudo para ser clicável -->
@@ -98,7 +98,7 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block" style="position: relative; min-height: 400px;">
                <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80"
-                  alt="Stories of the Dark"
+                  alt="Stories of the Dark" loading="lazy"
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
             </div>
          </div>
@@ -114,7 +114,7 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block" style="position: relative; min-height: 400px;">
                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80"
-                  alt="Usuário no computador"
+                  alt="Usuário no computador" loading="lazy"
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
             </div>
          </div>
@@ -130,7 +130,7 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block" style="position: relative; min-height: 400px;">
                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80"
-                  alt="Usuário no computador"
+                  alt="Usuário no computador" loading="lazy"
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
             </div>
          </div>
@@ -161,7 +161,7 @@
 						$thumbV = $ytV !== null ? cria_url_thumb($ytV) : base_url('public/assets/imagem-default.png');
 						?>
                         <img src="<?= esc($thumbV, 'attr') ?>"
-                           alt="<?= esc($v['titulo']) ?>">
+                           alt="<?= esc($v['titulo']) ?>" loading="lazy">
                         <div class="movie-card-overlay">
                            <i class="bi bi-play-circle-fill play-icon"></i>
                            <!-- O link do popup envolve tudo para ser clicável -->
@@ -183,9 +183,12 @@
    </section>
             <?php endforeach; ?>
 
-   <!-- 5. Scripts customizados -->
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
    <script>
-      $(document).ready(function () {
+      document.addEventListener('DOMContentLoaded', function () {
+         $(function () {
          // Inicialização do novo slider customizado
          $('#custom-slider-owl').owlCarousel({
             items: 1,
@@ -229,7 +232,7 @@
             preloader: false,
             fixedContentPos: false
          });
+         });
       });
    </script>
-
 <?= $this->endSection(); ?>

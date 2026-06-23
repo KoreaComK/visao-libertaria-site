@@ -27,27 +27,41 @@ class Site extends BaseController
 
 	public function index()
 	{
-		// Buscar todos os projetos
 		$projetos = $this->projetosModel->findAll();
 		$data['visao_libertaria_projeto_slug'] = null;
-
-		// Array para armazenar os vídeos por projeto
 		$data['videos_por_projeto'] = [];
 
-		// Para cada projeto, buscar os últimos 10 vídeos
 		foreach ($projetos as $projeto) {
 			if ($data['visao_libertaria_projeto_slug'] === null && mb_stripos($projeto['nome'], 'visão libertária') !== false) {
 				$data['visao_libertaria_projeto_slug'] = projeto_nome_para_url($projeto['nome']);
 			}
 			if ($projeto['listar'] == 'S') {
-				$videos = $this->projetosVideosModel
-					->where('projetos_id', $projeto['id'])
-					->where('short', 0)
-					->orderBy('publicado', 'DESC')
-					->limit(10)->get()->getResultArray();
-
-				$data['videos_por_projeto'][$projeto['nome']]['videos'] = $videos;
+				$data['videos_por_projeto'][$projeto['nome']] = ['videos' => []];
 			}
+		}
+
+		$subquery = $this->projetosModel->db->table('projetos')
+			->select('projetos.nome, projetos_videos.*, ROW_NUMBER() OVER(PARTITION BY projetos_videos.projetos_id ORDER BY projetos_videos.publicado DESC) as rn')
+			->join('projetos_videos', 'projetos_videos.projetos_id = projetos.id')
+			->where('projetos_videos.short', 0)
+			->getCompiledSelect();
+
+		$videosRanqueados = $this->projetosModel->db->table("({$subquery}) as ranked_videos")
+			->where('rn <=', 10)
+			->get()
+			->getResultArray();
+
+		$data['videos_destaque'] = array_values(array_filter(
+			$videosRanqueados,
+			static fn ($video) => (int) $video['rn'] <= 2
+		));
+
+		foreach ($videosRanqueados as $video) {
+			$nomeProjeto = $video['nome'];
+			if (! isset($data['videos_por_projeto'][$nomeProjeto])) {
+				continue;
+			}
+			$data['videos_por_projeto'][$nomeProjeto]['videos'][] = $video;
 		}
 
 		// Buscar os últimos 10 artigos
@@ -58,19 +72,6 @@ class Site extends BaseController
 			->limit(10)
 			->get()
 			->getResultArray();
-
-		// Query para vídeos em destaque (mantém a original)
-		$subquery = $this->projetosModel->db->table('projetos')
-			->select('projetos.*, projetos_videos.*, ROW_NUMBER() OVER(PARTITION BY projetos_videos.projetos_id ORDER BY projetos_videos.publicado DESC) as rn')
-			->join('projetos_videos', 'projetos_videos.projetos_id = projetos.id')
-			->where('projetos_videos.short', 0)
-			->getCompiledSelect();
-
-		$data['videos_destaque'] = $this->projetosModel->db->table("({$subquery}) as ranked_videos")
-			->whereIn('rn', array(1, 2))
-			->get()
-			->getResultArray();
-
 
 		$data['active_menu'] = 'home';
 
@@ -543,6 +544,7 @@ class Site extends BaseController
 							'email' => $colaborador['email'],
 							'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
 							'notificacoes' => $quantidadeNotificacoes,
+							'notificacoes_cache_em' => time(),
 							'permissoes' => array(),
 						]
 					];

@@ -172,6 +172,9 @@ class Admin extends BaseController
 				return $retorno->retorno(false, 'Erro ao atualizar as configurações.', true);
 			}
 		}
+
+		$this->invalidarSiteConfig();
+
 		return $retorno->retorno(true, 'Atualização feita com sucesso.', true);
 	}
 

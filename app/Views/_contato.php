@@ -183,7 +183,11 @@ $hcSiteKey = config('Hcaptcha')->siteKey ?? '';
 	</div>
 </div>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
 <script>
+	document.addEventListener('DOMContentLoaded', function () {
 	(function () {
 		var $form = $('#contato');
 		var $btn = $form.find('.btn-submeter');
@@ -244,6 +248,7 @@ $hcSiteKey = config('Hcaptcha')->siteKey ?? '';
 			$('#perfil, #redesocial').addClass('d-none').val('');
 			$('label[for="perfil"], label[for="redesocial"]').addClass('d-none');
 		}
+	});
 	});
 </script>
 

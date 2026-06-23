@@ -110,7 +110,11 @@
 	</div>
 </div>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
 <script>
+	document.addEventListener('DOMContentLoaded', function () {
 	$('.btn-submeter').on('click', function () {
 		$.ajax({
 			type: 'POST',
@@ -129,6 +133,6 @@
 			}
 		});
 	});
+	});
 </script>
-
 <?= $this->endSection(); ?>

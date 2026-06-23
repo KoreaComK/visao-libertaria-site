@@ -20,6 +20,8 @@
 	<?php endif; ?>
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/style.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/site-public-layout.css'); ?>">
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
 	<style>
 		body,
 		p,
@@ -156,20 +158,6 @@
 		}
 	</style>
 
-	<!-- 1. jQuery (DEVE SER O PRIMEIRO) -->
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-	<!-- 2. Bootstrap 5 (o bundle já inclui o Popper.js) -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-	<!-- 3. Outros Plugins -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/jquery.magnific-popup.min.js"></script>
-
-	<!-- 4. Arquivos de funções do tema (se necessário) -->
-	<script rel="stylesheet" href="<?= site_url('public/js/functions.js'); ?>"></script>
-
-
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="<?= current_url(true); ?>" />
 	<meta name="theme-color" content="#F3C921">
@@ -203,27 +191,6 @@
 
 <body>
 	<?= view('components/_loader'); ?>
-	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
-	<script>
-		let toast = {
-			title: '',
-			message: '',
-			status: TOAST_STATUS.SUCCESS,
-			timeout: 3000
-		};
-		Toast.setTheme(TOAST_THEME.DARK);
-		Toast.enableTimers(TOAST_TIMERS.DISABLED);
-		Toast.setMaxCount(10);
-		Toast.enableQueue(true);
-		function popMessage(titulo, mensagem, status) {
-			toast.message = mensagem;
-			toast.title = titulo;
-			toast.status = status;
-			Toast.create(toast);
-		}
-	</script>
 
 	<header id="gen-header" class="gen-header-style-1 gen-has-sticky">
 		<div class="gen-bottom-header">
@@ -371,7 +338,7 @@
 			<div class="row pt-5">
 				<!-- Footer Widget -->
 				<div class="col-md-6 col-lg-4 mb-4">
-					<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;"
+					<img class="img-thumbnail rounded-circle mr-3" style="max-width: 3rem;" loading="lazy"
 						src="<?= (file_exists('public/assets/rodape.png')) ? (site_url('public/assets/rodape.png')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>" />
 					<span class="lead"><?= $_SESSION['site_config']['texto_nome']; ?></span>
 					<p class="mt-2 lh-sm fw-light"><?= $_SESSION['site_config']['texto_rodape']; ?></p>
@@ -492,8 +459,38 @@
 		</div>
 	</footer>
 
+	<!-- Back to Top Button -->
+	<a href="#" id="back-to-top-btn">
+		<i class="bi bi-arrow-up"></i>
+	</a>
+
+	<script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/jquery.magnific-popup.min.js"></script>
+	<script defer src="<?= site_url('public/js/functions.js'); ?>"></script>
+	<script defer
+		src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
 	<script>
-		$(document).ready(function () {
+		document.addEventListener('DOMContentLoaded', function () {
+			var toast = {
+				title: '',
+				message: '',
+				status: TOAST_STATUS.SUCCESS,
+				timeout: 3000
+			};
+			Toast.setTheme(TOAST_THEME.DARK);
+			Toast.enableTimers(TOAST_TIMERS.DISABLED);
+			Toast.setMaxCount(10);
+			Toast.enableQueue(true);
+			window.popMessage = function (titulo, mensagem, status) {
+				toast.message = mensagem;
+				toast.title = titulo;
+				toast.status = status;
+				Toast.create(toast);
+			};
+
+			$(function () {
 			var qs = new URLSearchParams(window.location.search);
 			var deveAbrirLogin = qs.get('openLogin') === '1' || qs.has('url');
 			if (deveAbrirLogin) {
@@ -582,13 +579,10 @@
 				e.preventDefault();
 				$('html, body').animate({ scrollTop: 0 }, '300');
 			});
+			});
 		});
 	</script>
-
-	<!-- Back to Top Button -->
-	<a href="#" id="back-to-top-btn">
-		<i class="bi bi-arrow-up"></i>
-	</a>
+	<?= $this->renderSection('scripts') ?>
 </body>
 
 </html>

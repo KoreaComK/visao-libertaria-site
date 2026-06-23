@@ -21,6 +21,8 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseController extends Controller
 {
+	private const NOTIFICACOES_CACHE_TTL = 60;
+
 	/**
 	 * Instance of the main Request object.
 	 *
@@ -60,7 +62,14 @@ abstract class BaseController extends Controller
 		$this->session = \Config\Services::session();
 		$this->session->start();
 
-		if (!($this->session->has('site_config')) || !isset($this->session->get('colaboradores')['texto_nome'])) {
+		$versaoSiteConfig = $this->obterVersaoSiteConfig();
+		$versaoSessao = $this->session->get('site_config_version');
+
+		$deveRecarregarSiteConfig = ! $this->siteConfigCacheHabilitado()
+			|| ! $this->session->has('site_config')
+			|| $versaoSessao !== $versaoSiteConfig;
+
+		if ($deveRecarregarSiteConfig) {
 			$configuracaoModel = new \App\Models\ConfiguracaoModel();
 
 			$site_nome = json_decode($configuracaoModel->find('site_nome')['config_valor'], true);
@@ -90,7 +99,8 @@ abstract class BaseController extends Controller
 					'paginas' => $paginas_estaticas,
 					'pauta_tamanho_minimo' => $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'],
 					'pauta_tamanho_maximo' => $configuracaoModel->find('pauta_tamanho_maximo')['config_valor']
-				]
+				],
+				'site_config_version' => $versaoSiteConfig,
 			];
 			$this->session->set($estrutura_session);
 		}
@@ -103,6 +113,7 @@ abstract class BaseController extends Controller
 					'email' => null,
 					'avatar' => null,
 					'notificacoes' => 0,
+					'notificacoes_cache_em' => 0,
 					'permissoes' => array()
 				]
 			];
@@ -111,20 +122,88 @@ abstract class BaseController extends Controller
 
 		$this->session = \Config\Services::session();
 		$this->session->start();
-		if ($this->session->has('colaboradores') && $this->session->get('colaboradores')['id'] !== NULL) {
-			$colaboradores = $this->session->get('colaboradores');
-			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
-			$quantidadeNotificacoes = $colaboradoresNotificacoesModel->where('colaboradores_id', $colaboradores['id'])
-				->where('data_visualizado', null)->countAllResults();
-			if (!isset($colaboradores['notificacoes']) || $colaboradores['notificacoes'] !== $quantidadeNotificacoes) {
-				$colaboradores['notificacoes'] = $quantidadeNotificacoes;
-				$this->session->set(array('colaboradores' => $colaboradores));
-			}
-		}
+		$this->atualizarContagemNotificacoesSeNecessario();
 
 		// Preload any models, libraries, etc, here.
 
 		// E.g.: $this->session = \Config\Services::session();
 		$this->session = \Config\Services::session();
+	}
+
+	protected function siteConfigCacheHabilitado(): bool
+	{
+		return getenv('CI_ENVIRONMENT') === 'production';
+	}
+
+	protected function obterVersaoSiteConfig(): string
+	{
+		$arquivo = WRITEPATH . 'cache/site_config_version.txt';
+
+		if (! is_file($arquivo)) {
+			return '0';
+		}
+
+		$versao = trim((string) file_get_contents($arquivo));
+
+		return $versao !== '' ? $versao : '0';
+	}
+
+	protected function invalidarSiteConfig(): void
+	{
+		if ($this->siteConfigCacheHabilitado()) {
+			$arquivo = WRITEPATH . 'cache/site_config_version.txt';
+			$diretorio = dirname($arquivo);
+
+			if (! is_dir($diretorio)) {
+				mkdir($diretorio, 0775, true);
+			}
+
+			file_put_contents($arquivo, (string) time());
+		}
+
+		$this->session->remove('site_config');
+		$this->session->remove('site_config_version');
+	}
+
+	protected function atualizarContagemNotificacoesSeNecessario(): void
+	{
+		if (! $this->session->has('colaboradores')) {
+			return;
+		}
+
+		$colaboradores = $this->session->get('colaboradores');
+		if ($colaboradores['id'] === null) {
+			return;
+		}
+
+		$cacheEm = (int) ($colaboradores['notificacoes_cache_em'] ?? 0);
+		if ($cacheEm > 0 && (time() - $cacheEm) < self::NOTIFICACOES_CACHE_TTL) {
+			return;
+		}
+
+		$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+		$quantidadeNotificacoes = $colaboradoresNotificacoesModel
+			->where('colaboradores_id', $colaboradores['id'])
+			->where('data_visualizado', null)
+			->countAllResults();
+
+		$colaboradores['notificacoes'] = $quantidadeNotificacoes;
+		$colaboradores['notificacoes_cache_em'] = time();
+		$this->session->set(['colaboradores' => $colaboradores]);
+	}
+
+	protected function invalidarCacheNotificacoes(): void
+	{
+		if (! $this->session->has('colaboradores')) {
+			return;
+		}
+
+		$colaboradores = $this->session->get('colaboradores');
+		if ($colaboradores['id'] === null) {
+			return;
+		}
+
+		unset($colaboradores['notificacoes_cache_em']);
+		$this->session->set(['colaboradores' => $colaboradores]);
 	}
 }

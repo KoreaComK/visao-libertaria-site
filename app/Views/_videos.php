@@ -8,11 +8,6 @@ use CodeIgniter\I18n\Time;
 
 <?= $this->section('content'); ?>
 
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-   integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"></script>
-
-<script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
-
 <div class="container-fluid py-3 vl-site-videos">
    <div class="container">
 
@@ -66,7 +61,7 @@ use CodeIgniter\I18n\Time;
                   <div class="card video-card h-100">
                      <div class="video-thumbnail">
                         <img src="<?= cria_url_thumb($video['video_id']); ?>" alt="<?= esc($video['titulo']); ?>"
-                           class="card-img-top">
+                           class="card-img-top" loading="lazy">
                         <div class="play-overlay">
                            <i class="bi bi-play-circle-fill play-icon"></i>
                            <a href="<?= cria_link_watch($video['video_id']); ?>" class="gen-video-popup"
@@ -116,8 +111,15 @@ use CodeIgniter\I18n\Time;
    </div>
 </div>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
+<script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+   integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
 <script>
-   $(document).ready(function () {
+   document.addEventListener('DOMContentLoaded', function () {
+      $(function () {
       // Inicializar Masonry
       var $grid = $('.list-videos').masonry({
          itemSelector: '.video-item'
@@ -189,7 +191,7 @@ use CodeIgniter\I18n\Time;
       });
 
 
+      });
    });
 </script>
-
 <?= $this->endSection(); ?>

@@ -175,6 +175,11 @@ class Perfil extends BaseController
     	->set(['data_visualizado' => $agora])
     	->update();
 
+		$colaboradores = $this->session->get('colaboradores');
+		$colaboradores['notificacoes'] = 0;
+		$colaboradores['notificacoes_cache_em'] = time();
+		$this->session->set(['colaboradores' => $colaboradores]);
+
 
 		if($notificacoes != NULL && !empty($notificacoes)) {
 			$data['notificacoes'] = $notificacoes;

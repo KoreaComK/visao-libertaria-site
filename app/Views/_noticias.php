@@ -3,27 +3,6 @@
 <?= $this->section('content'); ?>
 
 <?php if (isset($_SESSION['colaboradores']['id'])): ?>
-	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
-	<script>
-		let toast = {
-			title: "",
-			message: "",
-			status: TOAST_STATUS.SUCCESS,
-			timeout: 3000
-		};
-		Toast.setTheme(TOAST_THEME.LIGHT);
-		Toast.enableTimers(TOAST_TIMERS.DISABLED);
-		Toast.setMaxCount(10);
-		Toast.enableQueue(true);
-		function popMessage(titulo, mensagem, status) {
-			toast.message = mensagem;
-			toast.title = titulo;
-			toast.status = status;
-			Toast.create(toast);
-		}
-	</script>
 	<div class="modal vl-noticias-loading-overlay" style="z-index:7000;" id="modal-loading" tabindex="-1"
 		aria-labelledby="modal-loadingLabel" aria-hidden="true">
 		<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center justify-content-center">
@@ -33,14 +12,6 @@
 		</div>
 	</div>
 <?php endif; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-	integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"
-	async></script>
-
-<script src="https://cdn.jsdelivr.net/npm/infinite-scroll@4.0.1/dist/infinite-scroll.pkgd.min.js"
-	integrity="sha384-+83ma0Y8eQWtTIhmx2gjueu3BY0XU4gX4EkL12u3M+WPc4SDskKaIpIL7QiB8ikh"
-	crossorigin="anonymous"></script>
 
 <div class="container-fluid py-3 vl-site-noticias">
 	<div class="container">
@@ -260,7 +231,23 @@
 	</div>
 <?php endif; ?>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
+<script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+	integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/infinite-scroll@4.0.1/dist/infinite-scroll.pkgd.min.js"
+	integrity="sha384-+83ma0Y8eQWtTIhmx2gjueu3BY0XU4gX4EkL12u3M+WPc4SDskKaIpIL7QiB8ikh"
+	crossorigin="anonymous"></script>
+<?php if (isset($_SESSION['colaboradores']['id'])): ?>
 <script>
+	document.addEventListener('DOMContentLoaded', function () {
+		Toast.setTheme(TOAST_THEME.LIGHT);
+	});
+</script>
+<?php endif; ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 (function () {
 	var listUrl = <?= json_encode(site_url('site/noticias')); ?>;
 	var debounceMs = 380;
@@ -443,8 +430,6 @@
 		fetchNoticiasList($('#pesquisa').val() != null ? String($('#pesquisa').val()).trim() : '', true);
 	};
 })();
-</script>
-
 <?php if (isset($_SESSION['colaboradores']['id'])): ?>
 <?php
 $pautaListAdminPerm7Modal = in_array('7', $pautaListPermissoes, false);
@@ -452,7 +437,6 @@ $pautaListAplicaLimitesModal = ! $pautaListAdminPerm7Modal;
 $pautaListMinPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta_tamanho_minimo'] : null;
 $pautaListMaxPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta_tamanho_maximo'] : null;
 ?>
-<script>
 (function () {
 	function resetPautaFormUi() {
 		$('#modalSugerirPauta #link').prop('disabled', false);
@@ -725,7 +709,10 @@ $pautaListMaxPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta
 		});
 	};
 })();
+<?php endif; ?>
+});
 </script>
+<?php if (isset($_SESSION['colaboradores']['id'])): ?>
 <?php
 	$pautaListPermissoesRodape = $_SESSION['colaboradores']['permissoes'] ?? [];
 	$pautaListAdminPerm7 = in_array('7', $pautaListPermissoesRodape, false);
@@ -739,20 +726,24 @@ $pautaListMaxPalavrasModal = $pautaListAplicaLimitesModal ? (int) $config['pauta
 		'minPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_minimo'] : null,
 		'maxPalavras'      => $pautaListAplicaLimites ? (int) $config['pauta_tamanho_maximo'] : null,
 	];
-	echo view('template/colaboradores_contagem_palavras_init', ['contagemPalavrasConfig' => $contagemPalavrasListModal]);
-	?>
-<script type="text/javascript">
-	if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
-		window.VL_CONTAGEM_PALAVRAS_INIT();
-	}
+	$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT;
+?>
+<script>
+	window.VL_CONTAGEM_PALAVRAS = <?= json_encode($contagemPalavrasListModal, $jsonFlags); ?>;
+	window.VL_COMENTARIOS = <?= json_encode([
+		'endpointPrefix'   => base_url('colaboradores/pautas/comentarios/'),
+		'entityIdSelector' => '#idPauta',
+		'autoLoad'         => false,
+	], $jsonFlags); ?>;
 </script>
-<?= view('template/colaboradores_comentarios_init', [
-	'comentariosConfig' => [
-		'endpointPrefix'     => base_url('colaboradores/pautas/comentarios/'),
-		'entityIdSelector'   => '#idPauta',
-		'autoLoad'           => false,
-	],
-]); ?>
+<script defer src="<?= site_url('public/js/colaboradores-contagem-palavras.js'); ?>"></script>
+<script defer src="<?= site_url('public/js/colaboradores-comentarios.js'); ?>"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		if (typeof window.VL_CONTAGEM_PALAVRAS_INIT === 'function') {
+			window.VL_CONTAGEM_PALAVRAS_INIT();
+		}
+	});
+</script>
 <?php endif; ?>
-
 <?= $this->endSection(); ?>
