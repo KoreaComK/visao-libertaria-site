@@ -294,6 +294,51 @@ class Cron extends BaseController
 				}
 			}
 		}
+
+		/* Parte relacionada a avançar artigos publicados no YouTube para pagamento */
+		helper('_formata_video');
+
+		$projetosVideosModel = new \App\Models\ProjetosVideosModel();
+		$videoIdsCadastrados = $projetosVideosModel->findColumn('video_id');
+		$videoIdsCadastrados = $videoIdsCadastrados !== null
+			? array_flip($videoIdsCadastrados)
+			: [];
+
+		if ($videoIdsCadastrados !== []) {
+			$artigosModel = new \App\Models\ArtigosModel();
+			$artigosPublicar = $artigosModel
+				->where('fase_producao_id', 5)
+				->where('link_video_youtube IS NOT NULL', null, false)
+				->where('link_video_youtube !=', '')
+				->where('descartado', null)
+				->findAll();
+
+			$artigosModelAtualizacao = new \App\Models\ArtigosModel();
+			$publicadoEm = $artigosModelAtualizacao->getNow();
+
+			foreach ($artigosPublicar as $artigo) {
+				$linkVideo = $artigo['link_video_youtube'];
+				$videoId = extrair_id_video_youtube($linkVideo);
+
+				if ($videoId === null) {
+					foreach (array_keys($videoIdsCadastrados) as $videoIdCadastrado) {
+						if (str_contains($linkVideo, $videoIdCadastrado)) {
+							$videoId = $videoIdCadastrado;
+							break;
+						}
+					}
+				}
+
+				if ($videoId !== null && isset($videoIdsCadastrados[$videoId])) {
+					$artigosModelAtualizacao->update($artigo['id'], [
+						'fase_producao_id' => 6,
+						'publicado_colaboradores_id' => 1,
+						'publicado' => $publicadoEm,
+					]);
+				}
+			}
+		}
+
 		return 'Cron Finalizado';
 	}
 
