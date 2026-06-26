@@ -27,6 +27,31 @@ class Site extends BaseController
 
 	public function index()
 	{
+		if ($this->homeCacheHabilitado() && $this->usuarioAnonimo()) {
+			$cache = \Config\Services::cache();
+			$data = $cache->get($this->chaveCacheHomeAnonima());
+
+			if (is_array($data)) {
+				$data['active_menu'] = 'home';
+
+				return view('_home', $data);
+			}
+		}
+
+		$data = $this->montarDadosHome();
+
+		if ($this->homeCacheHabilitado() && $this->usuarioAnonimo()) {
+			$cache = \Config\Services::cache();
+			$dadosParaCache = $data;
+			unset($dadosParaCache['active_menu']);
+			$cache->save($this->chaveCacheHomeAnonima(), $dadosParaCache, self::HOME_CACHE_TTL);
+		}
+
+		return view('_home', $data);
+	}
+
+	private function montarDadosHome(): array
+	{
 		$projetos = $this->projetosModel->findAll();
 		$data['visao_libertaria_projeto_slug'] = null;
 		$data['videos_por_projeto'] = [];
@@ -64,9 +89,8 @@ class Site extends BaseController
 			$data['videos_por_projeto'][$nomeProjeto]['videos'][] = $video;
 		}
 
-		// Buscar os últimos 10 artigos
 		$data['ultimos_artigos'] = $this->artigosModel
-			->whereIn('fase_producao_id', array(6, 7)) // Apenas artigos ativos
+			->whereIn('fase_producao_id', array(6, 7))
 			->where('descartado', null)
 			->orderBy('publicado', 'DESC')
 			->limit(10)
@@ -75,7 +99,7 @@ class Site extends BaseController
 
 		$data['active_menu'] = 'home';
 
-		return view('_home', $data);
+		return $data;
 	}
 
 	/**
@@ -699,27 +723,10 @@ class Site extends BaseController
 
 		$data = array();
 		$colaborador = $colaborador[0];
-
-		$artigosModel = new \App\Models\ArtigosModel();
-		$artigos = $artigosModel->where('escrito_colaboradores_id', $colaborador['id'])->where('descartado', NULL)->where('publicado IS NOT NULL')->get()->getResultArray();
-		$data['contador_artigos'] = 0;
-		if ($artigos !== null && !empty($artigos)) {
-			$data['contador_artigos'] = count($artigos);
-		}
-
 		$cid = (int) $colaborador['id'];
-		$contarArtigosPublicadosPapel = static function (string $colunaColaborador, int $colaboradorId): int {
-			$m = new \App\Models\ArtigosModel();
-			$m->where('descartado', null)->where('publicado IS NOT NULL', null, false)->where($colunaColaborador, $colaboradorId);
 
-			return (int) $m->countAllResults();
-		};
-		$data['contagem_papeis'] = [
-			'escrito' => $data['contador_artigos'],
-			'revisado' => $contarArtigosPublicadosPapel('revisado_colaboradores_id', $cid),
-			'narrado' => $contarArtigosPublicadosPapel('narrado_colaboradores_id', $cid),
-			'produzido' => $contarArtigosPublicadosPapel('produzido_colaboradores_id', $cid),
-		];
+		$data['contagem_papeis'] = $this->contagemArtigosPublicadosPorPapel($cid);
+		$data['contador_artigos'] = $data['contagem_papeis']['escrito'];
 
 		$artigosUltimo = new \App\Models\ArtigosModel();
 		$rowUltimo = $artigosUltimo->selectMax('publicado', 'ultimo')
@@ -838,15 +845,9 @@ class Site extends BaseController
 
 		$data = array();
 		$colaborador = $colaborador[0];
-
-		$pautasModel = new \App\Models\PautasModel();
-		$pautas = $pautasModel->where('colaboradores_id', $colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->get()->getResultArray();
-		$data['contador_pautas'] = 0;
-		if ($pautas !== null && !empty($pautas)) {
-			$data['contador_pautas'] = count($pautas);
-		}
-
 		$cid = (int) $colaborador['id'];
+
+		$data['contador_pautas'] = $this->contagemPautasUsadasColaborador($cid);
 
 		$pautasUltimoCadastro = new \App\Models\PautasModel();
 		$rowUltimaPautaCriada = $pautasUltimoCadastro->selectMax('criado', 'ultimo_criado')
@@ -920,6 +921,56 @@ class Site extends BaseController
 		return view('_links', $data);
 	}
 
+	private function contagemArtigosPublicadosPorPapel(int $colaboradorId): array
+	{
+		$artigosModel = new \App\Models\ArtigosModel();
+		$row = $artigosModel
+			->select(
+				'SUM(CASE WHEN escrito_colaboradores_id = ' . $colaboradorId . ' THEN 1 ELSE 0 END) AS escrito, '
+				. 'SUM(CASE WHEN revisado_colaboradores_id = ' . $colaboradorId . ' THEN 1 ELSE 0 END) AS revisado, '
+				. 'SUM(CASE WHEN narrado_colaboradores_id = ' . $colaboradorId . ' THEN 1 ELSE 0 END) AS narrado, '
+				. 'SUM(CASE WHEN produzido_colaboradores_id = ' . $colaboradorId . ' THEN 1 ELSE 0 END) AS produzido',
+				false
+			)
+			->where('descartado', null)
+			->where('publicado IS NOT NULL', null, false)
+			->groupStart()
+			->where('escrito_colaboradores_id', $colaboradorId)
+			->orWhere('revisado_colaboradores_id', $colaboradorId)
+			->orWhere('narrado_colaboradores_id', $colaboradorId)
+			->orWhere('produzido_colaboradores_id', $colaboradorId)
+			->groupEnd()
+			->first();
+
+		if (! is_array($row)) {
+			return [
+				'escrito' => 0,
+				'revisado' => 0,
+				'narrado' => 0,
+				'produzido' => 0,
+			];
+		}
+
+		return [
+			'escrito' => (int) ($row['escrito'] ?? 0),
+			'revisado' => (int) ($row['revisado'] ?? 0),
+			'narrado' => (int) ($row['narrado'] ?? 0),
+			'produzido' => (int) ($row['produzido'] ?? 0),
+		];
+	}
+
+	private function contagemPautasUsadasColaborador(int $colaboradorId): int
+	{
+		$pautasModel = new \App\Models\PautasModel();
+
+		return (int) $pautasModel
+			->withDeleted()
+			->where('colaboradores_id', $colaboradorId)
+			->where('reservado IS NOT NULL', null, false)
+			->where('tag_fechamento IS NOT NULL', null, false)
+			->countAllResults();
+	}
+
 	/**
 	 * Pautas cadastradas (criado) e usadas (reservado com tag de fechamento; inclui excluídas após fechamento).
 	 * Semana = segunda 00:00 a domingo 23:59:59 no fuso America/Sao_Paulo.
@@ -941,32 +992,48 @@ class Site extends BaseController
 		$inicioAno = Time::createFromDate((int) $agora->format('Y'), 1, 1, $tz)->setTime(0, 0, 0);
 		$fimAno = $inicioAno->modify('+1 year');
 
-		$countCadastradas = static function (int $cid, Time $ini, Time $fim): int {
-			$m = new \App\Models\PautasModel();
-			$m->where('colaboradores_id', $cid)
-				->where('criado >=', $ini->format('Y-m-d H:i:s'))
-				->where('criado <', $fim->format('Y-m-d H:i:s'));
+		$pautasModel = new \App\Models\PautasModel();
+		$db = $pautasModel->db;
+		$inicioSemanaSql = $db->escape($inicioSemana->format('Y-m-d H:i:s'));
+		$fimSemanaSql = $db->escape($fimSemana->format('Y-m-d H:i:s'));
+		$inicioMesSql = $db->escape($inicioMes->format('Y-m-d H:i:s'));
+		$fimMesSql = $db->escape($fimMes->format('Y-m-d H:i:s'));
+		$inicioAnoSql = $db->escape($inicioAno->format('Y-m-d H:i:s'));
+		$fimAnoSql = $db->escape($fimAno->format('Y-m-d H:i:s'));
 
-			return (int) $m->countAllResults();
-		};
+		$row = $pautasModel
+			->withDeleted()
+			->select(
+				'SUM(CASE WHEN pautas.criado >= ' . $inicioSemanaSql . ' AND pautas.criado < ' . $fimSemanaSql
+				. ' AND pautas.excluido IS NULL THEN 1 ELSE 0 END) AS cadastradas_semana, '
+				. 'SUM(CASE WHEN pautas.reservado IS NOT NULL AND pautas.tag_fechamento IS NOT NULL '
+				. 'AND pautas.reservado >= ' . $inicioSemanaSql . ' AND pautas.reservado < ' . $fimSemanaSql
+				. ' THEN 1 ELSE 0 END) AS usadas_semana, '
+				. 'SUM(CASE WHEN pautas.reservado IS NOT NULL AND pautas.tag_fechamento IS NOT NULL '
+				. 'AND pautas.reservado >= ' . $inicioMesSql . ' AND pautas.reservado < ' . $fimMesSql
+				. ' THEN 1 ELSE 0 END) AS usadas_mes, '
+				. 'SUM(CASE WHEN pautas.reservado IS NOT NULL AND pautas.tag_fechamento IS NOT NULL '
+				. 'AND pautas.reservado >= ' . $inicioAnoSql . ' AND pautas.reservado < ' . $fimAnoSql
+				. ' THEN 1 ELSE 0 END) AS usadas_ano',
+				false
+			)
+			->where('pautas.colaboradores_id', $colaboradorId)
+			->first();
 
-		$countUsadas = static function (int $cid, Time $ini, Time $fim): int {
-			$m = new \App\Models\PautasModel();
-			$m->withDeleted()
-				->where('colaboradores_id', $cid)
-				->where('reservado IS NOT NULL', null, false)
-				->where('tag_fechamento IS NOT NULL', null, false)
-				->where('reservado >=', $ini->format('Y-m-d H:i:s'))
-				->where('reservado <', $fim->format('Y-m-d H:i:s'));
-
-			return (int) $m->countAllResults();
-		};
+		if (! is_array($row)) {
+			return [
+				'cadastradas_semana' => 0,
+				'usadas_semana' => 0,
+				'usadas_mes' => 0,
+				'usadas_ano' => 0,
+			];
+		}
 
 		return [
-			'cadastradas_semana' => $countCadastradas($colaboradorId, $inicioSemana, $fimSemana),
-			'usadas_semana' => $countUsadas($colaboradorId, $inicioSemana, $fimSemana),
-			'usadas_mes' => $countUsadas($colaboradorId, $inicioMes, $fimMes),
-			'usadas_ano' => $countUsadas($colaboradorId, $inicioAno, $fimAno),
+			'cadastradas_semana' => (int) ($row['cadastradas_semana'] ?? 0),
+			'usadas_semana' => (int) ($row['usadas_semana'] ?? 0),
+			'usadas_mes' => (int) ($row['usadas_mes'] ?? 0),
+			'usadas_ano' => (int) ($row['usadas_ano'] ?? 0),
 		];
 	}
 

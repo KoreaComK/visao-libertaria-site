@@ -90,13 +90,12 @@ class PautasModel extends Model
 		$this->builder()
 			->select(
 				'pautas.*, colaboradores.apelido AS apelido, '
-				. '(SELECT COUNT(1) FROM pautas_comentarios pc '
-				. 'INNER JOIN colaboradores co ON co.id = pc.colaboradores_id '
-				. 'WHERE pc.pautas_id = pautas.id AND pc.excluido IS NULL) AS qtde_comentarios',
+				. 'COALESCE(comentarios_agg.qtde_comentarios, 0) AS qtde_comentarios',
 				false
 			)
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id');
-			$this->builder()->where('colaboradores.shadowban','N');
+		$this->aplicarJoinContagemComentarios();
+		$this->builder()->where('colaboradores.shadowban', 'N');
 		if ($redatores === true) {
 			$this->builder()->where('pautas.redator_colaboradores_id IS NOT NULL');
 		}
@@ -128,14 +127,13 @@ class PautasModel extends Model
 	{
 		$this->builder()
 			->select('pautas.*, colaboradores.apelido AS apelido, pautas_fechadas.titulo AS nome_pauta_fechada,
-			(SELECT COUNT(1) FROM pautas_comentarios pc
-			INNER JOIN colaboradores co ON co.id = pc.colaboradores_id
-			WHERE pc.pautas_id = pautas.id AND pc.excluido IS NULL) AS qtde_comentarios')
+			COALESCE(comentarios_agg.qtde_comentarios, 0) AS qtde_comentarios')
 			->join('colaboradores', 'pautas.colaboradores_id = colaboradores.id')
 			->join('pautas_pautas_fechadas','pautas.id = pautas_pautas_fechadas.pautas_id','LEFT')
-			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT')
-			->where('pautas.redator_colaboradores_id IS NULL')
-			->where('colaboradores.shadowban','N');
+			->join('pautas_fechadas','pautas_fechadas.id = pautas_pautas_fechadas.pautas_fechadas_id','LEFT');
+		$this->aplicarJoinContagemComentarios();
+		$this->builder()->where('pautas.redator_colaboradores_id IS NULL')
+			->where('colaboradores.shadowban', 'N');
 		$this->builder()->orderBy('pautas.criado', 'DESC');
 		if($pesquisa !== NULL) {
 			$this->builder()->where("(pautas.link like '%$pesquisa%' or pautas.titulo like '%$pesquisa%' or pautas.texto like '%$pesquisa%')");
@@ -149,6 +147,22 @@ class PautasModel extends Model
 	{
 		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE colaboradores_id = $usuario AND criado >= '$data'");
 		return $query->getResult('array');
+	}
+
+	private function subqueryContagemComentarios(): string
+	{
+		return $this->db->table('pautas_comentarios pc')
+			->select('pc.pautas_id, COUNT(1) AS qtde_comentarios', false)
+			->join('colaboradores co', 'co.id = pc.colaboradores_id')
+			->where('pc.excluido', null)
+			->groupBy('pc.pautas_id')
+			->getCompiledSelect();
+	}
+
+	private function aplicarJoinContagemComentarios(): void
+	{
+		$subquery = $this->subqueryContagemComentarios();
+		$this->builder()->join("({$subquery}) comentarios_agg", 'comentarios_agg.pautas_id = pautas.id', 'left', false);
 	}
 
 	protected function cadastraHistoricoUsuarioInserir(array $dados)

@@ -28,274 +28,324 @@ class Cron extends BaseController
 			return redirect()->to(base_url());
 		}
 
-		/*PARTE RELACIONADA A LIMPEZA DAS PAUTAS*/
+		$this->limparPautasAntigas($configuracaoModel);
+
+		$this->desmarcarArtigosExpirados($configuracaoModel);
+
+		$this->descartarArtigosAreaEscrita();
+
+		$this->enviarEmailCarteiraVazia($configuracaoModel);
+
+		$this->limparNotificacoesAntigas($configuracaoModel);
+
+		$this->descartarArtigosAbandonados($configuracaoModel);
+
+		$homeCacheInvalidar = $this->captarVideosYoutube();
+		if ($this->avancarArtigosPublicadosNoYoutube()) {
+			$homeCacheInvalidar = true;
+		}
+
+		if ($homeCacheInvalidar) {
+			$this->invalidarCacheHome();
+		}
+
+		return 'Cron Finalizado';
+	}
+
+	/**
+	 * Remove pautas antigas não reservadas (e comentários) e pautas de redator com artigo já criado.
+	 */
+	private function limparPautasAntigas(\App\Models\ConfiguracaoModel $configuracaoModel): void
+	{
 		$cronPautas = $configuracaoModel->find('cron_pautas_status_delete')['config_valor'];
-		if ($cronPautas == '1') {
-			$cronDataPautas = $configuracaoModel->find('cron_pautas_data_delete')['config_valor'];
+		if ($cronPautas != '1') {
+			return;
+		}
 
-			$time = new Time('-' . $cronDataPautas);
-			$pautasModel = new \App\Models\PautasModel();
-			$pautasModel->where("criado <= '" . $time->toDateTimeString() . "'");
-			$pautasModel->where('reservado', null);
-			$pautasModel->where('tag_fechamento', null);
-			$pautasModel->where('redator_colaboradores_id', null);
-			$pautasModel->withDeleted();
-			$pautas = $pautasModel->get()->getResultArray();
-			foreach ($pautas as $pauta) {
-				$pautasModel->db->table('pautas_comentarios')
-					->where('pautas_id', $pauta['id'])
-					->delete();
+		$cronDataPautas = $configuracaoModel->find('cron_pautas_data_delete')['config_valor'];
+		$limiteCriacao = new Time('-' . $cronDataPautas);
 
-				$pautasModelExclusao = new \App\Models\PautasModel();
-				$pautasModelExclusao->delete($pauta['id'], true);
-			}
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasAntigas = $pautasModel
+			->where('criado <=', $limiteCriacao->toDateTimeString())
+			->where('reservado', null)
+			->where('tag_fechamento', null)
+			->where('redator_colaboradores_id', null)
+			->withDeleted()
+			->findAll();
 
-			/*EXCLUSÃO SOFT DO ARTIGO CRIADO ATRAVÉS DE PAUTA DE REDATOR*/
-			$pautasModel = new \App\Models\PautasModel();
-			$pautasModel->where('redator_colaboradores_id IS NOT NULL');
-			$pautas = $pautasModel->get()->getResultArray();
-			foreach ($pautas as $pauta) {
-				$artigosModel = new \App\Models\ArtigosModel();
-				$artigosModel->where("link", $pauta['link']);
-				$artigosModel->where("escrito_colaboradores_id", $pauta['redator_colaboradores_id']);
-				if ($artigosModel->countAllResults() > 0) {
-					$pautasModel->delete($pauta['id']);
-				}
+		if ($pautasAntigas !== []) {
+			$idsPautasAntigas = array_column($pautasAntigas, 'id');
+			$pautasModel->db->table('pautas_comentarios')
+				->whereIn('pautas_id', $idsPautasAntigas)
+				->delete();
+
+			$pautasExclusao = new \App\Models\PautasModel();
+			foreach ($idsPautasAntigas as $idPauta) {
+				$pautasExclusao->delete($idPauta, true);
 			}
 		}
 
-		/*PARTE RELACIONADA A DESMARCAÇÃO DOS ARTIGOS*/
-		$cronArtigos = $configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'];
-		if ($cronArtigos == '1') {
-			$artigosHistoricos = new ArtigosHistoricos;
-			/*Revisão*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_revisao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 2);
-			$artigosModel->where("tipo_artigo", 'T');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
+		$pautasRedatorModel = new \App\Models\PautasModel();
+		$pautasRedator = $pautasRedatorModel
+			->where('redator_colaboradores_id IS NOT NULL', null, false)
+			->findAll();
 
-			/*Narração*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_narracao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 3);
-			$artigosModel->where("tipo_artigo", 'T');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
-
-			/*Produção*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_teoria_desmarcar_data_producao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 4);
-			$artigosModel->where("tipo_artigo", 'T');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
-
-			/*Revisão*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_revisao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 2);
-			$artigosModel->where("tipo_artigo", 'N');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
-
-			/*Narração*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_narracao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 3);
-			$artigosModel->where("tipo_artigo", 'N');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
-
-			/*Produção*/
-			$cronArtigos = $configuracaoModel->find('cron_artigos_noticia_desmarcar_data_producao')['config_valor'];
-			$time = new Time('-' . $cronArtigos);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("marcado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("fase_producao_id", 4);
-			$artigosModel->where("tipo_artigo", 'N');
-			$artigos = $artigosModel->get()->getResultArray();
-			foreach ($artigos as $artigo) {
-				$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
-				$artigosModel->update($artigo['id'], array('marcado' => NULL, 'marcado_colaboradores_id' => NULL));
-			}
-			unset($artigosModel);
+		if ($pautasRedator === []) {
+			return;
 		}
 
-		/*PARTE RELACIONADA A DESCARTAR ARTIGOS QUE ESTÃO NA ÁREA DE ESCRITA*/
-		$artigosHistoricos = new ArtigosHistoricos;
-		$time = new Time('-7 days');
 		$artigosModel = new \App\Models\ArtigosModel();
-		$artigosModel->where("fase_producao_id", 1);
-		$artigosModel->where("atualizado <= '" . $time->toDateTimeString() . "'");
-		$artigosModel->where("descartado IS NULL");
-		$artigos = $artigosModel->get()->getResultArray();
+		$artigosRedator = $artigosModel
+			->select('link, escrito_colaboradores_id')
+			->where('escrito_colaboradores_id IS NOT NULL', null, false)
+			->where('link IS NOT NULL', null, false)
+			->where('link !=', '')
+			->findAll();
+
+		$artigosPorLinkRedator = [];
+		foreach ($artigosRedator as $artigo) {
+			$chave = $artigo['link'] . "\0" . $artigo['escrito_colaboradores_id'];
+			$artigosPorLinkRedator[$chave] = true;
+		}
+
+		$pautasExclusaoRedator = new \App\Models\PautasModel();
+		foreach ($pautasRedator as $pauta) {
+			$chave = $pauta['link'] . "\0" . $pauta['redator_colaboradores_id'];
+			if (! isset($artigosPorLinkRedator[$chave])) {
+				continue;
+			}
+			$pautasExclusaoRedator->delete($pauta['id']);
+		}
+	}
+
+	/**
+	 * Desmarca artigos com marcação expirada (teoria e notícia × revisão, narração, produção).
+	 */
+	private function desmarcarArtigosExpirados(\App\Models\ConfiguracaoModel $configuracaoModel): void
+	{
+		if ($configuracaoModel->find('cron_artigos_desmarcar_status')['config_valor'] != '1') {
+			return;
+		}
+
+		$artigosHistoricos = new ArtigosHistoricos();
+		$regras = [
+			['cron_artigos_teoria_desmarcar_data_revisao', 2, 'T'],
+			['cron_artigos_teoria_desmarcar_data_narracao', 3, 'T'],
+			['cron_artigos_teoria_desmarcar_data_producao', 4, 'T'],
+			['cron_artigos_noticia_desmarcar_data_revisao', 2, 'N'],
+			['cron_artigos_noticia_desmarcar_data_narracao', 3, 'N'],
+			['cron_artigos_noticia_desmarcar_data_producao', 4, 'N'],
+		];
+
+		foreach ($regras as [$configChave, $faseProducaoId, $tipoArtigo]) {
+			$this->desmarcarArtigosPorPrazo(
+				$configuracaoModel,
+				$artigosHistoricos,
+				$configChave,
+				$faseProducaoId,
+				$tipoArtigo
+			);
+		}
+	}
+
+	/**
+	 * Descarta artigos parados na área de escrita (fase 1) há mais de 7 dias.
+	 */
+	private function descartarArtigosAreaEscrita(): void
+	{
+		$limiteAtualizado = new Time('-7 days');
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel
+			->where('fase_producao_id', 1)
+			->where('atualizado <=', $limiteAtualizado->toDateTimeString())
+			->where('descartado', null)
+			->findAll();
+
+		if ($artigos === []) {
+			return;
+		}
+
+		$artigosHistoricos = new ArtigosHistoricos();
+		$artigosAtualizacao = new \App\Models\ArtigosModel();
+
 		foreach ($artigos as $artigo) {
 			$artigosHistoricos->cadastraHistorico($artigo['id'], 'descartou', $artigo['escrito_colaboradores_id']);
-			$artigosModel->update($artigo['id'], array('descartado' => $artigosModel->getNow(), 'descartado_colaboradores_id' => $artigo['escrito_colaboradores_id']));
+			$artigosAtualizacao->update($artigo['id'], [
+				'descartado' => $artigosAtualizacao->getNow(),
+				'descartado_colaboradores_id' => $artigo['escrito_colaboradores_id'],
+			]);
 		}
-		unset($artigosModel);
+	}
 
-		/*PARTE RELACIONADA A MANDAR E-MAIL PARA PESSOAS QUE CONTRIBUIRAM E NÃO POSSUEM ENDEREÇOS DE BITCOIN CADASTRADOS*/
+	/**
+	 * Envia e-mail mensal para colaboradores que contribuíram em artigos publicados sem carteira cadastrada.
+	 */
+	private function enviarEmailCarteiraVazia(\App\Models\ConfiguracaoModel $configuracaoModel): void
+	{
 		$cronDiasEmailCarteira = $configuracaoModel->find('cron_email_carteira_data')['config_valor'];
 		$time = new Time('+' . $cronDiasEmailCarteira);
-		$cron_email_carteira = $configuracaoModel->find('cron_email_carteira')['config_valor'];
-		$cron_email_carteira = app_time($cron_email_carteira);
-		if ($time->getMonth() != $time->today()->getMonth() && $cron_email_carteira->getMonth() != $time->getMonth()) {
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->select("escrito_colaboradores_id,revisado_colaboradores_id,narrado_colaboradores_id,produzido_colaboradores_id");
-			$artigosModel->where("fase_producao_id", 6);
-			$artigos = $artigosModel->get()->getResultArray();
-			if (!empty($artigos)) {
-				$colaboradores = array();
-				foreach ($artigos as $artigo) {
-					$colaboradores[] = $artigo['escrito_colaboradores_id'];
-					$colaboradores[] = $artigo['revisado_colaboradores_id'];
-					$colaboradores[] = $artigo['narrado_colaboradores_id'];
-					$colaboradores[] = $artigo['produzido_colaboradores_id'];
-				}
-				$colaboradores = array_unique($colaboradores);
-				$colaboradoresModel = new \App\Models\ColaboradoresModel();
-				$colaboradoresModel->whereIn('id', $colaboradores);
-				$colaboradoresModel->where("(carteira IS NULL OR carteira = '')");
-				$colaboradores = $colaboradoresModel->get()->getResultArray();
-				if (!empty($colaboradores)) {
-					$emails = array();
-					foreach ($colaboradores as $colaborador) {
-						$emails[] = $colaborador['email'];
-					}
-					$enviaEmail = new \App\Libraries\EnviaEmail();
-					$enviaEmail->enviaEmail(NULL, 'VISÃO LIBERTÁRIA - CARTEIRA NÃO CADASTRADA', $enviaEmail->getMensagemCarteiraVazia(), false, $emails);
-				}
-			}
-			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			$configuracaoModel->update('cron_email_carteira', array('config_valor' => $time->toDateString()));
+		$ultimoEnvio = app_time($configuracaoModel->find('cron_email_carteira')['config_valor']);
+
+		if ($time->getMonth() === $time->today()->getMonth() || $ultimoEnvio->getMonth() === $time->getMonth()) {
+			return;
 		}
 
-		/*PARTE RELACIONADA A LIMPEZA DAS NOTIFICAÇÕES*/
-		$cronNotificacoes = $configuracaoModel->find('cron_notificacoes_status_delete')['config_valor'];
-		if ($cronNotificacoes == '1') {
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaboradores = $colaboradoresModel
+			->select('DISTINCT colaboradores.email')
+			->join(
+				'artigos',
+				'artigos.fase_producao_id = 6 AND artigos.descartado IS NULL AND (
+					artigos.escrito_colaboradores_id = colaboradores.id
+					OR artigos.revisado_colaboradores_id = colaboradores.id
+					OR artigos.narrado_colaboradores_id = colaboradores.id
+					OR artigos.produzido_colaboradores_id = colaboradores.id
+				)',
+				'inner',
+				false
+			)
+			->where('(colaboradores.carteira IS NULL OR colaboradores.carteira = \'\')', null, false)
+			->findAll();
 
-			/*EXCLUSÃO DAS PAUTAS VISUALIZADAS*/
-			$cronDataNotificacoesVisualizadas = $configuracaoModel->find('cron_notificacoes_data_visualizado')['config_valor'];
-			$time = new Time('-' . $cronDataNotificacoesVisualizadas);
-			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
-			$colaboradoresNotificacoesModel->where("data_visualizado <= '" . $time->toDateTimeString() . "'");
-			;
-			$notificacoes = $colaboradoresNotificacoesModel->get()->getResultArray();
-			foreach ($notificacoes as $notificacao) {
-				$colaboradoresNotificacoesModel->delete($notificacao['id'], true);
-			}
-
-			/*EXCLUSÃO DAS PAUTAS NÃO VISUALIZADAS*/
-			$cronDataNotificacoesNaoVisualizadas = $configuracaoModel->find('cron_notificacoes_data_cadastrado')['config_valor'];
-			$time = new Time('-' . $cronDataNotificacoesNaoVisualizadas);
-			$colaboradoresNotificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
-			$colaboradoresNotificacoesModel->where("criado <= '" . $time->toDateTimeString() . "'");
-			;
-			$notificacoes = $colaboradoresNotificacoesModel->get()->getResultArray();
-			foreach ($notificacoes as $notificacao) {
-				$colaboradoresNotificacoesModel->delete($notificacao['id'], true);
-			}
+		if ($colaboradores !== []) {
+			$emails = array_column($colaboradores, 'email');
+			$enviaEmail = new \App\Libraries\EnviaEmail();
+			$enviaEmail->enviaEmail(
+				null,
+				'VISÃO LIBERTÁRIA - CARTEIRA NÃO CADASTRADA',
+				$enviaEmail->getMensagemCarteiraVazia(),
+				false,
+				$emails
+			);
 		}
 
-		/*PARTE RELACIONADA A DESCARTE DOS ARTIGOS ABANDONADOS*/
-		$cronDescarteArtigosStatus = $configuracaoModel->find('cron_artigos_descartar_status')['config_valor'];
-		if ($cronDescarteArtigosStatus == '1') {
+		$configuracaoModel->update('cron_email_carteira', ['config_valor' => $time->toDateString()]);
+	}
 
-			$cronDataDescarteArtigos = $configuracaoModel->find('cron_artigos_descartar_data')['config_valor'];
-
-			$time = new Time('-' . $cronDataDescarteArtigos);
-			unset($artigosModel);
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosModel->where("criado <= '" . $time->toDateTimeString() . "'");
-			$artigosModel->where("descartado", NULL);
-			$artigosModel->whereIn("fase_producao_id", array('1', '2', '3', '4'));
-			$artigos = $artigosModel->get()->getResultArray();
-
-			foreach ($artigos as $artigo) {
-				$artigosModel->update($artigo['id'], array('descartado_colaboradores_id' => 1));
-				$artigosModel->delete($artigo['id']);
-			}
+	/**
+	 * Remove notificações antigas (visualizadas e cadastradas) conforme prazos da config.
+	 */
+	private function limparNotificacoesAntigas(\App\Models\ConfiguracaoModel $configuracaoModel): void
+	{
+		if ($configuracaoModel->find('cron_notificacoes_status_delete')['config_valor'] != '1') {
+			return;
 		}
 
-		/* Parte relacionada a captação de vídeos do youtube */
+		$prazoVisualizadas = $configuracaoModel->find('cron_notificacoes_data_visualizado')['config_valor'];
+		$limiteVisualizadas = new Time('-' . $prazoVisualizadas);
+
+		$notificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+		$notificacoesModel
+			->where('data_visualizado <=', $limiteVisualizadas->toDateTimeString())
+			->delete();
+
+		$prazoCadastradas = $configuracaoModel->find('cron_notificacoes_data_cadastrado')['config_valor'];
+		$limiteCadastradas = new Time('-' . $prazoCadastradas);
+
+		$notificacoesModel = new \App\Models\ColaboradoresNotificacoesModel();
+		$notificacoesModel
+			->where('criado <=', $limiteCadastradas->toDateTimeString())
+			->delete();
+	}
+
+	/**
+	 * Descarta artigos abandonados nas fases 1–4 conforme prazo configurado.
+	 */
+	private function descartarArtigosAbandonados(\App\Models\ConfiguracaoModel $configuracaoModel): void
+	{
+		if ($configuracaoModel->find('cron_artigos_descartar_status')['config_valor'] != '1') {
+			return;
+		}
+
+		$prazo = $configuracaoModel->find('cron_artigos_descartar_data')['config_valor'];
+		$limiteCriacao = new Time('-' . $prazo);
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel
+			->where('criado <=', $limiteCriacao->toDateTimeString())
+			->where('descartado', null)
+			->whereIn('fase_producao_id', ['1', '2', '3', '4'])
+			->findAll();
+
+		if ($artigos === []) {
+			return;
+		}
+
+		$artigosExclusao = new \App\Models\ArtigosModel();
+		foreach ($artigos as $artigo) {
+			$artigosExclusao->update($artigo['id'], ['descartado_colaboradores_id' => 1]);
+			$artigosExclusao->delete($artigo['id']);
+		}
+	}
+
+	/**
+	 * Capta vídeos novos dos canais YouTube dos projetos.
+	 */
+	private function captarVideosYoutube(): bool
+	{
 		$youtubeApiKey = getenv('YOUTUBE_API_KEY');
-		$projetosModel = new \App\Models\ProjetosModel();
-		$projetos = $projetosModel->findAll();
+		$projetos = (new \App\Models\ProjetosModel())->findAll();
 
-		if ($projetos) {
-			foreach ($projetos as $projeto) {
+		if ($projetos === []) {
+			return false;
+		}
 
-				$projetosVideosModel = new \App\Models\ProjetosVideosModel();
-				// Busca informações detalhadas do vídeo
-				$client = \Config\Services::curlrequest();
-				$videoResponse = $client->request('GET', 'https://www.googleapis.com/youtube/v3/search', [
-					'query' => [
-						'key' => $youtubeApiKey,
-						'channelId' => $projeto['canal_youtube_id'],
-						'part' => 'snippet',
-						'order' => 'date',
-						'maxResults' => 50,
-						'type' => 'video'
-					]
-				]);
+		$projetosVideosModel = new \App\Models\ProjetosVideosModel();
+		$videoIdsCadastrados = $projetosVideosModel->findColumn('video_id');
+		$videoIdsCadastrados = $videoIdsCadastrados !== null
+			? array_flip($videoIdsCadastrados)
+			: [];
 
-				$resultadosTotais = json_decode($videoResponse->getBody(), true)['pageInfo']['totalResults'];
-				if ($resultadosTotais > 0) {
-					$videos = json_decode($videoResponse->getBody(), true)['items'];
-					foreach ($videos as $video) {
-						$videoCadastrado = $projetosVideosModel->find($video['id']['videoId']);
-						if($videoCadastrado == NULL) {
-							$dataPublicacao = new \DateTime($video['snippet']['publishedAt']);
-							$videoId = $video['id']['videoId'];
-							$dadosVideo = [
-								'video_id' => $videoId,
-								'titulo' => $video['snippet']['title'],
-								'projetos_id' => $projeto['id'],
-								'publicado' => $dataPublicacao->format('Y-m-d H:i:s'),
-								'thumbnail' => $video['snippet']['thumbnails']['high']['url'],
-								'short' => $this->videoEhShort($client, $youtubeApiKey, $projeto['canal_youtube_id'], $videoId),
-							];
-							$projetosVideosModel->insert($dadosVideo);
-						}
-					}
+		$client = \Config\Services::curlrequest();
+		$homeCacheInvalidar = false;
+
+		foreach ($projetos as $projeto) {
+			$videoResponse = $client->request('GET', 'https://www.googleapis.com/youtube/v3/search', [
+				'query' => [
+					'key' => $youtubeApiKey,
+					'channelId' => $projeto['canal_youtube_id'],
+					'part' => 'snippet',
+					'order' => 'date',
+					'maxResults' => 50,
+					'type' => 'video',
+				],
+			]);
+
+			$responseBody = json_decode($videoResponse->getBody(), true);
+			if (($responseBody['pageInfo']['totalResults'] ?? 0) <= 0) {
+				continue;
+			}
+
+			foreach ($responseBody['items'] ?? [] as $video) {
+				$videoId = $video['id']['videoId'] ?? null;
+				if ($videoId === null || isset($videoIdsCadastrados[$videoId])) {
+					continue;
 				}
+
+				$dataPublicacao = new \DateTime($video['snippet']['publishedAt']);
+				$projetosVideosModel->insert([
+					'video_id' => $videoId,
+					'titulo' => $video['snippet']['title'],
+					'projetos_id' => $projeto['id'],
+					'publicado' => $dataPublicacao->format('Y-m-d H:i:s'),
+					'thumbnail' => $video['snippet']['thumbnails']['high']['url'],
+					'short' => $this->videoEhShort($client, $youtubeApiKey, $projeto['canal_youtube_id'], $videoId),
+				]);
+				$videoIdsCadastrados[$videoId] = true;
+				$homeCacheInvalidar = true;
 			}
 		}
 
-		/* Parte relacionada a avançar artigos publicados no YouTube para pagamento */
+		return $homeCacheInvalidar;
+	}
+
+	/**
+	 * Avança para fase 6 artigos com link de vídeo já cadastrado no YouTube.
+	 */
+	private function avancarArtigosPublicadosNoYoutube(): bool
+	{
 		helper('_formata_video');
 
 		$projetosVideosModel = new \App\Models\ProjetosVideosModel();
@@ -304,42 +354,81 @@ class Cron extends BaseController
 			? array_flip($videoIdsCadastrados)
 			: [];
 
-		if ($videoIdsCadastrados !== []) {
-			$artigosModel = new \App\Models\ArtigosModel();
-			$artigosPublicar = $artigosModel
-				->where('fase_producao_id', 5)
-				->where('link_video_youtube IS NOT NULL', null, false)
-				->where('link_video_youtube !=', '')
-				->where('descartado', null)
-				->findAll();
+		if ($videoIdsCadastrados === []) {
+			return false;
+		}
 
-			$artigosModelAtualizacao = new \App\Models\ArtigosModel();
-			$publicadoEm = $artigosModelAtualizacao->getNow();
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigosPublicar = $artigosModel
+			->where('fase_producao_id', 5)
+			->where('link_video_youtube IS NOT NULL', null, false)
+			->where('link_video_youtube !=', '')
+			->where('descartado', null)
+			->findAll();
 
-			foreach ($artigosPublicar as $artigo) {
-				$linkVideo = $artigo['link_video_youtube'];
-				$videoId = extrair_id_video_youtube($linkVideo);
+		if ($artigosPublicar === []) {
+			return false;
+		}
 
-				if ($videoId === null) {
-					foreach (array_keys($videoIdsCadastrados) as $videoIdCadastrado) {
-						if (str_contains($linkVideo, $videoIdCadastrado)) {
-							$videoId = $videoIdCadastrado;
-							break;
-						}
+		$artigosModelAtualizacao = new \App\Models\ArtigosModel();
+		$publicadoEm = $artigosModelAtualizacao->getNow();
+		$homeCacheInvalidar = false;
+
+		foreach ($artigosPublicar as $artigo) {
+			$linkVideo = $artigo['link_video_youtube'];
+			$videoId = extrair_id_video_youtube($linkVideo);
+
+			if ($videoId === null) {
+				foreach (array_keys($videoIdsCadastrados) as $videoIdCadastrado) {
+					if (str_contains($linkVideo, $videoIdCadastrado)) {
+						$videoId = $videoIdCadastrado;
+						break;
 					}
 				}
+			}
 
-				if ($videoId !== null && isset($videoIdsCadastrados[$videoId])) {
-					$artigosModelAtualizacao->update($artigo['id'], [
-						'fase_producao_id' => 6,
-						'publicado_colaboradores_id' => 1,
-						'publicado' => $publicadoEm,
-					]);
-				}
+			if ($videoId !== null && isset($videoIdsCadastrados[$videoId])) {
+				$artigosModelAtualizacao->update($artigo['id'], [
+					'fase_producao_id' => 6,
+					'publicado_colaboradores_id' => 1,
+					'publicado' => $publicadoEm,
+				]);
+				$homeCacheInvalidar = true;
 			}
 		}
 
-		return 'Cron Finalizado';
+		return $homeCacheInvalidar;
+	}
+
+	private function desmarcarArtigosPorPrazo(
+		\App\Models\ConfiguracaoModel $configuracaoModel,
+		ArtigosHistoricos $artigosHistoricos,
+		string $configChave,
+		int $faseProducaoId,
+		string $tipoArtigo
+	): void {
+		$prazo = $configuracaoModel->find($configChave)['config_valor'];
+		$limiteMarcado = new Time('-' . $prazo);
+
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigos = $artigosModel
+			->where('marcado <=', $limiteMarcado->toDateTimeString())
+			->where('fase_producao_id', $faseProducaoId)
+			->where('tipo_artigo', $tipoArtigo)
+			->findAll();
+
+		if ($artigos === []) {
+			return;
+		}
+
+		$artigosAtualizacao = new \App\Models\ArtigosModel();
+		foreach ($artigos as $artigo) {
+			$artigosHistoricos->cadastraHistorico($artigo['id'], 'desmarcou', $artigo['marcado_colaboradores_id']);
+			$artigosAtualizacao->update($artigo['id'], [
+				'marcado' => null,
+				'marcado_colaboradores_id' => null,
+			]);
+		}
 	}
 
 	private function videoEhShort($client, string $youtubeApiKey, string $canalYoutubeId, string $videoId): bool

@@ -21,7 +21,8 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseController extends Controller
 {
-	private const NOTIFICACOES_CACHE_TTL = 60;
+	protected const NOTIFICACOES_CACHE_TTL = 60;
+	protected const HOME_CACHE_TTL = 300;
 
 	/**
 	 * Instance of the main Request object.
@@ -133,6 +134,58 @@ abstract class BaseController extends Controller
 	protected function siteConfigCacheHabilitado(): bool
 	{
 		return getenv('CI_ENVIRONMENT') === 'production';
+	}
+
+	protected function homeCacheHabilitado(): bool
+	{
+		return $this->siteConfigCacheHabilitado();
+	}
+
+	protected function usuarioAnonimo(): bool
+	{
+		if (! $this->session->has('colaboradores')) {
+			return true;
+		}
+
+		return $this->session->get('colaboradores')['id'] === null;
+	}
+
+	protected function chaveCacheHomeAnonima(): string
+	{
+		return 'home_anon_' . $this->obterVersaoSiteConfig() . '_' . $this->obterVersaoCacheHome();
+	}
+
+	protected function obterVersaoCacheHome(): string
+	{
+		$arquivo = WRITEPATH . 'cache/home_version.txt';
+
+		if (! is_file($arquivo)) {
+			return '0';
+		}
+
+		$versao = trim((string) file_get_contents($arquivo));
+
+		return $versao !== '' ? $versao : '0';
+	}
+
+	protected function invalidarCacheHome(): void
+	{
+		if (! $this->homeCacheHabilitado()) {
+			return;
+		}
+
+		$arquivo = WRITEPATH . 'cache/home_version.txt';
+		$diretorio = dirname($arquivo);
+
+		if (! is_dir($diretorio)) {
+			mkdir($diretorio, 0775, true);
+		}
+
+		$cache = \Config\Services::cache();
+		$chaveAntiga = $this->chaveCacheHomeAnonima();
+
+		file_put_contents($arquivo, (string) time());
+		$cache->delete($chaveAntiga);
 	}
 
 	protected function obterVersaoSiteConfig(): string

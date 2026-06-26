@@ -895,6 +895,8 @@ class Admin extends BaseController
 				$retornoGravado = $paginasEstaticasModel->update($idEstaticas, $post);
 			}
 			if ($retornoGravado != false) {
+				$this->invalidarSiteConfig();
+
 				return $retorno->retorno(true, 'Aviso salvo com sucesso.', true);
 			} else {
 				return $retorno->retorno(false, 'Ocorreu um erro ao salvar o aviso.', true);
@@ -923,6 +925,8 @@ class Admin extends BaseController
 		$retornoExclusao = $paginasEstaticasModel->delete($paginasEstaticas['id'], true);
 
 		if ($retornoExclusao === true) {
+			$this->invalidarSiteConfig();
+
 			return $retorno->retorno(true, 'Página excluída com sucesso.', true);
 		} else {
 			return $retorno->retorno(false, 'Houve um erro ao excluir a página.', true);
