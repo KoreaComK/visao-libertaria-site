@@ -286,6 +286,10 @@ class Cron extends BaseController
 	private function captarVideosYoutube(): bool
 	{
 		$youtubeApiKey = getenv('YOUTUBE_API_KEY');
+		if ($youtubeApiKey === false || $youtubeApiKey === '') {
+			return false;
+		}
+
 		$projetos = (new \App\Models\ProjetosModel())->findAll();
 
 		if ($projetos === []) {
@@ -302,18 +306,19 @@ class Cron extends BaseController
 		$homeCacheInvalidar = false;
 
 		foreach ($projetos as $projeto) {
-			$videoResponse = $client->request('GET', 'https://www.googleapis.com/youtube/v3/search', [
-				'query' => [
-					'key' => $youtubeApiKey,
-					'channelId' => $projeto['canal_youtube_id'],
-					'part' => 'snippet',
-					'order' => 'date',
-					'maxResults' => 50,
-					'type' => 'video',
-				],
+			$responseBody = $this->requisicaoYoutubeApi($client, 'https://www.googleapis.com/youtube/v3/search', [
+				'key' => $youtubeApiKey,
+				'channelId' => $projeto['canal_youtube_id'],
+				'part' => 'snippet',
+				'order' => 'date',
+				'maxResults' => 50,
+				'type' => 'video',
 			]);
 
-			$responseBody = json_decode($videoResponse->getBody(), true);
+			if ($responseBody === null) {
+				continue;
+			}
+
 			if (($responseBody['pageInfo']['totalResults'] ?? 0) <= 0) {
 				continue;
 			}
@@ -440,23 +445,48 @@ class Cron extends BaseController
 
 		$playlistId = 'UUSH' . substr($canalYoutubeId, 2);
 
-		$response = $client->request('GET', 'https://www.googleapis.com/youtube/v3/playlistItems', [
-			'query' => [
-				'key' => $youtubeApiKey,
-				'part' => 'contentDetails',
-				'playlistId' => $playlistId,
-				'videoId' => $videoId,
-				'maxResults' => 1,
-			],
-			'http_errors' => false,
+		$body = $this->requisicaoYoutubeApi($client, 'https://www.googleapis.com/youtube/v3/playlistItems', [
+			'key' => $youtubeApiKey,
+			'part' => 'contentDetails',
+			'playlistId' => $playlistId,
+			'videoId' => $videoId,
+			'maxResults' => 1,
 		]);
 
-		if ($response->getStatusCode() !== 200) {
-			return false;
+		return $body !== null && ! empty($body['items']);
+	}
+
+	/**
+	 * GET na API do YouTube sem interromper o cron em erro HTTP ou de rede.
+	 */
+	private function requisicaoYoutubeApi($client, string $url, array $query): ?array
+	{
+		try {
+			$response = $client->request('GET', $url, [
+				'query' => $query,
+				'http_errors' => false,
+				'timeout' => 30,
+			]);
+
+			$statusCode = $response->getStatusCode();
+			if ($statusCode !== 200) {
+				$erroApi = json_decode($response->getBody(), true);
+				$mensagemErro = $erroApi['error']['message'] ?? $response->getReasonPhrase();
+				log_message(
+					'warning',
+					'[Cron YouTube] HTTP ' . $statusCode . ' em ' . $url . ': ' . $mensagemErro
+				);
+
+				return null;
+			}
+
+			$body = json_decode($response->getBody(), true);
+
+			return is_array($body) ? $body : null;
+		} catch (\Throwable $e) {
+			log_message('error', '[Cron YouTube] Falha na requisição para ' . $url . ': ' . $e->getMessage());
+
+			return null;
 		}
-
-		$body = json_decode($response->getBody(), true);
-
-		return ! empty($body['items']);
 	}
 }
