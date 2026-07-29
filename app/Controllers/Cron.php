@@ -194,7 +194,8 @@ class Cron extends BaseController
 
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$colaboradores = $colaboradoresModel
-			->select('DISTINCT colaboradores.email')
+			->distinct()
+			->select('colaboradores.email')
 			->join(
 				'artigos',
 				'artigos.fase_producao_id = 6 AND artigos.descartado IS NULL AND (
