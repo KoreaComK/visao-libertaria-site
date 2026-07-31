@@ -1,6 +1,13 @@
 <?php
-use CodeIgniter\I18n\Time;
-
+$pct_diario = $limites['limite_pautas_diario'] > 0
+	? min(100, ($limites['limite_pautas_diario_usadas'] / $limites['limite_pautas_diario']) * 100)
+	: 0;
+$pct_semanal = $limites['limite_pautas_semanal'] > 0
+	? min(100, ($limites['limite_pautas_semanal_usadas'] / $limites['limite_pautas_semanal']) * 100)
+	: 0;
+$avatarSrc = ($colaboradores['avatar'] != NULL)
+	? $colaboradores['avatar']
+	: site_url('public/assets/avatar-default.png');
 ?>
 <?= $this->extend('layouts/main'); ?>
 
@@ -14,346 +21,401 @@ use CodeIgniter\I18n\Time;
 				<div class="card mb-3">
 					<div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
-							<img src="<?= ($colaboradores['avatar'] != NULL) ? ($colaboradores['avatar']) : (site_url('public/assets/avatar-default.png')); ?>"
+							<img src="<?= esc($avatarSrc); ?>"
 								id="avatar_perfil" class="rounded-circle p-1 bg-primary" width="110"
-								height="110">
+								height="110" alt="Avatar">
 							<div class="mt-3">
 								<h4 class="apelido_colaborador">
-									<?= $colaboradores['apelido'] ?>
+									<?= esc($colaboradores['apelido']); ?>
 								</h4>
-								<p class="text-muted font-size-sm">Colaborador desde
+								<p class="text-muted font-size-sm mb-2">Colaborador desde
 									<?= date_format(new DateTime($colaboradores['criado']), 'd') . ' ' . month_helper(date_format(new DateTime($colaboradores['criado']), 'F'), 3) . '. ' . date_format(new DateTime($colaboradores['criado']), 'Y'); ?>
 								</p>
-								<p class="text-secondary mb-1">
+								<p class="text-secondary mb-0">
 									<?php foreach ($atribuicoes as $atribuicao): ?>
-										<label
-											class="badge bg-<?= $atribuicao['cor']; ?>"><?= $atribuicao['nome']; ?></label>
+										<label class="badge bg-<?= esc($atribuicao['cor']); ?>"><?= esc($atribuicao['nome']); ?></label>
 									<?php endforeach; ?>
 								</p>
-								<button class="btn btn-primary" data-bs-toggle="modal"
-									data-bs-target="#modal-perfil">Editar
-									Perfil</button>
-								<button class="btn btn-outline-primary" data-bs-toggle="modal"
-									data-bs-target="#modal-senha">Trocar senha</button>
 							</div>
 						</div>
 						<hr class="my-4">
-						<p class="fs-4">Páginas públicas</p>
+						<p class="fs-5 mb-2">Páginas públicas</p>
 						<ul class="list-group list-group-flush">
-							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-								<h6 class="mb-0"><a
-										href="<?= site_url('site/escritor/' . urlencode($colaboradores['apelido'])); ?>">Listar
-										artigos publicados</a></h6>
+							<li class="list-group-item px-0">
+								<a href="<?= site_url('site/escritor/' . rawurlencode($colaboradores['apelido'])); ?>">Artigos publicados</a>
+							</li>
+							<li class="list-group-item px-0">
+								<a href="<?= site_url('site/colaborador/' . rawurlencode($colaboradores['apelido'])); ?>">Pautas utilizadas</a>
 							</li>
 						</ul>
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-								<h6 class="mb-0"><a href="<?= site_url('site/colaborador/' . urlencode($colaboradores['apelido'])); ?>">Listar pautas
-										utilizadas</a></h6>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class="card mb-3">
-					<div class="card-body text-center">
-						<div class="border-light">
-							<h4 class="text-normal mt-1 mb-2 fw-normal">Histórico total</h4>
-						</div>
-						<div class="row">
-							<div class="col-12 border-end border-light">
-								<h6 class="text-muted mt-1 mb-2 fw-normal">Pontuações</h6>
-								<h3 class="mb-0 fw-bold">
-									<?= number_format($contribuicoes_total, 0, ',', '.'); ?>
-								</h3>
-							</div>
-						</div>
-						<div class="border-light">
-							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-bs-toggle="modal"
-									data-bs-target="#modal-pagamentos">Ver Todos os Pagamentos</a></h6>
-						</div>
 					</div>
 				</div>
 			</div>
+
 			<div class="col-lg-8">
-				<div class="card mb-3">
-					<div class="card-body text-center">
-						<div class="border-light">
-							<h4 class="text-normal mt-1 mb-2 fw-normal">Contribuições Aprovadas e Pendentes</h4>
-						</div>
-						<div class="row">
-							<div class="col-6 border-end border-light">
-								<h6 class="text-muted mt-1 mb-2 fw-normal">Colaborações</h6>
-								<h2 class="mb-0 fw-bold">
-									<?= number_format($contribuicoes_mensal['colaboracoes'], 0, ',', '.'); ?>
-								</h2>
+				<ul class="nav nav-tabs mb-3" id="perfil-tabs" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active" id="tab-recados" data-bs-toggle="tab"
+							data-bs-target="#painel-recados" type="button" role="tab"
+							aria-controls="painel-recados" aria-selected="true">
+							Recados<?php if (($recados_nao_lidos ?? 0) > 0): ?>
+								<span class="badge bg-danger ms-1" id="badge-recados-nao-lidos"><?= (int) $recados_nao_lidos; ?></span>
+							<?php endif; ?>
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="tab-contribuicoes" data-bs-toggle="tab"
+							data-bs-target="#painel-contribuicoes" type="button" role="tab"
+							aria-controls="painel-contribuicoes" aria-selected="false">Contribuições</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="tab-pagamentos" data-bs-toggle="tab"
+							data-bs-target="#painel-pagamentos" type="button" role="tab"
+							aria-controls="painel-pagamentos" aria-selected="false">Pagamentos</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="tab-perfil" data-bs-toggle="tab"
+							data-bs-target="#painel-perfil" type="button" role="tab"
+							aria-controls="painel-perfil" aria-selected="false">Perfil</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="tab-seguranca" data-bs-toggle="tab"
+							data-bs-target="#painel-seguranca" type="button" role="tab"
+							aria-controls="painel-seguranca" aria-selected="false">Segurança</button>
+					</li>
+				</ul>
+
+				<div class="tab-content" id="perfil-tabs-content">
+					<div class="tab-pane fade show active" id="painel-recados" role="tabpanel"
+						aria-labelledby="tab-recados" tabindex="0">
+						<div class="card mb-3">
+							<div class="card-body">
+								<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+									<h5 class="mb-0">Recados</h5>
+									<?php if (($recados_nao_lidos ?? 0) > 0): ?>
+										<button type="button" class="btn btn-outline-primary btn-sm" id="btn-marcar-recados-lidos">
+											Marcar todos como lidos
+										</button>
+									<?php endif; ?>
+								</div>
+								<div id="lista-recados"
+									data-offset="<?= (int) ($recados_offset ?? 0); ?>"
+									data-tem-mais="<?= !empty($recados_tem_mais) ? '1' : '0'; ?>">
+									<?php if ($notificacoes !== false && !empty($notificacoes)): ?>
+										<?= view('colaboradores/perfil_recados_itens', [
+											'notificacoes' => $notificacoes,
+											'colaboradores' => $colaboradores,
+											'idx_inicio' => 0,
+										]); ?>
+									<?php else: ?>
+										<p class="text-center text-muted mb-0" id="recados-vazio">Não há recados para o seu usuário.</p>
+									<?php endif; ?>
+								</div>
+								<div id="recados-sentinel" class="py-2 text-center<?= empty($recados_tem_mais) ? ' d-none' : ''; ?>">
+									<span class="small text-muted" id="recados-loading" style="display:none;">Carregando mais recados…</span>
+								</div>
 							</div>
-							<div class="col-6 border-end border-light">
-								<h6 class="text-muted mt-1 mb-2 fw-normal">Pontuações</h6>
-								<h2 class="mb-0 fw-bold">
-									<?= number_format($contribuicoes_mensal['pontos'], 0, ',', '.'); ?>
-								</h2>
-							</div>
-						</div>
-						<div class="border-light">
-							<h6 class="text-muted mt-1 mb-2 fw-normal"><a href="#" data-bs-toggle="modal"
-									data-bs-target="#modal-colaboracoes">Ver listagem</a></h6>
 						</div>
 					</div>
-				</div>
-				<div class="mb-3 text-end">
-					<a class="btn btn-outline-secondary" href="<?= site_url('site/noticias'); ?>">Sugerir pauta</a>
-				</div>
-				<div class="row">
-					<div class="col-sm-12 mb-3">
-						<div class="card">
+
+					<div class="tab-pane fade" id="painel-contribuicoes" role="tabpanel"
+						aria-labelledby="tab-contribuicoes" tabindex="0">
+						<div class="card mb-3">
 							<div class="card-body">
-								<h4 class="d-flex align-items-center mb-3">Informações úteis:</h5>
-									<div class="row">
-										<div class="col-md-6 col-lg-6 col-12">
-											<div class="card p-3 mb-3">
-												<div class="d-flex justify-content-between">
-													<h5> <span>Limite Diário de Pautas</span> </h5>
-												</div>
-												<div class="mt-2">
-													<?php if ($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
-														<div class="mt-1 mb-1">
-															Limites serão renovados em
-															<?= app_time($limites['limite_pautas_diario_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
-														</div>
-													<?php endif; ?>
-													<div class="progress">
-														<div class="progress-bar" role="progressbar"
-															style="width: <?= number_format(($limites['limite_pautas_diario_usadas'] / $limites['limite_pautas_diario']) * 100, 0, ',', '.'); ?>%"
-															aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-														</div>
-													</div>
-													<div class="mt-3">
-														<span class="text1">
-															<?= ($limites['limite_pautas_diario_usadas'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_diario_usadas']; ?>
-															envio<?= ($limites['limite_pautas_semanal_usadas'] > 1) ? ('s') : (''); ?>
-															<span class="text2">de
-																<?= ($limites['limite_pautas_diario'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_diario']; ?>
-																pautas.</span></span>
-													</div>
-												</div>
+								<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+									<h5 class="mb-0">Limites de pautas</h5>
+									<a class="btn btn-primary" href="<?= site_url('site/noticias'); ?>">Sugerir pauta</a>
+								</div>
+								<div class="row">
+									<div class="col-md-6 mb-3 mb-md-0">
+										<p class="fw-semibold mb-2">Limite diário</p>
+										<?php if ($limites['limite_pautas_diario_usadas'] >= $limites['limite_pautas_diario']): ?>
+											<p class="small text-muted mb-2">
+												Limites serão renovados em
+												<?= app_time($limites['limite_pautas_diario_permitido'])->toLocalizedString('dd MMMM yyyy'); ?>
+											</p>
+										<?php endif; ?>
+										<div class="progress mb-2">
+											<div class="progress-bar" role="progressbar"
+												style="width: <?= number_format($pct_diario, 0, ',', '.'); ?>%"
+												aria-valuenow="<?= (int) round($pct_diario); ?>" aria-valuemin="0" aria-valuemax="100">
 											</div>
 										</div>
-										<div class="col-md-6 col-lg-6 col-12">
-											<div class="card p-3 mb-3">
-												<div class="d-flex justify-content-between">
-													<h5> <span>Limite Semanal de Pautas</span> </h5>
-												</div>
-												<div class="mt-2">
-													<?php if ($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
-														<div class="mt-1 mb-1">
-															Limites serão renovados em
-															<?= app_time($limites['limite_pautas_semanal_permitido'])->toLocalizedString("dd MMMM yyyy"); ?>
-														</div>
-													<?php endif; ?>
-													<div class="progress">
-														<div class="progress-bar" role="progressbar"
-															style="width: <?= number_format(($limites['limite_pautas_semanal_usadas'] / $limites['limite_pautas_semanal']) * 100, 0, ',', '.'); ?>%"
-															aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-														</div>
-													</div>
-													<div class="mt-3">
-														<span class="text1">
-															<?= ($limites['limite_pautas_semanal_usadas'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_semanal_usadas']; ?>
-															envio<?= ($limites['limite_pautas_semanal_usadas'] > 1) ? ('s') : (''); ?>
-															<span class="text2">de
-																<?= ($limites['limite_pautas_semanal'] < 10) ? ('0') : (''); ?><?= $limites['limite_pautas_semanal']; ?>
-																pautas.</span></span>
-													</div>
-												</div>
+										<p class="mb-0 small">
+											<?= ($limites['limite_pautas_diario_usadas'] < 10) ? '0' : ''; ?><?= $limites['limite_pautas_diario_usadas']; ?>
+											envio<?= ($limites['limite_pautas_diario_usadas'] > 1) ? 's' : ''; ?>
+											de
+											<?= ($limites['limite_pautas_diario'] < 10) ? '0' : ''; ?><?= $limites['limite_pautas_diario']; ?>
+											pautas.
+										</p>
+									</div>
+									<div class="col-md-6">
+										<p class="fw-semibold mb-2">Limite semanal</p>
+										<?php if ($limites['limite_pautas_semanal_usadas'] >= $limites['limite_pautas_semanal']): ?>
+											<p class="small text-muted mb-2">
+												Limites serão renovados em
+												<?= app_time($limites['limite_pautas_semanal_permitido'])->toLocalizedString('dd MMMM yyyy'); ?>
+											</p>
+										<?php endif; ?>
+										<div class="progress mb-2">
+											<div class="progress-bar" role="progressbar"
+												style="width: <?= number_format($pct_semanal, 0, ',', '.'); ?>%"
+												aria-valuenow="<?= (int) round($pct_semanal); ?>" aria-valuemin="0" aria-valuemax="100">
 											</div>
+										</div>
+										<p class="mb-0 small">
+											<?= ($limites['limite_pautas_semanal_usadas'] < 10) ? '0' : ''; ?><?= $limites['limite_pautas_semanal_usadas']; ?>
+											envio<?= ($limites['limite_pautas_semanal_usadas'] > 1) ? 's' : ''; ?>
+											de
+											<?= ($limites['limite_pautas_semanal'] < 10) ? '0' : ''; ?><?= $limites['limite_pautas_semanal']; ?>
+											pautas.
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-3">Contribuições aprovadas e pendentes</h5>
+								<div class="row text-center mb-3">
+									<div class="col-4 border-end">
+										<p class="text-muted mb-1">Colaborações (mês)</p>
+										<p class="fs-3 fw-bold mb-0">
+											<?= number_format($contribuicoes_mensal['colaboracoes'], 0, ',', '.'); ?>
+										</p>
+									</div>
+									<div class="col-4 border-end">
+										<p class="text-muted mb-1">Pontos (mês)</p>
+										<p class="fs-3 fw-bold mb-0">
+											<?= number_format($contribuicoes_mensal['pontos'], 0, ',', '.'); ?>
+										</p>
+									</div>
+									<div class="col-4">
+										<p class="text-muted mb-1">Total histórico</p>
+										<p class="fs-3 fw-bold mb-0">
+											<?= number_format($contribuicoes_total, 0, ',', '.'); ?>
+										</p>
+									</div>
+								</div>
+								<div class="table-responsive">
+									<table class="table table-striped mb-0">
+										<thead>
+											<tr>
+												<th scope="col">#</th>
+												<th scope="col">Título</th>
+												<th scope="col">Atribuição</th>
+												<th scope="col">Pontos</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php if (empty($lista_artigos_mes)): ?>
+												<tr>
+													<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
+												</tr>
+											<?php else: ?>
+												<?php foreach ($lista_artigos_mes as $chave => $artigo): ?>
+													<?php $total = 0; ?>
+													<tr>
+														<th scope="row"><?= $chave + 1 ?></th>
+														<td>
+															<a href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']); ?>">
+																<?= esc($artigo['titulo']); ?>
+															</a>
+														</td>
+														<td>
+															<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
+																<?php $total += $artigo['pontos_escritor']; ?>
+																<label class="badge bg-info m-1">Escritor</label>
+															<?php endif; ?>
+															<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
+																<?php $total += $artigo['pontos_revisor']; ?>
+																<label class="badge bg-info m-1">Revisor</label>
+															<?php endif; ?>
+															<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
+																<?php $total += $artigo['pontos_narrador']; ?>
+																<label class="badge bg-info m-1">Narrador</label>
+															<?php endif; ?>
+															<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
+																<?php $total += $artigo['pontos_produtor']; ?>
+																<label class="badge bg-info m-1">Produtor</label>
+															<?php endif; ?>
+														</td>
+														<td><?= number_format($total, 0, ',', '.'); ?></td>
+													</tr>
+												<?php endforeach; ?>
+											<?php endif; ?>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-pane fade" id="painel-pagamentos" role="tabpanel"
+						aria-labelledby="tab-pagamentos" tabindex="0">
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-3">Pagamentos pelas contribuições</h5>
+								<p class="text-muted small">Clique nos seus pontos para ver os artigos daquele lote.</p>
+								<div class="table-responsive">
+									<table class="table table-striped mb-0">
+										<thead>
+											<tr>
+												<th scope="col">Data Pagamento</th>
+												<th scope="col">Hash da Transação</th>
+												<th scope="col">Seus pontos</th>
+												<th scope="col">Sats/Pontos</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php if (empty($lista_pagamentos)): ?>
+												<tr>
+													<td colspan="4" class="text-center">Não há pagamentos feitos até o momento</td>
+												</tr>
+											<?php else: ?>
+												<?php foreach ($lista_pagamentos as $pagamento): ?>
+													<tr>
+														<th scope="row">
+															<?= app_time($pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
+														</th>
+														<td>
+															<a href="https://mempool.space/pt/tx/<?= esc($pagamento['hash_transacao'], 'url'); ?>"
+																target="_blank" rel="noopener noreferrer">
+																<?= esc(substr($pagamento['hash_transacao'], 0, 5)); ?>...<?= esc(substr($pagamento['hash_transacao'], -5, 5)); ?>
+															</a>
+														</td>
+														<td>
+															<a href="#" class="listar-colaboracoes-fechadas"
+																id="<?= (int) $pagamento['id']; ?>"
+																data-bs-toggle="modal"
+																data-bs-target="#modal-colaboracoes-fechadas"
+																title="Veja suas contribuições deste pagamento">
+																<?= number_format((float) $pagamento['pontos_colaborador'], 0, ',', '.'); ?>
+															</a>
+														</td>
+														<td>
+															<?php if ((float) $pagamento['pontuacao_total'] > 0): ?>
+																<?= number_format(($pagamento['quantidade_bitcoin'] * 100000000) / $pagamento['pontuacao_total'], 0, ',', '.'); ?> sats
+															<?php else: ?>
+																—
+															<?php endif; ?>
+														</td>
+													</tr>
+												<?php endforeach; ?>
+											<?php endif; ?>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-pane fade" id="painel-perfil" role="tabpanel"
+						aria-labelledby="tab-perfil" tabindex="0">
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-3">Dados do perfil</h5>
+								<form class="needs-validation" method="post" id="colaboradores_perfil"
+									enctype="multipart/form-data">
+									<div class="mb-3">
+										<label for="apelido" class="form-label">Nome público</label>
+										<input type="text" class="form-control" id="apelido" placeholder="Digite seu apelido"
+											value="<?= esc($colaboradores['apelido']); ?>" name="apelido" required>
+									</div>
+
+									<div class="mb-3">
+										<label for="twitter" class="form-label">Usuário no X (antigo Twitter)</label>
+										<div class="input-group">
+											<span class="input-group-text">@</span>
+											<input type="text" class="form-control" id="twitter"
+												placeholder="Digite seu @ para usar o AncapsuBot"
+												value="<?= esc($colaboradores['twitter'] ?? ''); ?>" name="twitter">
 										</div>
 									</div>
+
+									<div class="mb-3">
+										<label for="carteira" class="form-label">Carteira Bitcoin</label>
+										<input type="text" class="form-control" id="carteira" name="carteira"
+											placeholder="Digite sua carteira bitcoin"
+											value="<?= esc($colaboradores['carteira'] ?? ''); ?>">
+										<div class="form-text">
+											Endereços válidos começam com 1, 3 ou bc1.
+										</div>
+									</div>
+
+									<div class="mb-3">
+										<label for="avatar" class="form-label">Alterar avatar</label>
+										<input type="file" class="form-control" id="avatar" name="avatar"
+											onchange="onFileUpload(this);" aria-label="Avatar" accept=".png,image/png">
+										<div class="form-text">
+											Apenas PNG, até 1&nbsp;MB, no máximo 2048×2048 pixels.
+										</div>
+									</div>
+
+									<div class="text-end">
+										<button class="btn btn-primary" type="submit">Salvar dados do perfil</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-pane fade" id="painel-seguranca" role="tabpanel"
+						aria-labelledby="tab-seguranca" tabindex="0">
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-3">Alterar senha</h5>
+								<form class="needs-validation" method="post" id="colaboradores_senha">
+									<div class="mb-3">
+										<label for="senha_antiga" class="form-label">Senha atual</label>
+										<input type="password" id="senha_antiga" name="senha_antiga"
+											placeholder="Digite sua senha atual" class="form-control">
+									</div>
+									<div class="mb-3">
+										<label for="senha_nova" class="form-label">Nova senha</label>
+										<input type="password" class="form-control" id="senha_nova" name="senha_nova"
+											placeholder="Digite sua nova senha">
+										<div class="form-text">Mínimo de 10 caracteres.</div>
+									</div>
+									<div class="mb-3">
+										<label for="senha_nova_confirmacao" class="form-label">Repetir nova senha</label>
+										<input type="password" class="form-control" id="senha_nova_confirmacao"
+											name="senha_nova_confirmacao" placeholder="Digite novamente a nova senha">
+									</div>
+									<button class="btn btn-primary" type="submit">Trocar senha</button>
+								</form>
+							</div>
+						</div>
+
+						<div class="card border-danger mb-3">
+							<div class="card-body">
+								<h5 class="mb-2 text-danger">Zona de risco</h5>
+								<p class="mb-3 text-muted">
+									A exclusão só é concluída depois que você confirma pelo link enviado ao seu e-mail.
+									Até lá, a conta continua ativa.
+								</p>
+								<div id="alerta-exclusao-enviada" class="alert alert-warning d-none mb-3" role="alert">
+									Verifique seu e-mail e clique no link de confirmação para concluir a exclusão.
+									Se não confirmar, nada será alterado na sua conta.
+								</div>
+								<button type="button" class="btn btn-outline-danger" id="btn-abrir-excluir" data-bs-toggle="modal"
+									data-bs-target="#modal-excluir">Solicitar exclusão da conta</button>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-lg-12 font-weight-light text-end"><small><a class="text-danger" data-bs-toggle="modal"
-						data-bs-target="#modal-excluir" href="">Excluir minha conta</a></small></div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade bd-example-modal-lg" id="modal-perfil" tabindex="-1" role="dialog"
-	aria-labelledby="modal-perfilLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Dados do Perfil</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form class="needs-validation m-2" method="post" id="colaboradores_perfil"
-					enctype="multipart/form-data">
-					<div class="card mb-3">
-						<div class="card-body">
-							<div class="mb-3">
-								<label for="firstName">Nome Público</label>
-								<input type="text" class="form-control" id="apelido" placeholder="Digite seu apelido"
-									value="<?= $colaboradores['apelido']; ?>" name="apelido" required>
-							</div>
-
-							<div class="mb-3">
-								<label for="twitter">Usuário no X (antigo Twitter)</label>
-								<div class="input-group mb-2">
-									<span class="input-group-text" id="basic-addon1">@</span>
-									<input type="text" class="form-control" id="twitter"
-										placeholder="Digite seu @ para usar o AncapsuBot"
-										value="<?= $colaboradores['twitter']; ?>" name="twitter">
-								</div>
-							</div>
-
-							<div class="mb-3">
-								<label for="username">Carteira Bitcoin</label>
-								<div class="input-group">
-									<input type="text" class="form-control" id="carteira" name="carteira"
-										placeholder="Digite sua carteira bitcoin"
-										value="<?= $colaboradores['carteira']; ?>">
-								</div>
-							</div>
-
-							<div class="mb-3">
-								<label for="imagem">Alterar Avatar</label>
-								<div class="input-group mb-3">
-									<input type="file" class="form-control" id="avatar" name="avatar"
-										onchange="onFileUpload(this);" aria-label="Avatar" accept=".png" />
-								</div>
-							</div>
-							<div class="d-grid gap-2">
-								<button class="btn btn-primary btn-block" type="submit">Salvar dados do Perfil</button>
-							</div>
-
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="modal-senha" tabindex="-1" role="dialog" aria-labelledby="modal-perfilLabel"
-	aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Alterar Senha</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form class="needs-validation m-2" method="post" id="colaboradores_senha">
-					<div class="card mb-3">
-						<div class="card-body">
-							<div class="row mb-3">
-								<div class="col-sm-4 align-self-center ">
-									<h6 class="mb-0">Senha Atual</h6>
-								</div>
-								<div class="col-sm-8 text-secondary">
-									<input type="password" name="senha_antiga" placeholder="Digite sua senha antiga"
-										class="form-control">
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-sm-4 align-self-center ">
-									<h6 class="mb-0">Nova Senha</h6>
-								</div>
-								<div class="col-sm-8 text-secondary">
-									<input type="password" class="form-control" name="senha_nova"
-										placeholder="Digite sua nova senha">
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-sm-4 align-self-center ">
-									<h6 class="mb-0">Repetir Senha</h6>
-								</div>
-								<div class="col-sm-8 text-secondary">
-									<input type="password" class="form-control" name="senha_nova_confirmacao"
-										placeholder="Digite sua nova senha">
-								</div>
-							</div>
-							<div class="d-grid gap-2">
-								<button class="btn btn-primary btn-block" type="submit">Trocar senha</button>
-							</div>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade bd-example-modal-lg" id="modal-colaboracoes" tabindex="-1" role="dialog"
-	aria-labelledby="modal-perfilLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Colaborações deste mês</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">Título</th>
-							<th scope="col">Atribuição</th>
-							<th scope="col">Pontos</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php if (empty($lista_artigos_mes)): ?>
-							<td colspan="4" class="text-center">Não há colaborações pendentes até o momento</td>
-						<?php else: ?>
-							<?php foreach ($lista_artigos_mes as $chave => $artigo): ?>
-								<?php $total = 0; ?>
-								<tr>
-									<th scope="row">
-										<?= $chave + 1 ?>
-									</th>
-									<td><a
-											href="<?= site_url('colaboradores/artigos/detalhamento/' . $artigo['id']); ?>"><?= $artigo['titulo']; ?></a>
-									</td>
-									<td>
-										<?php if ($artigo['escrito'] == $colaboradores['id']): ?>
-											<?php $total += $artigo['pontos_escritor']; ?>
-											<label class="badge bg-info m-1">Escritor</label>
-										<?php endif; ?>
-										<?php if ($artigo['revisado'] == $colaboradores['id']): ?>
-											<?php $total += $artigo['pontos_revisor']; ?>
-											<label class="badge bg-info m-1">Revisor</label>
-										<?php endif; ?>
-										<?php if ($artigo['narrado'] == $colaboradores['id']): ?>
-											<?php $total += $artigo['pontos_narrador']; ?>
-											<label class="badge bg-info m-1">Narrador</label>
-										<?php endif; ?>
-										<?php if ($artigo['produzido'] == $colaboradores['id']): ?>
-											<?php $total += $artigo['pontos_produtor']; ?>
-											<label class="badge bg-info m-1">Produtor</label>
-										<?php endif; ?>
-									</td>
-									<td>
-										<?= number_format($total, 0, ',', '.'); ?>
-									</td>
-								</tr>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</tbody>
-				</table>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div class="modal fade bd-example-modal-lg" id="modal-colaboracoes-fechadas" tabindex="-1" role="dialog"
-	aria-labelledby="modal-perfilLabel" aria-hidden="true">
+	aria-labelledby="modal-colaboracoes-fechadas-label" aria-hidden="true">
 	<div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Colaborações já pagas</h5>
+				<h5 class="modal-title" id="modal-colaboracoes-fechadas-label">Colaborações já pagas</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -374,75 +436,33 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
-
-<div class="modal fade bd-example-modal-lg" id="modal-pagamentos" tabindex="-1" role="dialog"
-	aria-labelledby="modal-perfilLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modal-perfilLabel">Pagamentos pelas Contribuições</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th scope="col">Data Pagamento</th>
-							<th scope="col">Hash da Transação</th>
-							<th scope="col">Pontos totais</th>
-							<th scope="col">Sats/Pontos</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php if (empty($lista_pagamentos)): ?>
-							<td colspan="4" class="text-center">Não há pagamentos feitos até o momento</td>
-						<?php else: ?>
-							<?php foreach ($lista_pagamentos as $indice => $pagamento): ?>
-								<tr>
-									<th scope="row">
-										<?= app_time($pagamento['criado'])->toLocalizedString('dd MMMM yyyy'); ?>
-										</td>
-									<td>
-										<a href="https://mempool.space/pt/tx/<?= $pagamento['hash_transacao']; ?>"
-											target="_blank">
-											<?= substr($pagamento['hash_transacao'], 0, 5); ?>...<?= substr($pagamento['hash_transacao'], -5, 5); ?>
-										</a>
-									</td>
-									<td><a href="#" class="listar-colaboracoes-fechadas" id="<?= $pagamento['id']; ?>"
-											data-bs-toggle="modal" data-bs-target="#modal-colaboracoes-fechadas" data-toggle="tooltip" title="Veja suas contribuições deste pagamento"
-											onclick="javascript:$('#modal-pagamentos').modal('toggle');"><?= number_format($pagamento['pontuacao_total'], 0, ',', '.'); ?></a>
-									</td>
-									<td><?= number_format(($pagamento['quantidade_bitcoin'] * 100000000) / $pagamento['pontuacao_total'], 0, ',', '.'); ?>
-										sats</td>
-								</tr>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="modal-excluir" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="modal-excluir" tabindex="-1" role="dialog" aria-labelledby="modal-excluir-label"
 	aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Tem certeza disso?</h5>
+				<h5 class="modal-title" id="modal-excluir-label">Solicitar exclusão da conta</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<p>Os pagamentos deste mês não serão enviados, pois todos os seus dados (com exceção do seu e-mail)
-					serão deletados da nossa base de
-					dados.</p>
-				<p>Você não conseguirá mais acessar sua conta. Essa ação não pode ser desfeita.</p>
-				<p>Ao clicar em "Excluir minha conta", será enviado um e-mail de confirmação de exclusão.</p>
-				<p>Lembre-se: <strong>Essa ação não pode ser desfeita</strong>.</p>
+				<p>
+					Ao confirmar abaixo, <strong>apenas enviaremos um e-mail</strong> com um link de confirmação.
+					Sua conta permanece ativa até você clicar nesse link.
+				</p>
+				<p>Depois de confirmar pelo e-mail:</p>
+				<ul class="mb-3">
+					<li>seus dados serão anonimizados (o e-mail é mantido no sistema);</li>
+					<li>sua carteira Bitcoin será removida, então contribuições pendentes não serão pagas;</li>
+					<li>você não conseguirá mais acessar a conta;</li>
+					<li>essa confirmação <strong>não pode ser desfeita</strong>.</li>
+				</ul>
+				<p class="mb-0 text-muted small">
+					Se você não clicar no link do e-mail, nenhuma alteração será feita.
+				</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-				<button type="button" class="btn btn-primary excluir">Excluir minha conta</button>
+				<button type="button" class="btn btn-danger excluir">Enviar e-mail de confirmação</button>
 			</div>
 		</div>
 	</div>
@@ -450,27 +470,57 @@ use CodeIgniter\I18n\Time;
 
 <script>
 	$(function () {
-		$('[data-toggle="tooltip"]').tooltip()
-	})
+		$('.listar-colaboracoes-fechadas').tooltip();
+	});
+
+	var csrfName = <?= json_encode(csrf_token()) ?>;
+	var csrfHash = <?= json_encode(csrf_hash()) ?>;
+
+	function appendCsrf(formData) {
+		formData.append(csrfName, csrfHash);
+		return formData;
+	}
+
+	var avatarPerfilOriginal = $('#avatar_perfil').attr('src');
+	var avatarMenuOriginal = $('#avatar_menu').attr('src');
+	var avatarPreviewPendente = false;
+
+	function restaurarAvatarPreview() {
+		if (avatarPreviewPendente) {
+			$('#avatar_perfil').attr('src', avatarPerfilOriginal);
+			if (avatarMenuOriginal !== undefined) {
+				$('#avatar_menu').attr('src', avatarMenuOriginal);
+			}
+			avatarPreviewPendente = false;
+		}
+	}
+
+	function confirmarAvatarPreview() {
+		avatarPerfilOriginal = $('#avatar_perfil').attr('src');
+		avatarMenuOriginal = $('#avatar_menu').attr('src');
+		avatarPreviewPendente = false;
+	}
 
 	function onFileUpload(input) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
 			reader.onload = function (e) {
-				$('#avatar_perfil').attr('src', e.target.result)
-				$('#avatar_menu').attr('src', e.target.result)
+				$('#avatar_perfil').attr('src', e.target.result);
+				$('#avatar_menu').attr('src', e.target.result);
+				avatarPreviewPendente = true;
 			};
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
 
 	$('.listar-colaboracoes-fechadas').on('click', function (e) {
+		e.preventDefault();
 		$.ajax({
 			url: "<?php echo base_url('colaboradores/perfil/fechadas/'); ?>" + e.currentTarget.id,
 			method: "POST",
 			dataType: "html",
 			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
+			complete: function () { $('#modal-loading').hide(); },
 			success: function (retorno) {
 				$('#tbody-modal-colaboracoes-fechadas').html(retorno);
 			}
@@ -478,26 +528,182 @@ use CodeIgniter\I18n\Time;
 	});
 
 	$(document).ready(function () {
+		var $listaRecados = $('#lista-recados');
+		var recadosOffset = parseInt($listaRecados.data('offset'), 10) || 0;
+		var recadosTemMais = String($listaRecados.data('tem-mais')) === '1';
+		var recadosCarregando = false;
+
+		function carregarMaisRecados() {
+			if (!recadosTemMais || recadosCarregando) {
+				return;
+			}
+			if (!$('#painel-recados').hasClass('active') && !$('#painel-recados').hasClass('show')) {
+				return;
+			}
+
+			recadosCarregando = true;
+			$('#recados-loading').show();
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/perfil/recadosMais'); ?>",
+				method: "GET",
+				data: { offset: recadosOffset },
+				dataType: "json",
+				success: function (retorno) {
+					if (!retorno || retorno.status !== true) {
+						return;
+					}
+					if (retorno.html) {
+						$('#recados-vazio').remove();
+						$listaRecados.append(retorno.html);
+					}
+					recadosOffset = retorno.proximo_offset || recadosOffset;
+					recadosTemMais = !!retorno.tem_mais;
+					$listaRecados.attr('data-offset', recadosOffset);
+					$listaRecados.attr('data-tem-mais', recadosTemMais ? '1' : '0');
+					if (!recadosTemMais) {
+						$('#recados-sentinel').addClass('d-none');
+					}
+				},
+				complete: function () {
+					recadosCarregando = false;
+					$('#recados-loading').hide();
+					// Se o fim da lista ainda está na tela, carrega o próximo lote
+					if (recadosTemMais) {
+						var el = document.getElementById('recados-sentinel');
+						if (el) {
+							var rect = el.getBoundingClientRect();
+							if (rect.top < window.innerHeight + 200) {
+								carregarMaisRecados();
+							}
+						}
+					}
+				}
+			});
+		}
+
+		if ('IntersectionObserver' in window) {
+			var recadosObserver = new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					if (entry.isIntersecting) {
+						carregarMaisRecados();
+					}
+				});
+			}, { root: null, rootMargin: '200px', threshold: 0 });
+
+			var sentinel = document.getElementById('recados-sentinel');
+			if (sentinel) {
+				recadosObserver.observe(sentinel);
+			}
+		} else {
+			$(window).on('scroll', function () {
+				if (!recadosTemMais || recadosCarregando) {
+					return;
+				}
+				var $sentinel = $('#recados-sentinel');
+				if (!$sentinel.length || $sentinel.hasClass('d-none')) {
+					return;
+				}
+				var rect = $sentinel[0].getBoundingClientRect();
+				if (rect.top < window.innerHeight + 200) {
+					carregarMaisRecados();
+				}
+			});
+		}
+
+		$(document).on('click', '.recado-toggle-pauta', function (e) {
+			e.preventDefault();
+			var $link = $(this);
+			var painelSel = $link.data('target-panel');
+			var $painel = $(painelSel);
+			var pautaId = $link.data('pauta-id');
+			var $conteudo = $painel.find('.recado-pauta-conteudo');
+
+			if ($painel.hasClass('show')) {
+				$painel.collapse('hide');
+				$link.attr('aria-expanded', 'false');
+				return;
+			}
+
+			$painel.collapse('show');
+			$link.attr('aria-expanded', 'true');
+
+			if ($painel.attr('data-loaded') === '1') {
+				return;
+			}
+
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/pautas/resumo/'); ?>" + encodeURIComponent(pautaId),
+				method: "GET",
+				dataType: "html",
+				beforeSend: function () {
+					$conteudo.html('Carregando…');
+				},
+				success: function (html) {
+					$conteudo.removeClass('text-muted').html(html);
+					$painel.attr('data-loaded', '1');
+				},
+				error: function () {
+					$conteudo.html('Não foi possível carregar o resumo desta pauta.');
+				}
+			});
+		});
+
+		$('#btn-marcar-recados-lidos').on('click', function (e) {
+			e.preventDefault();
+			var data = {};
+			data[csrfName] = csrfHash;
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/perfil/marcarRecadosLidos'); ?>",
+				method: "POST",
+				data: data,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide(); },
+				success: function (retorno) {
+					if (retorno.status == true) {
+						$('.recado-nao-lido .list-group-flush').removeClass('border border-primary');
+						$('.recado-nao-lido').removeClass('recado-nao-lido');
+						$('#btn-marcar-recados-lidos').remove();
+						$('#badge-recados-nao-lidos').remove();
+						$('.avatar-recados-indicator').addClass('d-none');
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				},
+				error: function () {
+					popMessage('ATENÇÃO', 'Não foi possível marcar os recados. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
+				}
+			});
+		});
+
 		$('#colaboradores_perfil').on('submit', function (e) {
 			e.preventDefault();
 			$.ajax({
-				url: "<?php echo base_url('colaboradores/perfil'); ?>",
+				url: "<?php echo base_url('colaboradores/perfil/atualizarPerfil'); ?>",
 				method: "POST",
-				data: new FormData(this),
+				data: appendCsrf(new FormData(this)),
 				processData: false,
 				contentType: false,
 				cache: false,
 				dataType: "json",
 				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
+				complete: function () { $('#modal-loading').hide(); },
 				success: function (retorno) {
 					if (retorno.status == true) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-						$('.apelido_colaborador').html($('#apelido').val())
+						$('.apelido_colaborador').text($('#apelido').val());
+						confirmarAvatarPreview();
+						$('#avatar').val('');
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						restaurarAvatarPreview();
 					}
-					$('#modal-perfil').modal('toggle');
+				},
+				error: function () {
+					restaurarAvatarPreview();
+					popMessage('ATENÇÃO', 'Não foi possível salvar o perfil. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
 				}
 			});
 		});
@@ -505,46 +711,57 @@ use CodeIgniter\I18n\Time;
 		$('#colaboradores_senha').on('submit', function (e) {
 			e.preventDefault();
 			$.ajax({
-				url: "<?php echo base_url('colaboradores/perfil'); ?>",
+				url: "<?php echo base_url('colaboradores/perfil/trocarSenha'); ?>",
 				method: "POST",
-				data: new FormData(this),
+				data: appendCsrf(new FormData(this)),
 				processData: false,
 				contentType: false,
 				cache: false,
 				dataType: "json",
 				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
+				complete: function () { $('#modal-loading').hide(); },
 				success: function (retorno) {
 					if (retorno.status == true) {
-						$('#modal-senha').modal('toggle');
+						$('#colaboradores_senha')[0].reset();
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
+				},
+				error: function () {
+					popMessage('ATENÇÃO', 'Não foi possível alterar a senha. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
 				}
 			});
 		});
 
 		$('.excluir').on('click', function (e) {
 			e.preventDefault();
+			var data = {};
+			data[csrfName] = csrfHash;
 			$.ajax({
 				url: "<?php echo base_url('site/excluir'); ?>",
 				method: "POST",
+				data: data,
 				dataType: "json",
 				beforeSend: function () { $('#modal-loading').show(); },
-				complete: function () { $('#modal-loading').hide() },
+				complete: function () { $('#modal-loading').hide(); },
 				success: function (retorno) {
 					if (retorno.status == true) {
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+						$('#alerta-exclusao-enviada').removeClass('d-none');
+						$('#btn-abrir-excluir').prop('disabled', true).text('E-mail de confirmação enviado');
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 					}
-					$('#modal-excluir').modal('toggle');
+					$('#modal-excluir').modal('hide');
+				},
+				error: function () {
+					popMessage('ATENÇÃO', 'Não foi possível solicitar a exclusão. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
+					$('#modal-excluir').modal('hide');
 				}
 			});
 		});
 	});
-
 </script>
 
 <?= $this->endSection(); ?>

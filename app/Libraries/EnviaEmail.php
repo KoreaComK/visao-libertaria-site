@@ -47,7 +47,14 @@ class EnviaEmail
 
 	public function getMensagemExcluirConta($hash)
 	{
-		$mensagem = "Olá. Você solicitou a exclusão da sua conta no site Visão Libertária.\r\nPara confirmar a exclusão, clique no link abaixo.\r\n" . site_url('site/excluir/' . $hash);
+		$mensagem = "Olá.\r\n\r\n"
+			. "Você solicitou a exclusão da sua conta no site Visão Libertária.\r\n\r\n"
+			. "Importante: sua conta ainda está ativa. A exclusão só acontece se você confirmar clicando no link abaixo.\r\n"
+			. "Se não clicou neste link, ignore este e-mail e nada será alterado.\r\n\r\n"
+			. "Ao confirmar, seus dados serão anonimizados (exceto o e-mail), a carteira Bitcoin será removida "
+			. "(contribuições pendentes não serão pagas) e você não poderá mais acessar a conta. Essa ação não pode ser desfeita.\r\n\r\n"
+			. "Confirmar exclusão:\r\n"
+			. site_url('site/excluir/' . $hash);
 		return $mensagem;
 	}
 

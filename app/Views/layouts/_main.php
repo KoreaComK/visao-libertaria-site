@@ -242,21 +242,22 @@
 									</div>
 								<?php endif; ?>
 								<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>
+									<?php $temRecados = isset($_SESSION['colaboradores']['notificacoes']) && (int) $_SESSION['colaboradores']['notificacoes'] > 0; ?>
 									<div class="gen-account-holder">
-										<a href="javascript:void(0)" id="gen-user-btn"><img id="avatar_menu"
+										<a href="javascript:void(0)" id="gen-user-btn" class="position-relative d-inline-block">
+											<img id="avatar_menu"
 												src="<?= $_SESSION['colaboradores']['avatar']; ?>"
-												class="rounded-circle"></a>
+												class="rounded-circle">
+											<span class="avatar-recados-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle<?= $temRecados ? '' : ' d-none'; ?>">
+												<span class="visually-hidden">Novos recados</span>
+											</span>
+										</a>
 										<div class="gen-account-menu">
 											<ul class="gen-account-menu rounded-bottom-3 rounded-top-3">
 												<li>
 													<a class="dropdown-item rounded-top-3"
 														href="<?= site_url('colaboradores/perfil'); ?>">Meu
 														Perfil</a>
-												</li>
-												<li>
-													<a class="dropdown-item"
-														href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
-														Notificações</a>
 												</li>
 												<li>
 													<a class="dropdown-item rounded-bottom-3"
@@ -452,7 +453,7 @@
 		</div>
 		<div class="container container-fluid py-2 px-sm-3 px-md-5">
 			<p class="m-0 text-center">
-				Desenvolvido por
+				Desenvolvido e mantido por
 				<a class="text-reset btn-link font-light" href="https://github.com/KoreaComK/">KoreacomK</a> e a
 				comunidade.
 			</p>

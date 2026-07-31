@@ -130,7 +130,7 @@ class ValidaFormularios extends BaseController
 			],
 			'carteira' => [
 				'label' => 'Carteira Bitcoin',
-				'rules' => 'permit_empty|max_length[255]|alpha_numeric|is_unique[colaboradores.carteira,id,' . $id . ']'
+				'rules' => 'permit_empty|max_length[255]|carteira_bitcoin|is_unique[colaboradores.carteira,id,' . $id . ']'
 			]
 		]);
 		$validation->run($post);

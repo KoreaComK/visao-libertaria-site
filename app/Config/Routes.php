@@ -57,14 +57,18 @@ $routes->match(['get', 'post'], 'site/login', 'Site::login', ['filter' => 'authC
 // Protected actions outside /colaboradores.
 $routes->group('site', ['filter' => 'authCookie'], static function ($routes) {
     $routes->get('logout', 'Site::logout');
-    $routes->match(['get', 'post'], 'excluir', 'Site::excluir');
+    $routes->get('excluir', 'Site::excluir');
+    $routes->post('excluir', 'Site::excluir', ['filter' => 'csrf']);
     $routes->match(['get', 'post'], 'excluir/(:any)', 'Site::excluir/$1');
 });
 
 // Protected collaborator area.
 $routes->group('colaboradores', ['namespace' => 'App\Controllers\Colaboradores', 'filter' => 'authCookie'], static function ($routes) {
-    $routes->get('/', 'Perfil::index');
-    $routes->get('perfil', 'Perfil::index');
+    $routes->get('/', 'Perfil::index', ['filter' => 'csrf']);
+    $routes->get('perfil', 'Perfil::index', ['filter' => 'csrf']);
+    $routes->post('perfil/atualizarPerfil', 'Perfil::atualizarPerfil', ['filter' => 'csrf']);
+    $routes->post('perfil/trocarSenha', 'Perfil::trocarSenha', ['filter' => 'csrf']);
+    $routes->post('perfil/marcarRecadosLidos', 'Perfil::marcarRecadosLidos', ['filter' => 'csrf']);
     $routes->add('perfil/(:any)', 'Perfil::$1');
     $routes->add('artigos/(:any)', 'Artigos::$1');
     $routes->add('artigos/(:any)/(:any)', 'Artigos::$1/$2');

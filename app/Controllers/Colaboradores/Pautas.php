@@ -233,6 +233,39 @@ class Pautas extends BaseController
 		return redirect()->to(base_url() . 'site/noticias');
 	}
 
+	/**
+	 * Resumo da pauta para expandir inline nos Recados do perfil.
+	 */
+	public function resumo($idPauta = null)
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('1');
+
+		if ($idPauta === null || $idPauta === '') {
+			return $this->response->setStatusCode(404)->setBody('Pauta não encontrada.');
+		}
+
+		$pautasModel = new \App\Models\PautasModel();
+		$pauta = $pautasModel->withDeleted()->find($idPauta);
+		if ($pauta === null || empty($pauta)) {
+			return $this->response->setStatusCode(404)->setBody('Pauta não encontrada.');
+		}
+
+		$pautasComentariosModel = new \App\Models\PautasComentariosModel();
+		$comentarios = $pautasComentariosModel->getComentarios($idPauta);
+
+		$texto = (string) ($pauta['texto'] ?? '');
+		$textoResumo = mb_strlen($texto) > 320
+			? (rtrim(mb_substr($texto, 0, 320)) . '…')
+			: $texto;
+
+		return view('colaboradores/perfil_recado_pauta_resumo', [
+			'pauta' => $pauta,
+			'texto_resumo' => $textoResumo,
+			'comentarios' => $comentarios,
+		]);
+	}
+
 	public function excluir($idPauta = null)
 	{
 		$verifica = new verificaPermissao();

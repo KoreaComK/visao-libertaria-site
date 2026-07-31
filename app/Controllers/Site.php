@@ -488,7 +488,7 @@ class Site extends BaseController
 			$enviaEmail = new \App\Libraries\EnviaEmail();
 			$enviaEmail->enviaEmail($colaborador['email'], 'VISÃO LIBERTÁRIA - EXCLUSÃO DEFINITIVA DE CONTA', $enviaEmail->getMensagemExcluirConta($colaborador['confirmacao_hash']));
 			$retorno['status'] = true;
-			$retorno['mensagem'] = 'Foi enviado um e-mail para confirmação de exclusão de conta. Clique no link para excluir definitivamente sua conta do site.';
+			$retorno['mensagem'] = 'Enviamos um e-mail de confirmação. Sua conta só será excluída depois que você clicar no link desse e-mail. Até lá, nada muda.';
 			return json_encode($retorno);
 		}
 		if ($hash !== null) {
@@ -505,7 +505,12 @@ class Site extends BaseController
 			$colaborador['excluido'] = $now;
 			$colaborador['atualizado'] = $now;
 			$colaboradoresModel->save($colaborador);
-			$data['mensagem'] = 'Exclusão da conta feita com sucesso. Seus dados foram apagados (menos o seu e-mail) e você não poderá mais acessar sua conta.';
+
+			helper('cookie');
+			$this->session->remove('colaboradores');
+			delete_cookie('hash');
+
+			$data['mensagem'] = 'Conta excluída com sucesso. Seus dados foram anonimizados (o e-mail permanece no sistema), a carteira foi removida e você não poderá mais acessar a conta.';
 			return view('excluir', $data);
 		}
 		return redirect()->to(base_url() . 'site/logout');

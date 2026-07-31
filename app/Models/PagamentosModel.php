@@ -57,6 +57,38 @@ class PagamentosModel extends Model
 		return $this;
 	}
 
+	/**
+	 * Pagamentos em que o colaborador participou, com a soma dos pontos dele no lote.
+	 */
+	public function getPagamentosColaborador(int $colaboradorId): array
+	{
+		$colaboradorId = (int) $colaboradorId;
+		$pontosExpr = "
+			SUM(
+				IF(a.escrito_colaboradores_id = {$colaboradorId}, a.palavras_escritor * p.multiplicador_escrito / 100, 0)
+				+ IF(a.revisado_colaboradores_id = {$colaboradorId}, a.palavras_revisor * p.multiplicador_revisado / 100, 0)
+				+ IF(a.narrado_colaboradores_id = {$colaboradorId}, a.palavras_narrador * p.multiplicador_narrado / 100, 0)
+				+ IF(a.produzido_colaboradores_id = {$colaboradorId}, a.palavras_produtor * p.multiplicador_produzido / 100, 0)
+			)
+		";
+
+		return $this->db->table('pagamentos p')
+			->select('p.*')
+			->select("{$pontosExpr} AS pontos_colaborador", false)
+			->join('pagamentos_artigos pa', 'pa.pagamentos_id = p.id')
+			->join('artigos a', 'a.id = pa.artigos_id')
+			->groupStart()
+				->where('a.escrito_colaboradores_id', $colaboradorId)
+				->orWhere('a.revisado_colaboradores_id', $colaboradorId)
+				->orWhere('a.narrado_colaboradores_id', $colaboradorId)
+				->orWhere('a.produzido_colaboradores_id', $colaboradorId)
+			->groupEnd()
+			->groupBy('p.id')
+			->orderBy('p.atualizado', 'DESC')
+			->get()
+			->getResultArray();
+	}
+
 	protected function cadastraHistoricoUsuarioInserir(array $dados) {
 		return $this->cadastraHistoricoUsuario($dados, 'inserir');
 	}

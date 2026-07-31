@@ -2,29 +2,16 @@
 
 <?= $this->section('content'); ?>
 
-<div class="container text-center w-auto">
+<div class="container text-center w-auto py-5">
 	<div class="py-2 px-4 mb-3">
-		<h3 class="m-0">Exclusão de conta</h3>
+		<h3 class="m-0 mb-3">Exclusão de conta</h3>
+		<?php if (!empty($mensagem)): ?>
+			<p class="mb-4"><?= esc($mensagem); ?></p>
+		<?php else: ?>
+			<p class="mb-4">Não foi possível concluir a exclusão. Faça login novamente ou solicite um novo e-mail de confirmação.</p>
+		<?php endif; ?>
+		<a class="btn btn-primary" href="<?= site_url('site'); ?>">Voltar ao site</a>
 	</div>
 </div>
-<script type="text/javascript">
-	$('.btn-submeter').on('click', function () {
-		$.ajax({
-			type: 'POST',
-			async: false,
-			url: window.location.href,
-			data: $('#esqueci').serialize(),
-			dataType: 'json',
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (retorno) {
-				if (retorno.status == true) {
-					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
-				} else {
-					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
-				}
-			}
-		});
-	});
-</script>
+
 <?= $this->endSection(); ?>

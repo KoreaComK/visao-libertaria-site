@@ -263,21 +263,23 @@
 					</ul>
 					<div class="navbar-nav align-items-center ms-auto menu-direita">
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] !== null): ?>
-
+							<?php $temRecados = isset($_SESSION['colaboradores']['notificacoes']) && (int) $_SESSION['colaboradores']['notificacoes'] > 0; ?>
 							<ul class="navbar-nav">
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
 										data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<img id="avatar_menu" src="<?= $_SESSION['colaboradores']['avatar']; ?>" width="30"
-											height="30" class="rounded-circle">
+										<span class="position-relative d-inline-block">
+											<img id="avatar_menu" src="<?= $_SESSION['colaboradores']['avatar']; ?>" width="30"
+												height="30" class="rounded-circle">
+											<span class="avatar-recados-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle<?= $temRecados ? '' : ' d-none'; ?>">
+												<span class="visually-hidden">Novos recados</span>
+											</span>
+										</span>
 										<span class="apelido_colaborador">
 											<?= $_SESSION['colaboradores']['nome']; ?>
 										</span>
 									</a>
 									<div class="dropdown-menu bg-primary" aria-labelledby="navbarDropdownMenuLink">
-										<a class="d-none d-lg-none d-xl-none d-md-block d-sm-block dropdown-item rounded-top"
-											href="<?= site_url('colaboradores/perfil/notificacoes'); ?>">
-											Notificações</a>
 										<a class="dropdown-item rounded-top"
 											href="<?= site_url('colaboradores/perfil'); ?>">Meu
 											Perfil</a>
@@ -286,23 +288,6 @@
 									</div>
 								</li>
 							</ul>
-							<div class="collapse navbar-collapse" id="navbar-list-5">
-								<ul class="navbar-nav d-flex flex-row me-1">
-									<li class="nav-item me-3 me-lg-0">
-										<div>
-											<a class="link-white me-3 text-reset"
-												href="<?= site_url('colaboradores/perfil/notificacoes'); ?>"
-												id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown"
-												aria-expanded="false">
-												<i class="bi bi-bell" style="font-size:25px;" <?php if (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] > 0)): ?> class="bi bi-bell"
-													<?php else: ?> class="bi bi-fill" <?php endif; ?>></i>
-												<span class="badge badge-counter bg-danger"
-													style="float:right; margin-top:0px; margin-left:-20px;"><?= (isset($_SESSION) && (!isset($_SESSION['colaboradores']['notificacoes']) || $_SESSION['colaboradores']['notificacoes'] == 0)) ? ('0') : ($_SESSION['colaboradores']['notificacoes']); ?></span>
-											</a>
-										</div>
-									</li>
-								</ul>
-							</div>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -314,7 +299,7 @@
 
 	<footer class="mb-3 mt-5">
 		<div class="container">
-			<div class="text-center">Desenvolvido por <a class="text-reset btn-link font-light"
+			<div class="text-center">Desenvolvido e mantido por <a class="text-reset btn-link font-light"
 					href="https://github.com/KoreaComK/">KoreacomK</a> e a
 				comunidade.
 			</div>
