@@ -80,6 +80,17 @@
 			background: transparent;
 		}
 
+		/* Login/cadastro no menu hamburger — só no mobile (os botões .gen-button somem em ≤767px) */
+		#gen-main-menu .menu-item-mobile-auth {
+			display: none;
+		}
+
+		@media (max-width: 767px) {
+			#gen-main-menu .menu-item-mobile-auth {
+				display: list-item;
+			}
+		}
+
 		.gen-account-menu {
 			display: block !important;
 			opacity: 0;
@@ -531,22 +542,39 @@
 			justify-content: center;
 			align-items: center;
 			font-size: 1.5rem;
-			z-index: 1000;
+			/* Acima da navbar fixa (z-index 9999) para permanecer clicável no mobile */
+			z-index: 10050;
 			cursor: pointer;
 			transition: opacity 0.3s, visibility 0.3s, background-color 0.3s;
 			opacity: 0;
 			visibility: hidden;
+			-webkit-tap-highlight-color: transparent;
+			touch-action: manipulation;
+			text-decoration: none;
+			border: 0;
+			padding: 0;
 		}
 
 		#back-to-top-btn.show {
 			display: flex;
 			opacity: 1;
 			visibility: visible;
+			pointer-events: auto;
 		}
 
-		#back-to-top-btn:hover {
+		#back-to-top-btn:hover,
+		#back-to-top-btn:focus-visible {
 			background: #fff;
 			color: var(--primary-color);
+		}
+
+		@media (max-width: 767px) {
+			#back-to-top-btn {
+				bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+				right: max(1rem, env(safe-area-inset-right, 0px));
+				width: 48px;
+				height: 48px;
+			}
 		}
 
 		@media (max-width: 400px) {

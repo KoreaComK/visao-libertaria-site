@@ -226,6 +226,15 @@
 												<a href="<?= site_url('colaboradores/admin/dashboard'); ?>">Administrar</a>
 											</li>
 										<?php endif; ?>
+										<?php if (!isset($_SESSION['colaboradores']) || $_SESSION['colaboradores']['id'] === null): ?>
+											<li class="menu-item menu-item-mobile-auth">
+												<a href="javascript:void(0)" data-bs-toggle="modal"
+													data-bs-target="#header-login-modal">Acessar</a>
+											</li>
+											<li class="menu-item menu-item-mobile-auth">
+												<a href="<?= site_url('site/cadastre-se'); ?>">Cadastre-se</a>
+											</li>
+										<?php endif; ?>
 									</ul>
 								</div>
 							</div>
@@ -461,9 +470,9 @@
 	</footer>
 
 	<!-- Back to Top Button -->
-	<a href="#" id="back-to-top-btn">
-		<i class="bi bi-arrow-up"></i>
-	</a>
+	<button type="button" id="back-to-top-btn" aria-label="Voltar ao topo" title="Voltar ao topo">
+		<i class="bi bi-arrow-up" aria-hidden="true"></i>
+	</button>
 
 	<script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 	<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -507,6 +516,14 @@
 					window.history.replaceState({}, '', novaUrl);
 				}
 			}
+
+			// Fecha o menu mobile ao abrir o login
+			$(document).on('click', '#gen-main-menu .menu-item-mobile-auth a, #gen-user-btn-login', function () {
+				var navCollapse = document.getElementById('navbarSupportedContent');
+				if (navCollapse && navCollapse.classList.contains('show') && typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+					bootstrap.Collapse.getOrCreateInstance(navCollapse).hide();
+				}
+			});
 
 			// --- User Account Menu Toggle ---
 			$('.gen-account-holder:not(.gen-account-holder-login) #gen-user-btn').on('click', function (e) {
@@ -568,18 +585,32 @@
 			});
 
 			// Back to Top Button
-			var backToTopBtn = $('#back-to-top-btn');
-			$(window).on('scroll', function () {
-				if ($(window).scrollTop() > 300) {
-					backToTopBtn.addClass('show');
-				} else {
-					backToTopBtn.removeClass('show');
-				}
-			});
-			backToTopBtn.on('click', function (e) {
-				e.preventDefault();
-				$('html, body').animate({ scrollTop: 0 }, '300');
-			});
+			var backToTopBtn = document.getElementById('back-to-top-btn');
+			if (backToTopBtn) {
+				var toggleBackToTop = function () {
+					if (window.scrollY > 300 || document.documentElement.scrollTop > 300) {
+						backToTopBtn.classList.add('show');
+					} else {
+						backToTopBtn.classList.remove('show');
+					}
+				};
+				window.addEventListener('scroll', toggleBackToTop, { passive: true });
+				toggleBackToTop();
+
+				backToTopBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					// window.scrollTo é mais confiável no mobile do que jQuery.animate(scrollTop)
+					var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+					if (!prefersReduced && 'scrollBehavior' in document.documentElement.style) {
+						window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+						return;
+					}
+					window.scrollTo(0, 0);
+					document.documentElement.scrollTop = 0;
+					document.body.scrollTop = 0;
+				});
+			}
 			});
 		});
 	</script>
