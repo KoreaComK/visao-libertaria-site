@@ -21,8 +21,14 @@ Options -Indexes
 	RewriteCond %{REQUEST_URI} (.+)/$
 	RewriteRule ^ %1 [L,R=301]
 
-	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
+	# Canonical host: www.example.com -> example.com (HTTP e HTTPS)
+	# A regra antiga só rodava quando HTTPS estava off, então
+	# https://www.visaolibertaria.com nunca redirecionava.
+	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+	RewriteCond %{HTTPS} =on [OR]
+	RewriteCond %{HTTP:X-Forwarded-Proto} =https
+	RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 
