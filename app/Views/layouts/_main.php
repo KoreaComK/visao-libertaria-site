@@ -7,8 +7,6 @@
 	<title><?= $_SESSION['site_config']['texto_nome']; ?></title>
 	<link rel="icon" type="image/x-icon"
 		href="<?= (file_exists('public/assets/favicon.ico')) ? (site_url('public/assets/favicon.ico')) : ('https://yt3.googleusercontent.com/ytc/AIf8zZSU5BzsyFkBIMmIdu0lPTvOEIu6c2h3V_DRrviXcA=s176-c-k-c0x00ffffff-no-rj'); ?>">
-	<!-- Favicon -->
-	<link rel="shortcut icon" href="images/favicon.png">
 	<!-- CSS bootstrap-->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

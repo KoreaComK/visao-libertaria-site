@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\AuthCookieFilter;
+use App\Filters\CanonicalHostFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -30,6 +31,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'authCookie'    => AuthCookieFilter::class,
+        'canonicalHost' => CanonicalHostFilter::class,
     ];
 
     /**
@@ -38,6 +40,7 @@ class Filters extends BaseFilters
     public array $required = [
         'before' => [
             'forcehttps',
+            'canonicalHost',
             'pagecache',
         ],
         'after' => [
