@@ -4,20 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous"> -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="<?= site_url('public/vendor/bootstrap/bootstrap.min.css'); ?>">
+	<link rel="stylesheet" href="<?= site_url('public/vendor/bootstrap-icons/bootstrap-icons.min.css'); ?>">
 
-	<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script> -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-		crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.7.0.min.js"
-		integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-
-	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
-	<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+	<script src="<?= site_url('public/vendor/bootstrap/bootstrap.bundle.min.js'); ?>"></script>
+	<script src="<?= site_url('public/vendor/jquery/jquery.min.js'); ?>"></script>
 
 
 	<meta property="og:type" content="website" />
@@ -37,11 +28,11 @@
 	<meta property="og:description" content="<?= $_SESSION['site_config']['texto_rodape']; ?>" />
 
 	<!-- Font Awesome -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<?= site_url('public/vendor/font-awesome/css/all.min.css'); ?>">
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 	<!-- MDB -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<?= site_url('public/vendor/mdb/mdb.min.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url('public/css/theme-tokens.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url('public/css/theme-dark.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url('public/css/layout-shared.css'); ?>">
@@ -99,13 +90,13 @@
 
 
 	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
+		href="<?= site_url('public/vendor/bootstrap-toaster/bootstrap-toaster.min.css'); ?>">
 
 </head>
 
 <body>
 	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
+		src="<?= site_url('public/vendor/bootstrap-toaster/bootstrap-toaster.min.js'); ?>"></script>
 	<script>
 		let toast = {
 			title: "",
@@ -327,10 +318,6 @@
 </body>
 
 <script type="text/javascript">
-
-	$(document).ready(function () {
-		bsCustomFileInput.init()
-	})
 
 	$(function () {
 		$('.btn-tooltip').tooltip();

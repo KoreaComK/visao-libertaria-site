@@ -5,9 +5,8 @@ $pct_diario = $limites['limite_pautas_diario'] > 0
 $pct_semanal = $limites['limite_pautas_semanal'] > 0
 	? min(100, ($limites['limite_pautas_semanal_usadas'] / $limites['limite_pautas_semanal']) * 100)
 	: 0;
-$avatarSrc = ($colaboradores['avatar'] != NULL)
-	? $colaboradores['avatar']
-	: site_url('public/assets/avatar-default.png');
+$temAvatarPersonalizado = avatar_personalizado($colaboradores['avatar'] ?? null);
+$avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 ?>
 <?= $this->extend('layouts/main'); ?>
 
@@ -351,6 +350,11 @@ $avatarSrc = ($colaboradores['avatar'] != NULL)
 										<div class="form-text">
 											Apenas PNG, até 1&nbsp;MB, no máximo 2048×2048 pixels.
 										</div>
+										<button type="button"
+											class="btn btn-link btn-sm px-0 mt-1<?= $temAvatarPersonalizado ? '' : ' d-none'; ?>"
+											id="btn-remover-avatar">
+											Remover avatar e usar o padrão
+										</button>
 									</div>
 
 									<div class="text-end">
@@ -484,6 +488,22 @@ $avatarSrc = ($colaboradores['avatar'] != NULL)
 	var avatarPerfilOriginal = $('#avatar_perfil').attr('src');
 	var avatarMenuOriginal = $('#avatar_menu').attr('src');
 	var avatarPreviewPendente = false;
+	var avatarPadraoUrl = <?= json_encode(avatar_padrao_url()) ?>;
+	var temAvatarPersonalizado = <?= $temAvatarPersonalizado ? 'true' : 'false' ?>;
+
+	function aplicarAvatar(src) {
+		$('#avatar_perfil').attr('src', src);
+		if ($('#avatar_menu').length) {
+			$('#avatar_menu').attr('src', src);
+		}
+		avatarPerfilOriginal = src;
+		avatarMenuOriginal = src;
+		avatarPreviewPendente = false;
+	}
+
+	function definirBotaoRemoverAvatar(visivel) {
+		$('#btn-remover-avatar').toggleClass('d-none', !visivel);
+	}
 
 	function restaurarAvatarPreview() {
 		if (avatarPreviewPendente) {
@@ -508,6 +528,7 @@ $avatarSrc = ($colaboradores['avatar'] != NULL)
 				$('#avatar_perfil').attr('src', e.target.result);
 				$('#avatar_menu').attr('src', e.target.result);
 				avatarPreviewPendente = true;
+				definirBotaoRemoverAvatar(true);
 			};
 			reader.readAsDataURL(input.files[0]);
 		}
@@ -678,6 +699,44 @@ $avatarSrc = ($colaboradores['avatar'] != NULL)
 			});
 		});
 
+		$('#btn-remover-avatar').on('click', function (e) {
+			e.preventDefault();
+			$('#avatar').val('');
+
+			if (!temAvatarPersonalizado) {
+				aplicarAvatar(avatarPadraoUrl);
+				definirBotaoRemoverAvatar(false);
+				return;
+			}
+
+			var data = {};
+			data[csrfName] = csrfHash;
+			$.ajax({
+				url: "<?php echo base_url('colaboradores/perfil/removerAvatar'); ?>",
+				method: "POST",
+				data: data,
+				dataType: "json",
+				beforeSend: function () { $('#modal-loading').show(); },
+				complete: function () { $('#modal-loading').hide(); },
+				success: function (retorno) {
+					if (retorno.status == true) {
+						var novoSrc = (retorno.parametros && retorno.parametros.avatar)
+							? retorno.parametros.avatar
+							: avatarPadraoUrl;
+						aplicarAvatar(novoSrc);
+						temAvatarPersonalizado = false;
+						definirBotaoRemoverAvatar(false);
+						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					} else {
+						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+					}
+				},
+				error: function () {
+					popMessage('ATENÇÃO', 'Não foi possível remover o avatar. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
+				}
+			});
+		});
+
 		$('#colaboradores_perfil').on('submit', function (e) {
 			e.preventDefault();
 			$.ajax({
@@ -692,17 +751,24 @@ $avatarSrc = ($colaboradores['avatar'] != NULL)
 				complete: function () { $('#modal-loading').hide(); },
 				success: function (retorno) {
 					if (retorno.status == true) {
+						var enviouAvatar = $('#avatar')[0].files && $('#avatar')[0].files.length > 0;
 						popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
 						$('.apelido_colaborador').text($('#apelido').val());
 						confirmarAvatarPreview();
 						$('#avatar').val('');
+						if (enviouAvatar) {
+							temAvatarPersonalizado = true;
+							definirBotaoRemoverAvatar(true);
+						}
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 						restaurarAvatarPreview();
+						definirBotaoRemoverAvatar(temAvatarPersonalizado);
 					}
 				},
 				error: function () {
 					restaurarAvatarPreview();
+					definirBotaoRemoverAvatar(temAvatarPersonalizado);
 					popMessage('ATENÇÃO', 'Não foi possível salvar o perfil. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
 				}
 			});

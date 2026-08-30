@@ -234,11 +234,8 @@
 <?= $this->endSection(); ?>
 
 <?= $this->section('scripts'); ?>
-<script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-	integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/infinite-scroll@4.0.1/dist/infinite-scroll.pkgd.min.js"
-	integrity="sha384-+83ma0Y8eQWtTIhmx2gjueu3BY0XU4gX4EkL12u3M+WPc4SDskKaIpIL7QiB8ikh"
-	crossorigin="anonymous"></script>
+<script defer src="<?= site_url('public/vendor/masonry/masonry.pkgd.min.js'); ?>"></script>
+<script defer src="<?= site_url('public/vendor/infinite-scroll/infinite-scroll.pkgd.min.js'); ?>"></script>
 <?php if (isset($_SESSION['colaboradores']['id'])): ?>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
@@ -296,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			return;
 		}
 		$grid.masonry({
-			stagger: 100,
 			itemSelector: '.card',
 			horizontalOrder: true,
 			gutter: 16,

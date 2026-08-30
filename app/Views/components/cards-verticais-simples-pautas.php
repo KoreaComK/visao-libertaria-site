@@ -1,10 +1,18 @@
 <?php
-
 use CodeIgniter\I18n\Time;
 
+$indiceLista = (int) ($dados['_list_index'] ?? 99);
+$loadingImg = $indiceLista < 4 ? 'eager' : 'lazy';
+$fetchPriority = $indiceLista === 0 ? 'high' : null;
 ?>
 <div class="card col-lg-3 mb-4 shadow-0 p-1">
-	<img src="<?= $dados['imagem']; ?>" alt="" class="card-img-top rounded-6 object-fit-cover">
+	<img src="<?= esc(url_imagem_pauta($dados['id'] ?? ''), 'attr'); ?>"
+		alt="<?= esc((string) ($dados['titulo'] ?? ''), 'attr'); ?>"
+		class="card-img-top rounded-6 object-fit-cover"
+		width="480" height="208"
+		decoding="async"
+		loading="<?= esc($loadingImg, 'attr'); ?>"
+		<?php if ($fetchPriority !== null): ?>fetchpriority="<?= esc($fetchPriority, 'attr'); ?>"<?php endif; ?>>
 	<div class="card-body p-2">
 		<h5 class="card-title fw-bold">
 			<?php if ($dados['pauta_antiga'] == 'S'): ?>
@@ -35,7 +43,7 @@ use CodeIgniter\I18n\Time;
 					: 'Comentários, ' . $nComentarios . ' comentários';
 				?>
 				<a href="" data-bs-titulo="<?= $dados['titulo']; ?>" data-bs-texto="<?= $dados['texto']; ?>"
-					data-bs-pautas-id="<?= $dados['id']; ?>" data-bs-imagem="<?= $dados['imagem']; ?>"
+					data-bs-pautas-id="<?= $dados['id']; ?>" data-bs-imagem="<?= esc(url_imagem_pauta($dados['id'] ?? ''), 'attr'); ?>"
 					class="btn btn-outline-info btn-sm mb-1" data-bs-toggle="modal"
 					data-bs-target="#modalComentariosPauta"
 					aria-label="<?= esc($comentariosAria, 'attr'); ?>">Comentários (<?= $nComentarios; ?>)</a>

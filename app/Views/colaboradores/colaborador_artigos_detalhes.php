@@ -164,12 +164,10 @@
 									</div>
 								</div>
 								<div id="narracao-mp3" class="mb-3 <?= ($tipoAudioNarracao === 'link_mp4') ? 'd-none' : ''; ?>">
-									<label for="audio">Arquivo de áudio</label>
-									<div class="custom-file">
-										<input type="file" class="form-control" id="audio" name="audio"
-											aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
-										<small id="audio-formato-help" class="">O arquivo precisa ser do formato .mp3</small>
-									</div>
+									<label for="audio" class="form-label">Arquivo de áudio</label>
+									<input type="file" class="form-control" id="audio" name="audio"
+										aria-describedby="audio-formato-help" accept=".mp3,audio/mpeg">
+									<small id="audio-formato-help" class="form-text">O arquivo precisa ser do formato .mp3</small>
 								</div>
 								<div id="narracao-link-mp4" class="mb-3 <?= ($tipoAudioNarracao === 'mp3') ? 'd-none' : ''; ?>">
 									<label for="link_mp4">Link do arquivo .mp4</label>

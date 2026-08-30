@@ -607,6 +607,10 @@ class Pautas extends BaseController
 		}
 		$pautasModel->db->transComplete();
 
+		if ($tipo === 'delete' && $retorno && $id !== null && $id !== '') {
+			(new \App\Libraries\CacheImagemPauta())->removerArquivo((string) $id);
+		}
+
 		if ($acao !== false && ($id != null || !is_bool($retorno))) {
 			$sujeito = $this->session->get('colaboradores')['id'];
 			$idObjeto = ($id == null) ? ($retorno) : ($id);

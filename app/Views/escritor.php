@@ -1,11 +1,6 @@
 <?= $this->extend('layouts/main'); ?>
 
 <?= $this->section('content'); ?>
-<?php
-$avatarPadrao = site_url('public/assets/avatar-default.png');
-$avatarBruto = isset($colaborador['avatar']) ? trim((string) $colaborador['avatar']) : '';
-$avatarSrc = ($avatarBruto !== '') ? $avatarBruto : $avatarPadrao;
-?>
 
 <div class="container py-4">
 	<div class="card border-0 shadow-sm mb-4">
@@ -15,7 +10,7 @@ $avatarSrc = ($avatarBruto !== '') ? $avatarBruto : $avatarPadrao;
 					<div class="position-relative d-inline-block mb-3">
 						<img class="rounded-circle border border-3 border-white shadow d-block"
 							style="width: 8.5rem; height: 8.5rem; object-fit: cover;"
-							src="<?= esc($avatarSrc, 'attr'); ?>"
+							src="<?= esc(avatar_url($colaborador['avatar'] ?? null), 'attr'); ?>"
 							alt="Avatar de <?= esc($colaborador['apelido']); ?>">
 						<span class="position-absolute top-100 start-50 translate-middle badge bg-danger rounded-pill px-3 py-2 shadow-sm text-nowrap"><?= (int) $contador_artigos; ?>
 							artigo<?= ($contador_artigos > 1) ? 's' : ''; ?></span>

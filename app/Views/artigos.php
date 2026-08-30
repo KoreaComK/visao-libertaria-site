@@ -8,12 +8,6 @@ use CodeIgniter\I18n\Time;
 
 <?= $this->section('content'); ?>
 
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-	integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"
-	async></script>
-
-<script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
-
 <style>
 	.page-load-status {
 		display: none;
@@ -85,6 +79,8 @@ use CodeIgniter\I18n\Time;
 	</div>
 </div>
 
+<script defer src="<?= site_url('public/vendor/masonry/masonry.pkgd.min.js'); ?>"></script>
+<script defer src="<?= site_url('public/vendor/infinite-scroll/infinite-scroll.pkgd.min.js'); ?>"></script>
 <script>
 	$(document).ready(function () {
 		var $grid = $('.list-artigos').masonry({

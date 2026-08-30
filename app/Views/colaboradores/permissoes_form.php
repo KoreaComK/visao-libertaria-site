@@ -7,7 +7,7 @@ use CodeIgniter\I18n\Time;
 
 <?= $this->section('content'); ?>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="<?= site_url('public/vendor/apexcharts/apexcharts.min.js'); ?>"></script>
 
 <style>
 	.metricas-colaborador {
@@ -198,10 +198,10 @@ use CodeIgniter\I18n\Time;
 				<div class="card-body">
 					<div class="d-sm-flex justify-content-sm-between align-items-center mb-4">
 						<div class="d-flex align-items-center">
-							<?php if ($colaboradores['avatar'] !== NULL && $colaboradores['avatar'] != ''): ?>
+							<?php if (avatar_personalizado($colaboradores['avatar'] ?? null)): ?>
 								<div class="avatar">
 									<img class="avatar-img rounded-circle" style="width: 3rem;"
-										src="<?= $colaboradores['avatar']; ?>" alt="">
+										src="<?= esc(avatar_url($colaboradores['avatar']), 'attr'); ?>" alt="">
 								</div>
 							<?php endif; ?>
 							<!-- Info -->

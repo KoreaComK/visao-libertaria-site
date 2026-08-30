@@ -6,6 +6,10 @@ use CodeIgniter\I18n\Time;
 
 <?= $this->extend('layouts/_main'); ?>
 
+<?= $this->section('styles'); ?>
+	<?= $this->include('partials/glightbox_styles'); ?>
+<?= $this->endSection(); ?>
+
 <?= $this->section('content'); ?>
 
 <div class="container-fluid py-3 vl-site-videos">
@@ -114,9 +118,9 @@ use CodeIgniter\I18n\Time;
 <?= $this->endSection(); ?>
 
 <?= $this->section('scripts'); ?>
-<script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-   integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"></script>
-<script defer src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
+<?= $this->include('partials/glightbox_scripts'); ?>
+<script defer src="<?= site_url('public/vendor/masonry/masonry.pkgd.min.js'); ?>"></script>
+<script defer src="<?= site_url('public/vendor/infinite-scroll/infinite-scroll.pkgd.min.js'); ?>"></script>
 <script>
    document.addEventListener('DOMContentLoaded', function () {
       $(function () {
@@ -134,63 +138,6 @@ use CodeIgniter\I18n\Time;
          status: '.page-load-status',
          scrollThreshold: 100
       });
-
-      // Configurar o carregamento de novos vídeos
-      $grid.on('load.infiniteScroll', function (event, response) {
-         if (response && response.html) {
-            var $newItems = $(response.html);
-            $grid.append($newItems).masonry('appended', $newItems);
-
-            // Aguardar o Masonry terminar de posicionar os itens
-            $grid.one('layoutComplete', function () {
-               // Reinicializar Magnific Popup nos novos vídeos com a mesma configuração
-               var $popupLinks = $newItems.find('.gen-video-popup');
-
-               $popupLinks.magnificPopup({
-                  type: 'iframe',
-                  mainClass: 'mfp-fade',
-                  removalDelay: 160,
-                  preloader: false,
-                  fixedContentPos: false
-               });
-            });
-         }
-      });
-
-      // Magnific Popup para vídeo
-      $('.gen-video-popup').magnificPopup({
-         type: 'iframe',
-         mainClass: 'mfp-fade',
-         removalDelay: 160,
-         preloader: false,
-         fixedContentPos: false
-      });
-
-      // Backup: Evento de clique global para garantir funcionamento
-      $(document).on('click', '.gen-video-popup', function (e) {
-         e.preventDefault();
-         var url = $(this).attr('href');
-
-         if (url && url.includes('youtube.com/watch?v=')) {
-            var videoId = url.split('v=')[1];
-            if (videoId) {
-               var embedUrl = 'https://www.youtube.com/watch?v=' + videoId + '?autoplay=1';
-
-               $.magnificPopup.open({
-                  items: {
-                     src: embedUrl
-                  },
-                  type: 'iframe',
-                  mainClass: 'mfp-fade',
-                  removalDelay: 160,
-                  preloader: false,
-                  fixedContentPos: false
-               });
-            }
-         }
-      });
-
-
       });
    });
 </script>

@@ -1,12 +1,21 @@
 <?= $this->extend('layouts/_main'); ?>
 
+<?= $this->section('styles'); ?>
+	<link rel="stylesheet" href="<?= site_url('public/vendor/splide/splide-core.min.css'); ?>" />
+	<?= $this->include('partials/glightbox_styles'); ?>
+<?= $this->endSection(); ?>
+
 <?= $this->section('content'); ?>
 
    <?php if (isset($videos_destaque) && !empty($videos_destaque)): ?>
       <section class="banner-section">
-         <div class="owl-carousel" data-dots="false" data-nav="true" data-desk_num="1" data-lap_num="1" data-tab_num="1"
-            data-mob_num="1" data-mob_sm="1" data-autoplay="true" data-loop="true" data-margin="0">
+         <div class="splide" data-dots="false" data-nav="false" data-desk-num="1" data-lap-num="1" data-tab-num="1"
+            data-mob-num="1" data-mob-sm="1" data-autoplay="true" data-loop="true" data-margin="0"
+            aria-label="Vídeos em destaque">
+            <div class="splide__track">
+               <div class="splide__list">
             <?php foreach ($videos_destaque as $video_destaque): ?>
+               <div class="splide__slide">
                <div class="item vh-100 d-flex align-items-center"
                   style="background-image: url('<?= cria_url_thumb($video_destaque['video_id']); ?>'); background-size: cover; background-position: center;">
                   <div class="container">
@@ -27,7 +36,10 @@
                      </div>
                   </div>
                </div>
+               </div>
             <?php endforeach; ?>
+               </div>
+            </div>
          </div>
       </section>
    <?php endif; ?>
@@ -48,11 +60,13 @@
             </a>
          </div>
       </div>
-      <div class="owl-carousel" data-dots="false" data-nav="true" data-desk_num="4" data-lap_num="3" data-tab_num="2"
-         data-mob_num="1" data-margin="20">
       <?php if (isset($ultimos_artigos) && !empty($ultimos_artigos)): ?>
+      <div class="splide" data-dots="false" data-nav="false" data-desk-num="4" data-lap-num="3" data-tab-num="2"
+         data-mob-num="1" data-margin="20" aria-label="Visão Libertária">
+         <div class="splide__track">
+            <div class="splide__list">
          <?php foreach ($ultimos_artigos as $ua): ?>
-               <div class="item">
+               <div class="splide__slide">
                   <div class="movie-card">
                      <div class="movie-card-img-container">
                      <?php
@@ -78,15 +92,22 @@
                   </div>
                </div>
             <?php endforeach; ?>
-         <?php endif; ?>
+            </div>
+         </div>
       </div>
+      <?php endif; ?>
    </section>
 
    <!-- Novo Slider com cor primária -->
    <section class="custom-slider-section container py-5">
-      <div class="custom-slider-wrapper owl-carousel" id="custom-slider-owl"
+      <div class="custom-slider-wrapper splide" id="custom-slider-splide"
+         data-dots="false" data-nav="false" data-desk-num="1" data-loop="true" data-autoplay="true" data-margin="0"
+         aria-label="Chamadas para colaboração"
          style="background: #161616; border-left: 3px solid var(--primary-color); border-radius: 4px; overflow: hidden; position: relative;">
+         <div class="splide__track">
+            <div class="splide__list">
          <!-- Slide 1 -->
+         <div class="splide__slide">
          <div class="row align-items-center" style="min-height: 400px;">
             <div class="col-lg-7 p-5">
                <h2 class="fw-bold text-white" style="font-size: 3rem;">ESCREVA E GANHE SATOSHINHOS</h2>
@@ -102,7 +123,9 @@
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
             </div>
          </div>
+         </div>
          <!-- Slide 2 -->
+         <div class="splide__slide">
          <div class="row align-items-center" style="min-height: 400px;">
             <div class="col-lg-7 p-5">
                <h2 class="fw-bold text-white" style="font-size: 3rem;">SUGIRA PAUTAS</h2>
@@ -118,7 +141,9 @@
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
             </div>
          </div>
-         <!-- Slide 2 -->
+         </div>
+         <!-- Slide 3 -->
+         <div class="splide__slide">
          <div class="row align-items-center" style="min-height: 400px;">
             <div class="col-lg-7 p-5">
                <h2 class="fw-bold text-white" style="font-size: 3rem;">COLABORE COM O PROJETO</h2>
@@ -132,6 +157,9 @@
                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80"
                   alt="Usuário no computador" loading="lazy"
                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; border-radius: 0 4px 4px 0; position: absolute; top: 0; left: 0;">
+            </div>
+         </div>
+         </div>
             </div>
          </div>
       </div>
@@ -149,11 +177,13 @@
             </a>
          </div>
       </div>
-      <div class="owl-carousel" data-dots="false" data-nav="true" data-desk_num="4" data-lap_num="3" data-tab_num="2"
-         data-mob_num="1" data-margin="20">
-         <?php if (isset($vp) && !empty($vp)): ?>
+         <?php if (isset($vp['videos']) && !empty($vp['videos'])): ?>
+      <div class="splide" data-dots="false" data-nav="false" data-desk-num="4" data-lap-num="3" data-tab-num="2"
+         data-mob-num="1" data-margin="20" aria-label="<?= esc($indice, 'attr'); ?>">
+         <div class="splide__track">
+            <div class="splide__list">
             <?php foreach ($vp['videos'] as $v): ?>
-               <div class="item">
+               <div class="splide__slide">
                   <div class="movie-card">
                      <div class="movie-card-img-container">
                         <?php
@@ -178,60 +208,58 @@
                   </div>
                </div>
             <?php endforeach; ?>
-         <?php endif; ?>
+            </div>
+         </div>
       </div>
+         <?php endif; ?>
    </section>
             <?php endforeach; ?>
 
 <?= $this->endSection(); ?>
 
 <?= $this->section('scripts'); ?>
+	<script defer src="<?= site_url('public/vendor/splide/splide.min.js'); ?>"></script>
+	<?= $this->include('partials/glightbox_scripts'); ?>
    <script>
       document.addEventListener('DOMContentLoaded', function () {
-         $(function () {
-         // Inicialização do novo slider customizado
-         $('#custom-slider-owl').owlCarousel({
-            items: 1,
-            nav: false,
-            dots: false,
-            loop: true,
-            autoplay: true,
-            autoplayTimeout: 5000,
-            autoplayHoverPause: false,
-            smartSpeed: 800,
-            margin: 0
-         });
+         function toInt(value, fallback) {
+            var n = parseInt(value, 10);
+            return isNaN(n) || n < 1 ? fallback : n;
+         }
 
-         // Inicialização dos outros Owl Carousel (exceto o customizado)
-         $('.owl-carousel').not('#custom-slider-owl').each(function () {
-            var $this = $(this);
-            var options = {
-               dots: false,
-               nav: false,
-               items: $this.data('desk_num') || 1,
-               loop: $this.data('loop') === true,
-               autoplay: $this.data('autoplay') === true,
-               autoplayTimeout: 5000,
-               margin: $this.data('margin') || 0,
-               responsive: {
-                  0: { items: $this.data('mob_sm') || 1 },
-                  480: { items: $this.data('mob_num') || 1 },
-                  768: { items: $this.data('tab_num') || 1 },
-                  1024: { items: $this.data('lap_num') || 1 },
-                  1200: { items: $this.data('desk_num') || 1 }
+         document.querySelectorAll('.splide').forEach(function (el) {
+            if (!el.querySelector('.splide__slide')) {
+               return;
+            }
+
+            var perPage = toInt(el.dataset.deskNum, 1);
+            var slideCount = el.querySelectorAll('.splide__slide').length;
+            var isLoop = el.dataset.loop === 'true' && slideCount > 1;
+            var autoplay = el.dataset.autoplay === 'true' && slideCount > 1;
+            var gap = el.dataset.margin ? toInt(el.dataset.margin, 0) + 'px' : 0;
+            var isBanner = !!el.closest('.banner-section');
+
+            new Splide(el, {
+               type: isLoop ? 'loop' : 'slide',
+               perPage: perPage,
+               perMove: 1,
+               gap: gap,
+               arrows: false,
+               pagination: el.dataset.dots === 'true',
+               autoplay: autoplay,
+               interval: 5000,
+               pauseOnHover: false,
+               speed: 800,
+               rewind: !isLoop && autoplay,
+               omitEnd: !isLoop,
+               autoHeight: !isBanner && perPage === 1,
+               breakpoints: {
+                  479: { perPage: toInt(el.dataset.mobSm, toInt(el.dataset.mobNum, 1)) },
+                  767: { perPage: toInt(el.dataset.mobNum, 1) },
+                  1023: { perPage: toInt(el.dataset.tabNum, 1) },
+                  1199: { perPage: toInt(el.dataset.lapNum, 1) }
                }
-            };
-            $this.owlCarousel(options);
-         });
-
-         // Magnific Popup para vídeo
-         $('.gen-video-popup').magnificPopup({
-            type: 'iframe',
-            mainClass: 'mfp-fade',
-            removalDelay: 160,
-            preloader: false,
-            fixedContentPos: false
-         });
+            }).mount();
          });
       });
    </script>

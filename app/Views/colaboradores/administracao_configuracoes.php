@@ -593,6 +593,24 @@
 															<small class="form-text text-muted">Quantidade padrão de itens nas listagens
 																públicas (artigos, vídeos, etc.).</small>
 														</div>
+														<div class="mb-3">
+															<label class="form-label" for="pautas_imagens_base_url">URL do site origem das thumbs de pautas</label>
+															<input type="url" class="form-control form-control-sm"
+																id="pautas_imagens_base_url" name="pautas_imagens_base_url"
+																placeholder="<?= esc(site_url(), 'attr'); ?>"
+																value="<?= isset($dados['pautas_imagens_base_url']) ? esc($dados['pautas_imagens_base_url']) : ''; ?>">
+															<small class="form-text text-muted d-block">
+																Vazio = este servidor. Preencha a mesma URL pública da origem nos cinco sites.
+															</small>
+															<small class="form-text d-block mt-1">
+																<?php if (sou_origem_imagens_pauta()): ?>
+																	Este servidor <strong>é a origem</strong> com a config atual.
+																<?php else: ?>
+																	Este servidor <strong>não é a origem</strong>. As thumbs apontarão para
+																	<code><?= esc(pautas_imagens_base_url()); ?></code>
+																<?php endif; ?>
+															</small>
+														</div>
 														<div class="d-sm-flex justify-content-end">
 															<button type="button"
 																class="btn btn-sm btn-primary salvar-config-listagem">Salvar

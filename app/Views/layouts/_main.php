@@ -10,18 +10,16 @@
 	<!-- Favicon -->
 	<link rel="shortcut icon" href="images/favicon.png">
 	<!-- CSS bootstrap-->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<!--  Style -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.css" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/magnific-popup.css" />
+	<link rel="stylesheet" href="<?= site_url('public/vendor/bootstrap/bootstrap.min.css'); ?>">
+	<link rel="stylesheet" href="<?= site_url('public/vendor/bootstrap-icons/bootstrap-icons.min.css'); ?>">
+	<?= $this->renderSection('styles') ?>
 	<?php if (getenv('CI_ENVIRONMENT') !== 'development'): ?>
 		<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 	<?php endif; ?>
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/style.css'); ?>">
 	<link rel="stylesheet" href="<?= site_url(relativePath: 'public/css/site-public-layout.css'); ?>">
 	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/css/bootstrap-toaster.min.css">
+		href="<?= site_url('public/vendor/bootstrap-toaster/bootstrap-toaster.min.css'); ?>">
 	<style>
 		body,
 		p,
@@ -474,13 +472,11 @@
 		<i class="bi bi-arrow-up" aria-hidden="true"></i>
 	</button>
 
-	<script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-	<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/jquery.magnific-popup.min.js"></script>
+	<script defer src="<?= site_url('public/vendor/jquery/jquery.min.js'); ?>"></script>
+	<script defer src="<?= site_url('public/vendor/bootstrap/bootstrap.bundle.min.js'); ?>"></script>
 	<script defer src="<?= site_url('public/js/functions.js'); ?>"></script>
 	<script defer
-		src="https://cdn.jsdelivr.net/npm/bootstrap-toaster@5.2.0-beta1.1/dist/umd/bootstrap-toaster.min.js"></script>
+		src="<?= site_url('public/vendor/bootstrap-toaster/bootstrap-toaster.min.js'); ?>"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			var toast = {

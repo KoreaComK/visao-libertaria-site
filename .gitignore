@@ -129,3 +129,5 @@ app/Config/Email.php
 # Database
 .db
 public/assets/imagem-default.png
+public/assets/pautas/*
+!public/assets/pautas/.gitkeep

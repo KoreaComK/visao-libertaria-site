@@ -32,6 +32,7 @@ $routes->group('', ['filter' => 'authCookie:optional'], static function ($routes
     $routes->get('/', 'Site::index');
     $routes->get('links', 'Site::links');
     $routes->get('site/noticias', 'Site::noticias');
+    $routes->get('site/pauta-imagem/(:segment)', 'Site::pautaImagem/$1');
     $routes->match(['get', 'post'], 'site/cadastre-se', 'Site::cadastrar');
     $routes->match(['get', 'post'], 'site/esqueci-senha', 'Site::esqueci');
     $routes->match(['get', 'post'], 'site/esqueci-senha/(:any)', 'Site::esqueci/$1');
@@ -67,6 +68,7 @@ $routes->group('colaboradores', ['namespace' => 'App\Controllers\Colaboradores',
     $routes->get('/', 'Perfil::index', ['filter' => 'csrf']);
     $routes->get('perfil', 'Perfil::index', ['filter' => 'csrf']);
     $routes->post('perfil/atualizarPerfil', 'Perfil::atualizarPerfil', ['filter' => 'csrf']);
+    $routes->post('perfil/removerAvatar', 'Perfil::removerAvatar', ['filter' => 'csrf']);
     $routes->post('perfil/trocarSenha', 'Perfil::trocarSenha', ['filter' => 'csrf']);
     $routes->post('perfil/marcarRecadosLidos', 'Perfil::marcarRecadosLidos', ['filter' => 'csrf']);
     $routes->add('perfil/(:any)', 'Perfil::$1');

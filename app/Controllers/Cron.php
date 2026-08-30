@@ -30,6 +30,10 @@ class Cron extends BaseController
 
 		$this->limparPautasAntigas($configuracaoModel);
 
+		$this->limparThumbsPautasOrfas();
+
+		$this->cachearImagensPautas();
+
 		$this->desmarcarArtigosExpirados($configuracaoModel);
 
 		$this->descartarArtigosAreaEscrita();
@@ -76,6 +80,7 @@ class Cron extends BaseController
 
 		if ($pautasAntigas !== []) {
 			$idsPautasAntigas = array_column($pautasAntigas, 'id');
+			$this->removerThumbsPautas($idsPautasAntigas);
 			$pautasModel->db->table('pautas_comentarios')
 				->whereIn('pautas_id', $idsPautasAntigas)
 				->delete();
@@ -115,6 +120,7 @@ class Cron extends BaseController
 			if (! isset($artigosPorLinkRedator[$chave])) {
 				continue;
 			}
+			$this->removerThumbsPautas([(string) $pauta['id']]);
 			$pautasExclusaoRedator->delete($pauta['id']);
 		}
 	}
@@ -488,6 +494,77 @@ class Cron extends BaseController
 			log_message('error', '[Cron YouTube] Falha na requisição para ' . $url . ': ' . $e->getMessage());
 
 			return null;
+		}
+	}
+
+	private function removerThumbsPautas(array $ids): void
+	{
+		$cache = new \App\Libraries\CacheImagemPauta();
+		foreach ($ids as $id) {
+			$cache->removerArquivo((string) $id);
+		}
+	}
+
+	/**
+	 * Na origem, apaga thumbs cujo UUID não existe mais ou cuja pauta já foi excluída (soft/hard).
+	 * Cobre exclusão feita em outro dos 5 servidores, onde o disco local não tem o arquivo.
+	 */
+	private function limparThumbsPautasOrfas(): void
+	{
+		helper('pauta_imagem');
+		if (! sou_origem_imagens_pauta()) {
+			return;
+		}
+
+		$cache = new \App\Libraries\CacheImagemPauta();
+		$diretorio = $cache->diretorioAbsoluto();
+		if (! is_dir($diretorio)) {
+			return;
+		}
+
+		$pautasModel = new \App\Models\PautasModel();
+		foreach (['webp', 'jpg'] as $ext) {
+			foreach (glob($diretorio . DIRECTORY_SEPARATOR . '*.' . $ext) ?: [] as $arquivo) {
+				$id = strtolower((string) pathinfo($arquivo, PATHINFO_FILENAME));
+				if (! pauta_imagem_id_valido($id)) {
+					continue;
+				}
+
+				$pauta = $pautasModel->withDeleted()->find($id);
+				if (! is_array($pauta) || ! empty($pauta['excluido'])) {
+					$cache->removerArquivo($id);
+				}
+			}
+		}
+	}
+
+	/**
+	 * No servidor origem, gera thumbs das pautas mais recentes da listagem pública.
+	 */
+	private function cachearImagensPautas(): void
+	{
+		helper('pauta_imagem');
+		if (! sou_origem_imagens_pauta()) {
+			return;
+		}
+
+		$cache = new \App\Libraries\CacheImagemPauta();
+		$pautasModel = new \App\Models\PautasModel();
+		$pautasModel->getPautas(false, false, false);
+		$pautas = $pautasModel->limit(60)->findAll();
+
+		$gerados = 0;
+		foreach ($pautas as $pauta) {
+			$id = (string) ($pauta['id'] ?? '');
+			if ($cache->caminhoExistente($id) !== null) {
+				continue;
+			}
+
+			$cache->garantirParaUrl($id, (string) ($pauta['imagem'] ?? ''));
+			$gerados++;
+			if ($gerados >= 15) {
+				break;
+			}
 		}
 	}
 }

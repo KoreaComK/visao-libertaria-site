@@ -162,6 +162,95 @@ class Site extends BaseController
 		return view('_noticias', $data);
 	}
 
+	/**
+	 * Thumb da pauta na origem. Outros servidores redirecionam para a origem.
+	 */
+	public function pautaImagem($id = null)
+	{
+		helper('pauta_imagem');
+
+		$id = strtolower(trim((string) $id));
+		if (! pauta_imagem_id_valido($id)) {
+			return $this->servirArquivoThumbPauta(
+				(new \App\Libraries\CacheImagemPauta())->caminhoDefault(),
+				false
+			);
+		}
+
+		if (! sou_origem_imagens_pauta()) {
+			$destino = url_imagem_pauta($id);
+			if (! $this->urlImagemPautaEhEsteEndpoint($destino, $id)) {
+				return redirect()->to($destino);
+			}
+		}
+
+		$cache = new \App\Libraries\CacheImagemPauta();
+		$resultado = $cache->garantir($id);
+		$cacheLongo = in_array($resultado['motivo'], ['ok', 'ja_existe'], true);
+
+		return $this->servirArquivoThumbPauta($resultado['caminho'], $cacheLongo);
+	}
+
+	private function urlImagemPautaEhEsteEndpoint(string $destino, string $id): bool
+	{
+		$partes = parse_url($destino);
+		$hostDestino = strtolower((string) ($partes['host'] ?? ''));
+		$hostAtual = strtolower($this->request->getUri()->getHost());
+		$caminho = strtolower((string) ($partes['path'] ?? ''));
+
+		return $hostDestino !== ''
+			&& $hostDestino === $hostAtual
+			&& str_ends_with(rtrim($caminho, '/'), '/site/pauta-imagem/' . $id);
+	}
+
+	private function servirArquivoThumbPauta(string $caminho, bool $cacheLongo)
+	{
+		if (! is_file($caminho) || filesize($caminho) < 1) {
+			$caminho = (new \App\Libraries\CacheImagemPauta())->caminhoDefault();
+		}
+
+		if (! is_file($caminho) || filesize($caminho) < 1) {
+			$png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', true);
+			if ($png === false) {
+				return $this->response->setStatusCode(404)->setBody('');
+			}
+
+			return $this->response
+				->setHeader('Content-Type', 'image/png')
+				->setHeader('Content-Length', (string) strlen($png))
+				->setHeader('Cache-Control', 'public, max-age=300')
+				->setHeader('X-Content-Type-Options', 'nosniff')
+				->setBody($png);
+		}
+
+		$ext = strtolower((string) pathinfo($caminho, PATHINFO_EXTENSION));
+		$mime = match ($ext) {
+			'webp' => 'image/webp',
+			'jpg', 'jpeg' => 'image/jpeg',
+			'gif' => 'image/gif',
+			default => 'image/png',
+		};
+
+		$mtime = filemtime($caminho) ?: time();
+		$etag = '"' . md5($caminho . $mtime . filesize($caminho)) . '"';
+		if ($this->request->getHeaderLine('If-None-Match') === $etag) {
+			return $this->response->setStatusCode(304);
+		}
+
+		$cacheControl = $cacheLongo
+			? 'public, max-age=31536000, immutable'
+			: 'public, max-age=300';
+
+		return $this->response
+			->setHeader('Content-Type', $mime)
+			->setHeader('Content-Length', (string) filesize($caminho))
+			->setHeader('Cache-Control', $cacheControl)
+			->setHeader('ETag', $etag)
+			->setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $mtime) . ' GMT')
+			->setHeader('X-Content-Type-Options', 'nosniff')
+			->setBody((string) file_get_contents($caminho));
+	}
+
 	public function videos($projeto = null)
 	{
 		// Verificar se é uma requisição AJAX para infinite scroll
@@ -571,7 +660,7 @@ class Site extends BaseController
 							'id' => $colaborador['id'],
 							'nome' => $colaborador['apelido'],
 							'email' => $colaborador['email'],
-							'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+							'avatar' => avatar_url($colaborador['avatar']),
 							'notificacoes' => $quantidadeNotificacoes,
 							'notificacoes_cache_em' => time(),
 							'permissoes' => array(),
@@ -1107,7 +1196,7 @@ class Site extends BaseController
 					'id' => $colaborador['id'],
 					'nome' => $colaborador['apelido'],
 					'email' => $colaborador['email'],
-					'avatar' => ($colaborador['avatar'] != NULL) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+					'avatar' => avatar_url($colaborador['avatar']),
 					'permissoes' => array()
 				]
 			];

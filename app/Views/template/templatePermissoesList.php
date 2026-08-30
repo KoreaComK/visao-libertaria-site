@@ -23,8 +23,8 @@ use CodeIgniter\I18n\Time;
 			<?php foreach ($colaboradoresList['colaboradores'] as $colaborador): ?>
 				<tr>
 					<th scope="row">
-						<?php if ($colaborador['avatar'] !== NULL && $colaborador['avatar'] !== ''): ?>
-							<img id="avatar_menu" src="<?= $colaborador['avatar']; ?>" width="24" height="24"
+						<?php if (avatar_personalizado($colaborador['avatar'] ?? null)): ?>
+							<img id="avatar_menu" src="<?= esc(avatar_url($colaborador['avatar']), 'attr'); ?>" width="24" height="24"
 								class="rounded-circle">
 						<?php endif; ?>
 						<?= $colaborador['apelido']; ?>

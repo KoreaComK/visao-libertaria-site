@@ -94,6 +94,35 @@ class Perfil extends BaseController
 		return $retorno->retorno(true, 'Perfil atualizado com sucesso.', true);
 	}
 
+	public function removerAvatar()
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Requisição inválida.', true);
+		}
+
+		$session = $this->session->get('colaboradores');
+		$avatarPadrao = avatar_url();
+		$dados = [
+			'id' => $session['id'],
+			'avatar' => null,
+		];
+
+		$colaborador = $this->gravarColaborador('save', $dados);
+		if (!$colaborador) {
+			return $retorno->retorno(false, 'Não foi possível remover o avatar. Tente novamente.', true);
+		}
+
+		$this->excluirArquivoAvatar((int) $session['id']);
+		$session['avatar'] = $avatarPadrao;
+		$this->session->set(['colaboradores' => $session]);
+
+		return $retorno->retorno(true, 'Avatar removido. O avatar padrão foi restaurado.', true, [
+			'avatar' => $avatarPadrao,
+		]);
+	}
+
 	public function trocarSenha()
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();
@@ -318,6 +347,20 @@ class Perfil extends BaseController
 	// 	->get()->getResultArray();
 	// 	return $pautas;
 	// }
+
+	private function excluirArquivoAvatar(int $colaboradorId): void
+	{
+		if ($colaboradorId < 1) {
+			return;
+		}
+
+		$diretorio = FCPATH . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'avatars' . DIRECTORY_SEPARATOR;
+		foreach (glob($diretorio . $colaboradorId . '.*') ?: [] as $arquivo) {
+			if (is_file($arquivo)) {
+				@unlink($arquivo);
+			}
+		}
+	}
 
 	private function errosValidacao($valida)
 	{

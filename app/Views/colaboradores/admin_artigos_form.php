@@ -3,8 +3,8 @@
 
 <?= $this->section('content'); ?>
 
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+<script src="<?= site_url('public/vendor/quill/quill.js'); ?>"></script>
+<link href="<?= site_url('public/vendor/quill/quill.snow.css'); ?>" rel="stylesheet">
 
 <style>
 	#editor .ql-container {

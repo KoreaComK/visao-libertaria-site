@@ -67,7 +67,7 @@ class AuthCookieFilter implements FilterInterface
 				'id' => $colaborador['id'],
 				'nome' => $colaborador['apelido'],
 				'email' => $colaborador['email'],
-				'avatar' => ($colaborador['avatar'] != null) ? ($colaborador['avatar']) : (site_url('public/assets/avatar-default.png')),
+				'avatar' => avatar_url($colaborador['avatar']),
 				'permissoes' => [],
 			],
 		];

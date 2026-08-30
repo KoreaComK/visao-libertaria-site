@@ -4,7 +4,6 @@ use CodeIgniter\I18n\Time;
 
 ?>
 <?php helper('data') ?>
-<?php $avatarPadrao = site_url('public/assets/avatar-default.png'); ?>
 <?php if (!empty($comentarios)): ?>
 	<?php foreach ($comentarios as $chave => $comentario): ?>
 		<?php
@@ -26,8 +25,8 @@ use CodeIgniter\I18n\Time;
 			id="<?= esc($comentario['id'], 'attr'); ?>">
 			<div class="d-flex gap-3 align-items-start">
 				<div class="flex-shrink-0" style="width: 2.75rem;">
-					<img src="<?= ($comentario['avatar'] != null && $comentario['avatar'] !== '') ? esc($comentario['avatar'], 'attr') : esc($avatarPadrao, 'attr'); ?>"
-						onerror="this.onerror=null;this.src='<?= esc($avatarPadrao, 'attr'); ?>';"
+					<img src="<?= esc(avatar_url($comentario['avatar'] ?? null), 'attr'); ?>"
+						onerror="this.onerror=null;this.src='<?= esc(avatar_padrao_url(), 'attr'); ?>';"
 						class="rounded-circle img-fluid border border-light shadow-sm"
 						alt="<?= esc('Avatar de ' . $comentario['apelido'], 'attr'); ?>"
 						width="44" height="44" style="width: 2.75rem; height: 2.75rem; object-fit: cover;">
