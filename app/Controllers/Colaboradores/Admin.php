@@ -1086,7 +1086,7 @@ class Admin extends BaseController
 		return $retorno->retorno(false, 'Houve um erro ao reativar a categoria.', true);
 	}
 
-	public function categoriasDesvincularArtigos($idCategoria)
+	public function categoriasDesvincularPautas($idCategoria)
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
 
@@ -1102,22 +1102,22 @@ class Admin extends BaseController
 			return $retorno->retorno(false, 'Categoria não encontrada.', true);
 		}
 
-		$qtdArtigos = $categoriasModel->contarArtigosVinculados((int) $categoria['id']);
-		if ($qtdArtigos === 0) {
-			return $retorno->retorno(false, 'Esta categoria não possui artigos vinculados.', true);
+		$qtdPautas = $categoriasModel->contarPautasVinculadas((int) $categoria['id']);
+		if ($qtdPautas === 0) {
+			return $retorno->retorno(false, 'Esta categoria não possui pautas vinculadas.', true);
 		}
 
-		$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-		$desvinculou = $artigosCategoriasModel->deletePorCategoria((int) $categoria['id']);
+		$pautasCategoriasModel = new \App\Models\PautasCategoriasModel();
+		$desvinculou = $pautasCategoriasModel->deletePorCategoria((int) $categoria['id']);
 
 		if ($desvinculou) {
-			$texto = $qtdArtigos === 1
-				? '1 artigo foi desvinculado da categoria.'
-				: $qtdArtigos . ' artigos foram desvinculados da categoria.';
+			$texto = $qtdPautas === 1
+				? '1 pauta foi desvinculada da categoria.'
+				: $qtdPautas . ' pautas foram desvinculadas da categoria.';
 			return $retorno->retorno(true, $texto, true);
 		}
 
-		return $retorno->retorno(false, 'Houve um erro ao desvincular os artigos.', true);
+		return $retorno->retorno(false, 'Houve um erro ao desvincular as pautas.', true);
 	}
 
 	public function artigos()

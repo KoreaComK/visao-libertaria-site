@@ -12,14 +12,14 @@ $totalLista = (int) ($categoriasList['total'] ?? 0);
 				<th scope="col" class="border-0 rounded-start">Nome</th>
 				<th scope="col" class="border-0">Situação</th>
 				<th scope="col" class="border-0">Criada em</th>
-				<th scope="col" class="border-0 text-center">Artigos</th>
+				<th scope="col" class="border-0 text-center">Pautas</th>
 				<th scope="col" class="border-0 rounded-end"></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach ($categoriasList['categorias'] as $categoria): ?>
 				<?php
-				$qtd = (int) ($categoria['qtd_artigos'] ?? 0);
+				$qtd = (int) ($categoria['qtd_pautas'] ?? 0);
 				$inativada = ! empty($categoria['excluido']);
 				?>
 				<tr class="<?= $inativada ? 'text-muted' : ''; ?>">
@@ -44,11 +44,11 @@ $totalLista = (int) ($categoriasList['total'] ?? 0);
 								<i class="fas fa-pencil"></i>
 							</a>
 							<?php if ($qtd > 0): ?>
-								<button type="button" class="btn btn-light btn-floating mb-0 btn-desvincular-artigos"
+								<button type="button" class="btn btn-light btn-floating mb-0 btn-desvincular-pautas"
 									data-categoria-id="<?= esc($categoria['id']); ?>"
 									data-categoria-nome="<?= esc($categoria['nome'] ?? '', 'attr'); ?>"
 									data-categoria-qtd="<?= $qtd; ?>"
-									title="Remover artigos vinculados">
+									title="Remover pautas vinculadas">
 									<i class="fas fa-link-slash"></i>
 								</button>
 							<?php endif; ?>

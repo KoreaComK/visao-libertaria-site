@@ -228,7 +228,7 @@
 		abrirModalConfirmacaoCategoria();
 	});
 
-	$(document).on('click', '.btn-desvincular-artigos', function (e) {
+	$(document).on('click', '.btn-desvincular-pautas', function (e) {
 		e.preventDefault();
 		e.stopPropagation();
 		var dados = dadosBotaoCategoria($(this));
@@ -238,8 +238,8 @@
 		if (isNaN(qtd) || qtd < 1) {
 			qtd = 1;
 		}
-		var quantidadeTexto = qtd === 1 ? '1 artigo vinculado' : qtd + ' artigos vinculados';
-		$('.conteudo-modal').html('Deseja remover os ' + quantidadeTexto + ' da categoria <strong>' + textoSeguro(dados.nome) + '</strong>? Os artigos não serão excluídos, apenas deixarão de pertencer a esta categoria.');
+		var quantidadeTexto = qtd === 1 ? 'a pauta vinculada' : 'as ' + qtd + ' pautas vinculadas';
+		$('.conteudo-modal').html('Deseja remover ' + quantidadeTexto + ' da categoria <strong>' + textoSeguro(dados.nome) + '</strong>? As pautas não serão excluídas, apenas deixarão de pertencer a esta categoria.');
 		abrirModalConfirmacaoCategoria();
 	});
 
@@ -254,7 +254,7 @@
 		}
 		var urlAcao = "<?= base_url('colaboradores/admin/categoriasExcluir/'); ?>";
 		if (categoriaTipoAcao === 'desvincular') {
-			urlAcao = "<?= base_url('colaboradores/admin/categoriasDesvincularArtigos/'); ?>";
+			urlAcao = "<?= base_url('colaboradores/admin/categoriasDesvincularPautas/'); ?>";
 		} else if (categoriaTipoAcao === 'reativar') {
 			urlAcao = "<?= base_url('colaboradores/admin/categoriasReativar/'); ?>";
 		}

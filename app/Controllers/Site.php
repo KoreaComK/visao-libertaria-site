@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Libraries\WidgetsSite;
 use Config\App;
 use CodeIgniter\I18n\Time;
 
@@ -378,20 +377,8 @@ class Site extends BaseController
 		$artigosModel->whereIn('fase_producao_id', array(6, 7));
 		$artigosModel->orderBy('publicado', 'DESC');
 
-		$widgets = new WidgetsSite();
-
-		//$data['widgetCategorias'] = $widgets->widgetCategorias();
 		$data['idCategoriaAtual'] = $id_categoria;
 		$data['nomeCategoriaAtual'] = null;
-		/*foreach ($data['widgetCategorias'] as $cat) {
-				  if ($cat['id'] == $id_categoria) {
-					  $data['nomeCategoriaAtual'] = $cat['nome'];
-				  }
-			  }
-
-			  if ($id_categoria !== null) {
-				  $artigosModel->join('artigos_categorias', 'artigos.id=artigos_categorias.artigos_id')->where('artigos_categorias.categorias_id', $id_categoria);
-			  }*/
 
 		$data['artigosList'] = [
 			'artigos' => $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos'),

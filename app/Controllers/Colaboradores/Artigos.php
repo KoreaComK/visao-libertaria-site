@@ -1647,11 +1647,6 @@ class Artigos extends BaseController
 			}
 			$this->cadastraHistoricoTextoArtigo($idArtigo, gera_hash_artigo($artigo_anterior));
 
-			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-			// $artigosCategoriasModel->deleteArtigoCategoria($idArtigo);
-			// foreach ($post['categorias'] as $categoria) {
-			// 	$artigosCategoriasModel->insertArtigoCategoria($idArtigo, $categoria);
-			// }
 			return $artigo_id;
 		}
 	}
@@ -1687,10 +1682,6 @@ class Artigos extends BaseController
 			$this->colaboradoresNotificacoes->cadastraNotificacao($session['id'], 'escreveu', 'artigos', 'o artigo', $artigo_id);
 			$this->artigosHistoricos->cadastraHistorico($artigo_id, 'escreveu', $this->session->get('colaboradores')['id']);
 			$this->cadastraHistoricoTextoArtigo($artigo_id, gera_hash_artigo(NULL));
-			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-			// foreach ($post['categorias'] as $categoria) {
-			// 	$artigosCategoriasModel->insertArtigoCategoria($artigo_id, $categoria);
-			// }
 			return $gravar['id'];
 		}
 		return false;
@@ -1718,11 +1709,6 @@ class Artigos extends BaseController
 			$this->artigosHistoricos->cadastraHistorico($idArtigo, 'alterou', $this->session->get('colaboradores')['id']);
 			$this->cadastraHistoricoTextoArtigo($idArtigo, gera_hash_artigo($artigo_anterior));
 
-			// $artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
-			// $artigosCategoriasModel->deleteArtigoCategoria($idArtigo);
-			// foreach ($post['categorias'] as $categoria) {
-			// 	$artigosCategoriasModel->insertArtigoCategoria($idArtigo, $categoria);
-			// }
 			return $artigo_id;
 		}
 	}

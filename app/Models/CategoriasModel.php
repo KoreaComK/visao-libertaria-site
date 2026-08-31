@@ -40,14 +40,14 @@ class CategoriasModel extends Model
 	protected $afterDelete    = [];
 
 	/**
-	 * Colunas da listagem admin com contagem de artigos vinculados.
+	 * Colunas da listagem admin com contagem de pautas vinculadas.
 	 *
 	 * @return $this
 	 */
 	public function aplicarSelectListagemComAgregados()
 	{
 		return $this->select('categorias.id, categorias.nome, categorias.criado, categorias.atualizado, categorias.excluido')
-			->select('(SELECT COUNT(*) FROM artigos_categorias WHERE artigos_categorias.categorias_id = categorias.id) AS qtd_artigos', false);
+			->select('(SELECT COUNT(*) FROM pautas_categorias WHERE pautas_categorias.categorias_id = categorias.id) AS qtd_pautas', false);
 	}
 
 	/**
@@ -80,9 +80,9 @@ class CategoriasModel extends Model
 		return $this;
 	}
 
-	public function contarArtigosVinculados(int $categoriaId): int
+	public function contarPautasVinculadas(int $categoriaId): int
 	{
-		return (int) $this->db->table('artigos_categorias')
+		return (int) $this->db->table('pautas_categorias')
 			->where('categorias_id', $categoriaId)
 			->countAllResults();
 	}
