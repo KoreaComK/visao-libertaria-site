@@ -933,6 +933,193 @@ class Admin extends BaseController
 		}
 	}
 
+	public function categorias($idCategoria = null)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$categoriasModel = new \App\Models\CategoriasModel();
+
+		if ($idCategoria != null) {
+			if ($idCategoria != 'novo') {
+				$categoria = $categoriasModel->withDeleted()->find($idCategoria);
+				if (empty($categoria)) {
+					return redirect()->to(site_url('colaboradores/admin/categorias'));
+				}
+				$data['categoria'] = $categoria;
+				$data['titulo'] = 'Atualização de categoria';
+			} else {
+				$data['titulo'] = 'Cadastro de categoria';
+				$data['categoria'] = false;
+			}
+
+			return view('colaboradores/categorias_form', $data);
+		}
+
+		$data['titulo'] = 'Listagem de categorias';
+
+		return view('colaboradores/categorias_list', $data);
+	}
+
+	public function categoriasList()
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
+		$porPagina = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+
+		$categoriasModel = new \App\Models\CategoriasModel();
+		$get = $this->request->getGet();
+		$nome = isset($get['nome']) ? trim((string) $get['nome']) : '';
+		$situacao = isset($get['situacao']) ? trim((string) $get['situacao']) : 'todas';
+		if (!in_array($situacao, ['todas', 'ativas', 'inativadas'], true)) {
+			$situacao = 'todas';
+		}
+
+		$categoriasModel->filtroSituacao($situacao)
+			->aplicarSelectListagemComAgregados()
+			->filtroNomeContem($nome !== '' ? $nome : null)
+			->orderBy('categorias.excluido', 'ASC')
+			->orderBy('categorias.nome', 'ASC');
+
+		$data['categoriasList'] = [
+			'categorias' => $categoriasModel->paginate($porPagina, 'categorias'),
+			'pager' => $categoriasModel->pager,
+			'total' => (int) $categoriasModel->pager->getTotal('categorias'),
+		];
+
+		return view('template/templateCategoriasList', $data);
+	}
+
+	public function categoriasGravar($idCategoria = null)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'O método só pode ser acessado via AJAX.', true);
+		}
+
+		if (strtolower($this->request->getMethod()) !== 'post') {
+			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$post = $this->request->getPost();
+		$post['nome'] = isset($post['nome']) ? trim((string) $post['nome']) : '';
+		$valida = $validaFormularios->validaFormularioCategorias($post);
+		if (!empty($valida->getErrors())) {
+			return $retorno->retorno(false, $retorno->montaStringErro($valida->getErrors()), true);
+		}
+
+		$categoriasModel = new \App\Models\CategoriasModel();
+		$idAtual = ($idCategoria !== null && $idCategoria !== '') ? (int) $idCategoria : null;
+		if ($idAtual !== null && empty($categoriasModel->withDeleted()->find($idAtual))) {
+			return $retorno->retorno(false, 'Categoria não encontrada.', true);
+		}
+
+		if ($categoriasModel->nomeJaExiste($post['nome'], $idAtual)) {
+			return $retorno->retorno(false, 'Já existe uma categoria com este nome.', true);
+		}
+
+		$dados = ['nome' => $post['nome']];
+		if ($idAtual === null) {
+			$retornoGravado = $categoriasModel->insert($dados);
+		} else {
+			$retornoGravado = $categoriasModel->update($idAtual, $dados);
+		}
+
+		if ($retornoGravado != false) {
+			return $retorno->retorno(true, 'Categoria salva com sucesso.', true);
+		}
+
+		return $retorno->retorno(false, 'Ocorreu um erro ao salvar a categoria.', true);
+	}
+
+	public function categoriasExcluir($idCategoria)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$categoriasModel = new \App\Models\CategoriasModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$categoria = $categoriasModel->find($idCategoria);
+		if (empty($categoria) || $categoria == null) {
+			return $retorno->retorno(false, 'Categoria não encontrada.', true);
+		}
+
+		$retornoInativar = $categoriasModel->delete($categoria['id']);
+
+		if ($retornoInativar === true) {
+			return $retorno->retorno(true, 'Categoria inativada com sucesso.', true);
+		}
+
+		return $retorno->retorno(false, 'Houve um erro ao inativar a categoria.', true);
+	}
+
+	public function categoriasReativar($idCategoria)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$categoriasModel = new \App\Models\CategoriasModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$categoria = $categoriasModel->withDeleted()->find($idCategoria);
+		if (empty($categoria) || $categoria == null) {
+			return $retorno->retorno(false, 'Categoria não encontrada.', true);
+		}
+
+		if (empty($categoria['excluido'])) {
+			return $retorno->retorno(false, 'Esta categoria já está ativa.', true);
+		}
+
+		if ($categoriasModel->reativar((int) $categoria['id'])) {
+			return $retorno->retorno(true, 'Categoria reativada com sucesso.', true);
+		}
+
+		return $retorno->retorno(false, 'Houve um erro ao reativar a categoria.', true);
+	}
+
+	public function categoriasDesvincularArtigos($idCategoria)
+	{
+		$this->verificaPermissao->PermiteAcesso('7');
+
+		$retorno = new \App\Libraries\RetornoPadrao();
+		$categoriasModel = new \App\Models\CategoriasModel();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Ação só possível via AJAX.', true);
+		}
+
+		$categoria = $categoriasModel->withDeleted()->find($idCategoria);
+		if (empty($categoria) || $categoria == null) {
+			return $retorno->retorno(false, 'Categoria não encontrada.', true);
+		}
+
+		$qtdArtigos = $categoriasModel->contarArtigosVinculados((int) $categoria['id']);
+		if ($qtdArtigos === 0) {
+			return $retorno->retorno(false, 'Esta categoria não possui artigos vinculados.', true);
+		}
+
+		$artigosCategoriasModel = new \App\Models\ArtigosCategoriasModel();
+		$desvinculou = $artigosCategoriasModel->deletePorCategoria((int) $categoria['id']);
+
+		if ($desvinculou) {
+			$texto = $qtdArtigos === 1
+				? '1 artigo foi desvinculado da categoria.'
+				: $qtdArtigos . ' artigos foram desvinculados da categoria.';
+			return $retorno->retorno(true, $texto, true);
+		}
+
+		return $retorno->retorno(false, 'Houve um erro ao desvincular os artigos.', true);
+	}
+
 	public function artigos()
 	{
 		$data = array();

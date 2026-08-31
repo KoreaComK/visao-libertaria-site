@@ -409,6 +409,19 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioCategorias($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'nome' => [
+				'label' => 'Nome',
+				'rules' => 'required|max_length[255]'
+			]
+		]);
+		$validation->run($post);
+		return $validation;
+	}
+
 	public function validaFormularioPaginasEstaticas($post,$id)
 	{
 		$validation = \Config\Services::validation();

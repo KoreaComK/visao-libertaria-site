@@ -185,16 +185,23 @@
 									class="fas fa-globe"></i> Dashboard</a>
 						</li>
 						<?php if (isset($_SESSION) && $_SESSION['colaboradores']['id'] != null): ?>
-							<?php if (in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+							<?php if (in_array('10', $_SESSION['colaboradores']['permissoes']) || in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="menuPautasColaboradores"><i
 											class="fas fa-bullhorn"></i> Pautas</a>
 									<ul class="dropdown-menu bg-primary" aria-labelledby="menuPautasColaboradores">
-										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
-										<li> <a class="dropdown-item"
-												href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
-										</li>
+										<?php if (in_array('10', $_SESSION['colaboradores']['permissoes'])): ?>
+											<li> <a class="dropdown-item"
+													href="<?= site_url('colaboradores/pautas/fechar'); ?>">Fechar pautas</a> </li>
+											<li> <a class="dropdown-item"
+													href="<?= site_url('colaboradores/pautas/fechadas'); ?>">Pautas fechadas</a>
+											</li>
+										<?php endif; ?>
+										<?php if (in_array('7', $_SESSION['colaboradores']['permissoes'])): ?>
+											<li> <a class="dropdown-item"
+													href="<?= site_url('colaboradores/admin/categorias'); ?>">Categorias</a>
+											</li>
+										<?php endif; ?>
 									</ul>
 								</li>
 							<?php endif; ?>

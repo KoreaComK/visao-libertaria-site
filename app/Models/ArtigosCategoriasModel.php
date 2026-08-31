@@ -73,4 +73,11 @@ class ArtigosCategoriasModel extends Model
 			artigos_id = '$artigoId' ");
 		return $query;
 	}
+
+	public function deletePorCategoria(int $categoriaId): bool
+	{
+		return $this->db->table($this->table)
+			->where('categorias_id', $categoriaId)
+			->delete() !== false;
+	}
 }
