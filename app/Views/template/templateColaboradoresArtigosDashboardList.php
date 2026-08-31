@@ -56,8 +56,8 @@ $temLinhas = $artigosPagina !== null && !empty($artigosPagina);
 		<?php else: ?>
 			<tr>
 				<td colspan="5" class="p-0">
-					<div class="text-center py-5 px-3">
-						<i class="far fa-folder-open fa-2x text-muted mb-2 d-block" aria-hidden="true"></i>
+					<div class="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+						<i class="far fa-folder-open fa-2x text-muted mb-2" aria-hidden="true"></i>
 						<p class="fw-semibold text-body mb-1">Nenhum artigo encontrado</p>
 						<p class="small text-muted mb-0">Ajuste os filtros ou limpe a pesquisa para ver mais resultados.</p>
 					</div>

@@ -30,8 +30,8 @@ if ($temLinhas) {
 }
 ?>
 <?php if (!$temLinhas): ?>
-	<div class="text-center py-5 px-3">
-		<i class="fas fa-folder-open fa-2x text-muted mb-3 d-block" aria-hidden="true"></i>
+	<div class="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+		<i class="fas fa-folder-open fa-2x text-muted mb-3" aria-hidden="true"></i>
 		<p class="fw-semibold text-body mb-1">Nenhum artigo em produção</p>
 		<p class="small text-muted mb-3">Quando tiver rascunhos ou artigos na trilha de produção, eles aparecem aqui.</p>
 		<a href="<?= site_url('colaboradores/artigos/cadastrar'); ?>" class="btn btn-sm btn-primary">Novo artigo</a>
