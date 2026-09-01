@@ -1,6 +1,15 @@
 # Disable directory browsing
 Options -Indexes
 
+<Files "sugerir-categorias-pautas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
 # ----------------------------------------------------------------------
 # Rewrite engine
 # ----------------------------------------------------------------------
