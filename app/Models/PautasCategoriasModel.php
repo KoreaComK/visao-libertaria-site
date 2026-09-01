@@ -82,4 +82,27 @@ class PautasCategoriasModel extends Model
 			->where('categorias_id', $categoriaId)
 			->delete() !== false;
 	}
+
+	/**
+	 * Remove vínculos de uma ou mais pautas (necessário antes de apagar a pauta de vez).
+	 *
+	 * @param list<mixed> $pautaIds
+	 */
+	public function deletePorPautas(array $pautaIds): bool
+	{
+		$ids = [];
+		foreach ($pautaIds as $id) {
+			$id = trim((string) $id);
+			if ($id !== '') {
+				$ids[] = $id;
+			}
+		}
+		if ($ids === []) {
+			return true;
+		}
+
+		return $this->db->table($this->table)
+			->whereIn('pautas_id', $ids)
+			->delete() !== false;
+	}
 }

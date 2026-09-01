@@ -30,14 +30,9 @@ class PautasModel extends Model
 
 	// Callbacks
 	protected $allowCallbacks = true;
-	// protected $beforeInsert   = [];
 	protected $afterInsert = ['cadastraHistoricoUsuarioInserir'];
-	// protected $beforeUpdate   = [];
 	protected $afterUpdate = ['cadastraHistoricoUsuarioAlterar'];
-	// protected $beforeFind     = [];
-	// protected $afterFind      = [];
-	// protected $beforeDelete   = [];
-	// protected $afterDelete = ['cadastraHistoricoUsuarioExcluir'];
+	protected $beforeDelete = ['desvincularCategoriasSeExclusaoPermanente'];
 
 	public function isPautaCadastrada($link, $id = null)
 	{
@@ -219,6 +214,25 @@ class PautasModel extends Model
 	protected function cadastraHistoricoUsuarioInserir(array $dados)
 	{
 		return $this->cadastraHistoricoUsuario($dados, 'inserir');
+	}
+
+	/**
+	 * FK NO ACTION: na exclusão permanente, apaga pautas_categorias antes da pauta.
+	 */
+	protected function desvincularCategoriasSeExclusaoPermanente(array $dados)
+	{
+		if (empty($dados['purge'])) {
+			return $dados;
+		}
+
+		$ids = $dados['id'] ?? [];
+		if (! is_array($ids)) {
+			$ids = [$ids];
+		}
+
+		(new PautasCategoriasModel())->deletePorPautas($ids);
+
+		return $dados;
 	}
 
 	protected function cadastraHistoricoUsuarioAlterar(array $dados)

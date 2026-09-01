@@ -84,6 +84,7 @@ class Cron extends BaseController
 			$pautasModel->db->table('pautas_comentarios')
 				->whereIn('pautas_id', $idsPautasAntigas)
 				->delete();
+			(new \App\Models\PautasCategoriasModel())->deletePorPautas($idsPautasAntigas);
 
 			$pautasExclusao = new \App\Models\PautasModel();
 			foreach ($idsPautasAntigas as $idPauta) {
