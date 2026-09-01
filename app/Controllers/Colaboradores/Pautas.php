@@ -354,6 +354,7 @@ class Pautas extends BaseController
 		$data['titulo'] = 'Fechamento de Pautas';
 		$pautasModel = new \App\Models\PautasModel();
 		$data['pautasReservadas'] = $pautasModel->getReservadasParaPainelFechamento();
+		$data['categoriasAtivas'] = (new \App\Models\CategoriasModel())->listarAtivasIdNome();
 		return view('colaboradores/pautas_closing', $data);
 	}
 
@@ -371,21 +372,47 @@ class Pautas extends BaseController
 	{
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('10');
+		$data = [];
 		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$pautasModel = new \App\Models\PautasModel();
 			if (!isset($get['pesquisa']) || $get['pesquisa'] == '') {
 				$get['pesquisa'] = NULL;
 			}
-			$pautas = $pautasModel->getPautasPesquisa($get['pesquisa']);
 
-			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			$config = array();
-			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-			$data['pautasList'] = [
-				'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
-				'pager' => $pautas->pager
-			];
+			$modo = isset($get['categorias_modo']) ? (string) $get['categorias_modo'] : 'todas';
+			$ids = [];
+			if (isset($get['categorias']) && $get['categorias'] !== '') {
+				foreach (explode(',', (string) $get['categorias']) as $id) {
+					$n = (int) $id;
+					if ($n > 0) {
+						$ids[] = $n;
+					}
+				}
+			}
+
+			$filtroVazio = ($modo === 'nenhuma' || ($modo === 'ids' && $ids === []));
+			$data['filtroCategoriasVazio'] = $filtroVazio;
+
+			if ($filtroVazio) {
+				$data['pautasList'] = [
+					'pautas' => [],
+					'pager' => null,
+				];
+			} else {
+				$pautas = $pautasModel->getPautasPesquisa($get['pesquisa']);
+				if ($modo === 'ids') {
+					$pautas->aplicarFiltroPorCategorias($ids);
+				}
+
+				$configuracaoModel = new \App\Models\ConfiguracaoModel();
+				$config = array();
+				$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+				$data['pautasList'] = [
+					'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+					'pager' => $pautas->pager
+				];
+			}
 		}
 		return view('template/templatePautasList', $data);
 	}

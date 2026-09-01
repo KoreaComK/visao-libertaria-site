@@ -45,6 +45,30 @@
 		</div>
 	</div>
 
+	<div class="card shadow-sm border-0 mb-4">
+		<div class="card-header py-3">
+			<h5 class="mb-0">Categorias</h5>
+		</div>
+		<div class="card-body">
+			<div class="d-flex flex-wrap gap-2 mb-3">
+				<button type="button" class="btn btn-primary btn-sm" id="btn-categorias-todas">Todas as categorias</button>
+				<button type="button" class="btn btn-outline-primary btn-sm" id="btn-categorias-limpar">Limpar todas as categorias</button>
+			</div>
+			<?php if (! empty($categoriasAtivas)): ?>
+				<div class="d-flex flex-wrap gap-2" id="filtro-categorias-chips">
+					<?php foreach ($categoriasAtivas as $categoria): ?>
+						<button type="button" class="btn btn-outline-primary btn-sm btn-filtro-categoria"
+							data-id="<?= (int) $categoria['id']; ?>">
+							<?= esc($categoria['nome']); ?>
+						</button>
+					<?php endforeach; ?>
+				</div>
+			<?php else: ?>
+				<p class="text-muted small mb-0">Nenhuma categoria ativa cadastrada.</p>
+			<?php endif; ?>
+		</div>
+	</div>
+
 	<div class="row g-4">
 		<div class="col-12 col-lg-8">
 			<div class="card shadow-sm border-0" id="pautas-encontradas-listagem">
@@ -122,6 +146,62 @@
 		});
 	};
 
+	var categoriasModo = 'todas';
+	var categoriasIds = [];
+
+	function dadosPesquisaPautas() {
+		var data = {
+			pesquisa: $('#pesquisa').val() || '',
+			categorias_modo: categoriasModo
+		};
+		if (categoriasModo === 'ids' && categoriasIds.length > 0) {
+			data.categorias = categoriasIds.join(',');
+		}
+		return data;
+	}
+
+	function idsTodasCategorias() {
+		var ids = [];
+		$('.btn-filtro-categoria').each(function () {
+			var id = parseInt($(this).attr('data-id'), 10);
+			if (id) {
+				ids.push(id);
+			}
+		});
+		return ids;
+	}
+
+	function atualizarBotoesCategorias() {
+		var todas = categoriasModo === 'todas';
+		$('#btn-categorias-todas')
+			.toggleClass('btn-primary', todas)
+			.toggleClass('btn-outline-primary', !todas);
+		$('.btn-filtro-categoria').each(function () {
+			var id = parseInt($(this).attr('data-id'), 10);
+			var ativo = todas || (categoriasModo === 'ids' && categoriasIds.indexOf(id) !== -1);
+			$(this)
+				.toggleClass('btn-primary', ativo)
+				.toggleClass('btn-outline-primary', !ativo);
+		});
+	}
+
+	function carregarPautasListagem() {
+		$.ajax({
+			url: "<?php echo base_url('colaboradores/pautas/pautasList'); ?>",
+			type: 'get',
+			dataType: 'html',
+			data: dadosPesquisaPautas(),
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide() },
+			success: function (data) {
+				$('.pautas-list').html(data);
+				if (typeof window.recarregarResumoPautasReservadas === 'function') {
+					window.recarregarResumoPautasReservadas();
+				}
+			}
+		});
+	}
+
 	$('.btn-fechar').on('click', function (e) {
 		var id_pauta = e.target.getAttribute('data-information');
 
@@ -159,30 +239,61 @@
 
 	$('.btn-submeter').on('click', function (e) {
 		e.preventDefault();
-		$.ajax({
-			url: "<?php echo base_url('colaboradores/pautas/pautasList'); ?>",
-			type: 'get',
-			dataType: 'html',
-			data: {
-				pesquisa: $('#pesquisa').val()
-			},
-			beforeSend: function () { $('#modal-loading').show(); },
-			complete: function () { $('#modal-loading').hide() },
-			success: function (data) {
-				$('.pautas-list').html(data);
-				if (typeof window.recarregarResumoPautasReservadas === 'function') {
-					window.recarregarResumoPautasReservadas();
-				}
-			}
-		});
+		carregarPautasListagem();
+	});
+
+	$('#btn-categorias-todas').on('click', function () {
+		categoriasModo = 'todas';
+		categoriasIds = idsTodasCategorias();
+		atualizarBotoesCategorias();
+		carregarPautasListagem();
+	});
+
+	$('#btn-categorias-limpar').on('click', function () {
+		categoriasModo = 'nenhuma';
+		categoriasIds = [];
+		atualizarBotoesCategorias();
+		carregarPautasListagem();
+	});
+
+	$(document).on('click', '.btn-filtro-categoria', function () {
+		var id = parseInt($(this).attr('data-id'), 10);
+		if (!id) {
+			return;
+		}
+		if (categoriasModo === 'todas') {
+			categoriasModo = 'ids';
+			categoriasIds = idsTodasCategorias();
+		} else if (categoriasModo === 'nenhuma') {
+			categoriasModo = 'ids';
+			categoriasIds = [];
+		}
+		var pos = categoriasIds.indexOf(id);
+		if (pos === -1) {
+			categoriasIds.push(id);
+		} else {
+			categoriasIds.splice(pos, 1);
+		}
+		var todosIds = idsTodasCategorias();
+		if (categoriasIds.length === 0) {
+			categoriasModo = 'nenhuma';
+		} else if (categoriasIds.length === todosIds.length) {
+			categoriasModo = 'todas';
+		} else {
+			categoriasModo = 'ids';
+		}
+		atualizarBotoesCategorias();
+		carregarPautasListagem();
 	});
 
 	$("form").on("submit", function (e) {
 		e.preventDefault();
+		carregarPautasListagem();
 	});
 
 	$(document).ready(function () {
-		$(".btn-submeter").click();
+		atualizarBotoesCategorias();
+		carregarPautasListagem();
 	});
 
 </script>

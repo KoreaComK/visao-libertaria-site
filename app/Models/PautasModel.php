@@ -143,6 +143,35 @@ class PautasModel extends Model
 		
 	}
 
+	/**
+	 * Restringe às pautas que tenham ao menos uma das categorias (OR).
+	 *
+	 * @param list<int> $categoriaIds
+	 * @return $this
+	 */
+	public function aplicarFiltroPorCategorias(array $categoriaIds)
+	{
+		$ids = [];
+		foreach ($categoriaIds as $id) {
+			$n = (int) $id;
+			if ($n > 0) {
+				$ids[$n] = $n;
+			}
+		}
+		if ($ids === []) {
+			return $this;
+		}
+
+		$lista = implode(',', $ids);
+		$this->builder()->where(
+			"EXISTS (SELECT 1 FROM pautas_categorias pc WHERE pc.pautas_id = pautas.id AND pc.categorias_id IN ({$lista}))",
+			null,
+			false
+		);
+
+		return $this;
+	}
+
 	public function getPautasPorUsuario($data, $usuario)
 	{
 		$query = $this->db->query("SELECT count(1) as contador FROM pautas WHERE colaboradores_id = $usuario AND criado >= '$data'");

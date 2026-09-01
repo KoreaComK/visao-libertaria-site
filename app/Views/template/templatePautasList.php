@@ -5,7 +5,9 @@ use CodeIgniter\I18n\Time;
 $nTotalEncontradas = ! empty($pautasList['pager'])
 	? (int) $pautasList['pager']->getTotal('pautas')
 	: 0;
+$filtroCategoriasVazio = ! empty($filtroCategoriasVazio);
 ?>
+<?php if (! $filtroCategoriasVazio): ?>
 <p class="small text-muted mb-2 border-bottom pb-2">
 	<strong><?= $nTotalEncontradas; ?></strong>
 	<?= $nTotalEncontradas === 1 ? 'pauta encontrada no total' : 'pautas encontradas no total'; ?>
@@ -13,6 +15,7 @@ $nTotalEncontradas = ! empty($pautasList['pager'])
 		<span class="text-muted"> (página <?= (int) $pautasList['pager']->getCurrentPage('pautas'); ?> de <?= (int) $pautasList['pager']->getPageCount('pautas'); ?>)</span>
 	<?php endif; ?>
 </p>
+<?php endif; ?>
 <?php if ($pautasList['pautas'] !== NULL && !empty($pautasList['pautas'])): ?>
 	<?php foreach ($pautasList['pautas'] as $pauta): ?>
 		<div class="media text-muted pt-2 border-bottom row" id="pauta_<?= $pauta['id']; ?>">
@@ -83,7 +86,9 @@ $nTotalEncontradas = ! empty($pautasList['pager'])
 		</div>
 	<?php endforeach; ?>
 <?php else: ?>
-	<p class="text-muted small py-2 mb-0">Nenhuma pauta nesta página.</p>
+	<p class="text-muted small py-2 mb-0"><?= ! empty($filtroCategoriasVazio)
+		? 'Nenhuma categoria selecionada. Clique em uma categoria ou em “Todas as categorias”.'
+		: 'Nenhuma pauta nesta página.'; ?></p>
 <?php endif; ?>
 
 
