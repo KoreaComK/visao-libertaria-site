@@ -936,22 +936,9 @@ class Admin extends BaseController
 	public function categorias($idCategoria = null)
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
-		$categoriasModel = new \App\Models\CategoriasModel();
 
 		if ($idCategoria != null) {
-			if ($idCategoria != 'novo') {
-				$categoria = $categoriasModel->withDeleted()->find($idCategoria);
-				if (empty($categoria)) {
-					return redirect()->to(site_url('colaboradores/admin/categorias'));
-				}
-				$data['categoria'] = $categoria;
-				$data['titulo'] = 'Atualização de categoria';
-			} else {
-				$data['titulo'] = 'Cadastro de categoria';
-				$data['categoria'] = false;
-			}
-
-			return view('colaboradores/categorias_form', $data);
+			return redirect()->to(site_url('colaboradores/admin/categorias'));
 		}
 
 		$data['titulo'] = 'Listagem de categorias';

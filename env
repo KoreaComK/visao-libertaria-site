@@ -34,6 +34,18 @@ YOUTUBE_API_KEY = your-youtube-data-api-key
 YOUTUBE_CHANNEL_ID_VISAOLIBERTARIA = your-youtube-channel-id
 
 #--------------------------------------------------------------------
+# IA — classificação automática de pautas
+# Copiar estas chaves para o .env (não commitar a API key).
+# IA_PROVEDOR e IA_MODELO são livres: use o que a API esperar.
+# Sem IA_API_KEY ou IA_MODELO o comando Spark sai sem chamar a API.
+#--------------------------------------------------------------------
+IA_API_KEY =
+IA_PROVEDOR = gemini
+IA_MODELO = gemini-flash-latest
+IA_LOTE = 5
+IA_TIMEOUT = 25
+
+#--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------
 

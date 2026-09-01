@@ -39,10 +39,12 @@ $totalLista = (int) ($categoriasList['total'] ?? 0);
 					</td>
 					<td>
 						<div class="d-flex gap-1 justify-content-end">
-							<a href="<?= site_url('colaboradores/admin/categorias/' . $categoria['id']); ?>"
-								class="btn btn-light btn-floating mb-0" title="Editar categoria">
+							<button type="button" class="btn btn-light btn-floating mb-0 btn-editar-categoria"
+								data-categoria-id="<?= esc($categoria['id']); ?>"
+								data-categoria-nome="<?= esc($categoria['nome'] ?? '', 'attr'); ?>"
+								title="Editar categoria">
 								<i class="fas fa-pencil"></i>
-							</a>
+							</button>
 							<?php if ($qtd > 0): ?>
 								<button type="button" class="btn btn-light btn-floating mb-0 btn-desvincular-pautas"
 									data-categoria-id="<?= esc($categoria['id']); ?>"

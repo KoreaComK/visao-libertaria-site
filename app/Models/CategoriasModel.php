@@ -98,6 +98,20 @@ class CategoriasModel extends Model
 	}
 
 	/**
+	 * Categorias ativas (excluido IS NULL) para enviar à IA: só id e nome.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function listarAtivasIdNome(): array
+	{
+		$consulta = new self();
+
+		return $consulta->select('id, nome')
+			->orderBy('nome', 'ASC')
+			->findAll();
+	}
+
+	/**
 	 * Verifica duplicidade de nome entre categorias ativas e inativadas.
 	 */
 	public function nomeJaExiste(string $nome, ?int $excetoId = null): bool

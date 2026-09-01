@@ -149,6 +149,28 @@ class PautasModel extends Model
 		return $query->getResult('array');
 	}
 
+	/**
+	 * Pautas ativas sem nenhuma linha em pautas_categorias, mais novas primeiro.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function getPautasSemCategoria(int $limite): array
+	{
+		if ($limite < 1) {
+			return [];
+		}
+
+		return $this->db->table($this->table)
+			->select('pautas.id, pautas.titulo, pautas.texto, pautas.link')
+			->join('pautas_categorias', 'pautas_categorias.pautas_id = pautas.id', 'left')
+			->where('pautas.excluido', null)
+			->where('pautas_categorias.pautas_id', null)
+			->orderBy('pautas.criado', 'DESC')
+			->limit($limite)
+			->get()
+			->getResultArray();
+	}
+
 	private function subqueryContagemComentarios(): string
 	{
 		return $this->db->table('pautas_comentarios pc')

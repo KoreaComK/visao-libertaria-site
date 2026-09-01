@@ -43,9 +43,9 @@
 				<h1 id="heading-categorias" class="h3 mb-1"><?= esc($titulo); ?></h1>
 			</div>
 			<div>
-				<a href="<?= site_url('colaboradores/admin/categorias/novo'); ?>" class="btn btn-primary btn-sm w-100 w-sm-auto">
+				<button type="button" class="btn btn-primary btn-sm w-100 w-sm-auto" id="btn-cadastrar-categoria">
 					Cadastrar categoria
-				</a>
+				</button>
 			</div>
 		</div>
 
@@ -93,6 +93,31 @@
 				</div>
 			</div>
 		</section>
+	</div>
+</div>
+
+<div class="modal fade" id="modal-categoria-form" tabindex="-1" aria-labelledby="modal-categoria-form-label" aria-hidden="true">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<form id="categorias_form" method="post" novalidate autocomplete="off">
+				<div class="modal-header">
+					<h2 class="modal-title h5 mb-0" id="modal-categoria-form-label">Cadastro de categoria</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="categoria-form-id" name="id" value="">
+					<div class="mb-0">
+						<label class="form-label" for="categoria-form-nome">Nome</label>
+						<input type="text" class="form-control" id="categoria-form-nome" name="nome"
+							placeholder="Nome da categoria" maxlength="255" required>
+					</div>
+				</div>
+				<div class="modal-footer justify-content-between">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn btn-primary btn-sm" id="btn-salvar-categoria">Salvar categoria</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 
@@ -278,6 +303,84 @@
 			error: function () {
 				popMessage('ATENÇÃO', 'Não foi possível concluir a ação agora.', TOAST_STATUS.DANGER);
 				resetarAcaoCategoria();
+			}
+		});
+	});
+
+	function modalCategoriaFormInstancia() {
+		var el = document.getElementById('modal-categoria-form');
+		if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+			return null;
+		}
+		return bootstrap.Modal.getOrCreateInstance(el);
+	}
+
+	function abrirModalCategoriaForm(id, nome) {
+		var ehEdicao = !!id;
+		$('#modal-categoria-form-label').text(ehEdicao ? 'Atualização de categoria' : 'Cadastro de categoria');
+		$('#categoria-form-id').val(id || '');
+		$('#categoria-form-nome').val(nome || '');
+		var inst = modalCategoriaFormInstancia();
+		if (inst) {
+			inst.show();
+		}
+	}
+
+	$('#modal-categoria-form').on('shown.bs.modal', function () {
+		$('#categoria-form-nome').trigger('focus');
+	});
+
+	$('#modal-categoria-form').on('hidden.bs.modal', function () {
+		$('#categoria-form-id').val('');
+		$('#categoria-form-nome').val('');
+	});
+
+	$('#btn-cadastrar-categoria').on('click', function () {
+		abrirModalCategoriaForm('', '');
+	});
+
+	$(document).on('click', '.btn-editar-categoria', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var dados = dadosBotaoCategoria($(this));
+		abrirModalCategoriaForm(dados.id, dados.nome === 'esta categoria' ? '' : dados.nome);
+	});
+
+	$('#categorias_form').on('submit', function (e) {
+		e.preventDefault();
+		var id = String($('#categoria-form-id').val() || '').trim();
+		var nome = String($('#categoria-form-nome').val() || '').trim();
+		if (nome === '') {
+			popMessage('ATENÇÃO', 'Informe o nome da categoria.', TOAST_STATUS.DANGER);
+			$('#categoria-form-nome').trigger('focus');
+			return;
+		}
+		var url = "<?= base_url('colaboradores/admin/categoriasGravar'); ?>";
+		if (id !== '') {
+			url += '/' + id;
+		}
+		$.ajax({
+			url: url,
+			method: 'POST',
+			headers: { 'X-Requested-With': 'XMLHttpRequest' },
+			data: { nome: nome },
+			dataType: 'json',
+			beforeSend: function () { $('#modal-loading').show(); },
+			complete: function () { $('#modal-loading').hide(); },
+			success: function (retorno) {
+				if (retorno.status) {
+					var inst = modalCategoriaFormInstancia();
+					if (inst) {
+						inst.hide();
+					}
+					popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+					refreshCategoriasList();
+				} else {
+					popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+				}
+			},
+			error: function () {
+				popMessage('ATENÇÃO', 'Não foi possível salvar a categoria agora.', TOAST_STATUS.DANGER);
 			}
 		});
 	});

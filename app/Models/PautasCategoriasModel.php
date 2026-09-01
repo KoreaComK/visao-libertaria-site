@@ -36,6 +36,39 @@ class PautasCategoriasModel extends Model
 		]);
 	}
 
+	/**
+	 * Grava o vínculo; se a PK composta já existir (lote concorrente), segue sem erro.
+	 */
+	public function insertPautaCategoriaIgnorarDuplicata(string $pautaId, int $categoriaId): bool
+	{
+		try {
+			$ok = $this->db->table($this->table)
+				->ignore(true)
+				->insert([
+					'pautas_id' => $pautaId,
+					'categorias_id' => $categoriaId,
+				]);
+
+			return $ok !== false;
+		} catch (\Throwable $e) {
+			if ($this->ehDuplicataChave($e)) {
+				return true;
+			}
+
+			throw $e;
+		}
+	}
+
+	private function ehDuplicataChave(\Throwable $e): bool
+	{
+		$codigo = (int) ($this->db->error()['code'] ?? 0);
+		if ($codigo === 1062) {
+			return true;
+		}
+
+		return str_contains(strtolower($e->getMessage()), 'duplicate');
+	}
+
 	public function deletePautaCategoria($pautaId)
 	{
 		return $this->db->table($this->table)
