@@ -12,6 +12,7 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 
 <?= $this->section('content'); ?>
 <?php helper('month_helper'); ?>
+<?php helper('duracao'); ?>
 
 <div class="container mb-3">
 	<div class="main-body">
@@ -72,6 +73,13 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 							data-bs-target="#painel-pagamentos" type="button" role="tab"
 							aria-controls="painel-pagamentos" aria-selected="false">Pagamentos</button>
 					</li>
+					<?php if (!empty($eh_contratado)): ?>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="tab-remuneracao" data-bs-toggle="tab"
+							data-bs-target="#painel-remuneracao" type="button" role="tab"
+							aria-controls="painel-remuneracao" aria-selected="false">Remuneração</button>
+					</li>
+					<?php endif; ?>
 					<li class="nav-item" role="presentation">
 						<button class="nav-link" id="tab-perfil" data-bs-toggle="tab"
 							data-bs-target="#painel-perfil" type="button" role="tab"
@@ -309,6 +317,165 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 							</div>
 						</div>
 					</div>
+
+					<?php if (!empty($eh_contratado)): ?>
+					<?php
+						$remuneracaoAtual = $remuneracao_atual ?? null;
+						$remuneracaoHistorico = $remuneracao_historico ?? [];
+						$remuneracaoCompetencia = $remuneracao_competencia ?? date('Y-m');
+						$remuneracaoBloqueada = is_array($remuneracaoAtual) && !empty($remuneracaoAtual['pagamentos_id']);
+						$tipoAtual = (is_array($remuneracaoAtual) && ($remuneracaoAtual['tipo'] ?? '') === 'F') ? 'F' : 'H';
+						$valorExibicao = (is_array($remuneracaoAtual) && isset($remuneracaoAtual['valor_reais']))
+							? number_format((float) $remuneracaoAtual['valor_reais'], 2, ',', '.')
+							: '';
+						$horasExibicao = (is_array($remuneracaoAtual) && isset($remuneracaoAtual['horas_trabalhadas']) && $remuneracaoAtual['horas_trabalhadas'] !== null && $remuneracaoAtual['horas_trabalhadas'] !== '')
+							? decimal_para_duracao_hhmm($remuneracaoAtual['horas_trabalhadas'])
+							: '';
+						$partesCompetencia = explode('-', $remuneracaoCompetencia);
+						$labelCompetencia = $remuneracaoCompetencia;
+						if (count($partesCompetencia) === 2) {
+							$tsCompetencia = mktime(0, 0, 0, (int) $partesCompetencia[1], 1, (int) $partesCompetencia[0]);
+							$labelCompetencia = month_helper(date('F', $tsCompetencia)) . ' de ' . $partesCompetencia[0];
+						}
+						$formatarCompetencia = static function (string $comp): string {
+							$partes = explode('-', $comp);
+							if (count($partes) !== 2) {
+								return $comp;
+							}
+							$ts = mktime(0, 0, 0, (int) $partes[1], 1, (int) $partes[0]);
+							return month_helper(date('F', $ts)) . ' de ' . $partes[0];
+						};
+					?>
+					<div class="tab-pane fade" id="painel-remuneracao" role="tabpanel"
+						aria-labelledby="tab-remuneracao" tabindex="0">
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-1">Remuneração do mês</h5>
+								<p class="text-muted small mb-3">Informe uma vez por mês o valor a receber referente a <?= esc($labelCompetencia); ?>.</p>
+								<?php if ($remuneracaoBloqueada): ?>
+									<div class="alert alert-info" role="alert">
+										Este envio já foi incluído em um pagamento e não pode mais ser alterado.
+									</div>
+								<?php endif; ?>
+								<form class="needs-validation" method="post" id="colaboradores_remuneracao"
+									enctype="multipart/form-data">
+									<fieldset <?= $remuneracaoBloqueada ? 'disabled' : ''; ?>>
+										<div class="mb-3">
+											<span class="form-label d-block">Tipo de remuneração</span>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo" id="remuneracao_tipo_horas"
+													value="H" <?= $tipoAtual === 'H' ? 'checked' : ''; ?>>
+												<label class="form-check-label" for="remuneracao_tipo_horas">Por horas</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo" id="remuneracao_tipo_fixo"
+													value="F" <?= $tipoAtual === 'F' ? 'checked' : ''; ?>>
+												<label class="form-check-label" for="remuneracao_tipo_fixo">Valor fixo</label>
+											</div>
+										</div>
+
+										<div class="mb-3">
+											<label for="remuneracao_valor_reais" class="form-label">Valor a receber (R$)</label>
+											<input type="text" class="form-control" id="remuneracao_valor_reais"
+												name="valor_reais" inputmode="decimal" autocomplete="off"
+												placeholder="0,00" value="<?= esc($valorExibicao); ?>" required>
+										</div>
+
+										<div id="remuneracao_campos_horas" class="<?= $tipoAtual === 'H' ? '' : 'd-none'; ?>">
+											<div class="mb-3">
+												<label for="remuneracao_horas" class="form-label">Horas trabalhadas</label>
+												<input type="text" class="form-control" id="remuneracao_horas"
+													name="horas_trabalhadas" inputmode="numeric" autocomplete="off"
+													placeholder="160:30" value="<?= esc($horasExibicao); ?>">
+												<div class="form-text">Formato horas:minutos, por exemplo 160:30.</div>
+											</div>
+											<div class="mb-3">
+												<label for="remuneracao_arquivo" class="form-label">Arquivo de detalhamento</label>
+												<input type="file" class="form-control" id="remuneracao_arquivo" name="arquivo"
+													accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+												<div class="form-text">
+													PDF, JPG ou PNG, até 5&nbsp;MB.
+													<?php if (!empty($remuneracaoAtual['arquivo'])): ?>
+														Arquivo atual:
+														<a href="<?= esc(base_url('colaboradores/perfil/downloadRemuneracao/' . (int) $remuneracaoAtual['id']), 'attr'); ?>">
+															<?= esc($remuneracaoAtual['arquivo_nome'] ?: 'Baixar arquivo'); ?>
+														</a>
+														(envie outro para substituir).
+													<?php endif; ?>
+												</div>
+											</div>
+										</div>
+									</fieldset>
+									<?php if (!$remuneracaoBloqueada): ?>
+										<div class="text-end">
+											<button class="btn btn-primary" type="submit">
+												<?= $remuneracaoAtual === null ? 'Enviar remuneração do mês' : 'Atualizar remuneração do mês'; ?>
+											</button>
+										</div>
+									<?php endif; ?>
+								</form>
+							</div>
+						</div>
+
+						<div class="card mb-3">
+							<div class="card-body">
+								<h5 class="mb-3">Meses anteriores</h5>
+								<div class="table-responsive">
+									<table class="table table-striped mb-0">
+										<thead>
+											<tr>
+												<th scope="col">Mês</th>
+												<th scope="col">Tipo</th>
+												<th scope="col">Valor</th>
+												<th scope="col">Horas</th>
+												<th scope="col">Arquivo</th>
+												<th scope="col">Situação</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php if (empty($remuneracaoHistorico)): ?>
+												<tr>
+													<td colspan="6" class="text-center">Não há envios de meses anteriores.</td>
+												</tr>
+											<?php else: ?>
+												<?php foreach ($remuneracaoHistorico as $item): ?>
+													<tr>
+														<td><?= esc($formatarCompetencia((string) $item['competencia'])); ?></td>
+														<td><?= ($item['tipo'] ?? '') === 'F' ? 'Valor fixo' : 'Por horas'; ?></td>
+														<td>R$ <?= number_format((float) $item['valor_reais'], 2, ',', '.'); ?></td>
+														<td>
+															<?php if (($item['tipo'] ?? '') === 'H' && $item['horas_trabalhadas'] !== null && $item['horas_trabalhadas'] !== ''): ?>
+																<?= esc(decimal_para_duracao_hhmm($item['horas_trabalhadas'])); ?>
+															<?php else: ?>
+																—
+															<?php endif; ?>
+														</td>
+														<td>
+															<?php if (!empty($item['arquivo'])): ?>
+																<a href="<?= esc(base_url('colaboradores/perfil/downloadRemuneracao/' . (int) $item['id']), 'attr'); ?>">
+																	<?= esc($item['arquivo_nome'] ?: 'Baixar'); ?>
+																</a>
+															<?php else: ?>
+																—
+															<?php endif; ?>
+														</td>
+														<td>
+															<?php if (!empty($item['pagamentos_id'])): ?>
+																<span class="badge bg-success">Pago</span>
+															<?php else: ?>
+																<span class="badge bg-secondary">Aguardando pagamento</span>
+															<?php endif; ?>
+														</td>
+													</tr>
+												<?php endforeach; ?>
+											<?php endif; ?>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+					<?php endif; ?>
 
 					<div class="tab-pane fade" id="painel-perfil" role="tabpanel"
 						aria-labelledby="tab-perfil" tabindex="0">
@@ -799,6 +966,63 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 				}
 			});
 		});
+
+		function atualizarCamposRemuneracaoPorTipo() {
+			var porHoras = $('#remuneracao_tipo_horas').is(':checked');
+			$('#remuneracao_campos_horas').toggleClass('d-none', !porHoras);
+			$('#remuneracao_horas, #remuneracao_arquivo').prop('disabled', !porHoras);
+		}
+
+		if ($('#colaboradores_remuneracao').length) {
+			atualizarCamposRemuneracaoPorTipo();
+			$('#colaboradores_remuneracao input[name="tipo"]').on('change', atualizarCamposRemuneracaoPorTipo);
+
+			$('#remuneracao_horas').on('blur', function () {
+				var v = String($(this).val() || '').trim().replace(/[hH\s]/g, '').replace(/[.,]/g, ':');
+				if (/^\d{1,4}$/.test(v)) {
+					v = v + ':00';
+				} else if (/^(\d{1,4}):(\d)$/.test(v)) {
+					v = v.replace(/:(\d)$/, ':0$1');
+				}
+				$(this).val(v);
+			});
+
+			if (window.location.hash === '#painel-remuneracao') {
+				var tabRemuneracao = document.getElementById('tab-remuneracao');
+				if (tabRemuneracao && window.bootstrap && bootstrap.Tab) {
+					bootstrap.Tab.getOrCreateInstance(tabRemuneracao).show();
+				}
+			}
+
+			$('#colaboradores_remuneracao').on('submit', function (e) {
+				e.preventDefault();
+				$.ajax({
+					url: "<?php echo base_url('colaboradores/perfil/salvarRemuneracao'); ?>",
+					method: "POST",
+					data: appendCsrf(new FormData(this)),
+					processData: false,
+					contentType: false,
+					cache: false,
+					dataType: "json",
+					beforeSend: function () { $('#modal-loading').show(); },
+					complete: function () { $('#modal-loading').hide(); },
+					success: function (retorno) {
+						if (retorno.status == true) {
+							popMessage('Sucesso!', retorno.mensagem, TOAST_STATUS.SUCCESS);
+							window.location.hash = 'painel-remuneracao';
+							setTimeout(function () {
+								window.location.reload();
+							}, 800);
+						} else {
+							popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
+						}
+					},
+					error: function () {
+						popMessage('ATENÇÃO', 'Não foi possível salvar a remuneração. Recarregue a página e tente novamente.', TOAST_STATUS.DANGER);
+					}
+				});
+			});
+		}
 
 		$('.excluir').on('click', function (e) {
 			e.preventDefault();

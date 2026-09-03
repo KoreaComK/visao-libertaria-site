@@ -71,6 +71,8 @@ $routes->group('colaboradores', ['namespace' => 'App\Controllers\Colaboradores',
     $routes->post('perfil/removerAvatar', 'Perfil::removerAvatar', ['filter' => 'csrf']);
     $routes->post('perfil/trocarSenha', 'Perfil::trocarSenha', ['filter' => 'csrf']);
     $routes->post('perfil/marcarRecadosLidos', 'Perfil::marcarRecadosLidos', ['filter' => 'csrf']);
+    $routes->post('perfil/salvarRemuneracao', 'Perfil::salvarRemuneracao', ['filter' => 'csrf']);
+    $routes->get('perfil/downloadRemuneracao/(:num)', 'Perfil::downloadRemuneracao/$1');
     $routes->add('perfil/(:any)', 'Perfil::$1');
     $routes->add('artigos/(:any)', 'Artigos::$1');
     $routes->add('artigos/(:any)/(:any)', 'Artigos::$1/$2');

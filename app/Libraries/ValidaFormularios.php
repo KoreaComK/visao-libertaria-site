@@ -422,6 +422,46 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioRemuneracao($post)
+	{
+		$validation = \Config\Services::validation();
+		$rules = [
+			'tipo' => [
+				'label' => 'Tipo de remuneração',
+				'rules' => 'required|in_list[F,H]'
+			],
+			'valor_reais' => [
+				'label' => 'Valor a receber',
+				'rules' => 'required|decimal|greater_than[0]'
+			],
+		];
+		if (($post['tipo'] ?? '') === 'H') {
+			$rules['horas_trabalhadas'] = [
+				'label' => 'Horas trabalhadas',
+				'rules' => 'required|regex_match[/^\d{1,4}:[0-5]\d$/]',
+				'errors' => [
+					'regex_match' => 'Informe as horas no formato horas:minutos, por exemplo 160:30.',
+				],
+			];
+		}
+		$validation->setRules($rules);
+		$validation->run($post);
+		return $validation;
+	}
+
+	public function validaFormularioRemuneracaoArquivo()
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'arquivo' => [
+				'label' => 'Arquivo de detalhamento',
+				'rules' => 'uploaded[arquivo]|ext_in[arquivo,pdf,jpg,jpeg,png]|max_size[arquivo,5120]'
+			],
+		]);
+		$validation->run();
+		return $validation;
+	}
+
 	public function validaFormularioPaginasEstaticas($post,$id)
 	{
 		$validation = \Config\Services::validation();

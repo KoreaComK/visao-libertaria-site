@@ -45,6 +45,30 @@ class Perfil extends BaseController
 		$data['recados_tem_mais'] = count($notificacoes) === $recadosPorPagina;
 		$data['recados_por_pagina'] = $recadosPorPagina;
 
+		$data['eh_contratado'] = (($data['colaboradores']['contratado'] ?? 'N') === 'S');
+		$data['remuneracao_atual'] = null;
+		$data['remuneracao_historico'] = [];
+		$data['remuneracao_competencia'] = Time::now()->format('Y-m');
+		if ($data['eh_contratado']) {
+			$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();
+			$colaboradorId = (int) $session['id'];
+			$competencia = $data['remuneracao_competencia'];
+			$data['remuneracao_atual'] = $remuneracoesModel
+				->where('colaboradores_id', $colaboradorId)
+				->where('competencia', $competencia)
+				->first();
+			$historico = $remuneracoesModel
+				->where('colaboradores_id', $colaboradorId)
+				->orderBy('competencia', 'DESC')
+				->findAll();
+			$data['remuneracao_historico'] = array_values(array_filter(
+				$historico,
+				static function ($row) use ($competencia) {
+					return ($row['competencia'] ?? '') !== $competencia;
+				}
+			));
+		}
+
 		return view('colaboradores/perfil', $data);
 	}
 
@@ -243,6 +267,139 @@ class Perfil extends BaseController
 			->countAllResults();
 	}
 
+	public function salvarRemuneracao()
+	{
+		$retorno = new \App\Libraries\RetornoPadrao();
+
+		if (!$this->request->isAJAX()) {
+			return $retorno->retorno(false, 'Requisição inválida.', true);
+		}
+
+		$session = $this->session->get('colaboradores');
+		$colaboradoresModel = new \App\Models\ColaboradoresModel();
+		$colaborador = $colaboradoresModel->find($session['id']);
+		if (($colaborador['contratado'] ?? 'N') !== 'S') {
+			return $retorno->retorno(false, 'Apenas colaboradores contratados podem informar a remuneração.', true);
+		}
+
+		$competencia = Time::now()->format('Y-m');
+		$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();
+		$atual = $remuneracoesModel
+			->where('colaboradores_id', $session['id'])
+			->where('competencia', $competencia)
+			->first();
+
+		if ($atual !== null && !empty($atual['pagamentos_id'])) {
+			return $retorno->retorno(false, 'Esta remuneração já foi incluída em um pagamento e não pode ser alterada.', true);
+		}
+
+		$post = service('request')->getPost();
+		$tipo = $post['tipo'] ?? '';
+		$tipo = ($tipo === 'H' || $tipo === 'F') ? $tipo : '';
+		$post['tipo'] = $tipo;
+		$post['valor_reais'] = $this->normalizarDecimal($post['valor_reais'] ?? '');
+		if ($tipo === 'H') {
+			helper('duracao');
+			$post['horas_trabalhadas'] = duracao_hhmm_normalizar($post['horas_trabalhadas'] ?? '');
+		} else {
+			unset($post['horas_trabalhadas']);
+		}
+
+		$validaFormularios = new \App\Libraries\ValidaFormularios();
+		$valida = $validaFormularios->validaFormularioRemuneracao($post);
+		if (!empty($valida->getErrors())) {
+			return $retorno->retorno(false, $this->errosValidacao($valida), true);
+		}
+
+		if ($tipo === 'H' && duracao_hhmm_para_decimal($post['horas_trabalhadas']) === null) {
+			return $retorno->retorno(false, 'Informe um tempo de horas trabalhadas maior que 0:00.', true);
+		}
+
+		$arquivo = $this->request->getFile('arquivo');
+		$enviouArquivo = $arquivo !== null && $arquivo->getError() !== UPLOAD_ERR_NO_FILE && $arquivo->getName() !== '';
+
+		if ($tipo === 'H') {
+			$precisaArquivo = $atual === null || empty($atual['arquivo']);
+			if ($precisaArquivo && !$enviouArquivo) {
+				return $retorno->retorno(false, 'Envie o arquivo de detalhamento do serviço.', true);
+			}
+			if ($enviouArquivo) {
+				$validaArquivo = $validaFormularios->validaFormularioRemuneracaoArquivo();
+				if (!empty($validaArquivo->getErrors())) {
+					return $retorno->retorno(false, $this->errosValidacao($validaArquivo), true);
+				}
+			}
+		}
+
+		$agora = Time::now()->toDateTimeString();
+		$dados = [
+			'colaboradores_id' => (int) $session['id'],
+			'competencia' => $competencia,
+			'tipo' => $tipo,
+			'valor_reais' => $post['valor_reais'],
+			'horas_trabalhadas' => $tipo === 'H' ? duracao_hhmm_para_decimal($post['horas_trabalhadas']) : null,
+			'atualizado' => $agora,
+		];
+
+		if ($tipo === 'F') {
+			$dados['arquivo'] = null;
+			$dados['arquivo_nome'] = null;
+			if ($atual !== null && !empty($atual['arquivo'])) {
+				$this->excluirArquivoRemuneracao($atual['arquivo']);
+			}
+		}
+
+		if ($tipo === 'H' && $enviouArquivo) {
+			$salvo = $this->salvarArquivoRemuneracao($arquivo, (int) $session['id'], $competencia);
+			if ($salvo === null) {
+				return $retorno->retorno(false, 'Não foi possível salvar o arquivo. Tente novamente.', true);
+			}
+			if ($atual !== null && !empty($atual['arquivo'])) {
+				$this->excluirArquivoRemuneracao($atual['arquivo']);
+			}
+			$dados['arquivo'] = $salvo['arquivo'];
+			$dados['arquivo_nome'] = $salvo['arquivo_nome'];
+		}
+
+		if ($atual === null) {
+			$dados['criado'] = $agora;
+			$ok = $remuneracoesModel->insert($dados);
+		} else {
+			$ok = $remuneracoesModel->update((int) $atual['id'], $dados);
+		}
+
+		if (!$ok) {
+			return $retorno->retorno(false, 'Não foi possível salvar a remuneração. Tente novamente.', true);
+		}
+
+		$mensagem = $atual === null
+			? 'Remuneração do mês enviada com sucesso.'
+			: 'Remuneração do mês atualizada com sucesso.';
+		return $retorno->retorno(true, $mensagem, true);
+	}
+
+	public function downloadRemuneracao($id = null)
+	{
+		$id = (int) $id;
+		$session = $this->session->get('colaboradores');
+		$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();
+		$row = $remuneracoesModel->find($id);
+		if ($row === null || (int) $row['colaboradores_id'] !== (int) $session['id'] || empty($row['arquivo'])) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		$path = $this->caminhoArquivoRemuneracao($row['arquivo']);
+		if ($path === null) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		$nome = $row['arquivo_nome'] !== null && $row['arquivo_nome'] !== ''
+			? $row['arquivo_nome']
+			: $row['arquivo'];
+
+		return $this->response->download($path, null)->setFileName($nome);
+	}
+
 	public function fechadas($pagamentoId = NULL)
 	{
 		if ($pagamentoId == null) {
@@ -347,6 +504,61 @@ class Perfil extends BaseController
 	// 	->get()->getResultArray();
 	// 	return $pautas;
 	// }
+
+	private function normalizarDecimal($valor): string
+	{
+		$valor = trim((string) $valor);
+		$valor = str_replace(['R$', ' '], '', $valor);
+		if (str_contains($valor, ',')) {
+			$valor = str_replace('.', '', $valor);
+			$valor = str_replace(',', '.', $valor);
+		}
+		return $valor;
+	}
+
+	private function salvarArquivoRemuneracao($arquivo, int $colaboradorId, string $competencia): ?array
+	{
+		$nomeOriginal = $arquivo->getClientName();
+		$ext = strtolower((string) $arquivo->guessExtension());
+		if ($ext === '') {
+			$ext = strtolower((string) $arquivo->getClientExtension());
+		}
+		if (!in_array($ext, ['pdf', 'jpg', 'jpeg', 'png'], true) || !$arquivo->isValid() || $arquivo->hasMoved()) {
+			return null;
+		}
+
+		$dir = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'remuneracoes';
+		if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+			return null;
+		}
+
+		$nomeInterno = $colaboradorId . '_' . $competencia . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+		if (!$arquivo->move($dir, $nomeInterno, true)) {
+			return null;
+		}
+
+		return [
+			'arquivo' => $nomeInterno,
+			'arquivo_nome' => mb_substr((string) $nomeOriginal, 0, 255),
+		];
+	}
+
+	private function caminhoArquivoRemuneracao(string $arquivo): ?string
+	{
+		helper('remuneracao_arquivo');
+		return remuneracao_arquivo_caminho($arquivo);
+	}
+
+	private function excluirArquivoRemuneracao(?string $arquivo): void
+	{
+		if ($arquivo === null || $arquivo === '') {
+			return;
+		}
+		$path = $this->caminhoArquivoRemuneracao($arquivo);
+		if ($path !== null) {
+			@unlink($path);
+		}
+	}
 
 	private function excluirArquivoAvatar(int $colaboradorId): void
 	{

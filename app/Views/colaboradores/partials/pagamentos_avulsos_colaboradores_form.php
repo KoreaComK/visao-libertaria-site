@@ -1,6 +1,6 @@
 <div class="rounded-3 border bg-body-secondary p-3 mt-4" id="secao_pagamentos_avulsos">
 	<h2 class="h6 mb-2 text-muted">Pagamentos avulsos para colaboradores</h2>
-	<p class="small text-muted mb-3 mb-lg-2">Repasse extra por colaborador, além da divisão por pontos. Ao escolher um nome na busca, ele entra na tabela abaixo. Use o <strong>Valor do bitcoin em reais</strong> já preenchido na calculadora (modal). Preencha a <strong>Quantidade em reais</strong> do repasse; o valor em bitcoin é calculado automaticamente (não é gravado no banco além do BTC do repasse).</p>
+	<p class="small text-muted mb-3 mb-lg-2">Repasse extra por colaborador, além da divisão por pontos. Colaboradores contratados entram na lista com o valor informado na aba Remuneração do mês. Use o <strong>Valor do bitcoin em reais</strong> já preenchido na calculadora (modal). O valor em bitcoin é calculado automaticamente (não é gravado no banco além do BTC do repasse).</p>
 	<div class="row g-2">
 		<div class="col-12 col-lg-6 col-xl-5">
 			<label class="form-label small text-muted mb-1" for="avulso_busca_apelido">Apelido</label>
@@ -17,6 +17,7 @@
 			<thead class="table-light">
 				<tr>
 					<th scope="col">Colaborador</th>
+					<th scope="col">Remuneração</th>
 					<th scope="col">Valor do bitcoin em reais</th>
 					<th scope="col">Quantidade em reais</th>
 					<th scope="col">Valor do pagamento em bitcoin</th>

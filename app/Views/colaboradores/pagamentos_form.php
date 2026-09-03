@@ -385,6 +385,7 @@
 
 		(function () {
 			const URL_BUSCA = <?= json_encode(base_url('colaboradores/admin/financeiro/buscarColaboradores')) ?>;
+			const URL_DOWNLOAD_REMUNERACAO = <?= json_encode(base_url('colaboradores/admin/financeiro/downloadRemuneracao')) ?>;
 			let avulsosTimer = null;
 			window.pagamentosAvulsosRows = window.pagamentosAvulsosRows || [];
 
@@ -418,6 +419,33 @@
 				} else {
 					r.valor_bitcoin = 0;
 				}
+			}
+
+			function textoEnvioAvulso(r) {
+				if (r.tipo === 'F') {
+					return 'Valor fixo';
+				}
+				if (r.tipo === 'H') {
+					return r.horas_label ? ('Por horas · ' + r.horas_label) : 'Por horas';
+				}
+				return 'Não enviado';
+			}
+
+			function celulaRemuneracaoAvulso(r) {
+				const $cell = $('<td>');
+				$cell.append($('<div>').addClass('small').text(textoEnvioAvulso(r)));
+				if (r.tem_arquivo && r.remuneracao_id) {
+					const nome = (r.arquivo_nome || 'Baixar arquivo').toString();
+					$cell.append(
+						$('<a>', {
+							href: URL_DOWNLOAD_REMUNERACAO + '/' + r.remuneracao_id,
+							class: 'small',
+							target: '_blank',
+							rel: 'noopener noreferrer'
+						}).text(nome)
+					);
+				}
+				return $cell;
 			}
 
 			function textoBtcRepasse(n) {
@@ -454,7 +482,12 @@
 					apelido: ap,
 					valor_btc_brl: btcBrlModal,
 					quantidade_reais: 0,
-					valor_bitcoin: 0
+					valor_bitcoin: 0,
+					tipo: '',
+					horas_label: '',
+					remuneracao_id: 0,
+					tem_arquivo: false,
+					arquivo_nome: ''
 				});
 				$pv.find('#avulso_busca_apelido').val('');
 				renderAvulsosTable();
@@ -480,6 +513,7 @@
 					recalcAvulsoRow(r);
 					const $tr = $('<tr>').attr('data-idx', String(idx));
 					$tr.append($('<td>').text(r.apelido));
+					$tr.append(celulaRemuneracaoAvulso(r));
 					$tr.append($('<td>').append(
 						$('<input>', { type: 'text', class: 'form-control form-control-sm avulso-brl-btc', autocomplete: 'off', inputmode: 'decimal', placeholder: '0,00' })
 							.val(r.valor_btc_brl > 0 ? pagamentosFormatBrl(r.valor_btc_brl) : '')
@@ -526,8 +560,13 @@
 							colaboradores_id: id,
 							apelido: (c.apelido || '').toString(),
 							valor_btc_brl: vb,
-							quantidade_reais: 0,
-							valor_bitcoin: 0
+							quantidade_reais: parseFloat(c.quantidade_reais) || 0,
+							valor_bitcoin: 0,
+							tipo: (c.tipo || '').toString(),
+							horas_label: (c.horas_label || '').toString(),
+							remuneracao_id: parseInt(c.remuneracao_id, 10) || 0,
+							tem_arquivo: !!c.tem_arquivo,
+							arquivo_nome: (c.arquivo_nome || '').toString()
 						});
 					});
 				}

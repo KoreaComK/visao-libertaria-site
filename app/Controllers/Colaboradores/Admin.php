@@ -697,13 +697,17 @@ class Admin extends BaseController
 		return view('template/templateHistoricosList', $data);
 	}
 
-	public function financeiro($acao = null)
+	public function financeiro($acao = null, $id = null)
 	{
 		$pagamentosModel = new \App\Models\PagamentosModel();
 		$data = array();
 
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('8');
+
+		if ($acao === 'downloadRemuneracao') {
+			return $this->baixarArquivoRemuneracao((int) $id);
+		}
 
 		if ($acao == 'pagar') {
 			$data['titulo'] = 'Pagar artigos publicados';
@@ -1260,7 +1264,7 @@ class Admin extends BaseController
 	/**
 	 * Colaboradores contratados (contratado = S) para pré-lista em Pagamentos avulsos (novo pagamento).
 	 *
-	 * @return list<array{id: int, apelido: string}>
+	 * @return list<array<string, mixed>>
 	 */
 	private function obterColaboradoresContratadosParaPrelistaAvulsos(): array
 	{
@@ -1279,6 +1283,37 @@ class Admin extends BaseController
 				'apelido' => (string) ($r['apelido'] ?? ''),
 			];
 		}
+
+		$ids = array_column($out, 'id');
+		$porColaborador = [];
+		if ($ids !== []) {
+			$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();
+			$competencia = Time::now()->format('Y-m');
+			$remuneracoes = $remuneracoesModel
+				->whereIn('colaboradores_id', $ids)
+				->where('competencia', $competencia)
+				->findAll();
+			foreach ($remuneracoes as $rem) {
+				$porColaborador[(int) $rem['colaboradores_id']] = $rem;
+			}
+		}
+
+		helper('duracao');
+		foreach ($out as &$c) {
+			$rem = $porColaborador[$c['id']] ?? null;
+			$tipo = is_array($rem) ? (string) ($rem['tipo'] ?? '') : '';
+			$horas = (is_array($rem) && $tipo === 'H' && $rem['horas_trabalhadas'] !== null && $rem['horas_trabalhadas'] !== '')
+				? decimal_para_duracao_hhmm($rem['horas_trabalhadas'])
+				: '';
+			$c['quantidade_reais'] = is_array($rem) ? (float) ($rem['valor_reais'] ?? 0) : 0.0;
+			$c['tipo'] = $tipo;
+			$c['horas_label'] = $horas;
+			$c['remuneracao_id'] = is_array($rem) ? (int) ($rem['id'] ?? 0) : 0;
+			$c['tem_arquivo'] = is_array($rem) && !empty($rem['arquivo']);
+			$c['arquivo_nome'] = is_array($rem) ? (string) ($rem['arquivo_nome'] ?? '') : '';
+		}
+		unset($c);
+
 		return $out;
 	}
 
@@ -1468,6 +1503,16 @@ class Admin extends BaseController
 					'Insert em pagamentos_avulsos retornou false (pagamentos_id=' . $pagamentosId . ', colaborador ' . $cid . '): ' . $msg
 				);
 			}
+
+			$competencia = Time::now()->format('Y-m');
+			$db->table('colaboradores_remuneracoes')
+				->where('colaboradores_id', $cid)
+				->where('competencia', $competencia)
+				->where('pagamentos_id', null)
+				->update([
+					'pagamentos_id' => $pagamentosId,
+					'atualizado'    => $agora,
+				]);
 		}
 	}
 
@@ -1715,5 +1760,33 @@ class Admin extends BaseController
 		}
 
 		return (bool) $db->transComplete();
+	}
+
+	private function baixarArquivoRemuneracao(int $id)
+	{
+		$verifica = new verificaPermissao();
+		$verifica->PermiteAcesso('8');
+
+		if ($id < 1) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();
+		$row = $remuneracoesModel->find($id);
+		if ($row === null || empty($row['arquivo'])) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		helper('remuneracao_arquivo');
+		$path = remuneracao_arquivo_caminho($row['arquivo']);
+		if ($path === null) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		$nome = $row['arquivo_nome'] !== null && $row['arquivo_nome'] !== ''
+			? $row['arquivo_nome']
+			: $row['arquivo'];
+
+		return $this->response->download($path, null)->setFileName($nome);
 	}
 }

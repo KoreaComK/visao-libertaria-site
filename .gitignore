@@ -59,6 +59,8 @@ writable/session/*
 
 writable/uploads/*
 !writable/uploads/index.html
+writable/uploads/remuneracoes/*
+!writable/uploads/remuneracoes/index.html
 
 writable/debugbar/*
 
