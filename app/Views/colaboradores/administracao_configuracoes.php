@@ -104,7 +104,7 @@
 						<a class="list-group-item list-group-item-action config-section-link py-2 px-3" href="#section-artigos"
 							data-bs-target="#collapseArtigos" role="button">Artigos</a>
 						<a class="list-group-item list-group-item-action config-section-link py-2 px-3"
-							href="#section-listagem" data-bs-target="#collapseListagem" role="button">Listagens e Anti IA</a>
+							href="#section-listagem" data-bs-target="#collapseListagem" role="button">Thumbs e Anti IA</a>
 						<a class="list-group-item list-group-item-action config-section-link py-2 px-3" href="#section-contato"
 							data-bs-target="#collapseContato" role="button">Contato</a>
 						<a class="list-group-item list-group-item-action config-section-link py-2 px-3"
@@ -571,7 +571,7 @@
 								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 									data-bs-target="#collapseListagem" aria-expanded="false" aria-controls="collapseListagem"
 									id="acc-btn-listagem">
-									Listagens e Anti IA
+									Thumbs e Anti IA
 								</button>
 							</h2>
 							<div id="collapseListagem" class="accordion-collapse collapse"
@@ -581,18 +581,8 @@
 										<div class="col-lg-5">
 											<div class="card border h-100">
 												<div class="card-body">
-													<h3 class="h6 mb-3">Listagens do site</h3>
+													<h3 class="h6 mb-3">Thumbs de pautas</h3>
 													<form class="col-12" novalidate="yes" method="post" id="listagem_form">
-														<div class="mb-3">
-															<label class="form-label" for="site_quantidade_listagem">Itens por
-																página</label>
-															<input type="number" class="form-control form-control-sm"
-																id="site_quantidade_listagem" name="site_quantidade_listagem" required min="1"
-																placeholder="Ex.: 12"
-																value="<?= (isset($dados['site_quantidade_listagem'])) ? ($dados['site_quantidade_listagem']) : (''); ?>">
-															<small class="form-text text-muted">Quantidade padrão de itens nas listagens
-																públicas (artigos, vídeos, etc.).</small>
-														</div>
 														<div class="mb-3">
 															<label class="form-label" for="pautas_imagens_base_url">URL do site origem das thumbs de pautas</label>
 															<input type="url" class="form-control form-control-sm"
@@ -614,7 +604,7 @@
 														<div class="d-sm-flex justify-content-end">
 															<button type="button"
 																class="btn btn-sm btn-primary salvar-config-listagem">Salvar
-																listagens</button>
+																thumbs</button>
 														</div>
 													</form>
 												</div>

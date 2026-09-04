@@ -183,8 +183,7 @@ class Pautas extends BaseController
 		$session = \Config\Services::session();
 		$session->start();
 		if (!$session->has('colaboradores') || $session->get('colaboradores')['id'] === NULL) {
-			header("location: " . site_url('site/pauta/' . $idPautas));
-			die();
+			return redirect()->to(site_url('site/noticias'));
 		}
 		$verifica = new verificaPermissao();
 		$verifica->PermiteAcesso('1');
@@ -405,11 +404,9 @@ class Pautas extends BaseController
 					$pautas->aplicarFiltroPorCategorias($ids);
 				}
 
-				$configuracaoModel = new \App\Models\ConfiguracaoModel();
-				$config = array();
-				$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+				$porPagina = 36;
 				$data['pautasList'] = [
-					'pautas' => $pautas->paginate($config['site_quantidade_listagem'], 'pautas'),
+					'pautas' => $pautas->paginate($porPagina, 'pautas'),
 					'pager' => $pautas->pager
 				];
 			}
@@ -484,9 +481,7 @@ class Pautas extends BaseController
 
 		$pautasFechadasModel = new \App\Models\PautasFechadasModel();
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 		if ($this->request->getMethod() === 'GET') {
 			$get = $this->request->getGet();
 			$fechamento = isset($get['fechamento']) ? trim((string) $get['fechamento']) : '';
@@ -498,7 +493,7 @@ class Pautas extends BaseController
 				->orderBy('criado', 'DESC');
 
 			$data['pautasList'] = [
-				'pautas' => $pautasFechadasModel->paginate($config['site_quantidade_listagem'], 'pautas'),
+				'pautas' => $pautasFechadasModel->paginate($porPagina, 'pautas'),
 				'pager' => $pautasFechadasModel->pager,
 				'total' => (int) $pautasFechadasModel->pager->getTotal('pautas'),
 			];

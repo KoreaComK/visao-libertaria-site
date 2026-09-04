@@ -292,68 +292,6 @@ use CodeIgniter\I18n\Time;
 			</div>
 		</div>
 
-		<div class="col-12 col-lg-6 order-3">
-			<!-- Popular blog START -->
-			<div class="card border h-100">
-				<!-- Card header -->
-				<div class="card-header border-bottom p-3">
-					<h5 class="card-header-title mb-0">Últimos artigos escritos deste mês</h5>
-				</div>
-
-				<!-- Card body START -->
-				<div class="card-body p-3">
-
-					<div class="row">
-						<?php if (!empty($artigos['lista']) && $artigos['lista'] !== NULL): ?>
-							<?php foreach ($artigos['lista'] as $chave => $artigo): ?>
-								<?php if ($chave < 4): ?>
-									<?php $artigo['class-img'] = 'd-none'; ?>
-									<?php $artigo['class-div'] = 'col-12'; ?>
-									<?php $artigo['abrir_nova_aba'] = true; ?>
-									<?= view_cell('\App\Libraries\Cards::cardsHorizontais', $artigo); ?>
-								<?php endif; ?>
-							<?php endforeach; ?>
-						<?php else: ?>
-							<div class="text-center">Artigos não encontrados.</div>
-						<?php endif; ?>
-
-					</div>
-				</div>
-			</div>
-			<!-- Popular blog END -->
-		</div>
-
-		<div class="col-12 col-lg-6 order-3">
-			<!-- Popular blog START -->
-			<div class="card border h-100">
-				<!-- Card header -->
-				<div class="card-header border-bottom p-3">
-					<h5 class="card-header-title mb-0">Últimas pautas cadastradas deste mês</h5>
-				</div>
-
-				<!-- Card body START -->
-				<div class="card-body p-3">
-
-					<div class="row">
-						<?php if (!empty($pautas['lista']) && $pautas['lista'] !== NULL): ?>
-							<?php foreach ($pautas['lista'] as $chave => $pauta): ?>
-								<?php if ($chave < 4): ?>
-									<?php $pauta['class-img'] = 'd-none'; ?>
-									<?php $pauta['class-div'] = 'col-12'; ?>
-									<?php $pauta['abrir_nova_aba'] = true; ?>
-									<?= view_cell('\App\Libraries\Cards::cardsHorizontais', $pauta); ?>
-								<?php endif; ?>
-							<?php endforeach; ?>
-						<?php else: ?>
-							<div class="text-center">Pautas não encontradas.</div>
-						<?php endif; ?>
-
-					</div>
-				</div>
-			</div>
-			<!-- Popular blog END -->
-		</div>
-
 		<div class="col-12 col-lg-6 order-1">
 			<div class="card border h-100">
 				<div class="card-body">

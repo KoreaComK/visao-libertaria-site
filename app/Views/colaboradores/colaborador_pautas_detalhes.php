@@ -18,13 +18,6 @@
 			</div>
 			<div class="position-relative mb-3">
 				<div class="pt-3 pb-3">
-					<!-- <div class="mb-3">
-							<?php //foreach($artigo['categorias'] as $categoria): ?>
-								<span class="badge bg-primary m-1 p-1">
-									<a href="<? //base_url() . 'site/artigos/'.$categoria['id']; ?>"><? //$categoria['nome']; ?></a>
-								</span>
-							<?php //endforeach; ?>
-						</div> -->
 					<div>
 						<div><?= str_replace("\n", '<br/>', $pauta['texto']); ?></div>
 					</div>

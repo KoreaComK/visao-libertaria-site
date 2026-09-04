@@ -290,10 +290,7 @@ class Admin extends BaseController
 
 	public function contatosList()
 	{
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 36;
 
 		$this->verificaPermissao->PermiteAcesso('9');
 		$contatosModel = new \App\Models\ContatosModel();
@@ -314,7 +311,7 @@ class Admin extends BaseController
 
 			$contatosModel->orderBy('contatos.criado', 'DESC');
 
-			$contatos = $contatosModel->paginate($config['site_quantidade_listagem'], 'contatos');
+			$contatos = $contatosModel->paginate($porPagina, 'contatos');
 			$pager = $contatosModel->pager;
 			$totalRegistros = is_array($contatos) ? count($contatos) : 0;
 			if ($pager !== null && method_exists($pager, 'getTotal')) {
@@ -465,14 +462,10 @@ class Admin extends BaseController
 			$time_atual = new Time('-30 days');
 			$time_antigo = new Time('-60 days');
 			$artigosModel = new \App\Models\ArtigosModel();
-
-			$artigosModel->select('id AS id, imagem AS imagem, url_friendly AS url, titulo AS titulo, publicado AS publicacao, \'artigo\' AS tipo_conteudo');
 			$artigosModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
 			$artigosModel->where("escrito_colaboradores_id", $idColaboradores);
 			$artigosModel->withDeleted();
-			$artigos = $artigosModel->get()->getResultArray();
-			$data['artigos']['atual'] = count($artigos);
-			$data['artigos']['lista'] = $artigos;
+			$data['artigos']['atual'] = $artigosModel->countAllResults();
 
 			$artigosModel = new \App\Models\ArtigosModel();
 			$artigosModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
@@ -525,13 +518,10 @@ class Admin extends BaseController
 			$data['artigos']['publicados_diferenca'] = $data['artigos']['publicados_atual'] - $data['artigos']['publicados_antigo'];
 
 			$pautasModel = new \App\Models\PautasModel();
-			$pautasModel->select('id AS id, imagem AS imagem, link AS url, titulo AS titulo, criado AS publicacao, \'pauta\' AS tipo_conteudo');
 			$pautasModel->where("criado >= '" . $time_atual->toDateTimeString() . "'");
 			$pautasModel->where("colaboradores_id", $idColaboradores);
 			$pautasModel->withDeleted();
-			$pautas = $pautasModel->get()->getResultArray();
-			$data['pautas']['atual'] = count($pautas);
-			$data['pautas']['lista'] = $pautas;
+			$data['pautas']['atual'] = $pautasModel->countAllResults();
 
 			$pautasModel = new \App\Models\PautasModel();
 			$pautasModel->where("criado >= '" . $time_antigo->toDateTimeString() . "'");
@@ -657,17 +647,14 @@ class Admin extends BaseController
 
 	public function permissoesList()
 	{
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 
 		$this->verificaPermissao->PermiteAcesso('9');
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$colaboradores = $colaboradoresModel->getTodosColaboradores($get['apelido'], $get['email'], $get['atribuicao'], $get['status']);
-			$colaboradoresPaginados = $colaboradores->paginate($config['site_quantidade_listagem'], 'colaboradores');
+			$colaboradoresPaginados = $colaboradores->paginate($porPagina, 'colaboradores');
 			$data['colaboradoresList'] = [
 				'colaboradores' => $colaboradoresPaginados,
 				'pager' => $colaboradores->pager,
@@ -681,16 +668,14 @@ class Admin extends BaseController
 	{
 		$this->verificaPermissao->PermiteAcesso('9');
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 
 		$colaboradoresHistoricosModel = new \App\Models\ColaboradoresHistoricosModel();
 		if ($this->request->getMethod() === 'GET') {
 			$get = service('request')->getGet();
 			$colaboradoresHistoricos = $colaboradoresHistoricosModel->where('colaboradores_id', $get['apelido'])->orderBy('criado', 'DESC');
 			$data['colaboradoresHistoricosList'] = [
-				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate($config['site_quantidade_listagem'], 'historico'),
+				'colaboradoresHistoricos' => $colaboradoresHistoricos->paginate($porPagina, 'historico'),
 				'pager' => $colaboradoresHistoricos->pager
 			];
 		}
@@ -809,11 +794,9 @@ class Admin extends BaseController
 		$hashTransacao = $get['hash_transacao'] ?? '';
 		$pagamentos = $pagamentosModel->getPagamentos($titulo, $quantidadeBitcoinMin, $quantidadeBitcoinMax, $hashTransacao);
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 12;
 		$data['pagamentosList'] = [
-			'pagamentos' => $pagamentos->paginate($config['site_quantidade_listagem'], 'pagamentos'),
+			'pagamentos' => $pagamentos->paginate($porPagina, 'pagamentos'),
 			'pager' => $pagamentos->pager
 		];
 		return view('template/templatePagamentosList', $data);
@@ -856,17 +839,14 @@ class Admin extends BaseController
 
 	public function estaticasList()
 	{
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 12;
 
 		$this->verificaPermissao->PermiteAcesso('7');
 		$paginasEstaticasModel = new \App\Models\PaginasEstaticasModel();
 		$paginasEstaticasModel->where('criado IS NOT NULL');
 		if ($this->request->getMethod() === 'GET') {
 			$data['estaticasList'] = [
-				'estaticas' => $paginasEstaticasModel->paginate($config['site_quantidade_listagem'], 'estaticas'),
+				'estaticas' => $paginasEstaticasModel->paginate($porPagina, 'estaticas'),
 				'pager' => $paginasEstaticasModel->pager
 			];
 		}
@@ -954,8 +934,7 @@ class Admin extends BaseController
 	{
 		$this->verificaPermissao->PermiteAcesso('7');
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$porPagina = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 
 		$categoriasModel = new \App\Models\CategoriasModel();
 		$get = $this->request->getGet();

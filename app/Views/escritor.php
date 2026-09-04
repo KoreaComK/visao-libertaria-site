@@ -1,5 +1,9 @@
 <?= $this->extend('layouts/main'); ?>
 
+<?= $this->section('styles'); ?>
+	<?= $this->include('partials/glightbox_styles'); ?>
+<?= $this->endSection(); ?>
+
 <?= $this->section('content'); ?>
 
 <div class="container py-4">
@@ -69,7 +73,6 @@
 				<div class="col-lg-5">
 					<h3 class="h6 text-dark mb-3">Veja também</h3>
 					<div class="d-flex flex-wrap gap-2">
-						<a href="<?= esc(site_url('site/artigos'), 'attr'); ?>" class="btn btn-sm btn-outline-secondary">Todos os artigos</a>
 						<a href="<?= esc(site_url('site/colaborador/' . rawurlencode($colaborador['apelido'])), 'attr'); ?>" class="btn btn-sm btn-outline-secondary">Perfil de colaborador</a>
 					</div>
 					<p class="small text-body-secondary mt-3 mb-0">O perfil de colaborador mostra <span class="text-dark fw-semibold">pautas</span> reservadas no site.</p>
@@ -174,4 +177,8 @@
 	})();
 </script>
 
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
+	<?= $this->include('partials/glightbox_scripts'); ?>
 <?= $this->endSection(); ?>

@@ -358,12 +358,6 @@
 					<div class="row">
 						<div class="col-6">
 							<ul class="nav flex-column">
-								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/artigos'); ?>">Artigos</a>
-								</li>
-							</ul>
-						</div>
-						<div class="col-6">
-							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
 								</li>
 							</ul>
@@ -388,23 +382,6 @@
 						<?php endif; ?>
 					</div>
 				</div>
-
-				<!-- 
-				<div class="col-sm-6 col-lg-3 mb-4">
-					<h5 class="mb-4">Browse by Tag</h5>
-					<ul class="list-inline">
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Travel</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Business</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Tech</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Gadgets</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Lifestyle</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-primary-soft">Vaccine</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-warning-soft">Marketing</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-success-soft">Sports</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-danger-soft">Covid-19</a></li>
-						<li class="list-inline-item"><a href="#" class="btn btn-sm btn-info-soft">Politics</a></li>
-					</ul>
-				</div> -->
 
 				<!-- Footer Widget -->
 				<div class="col-sm-12 col-lg-5 mb-4">

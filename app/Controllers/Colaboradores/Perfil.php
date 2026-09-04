@@ -178,11 +178,6 @@ class Perfil extends BaseController
 		return $retorno->retorno(false, 'Houve um erro ao alterar sua senha, entre em contato com o suporte.', true);
 	}
 
-	public function notificacoes()
-	{
-		return redirect()->to(site_url('colaboradores/perfil'));
-	}
-
 	public function marcarRecadosLidos()
 	{
 		$retorno = new \App\Libraries\RetornoPadrao();

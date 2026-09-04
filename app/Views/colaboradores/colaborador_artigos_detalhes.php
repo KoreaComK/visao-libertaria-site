@@ -20,13 +20,6 @@
 			<h1 class="display-5 mb-3"><?= esc($artigo['titulo']); ?></h1>
 			<div class="position-relative mb-2">
 				<div class="py-2">
-					<!-- <div class="mb-3">
-							<?php //foreach($artigo['categorias'] as $categoria): ?>
-								<span class="badge bg-primary m-1 p-1">
-									<a href="<? //base_url() . 'site/artigos/'.$categoria['id']; ?>"><? //$categoria['nome']; ?></a>
-								</span>
-							<?php //endforeach; ?>
-						</div> -->
 					<div>
 						<div><?= $artigo['texto_producao'] ?? ''; ?></div>
 						<h4 class="mb-3">Referências:</h4>

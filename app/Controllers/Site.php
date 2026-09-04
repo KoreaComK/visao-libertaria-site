@@ -111,8 +111,7 @@ class Site extends BaseController
 		$pesquisa    = (isset($get['pesquisa']) && $get['pesquisa'] !== '') ? $get['pesquisa'] : null;
 		$pautas       = $pautasModel->getPautas(false, false, false, $pesquisa);
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$perPage           = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$perPage = 12;
 
 		$data['pautasList'] = [
 			'pautas' => $pautas->paginate($perPage, 'noticias'),
@@ -132,6 +131,7 @@ class Site extends BaseController
 			return view('template/templatePautasListSite', $data);
 		}
 
+		$configuracaoModel = new \App\Models\ConfiguracaoModel();
 		$data['config'] = [
 			'pauta_tamanho_maximo'   => $configuracaoModel->find('pauta_tamanho_maximo')['config_valor'],
 			'pauta_tamanho_minimo'   => $configuracaoModel->find('pauta_tamanho_minimo')['config_valor'],
@@ -359,64 +359,6 @@ class Site extends BaseController
 
 
 
-	/*LISTAGEM DE ARTIGOS*/
-	public function artigos($id_categoria = null): string
-	{
-		$data = array();
-
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
-
-		$artigosModel = new \App\Models\ArtigosModel();
-		$artigosModel->select('artigos.id AS id, imagem AS imagem, artigos.link_video_youtube AS link_video_youtube, url_friendly AS url, titulo AS titulo, B.apelido AS autor, C.apelido AS revisor, D.apelido AS narrador, E.apelido AS produtor, publicado AS publicacao, gancho AS texticulo,\'artigo\' AS tipo_conteudo');
-		$artigosModel->join('colaboradores B', 'B.id = artigos.escrito_colaboradores_id');
-		$artigosModel->join('colaboradores C', 'C.id = artigos.revisado_colaboradores_id', 'left');
-		$artigosModel->join('colaboradores D', 'D.id = artigos.narrado_colaboradores_id', 'left');
-		$artigosModel->join('colaboradores E', 'E.id = artigos.produzido_colaboradores_id', 'left');
-		$artigosModel->whereIn('fase_producao_id', array(6, 7));
-		$artigosModel->orderBy('publicado', 'DESC');
-
-		$data['idCategoriaAtual'] = $id_categoria;
-		$data['nomeCategoriaAtual'] = null;
-
-		$data['artigosList'] = [
-			'artigos' => $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos'),
-			'pager' => $artigosModel->pager
-		];
-
-		return view('artigos', $data);
-	}
-
-	/*DETALHE DA PAUTA*/
-	public function pauta($idPauta = null)
-	{
-		if ($idPauta === null) {
-			return redirect()->to(base_url() . 'site');
-		}
-
-		$data = array();
-
-		$pautasModel = new \App\Models\PautasModel();
-		$colaboradoresModel = new \App\Models\ColaboradoresModel();
-
-		$pauta = $pautasModel->find($idPauta);
-
-		if ($pauta !== null) {
-			$data['pauta'] = $pauta;
-
-			$data['pauta']['colaborador'] = $colaboradoresModel->find($pauta['colaboradores_id']);
-
-			$data['meta'] = array();
-			$data['meta']['title'] = $data['pauta']['titulo'];
-			$data['meta']['image'] = $data['pauta']['imagem'];
-			$data['meta']['description'] = addslashes($data['pauta']['texto']);
-
-			return view('pauta', $data);
-		} else {
-			return redirect()->to(base_url() . 'site');
-		}
-	}
 
 	/* CADASTRO DO USUÁRIO */
 	public function cadastrar()
@@ -866,9 +808,7 @@ class Site extends BaseController
 			$papel = 'escrito';
 		}
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 12;
 
 		$artigosModel = new \App\Models\ArtigosModel();
 		$artigosModel->select('artigos.id AS id, imagem AS imagem, artigos.link_video_youtube AS link_video_youtube, url_friendly AS url, titulo AS titulo, B.apelido AS autor, C.apelido AS revisor, D.apelido AS narrador, E.apelido AS produtor, publicado AS publicacao, gancho AS texticulo, \'artigo\' AS tipo_conteudo');
@@ -899,7 +839,7 @@ class Site extends BaseController
 		$artigos = $artigosModel->orderBy('publicado', 'DESC');
 		if ($this->request->getMethod() === 'GET') {
 			$data['listas'] = [
-				'lista' => $artigos->paginate($config['site_quantidade_listagem'], 'lista'),
+				'lista' => $artigos->paginate($porPagina, 'lista'),
 				'pager' => $artigos->pager
 			];
 		}
@@ -907,7 +847,7 @@ class Site extends BaseController
 		$data['classeListaCSS'] = 'listagem-escritor';
 		$data['omitPagerAjaxDelegado'] = true;
 
-		return view_cell('\App\Libraries\Listas::listasVerticaisSimples', $data);
+		return view('components/listas-verticais-simples', $data);
 	}
 
 	public function colaborador($apelido = NULL)
@@ -977,9 +917,7 @@ class Site extends BaseController
 		}
 		$colaborador = $colaborador[0];
 
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 12;
 
 		$pautasModel = new \App\Models\PautasModel();
 		$pautasModel->select('pautas.id AS id, imagem AS imagem, link AS url, titulo AS titulo, apelido AS autor, reservado AS publicacao, texto AS texticulo, \'pauta\' AS tipo_conteudo');
@@ -987,13 +925,13 @@ class Site extends BaseController
 		$pautas = $pautasModel->where('colaboradores_id', $colaborador['id'])->where('reservado IS NOT NULL')->where('tag_fechamento IS NOT NULL')->withDeleted()->orderBy('reservado', 'DESC');
 		if ($this->request->getMethod() === 'GET') {
 			$data['listas'] = [
-				'lista' => $pautas->paginate($config['site_quantidade_listagem'], 'lista'),
+				'lista' => $pautas->paginate($porPagina, 'lista'),
 				'pager' => $pautas->pager
 			];
 		}
 		$data['urlComponente'] = '\App\Libraries\Cards::cardsVerticaisSimples';
 		$data['classeListaCSS'] = 'listagem-colaborador';
-		return view_cell('\App\Libraries\Listas::listasVerticaisSimples', $data);
+		return view('components/listas-verticais-simples', $data);
 	}
 
 	public function links(): string
@@ -1246,11 +1184,6 @@ class Site extends BaseController
 		}
 
 		return false;
-	}
-
-	public function calculadoras()
-	{
-		return view('calculadoras');
 	}
 
 }

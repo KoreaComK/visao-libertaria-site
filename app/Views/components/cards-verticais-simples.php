@@ -13,20 +13,28 @@ publicacao, texticulo, link_video_youtube, tipo_conteudo
 */
 
 helper('_formata_video');
+helper('pauta_imagem');
 
 $tipo = $dados['tipo_conteudo'] ?? 'artigo';
-$href = $tipo === 'artigo'
-	? site_url('colaboradores/artigos/detalhamento/' . rawurlencode((string) ($dados['id'] ?? '')))
-	: base_url('colaboradores/pautas/detalhamento/' . ($dados['id'] ?? ''));
-
+$ytIdLista = null;
 $imagemBruta = trim((string) ($dados['imagem'] ?? ''));
 $imagemSrc = $imagemBruta !== '' ? $imagemBruta : base_url('public/assets/imagem-default.png');
+$abrirYoutube = false;
+$href = '';
+$linkClass = '';
 
 if ($tipo === 'artigo') {
 	$ytIdLista = extrair_id_video_youtube($dados['link_video_youtube'] ?? null);
 	if ($ytIdLista !== null) {
 		$imagemSrc = cria_url_thumb($ytIdLista);
+		$href = cria_link_watch($ytIdLista);
+	} else {
+		$href = (string) ($dados['link_video_youtube'] ?? '#');
 	}
+	$linkClass = 'gen-video-popup';
+	$abrirYoutube = true;
+} else {
+	$imagemSrc = url_imagem_pauta($dados['id'] ?? '');
 }
 
 $dataPublicacao = '';
@@ -67,17 +75,34 @@ if ($tipo === 'artigo') {
 
 <div class="vl-card-vertical-col col-sm-6 col-lg-3">
 	<div class="vl-card-vertical card h-100 border-0 shadow-sm rounded-3 overflow-hidden w-100">
-		<div class="vl-card-vertical-thumb rounded-top-3">
-			<a href="<?= esc($href, 'attr'); ?>"
-				class="vl-card-vertical-thumb-link text-decoration-none">
-				<img class="vl-card-vertical-thumb-img" src="<?= esc($imagemSrc, 'attr'); ?>"
-					alt="<?= esc($titulo, 'attr'); ?>"
-					loading="lazy">
-			</a>
+		<div class="vl-card-vertical-thumb rounded-top-3 position-relative">
+			<?php if ($abrirYoutube): ?>
+				<a href="<?= esc($href, 'attr'); ?>"
+					class="vl-card-vertical-thumb-link text-decoration-none <?= esc($linkClass, 'attr'); ?>"
+					aria-label="Assistir vídeo no YouTube">
+					<img class="vl-card-vertical-thumb-img" src="<?= esc($imagemSrc, 'attr'); ?>"
+						alt="<?= esc($titulo, 'attr'); ?>"
+						loading="lazy">
+					<span class="vl-card-vertical-play position-absolute top-50 start-50 translate-middle text-white" aria-hidden="true">
+						<i class="bi bi-play-circle-fill" style="font-size: 2.75rem; opacity: 0.92; filter: drop-shadow(0 2px 6px rgba(0,0,0,.45));"></i>
+					</span>
+				</a>
+			<?php else: ?>
+				<div class="vl-card-vertical-thumb-link">
+					<img class="vl-card-vertical-thumb-img" src="<?= esc($imagemSrc, 'attr'); ?>"
+						alt="<?= esc($titulo, 'attr'); ?>"
+						loading="lazy">
+				</div>
+			<?php endif; ?>
 		</div>
 		<div class="card-body d-flex flex-column p-3">
 			<h2 class="h6 card-title lh-sm mb-2">
-				<a href="<?= esc($href, 'attr'); ?>" class="link-dark text-decoration-none fw-bold"><?= esc($titulo); ?></a>
+				<?php if ($abrirYoutube): ?>
+					<a href="<?= esc($href, 'attr'); ?>"
+						class="link-dark text-decoration-none fw-bold <?= esc($linkClass, 'attr'); ?>"><?= esc($titulo); ?></a>
+				<?php else: ?>
+					<span class="text-dark fw-bold"><?= esc($titulo); ?></span>
+				<?php endif; ?>
 			</h2>
 			<p class="card-text small text-body-secondary mb-3 flex-grow-1"
 				style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;">

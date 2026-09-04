@@ -4,11 +4,6 @@ namespace App\Libraries;
 
 class Cards
 {
-	public function cardsHorizontais($conteudo)
-	{
-		return view('components/cards-horizontais',array('dados'=>$conteudo));
-	}
-
 	public function cardsVerticaisSimples($conteudo) {
 		return view('components/cards-verticais-simples',array('dados'=>$conteudo));
 	}

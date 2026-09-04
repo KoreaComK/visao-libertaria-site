@@ -426,9 +426,7 @@ class Artigos extends BaseController
 
 		if ($post['tipo'] == 'finalizado') {
 
-			$configuracaoModel = new \App\Models\ConfiguracaoModel();
-			$config = array();
-			$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+			$porPagina = 24;
 
 			$incluirDescartados = isset($post['incluir_descartados']) && $post['incluir_descartados'] === '1';
 
@@ -447,7 +445,7 @@ class Artigos extends BaseController
 			}
 
 			$artigosModel->orderBy('artigos.atualizado', 'DESC');
-			$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
+			$artigos = $artigosModel->paginate($porPagina, 'artigos');
 			if (!empty($artigos)) {
 				foreach ($artigos as $chave => $artigo) {
 					if (!empty($artigo['descartado'])) {
@@ -799,9 +797,7 @@ class Artigos extends BaseController
 
 	public function artigosList()
 	{
-		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 		$data = array();
 
 		$this->verificaPermissao->PermiteAcesso('2');
@@ -862,7 +858,7 @@ class Artigos extends BaseController
 
 			$artigosModel->orderBy('data_publicado', 'DESC');
 
-			$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
+			$artigos = $artigosModel->paginate($porPagina, 'artigos');
 			if (!empty($artigos)) {
 				foreach ($artigos as $chave => $artigo) {
 					$artigos[$chave]['cor'] = $this->getCorFaseProducao($artigo['fase_producao_id']);
@@ -972,8 +968,7 @@ class Artigos extends BaseController
 		}
 
 		$configuracaoModel = new \App\Models\ConfiguracaoModel();
-		$config = array();
-		$config['site_quantidade_listagem'] = (int) $configuracaoModel->find('site_quantidade_listagem')['config_valor'];
+		$porPagina = 24;
 		$antiIaLimiteMax = (int) $configuracaoModel->find('anti_ia_limite_maximo')['config_valor'];
 		$antiIaLimiteMin = (int) $configuracaoModel->find('anti_ia_limite_minimo')['config_valor'];
 
@@ -1014,7 +1009,7 @@ class Artigos extends BaseController
 		$artigosModel->where('artigos.fase_producao_id', (int) $faseProducaoId);
 
 		$artigosModel->orderBy('artigos.atualizado', 'ASC');
-		$artigos = $artigosModel->paginate($config['site_quantidade_listagem'], 'artigos');
+		$artigos = $artigosModel->paginate($porPagina, 'artigos');
 
 		$faseProducaoModel = new \App\Models\FaseProducaoModel();
 		$data['atualizar'] = array();
