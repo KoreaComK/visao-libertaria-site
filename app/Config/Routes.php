@@ -52,6 +52,10 @@ $routes->group('', ['filter' => 'authCookie:optional'], static function ($routes
 // Login endpoint (AJAX and cookie flow).
 $routes->match(['get', 'post'], 'site/login', 'Site::login', ['filter' => 'authCookie:optional']);
 
+// Cron: listagem de artigos produzidos (fase publicar), com hash.
+$routes->get('cron/listar-produzidos', 'Cron::listarProduzidos');
+$routes->get('cron/listar-produzidos/(:segment)', 'Cron::listarProduzidos/$1');
+
 // Protected actions outside /colaboradores.
 $routes->group('site', ['filter' => 'authCookie'], static function ($routes) {
     $routes->get('logout', 'Site::logout');
