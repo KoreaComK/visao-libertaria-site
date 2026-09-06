@@ -273,14 +273,14 @@ use CodeIgniter\I18n\Time;
 									<div class="row g-2 mt-2 pt-2 border-top">
 										<div class="col-12">
 											<div class="d-flex align-items-center gap-2 mb-1">
-												<span class="small text-muted">Status de contrato</span>
+												<span class="small text-muted">Status de associação</span>
 												<span class="badge <?= ($contratado === 'S') ? 'bg-primary-subtle text-primary-emphasis border border-primary-subtle' : 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; ?> status-contrato-badge">
-													<?= ($contratado === 'S') ? 'Contratado' : 'Não contratado'; ?>
+													<?= ($contratado === 'S') ? 'Associado' : 'Não associado'; ?>
 												</span>
 											</div>
 											<div class="mt-1">
-												<button type="button" class="btn btn-link text-primary p-0 contratado-contratar <?= ($contratado === 'S') ? ('d-none') : (''); ?>">Contratar colaborador</button>
-												<button type="button" class="btn btn-link text-danger p-0 contratado-descontratar <?= ($contratado === 'S') ? ('') : ('d-none'); ?>">Descontratar colaborador</button>
+												<button type="button" class="btn btn-link text-primary p-0 contratado-contratar <?= ($contratado === 'S') ? ('d-none') : (''); ?>">Associar colaborador</button>
+												<button type="button" class="btn btn-link text-danger p-0 contratado-descontratar <?= ($contratado === 'S') ? ('') : ('d-none'); ?>">Desassociar colaborador</button>
 											</div>
 										</div>
 									</div>
@@ -627,7 +627,7 @@ use CodeIgniter\I18n\Time;
 	});
 
 	$('.contratado-contratar').on('click', function () {
-		abrirModalConfirmacao('Tem certeza que deseja marcar este colaborador como contratado?', function () {
+		abrirModalConfirmacao('Tem certeza que deseja marcar este colaborador como associado?', function () {
 			const form = new FormData();
 			form.append('contratado', 'S');
 			form.append('colaborador_id', colaboradorIdPermissoes);
@@ -641,7 +641,7 @@ use CodeIgniter\I18n\Time;
 						$('.status-contrato-badge')
 							.removeClass('bg-secondary-subtle text-secondary-emphasis border-secondary-subtle')
 							.addClass('bg-primary-subtle text-primary-emphasis border-primary-subtle')
-							.text('Contratado');
+							.text('Associado');
 					}
 				}
 			});
@@ -649,7 +649,7 @@ use CodeIgniter\I18n\Time;
 	});
 
 	$('.contratado-descontratar').on('click', function () {
-		abrirModalConfirmacao('Tem certeza que deseja descontratar este colaborador?', function () {
+		abrirModalConfirmacao('Tem certeza que deseja desassociar este colaborador?', function () {
 			const form = new FormData();
 			form.append('contratado', 'N');
 			form.append('colaborador_id', colaboradorIdPermissoes);
@@ -663,7 +663,7 @@ use CodeIgniter\I18n\Time;
 						$('.status-contrato-badge')
 							.removeClass('bg-primary-subtle text-primary-emphasis border-primary-subtle')
 							.addClass('bg-secondary-subtle text-secondary-emphasis border-secondary-subtle')
-							.text('Não contratado');
+							.text('Não associado');
 					}
 				}
 			});

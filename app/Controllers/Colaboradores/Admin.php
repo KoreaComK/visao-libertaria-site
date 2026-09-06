@@ -625,9 +625,9 @@ class Admin extends BaseController
 				$novoContrato = ($post['contratado'] === 'S') ? 'S' : 'N';
 				$contrato_retorno = $colaboradoresModel->update($post['colaborador_id'], array('contratado' => $novoContrato));
 				if ($contrato_retorno) {
-					return $retorno->retorno(true, 'Status de contrato atualizado com sucesso.', true);
+					return $retorno->retorno(true, 'Status de associação atualizado com sucesso.', true);
 				}
-				return $retorno->retorno(false, 'Erro ao atualizar o status de contrato.', true);
+				return $retorno->retorno(false, 'Erro ao atualizar o status de associação.', true);
 			}
 			if (isset($post['confirmar_email']) && isset($post['colaborador_id'])) {
 				$confirmacaoRetorno = $colaboradoresModel->update($post['colaborador_id'], array(
@@ -1241,7 +1241,7 @@ class Admin extends BaseController
 	}
 
 	/**
-	 * Colaboradores contratados (contratado = S) para pré-lista em Pagamentos avulsos (novo pagamento).
+	 * Colaboradores associados (contratado = S) para pré-lista em Pagamentos avulsos (novo pagamento).
 	 *
 	 * @return list<array<string, mixed>>
 	 */

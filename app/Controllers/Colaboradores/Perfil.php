@@ -274,7 +274,7 @@ class Perfil extends BaseController
 		$colaboradoresModel = new \App\Models\ColaboradoresModel();
 		$colaborador = $colaboradoresModel->find($session['id']);
 		if (($colaborador['contratado'] ?? 'N') !== 'S') {
-			return $retorno->retorno(false, 'Apenas colaboradores contratados podem informar a remuneração.', true);
+			return $retorno->retorno(false, 'Apenas colaboradores associados podem informar a remuneração.', true);
 		}
 
 		$competencia = Time::now()->format('Y-m');
