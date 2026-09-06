@@ -1,7 +1,97 @@
 # Disable directory browsing
 Options -Indexes
 
-<Files "sugerir-categorias-pautas.php">
+<Files "cron_sugerir-categorias-pautas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_limpar-pautas-antigas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_limpar-thumbs-pautas-orfas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_cachear-imagens-pautas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_desmarcar-artigos-expirados.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_descartar-artigos-area-escrita.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_enviar-email-carteira-vazia.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_limpar-notificacoes-antigas.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_descartar-artigos-abandonados.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_captar-videos-youtube.php">
+	<IfModule authz_core_module>
+		Require all denied
+	</IfModule>
+	<IfModule !authz_core_module>
+		Deny from all
+	</IfModule>
+</Files>
+
+<Files "cron_avancar-artigos-publicados-youtube.php">
 	<IfModule authz_core_module>
 		Require all denied
 	</IfModule>
