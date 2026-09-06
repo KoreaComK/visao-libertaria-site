@@ -39,8 +39,11 @@ class CachearImagensPautas extends BaseCommand
 				continue;
 			}
 
-			$cache->garantirParaUrl($id, (string) ($pauta['imagem'] ?? ''));
-			$gerados++;
+			$resultado = $cache->garantirParaUrl($id, (string) ($pauta['imagem'] ?? ''));
+			if (! empty($resultado['gerado'])) {
+				$gerados++;
+			}
+
 			if ($gerados >= 15) {
 				break;
 			}

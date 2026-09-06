@@ -16,7 +16,10 @@ class CacheImagemPauta
 	public const LARGURA_MAX = 480;
 	public const QUALIDADE_WEBP = 78;
 	public const QUALIDADE_JPEG = 82;
-	public const MAX_BYTES = 5242880;
+	/** Limite do download (2 MiB basta para gerar thumb de 480px). */
+	public const MAX_BYTES = 2097152;
+	/** Evita OOM no GD (ex.: 4000×4000 RGBA ≈ 64 MiB só no bitmap). */
+	public const MAX_PIXELS = 6000000;
 	public const TIMEOUT = 10;
 	public const MAX_REDIRECTS = 3;
 
@@ -167,6 +170,7 @@ class CacheImagemPauta
 		}
 
 		$gerado = $this->gerarDeBinario($id, $binario);
+		unset($binario);
 		if (! $gerado['ok']) {
 			return $this->resultado(true, true, false, false, $padrao, 'processamento_falhou');
 		}
@@ -189,13 +193,14 @@ class CacheImagemPauta
 		}
 
 		$origem = @imagecreatefromstring($binario);
+		unset($binario);
 		if ($origem === false) {
 			return ['ok' => false, 'caminho' => $padrao];
 		}
 
 		$largura = imagesx($origem);
 		$altura = imagesy($origem);
-		if ($largura < 1 || $altura < 1) {
+		if ($largura < 1 || $altura < 1 || ($largura * $altura) > self::MAX_PIXELS) {
 			imagedestroy($origem);
 
 			return ['ok' => false, 'caminho' => $padrao];
@@ -304,12 +309,6 @@ class CacheImagemPauta
 				return null;
 			}
 
-			if (strlen($body) > self::MAX_BYTES) {
-				$this->ultimoErroDownload = 'arquivo_grande';
-
-				return null;
-			}
-
 			if ($contentType !== '' && ! str_starts_with($contentType, 'image/')) {
 				if (! $this->binarioPareceImagem($body)) {
 					$this->ultimoErroDownload = 'nao_e_imagem';
@@ -351,8 +350,10 @@ class CacheImagemPauta
 			return null;
 		}
 
+		$body = '';
+		$excedeuLimite = false;
 		curl_setopt_array($ch, [
-			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_RETURNTRANSFER => false,
 			CURLOPT_FOLLOWLOCATION => false,
 			CURLOPT_TIMEOUT => self::TIMEOUT,
 			CURLOPT_CONNECTTIMEOUT => self::TIMEOUT,
@@ -365,23 +366,47 @@ class CacheImagemPauta
 			CURLOPT_SSL_VERIFYPEER => $verificarSsl,
 			CURLOPT_SSL_VERIFYHOST => $verificarSsl ? 2 : 0,
 			CURLOPT_HEADER => true,
+			CURLOPT_WRITEFUNCTION => static function ($ch, string $chunk) use (&$body, &$excedeuLimite): int {
+				$body .= $chunk;
+				if (strlen($body) > CacheImagemPauta::MAX_BYTES + 16384) {
+					$excedeuLimite = true;
+
+					return 0;
+				}
+
+				return strlen($chunk);
+			},
 		]);
 
-		$bruto = curl_exec($ch);
+		$ok = curl_exec($ch);
 		$errno = curl_errno($ch);
 		$erro = curl_error($ch);
 		$status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		curl_close($ch);
 
-		if ($bruto === false) {
+		if ($excedeuLimite) {
+			$this->ultimoErroDownload = 'arquivo_grande';
+
+			return null;
+		}
+
+		if ($ok === false) {
 			$this->ultimoErroDownload = $erro !== '' ? $erro : ('curl_' . $errno);
 
 			return null;
 		}
 
-		$cabecalhos = substr($bruto, 0, $headerSize);
-		$body = substr($bruto, $headerSize);
+		$cabecalhos = substr($body, 0, $headerSize);
+		$conteudo = substr($body, $headerSize);
+		unset($body);
+
+		if (strlen($conteudo) > self::MAX_BYTES) {
+			$this->ultimoErroDownload = 'arquivo_grande';
+
+			return null;
+		}
+
 		$location = '';
 		$contentType = '';
 		foreach (preg_split("/\r\n|\n|\r/", $cabecalhos) ?: [] as $linha) {
@@ -393,7 +418,7 @@ class CacheImagemPauta
 			}
 		}
 
-		return [$status, $body, $location, $contentType];
+		return [$status, $conteudo, $location, $contentType];
 	}
 
 	private function ehImagemPadrao(string $url): bool

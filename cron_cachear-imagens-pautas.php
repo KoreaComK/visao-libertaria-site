@@ -32,6 +32,8 @@ if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+// Processamento GD de thumbs: Plesk costuma vir com 128M.
+ini_set('memory_limit', '256M');
 
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
 chdir(FCPATH);
