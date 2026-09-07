@@ -68,6 +68,26 @@
 									</div>
 								</div>
 							</form>
+
+							<div class="vl-noticias-categorias mt-4 pt-3 border-top border-secondary">
+								<p class="form-label mb-2">Categorias</p>
+								<div class="d-flex flex-wrap gap-2 mb-3">
+									<button type="button" class="btn btn-sm vl-noticias-chip is-active" id="btn-categorias-todas">Todas as categorias</button>
+									<button type="button" class="btn btn-sm vl-noticias-chip" id="btn-categorias-limpar">Limpar todas as categorias</button>
+								</div>
+								<?php if (! empty($categoriasAtivas)): ?>
+									<div class="d-flex flex-wrap gap-2" id="filtro-categorias-chips">
+										<?php foreach ($categoriasAtivas as $categoria): ?>
+											<button type="button" class="btn btn-sm vl-noticias-chip btn-filtro-categoria is-active"
+												data-id="<?= (int) $categoria['id']; ?>">
+												<?= esc($categoria['nome']); ?>
+											</button>
+										<?php endforeach; ?>
+									</div>
+								<?php else: ?>
+									<p class="text-white-50 small mb-0">Nenhuma categoria ativa cadastrada.</p>
+								<?php endif; ?>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -98,7 +118,10 @@
 		<?php endif; ?>
 
 		<div id="vl-noticias-list-root">
-			<?= view('template/templatePautasListSite', ['pautasList' => $pautasList]); ?>
+			<?= view('template/templatePautasListSite', [
+				'pautasList' => $pautasList,
+				'filtroCategoriasVazio' => $filtroCategoriasVazio ?? false,
+			]); ?>
 		</div>
 
 		<div class="page-load-status">
@@ -250,7 +273,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	var debounceMs = 380;
 	var debounceTimer = null;
 	var listAbort = null;
-	var lastFetchedTerm = null;
+	var lastFetchedKey = null;
+	var categoriasModo = 'todas';
+	var categoriasIds = [];
 
 	function destroyNoticiasListWidgets($wrap) {
 		var $grid = $wrap.find('.pautas-list');
@@ -312,12 +337,62 @@ document.addEventListener('DOMContentLoaded', function () {
 		initTooltipsIn($wrap);
 	}
 
-	function syncUrlPesquisa(term) {
+	function idsTodasCategorias() {
+		var ids = [];
+		$('.btn-filtro-categoria').each(function () {
+			var id = parseInt($(this).attr('data-id'), 10);
+			if (id) {
+				ids.push(id);
+			}
+		});
+		return ids;
+	}
+
+	function atualizarBotoesCategorias() {
+		var todas = categoriasModo === 'todas';
+		$('#btn-categorias-todas').toggleClass('is-active', todas);
+		$('.btn-filtro-categoria').each(function () {
+			var id = parseInt($(this).attr('data-id'), 10);
+			var ativo = todas || (categoriasModo === 'ids' && categoriasIds.indexOf(id) !== -1);
+			$(this).toggleClass('is-active', ativo);
+		});
+	}
+
+	function dadosFiltroNoticias(term) {
+		var t = term == null ? '' : String(term).trim();
+		var data = {
+			pesquisa: t,
+			categorias_modo: categoriasModo
+		};
+		if (categoriasModo === 'ids' && categoriasIds.length > 0) {
+			data.categorias = categoriasIds.slice().sort(function (a, b) { return a - b; }).join(',');
+		}
+		return data;
+	}
+
+	function chaveFiltro(term) {
+		var d = dadosFiltroNoticias(term);
+		return [d.pesquisa || '', d.categorias_modo || 'todas', d.categorias || ''].join('|');
+	}
+
+	function syncUrlFiltros(term) {
 		var u = new URL(window.location.href);
-		if (term) {
-			u.searchParams.set('pesquisa', term);
+		var d = dadosFiltroNoticias(term);
+		if (d.pesquisa) {
+			u.searchParams.set('pesquisa', d.pesquisa);
 		} else {
 			u.searchParams.delete('pesquisa');
+		}
+		if (d.categorias_modo && d.categorias_modo !== 'todas') {
+			u.searchParams.set('categorias_modo', d.categorias_modo);
+			if (d.categorias) {
+				u.searchParams.set('categorias', d.categorias);
+			} else {
+				u.searchParams.delete('categorias');
+			}
+		} else {
+			u.searchParams.delete('categorias_modo');
+			u.searchParams.delete('categorias');
 		}
 		u.searchParams.delete('page_noticias');
 		u.searchParams.delete('partial');
@@ -331,16 +406,22 @@ document.addEventListener('DOMContentLoaded', function () {
 			return;
 		}
 		var t = term == null ? '' : String(term).trim();
-		if (!force && lastFetchedTerm !== null && lastFetchedTerm === t) {
+		var key = chaveFiltro(t);
+		if (!force && lastFetchedKey !== null && lastFetchedKey === key) {
 			return;
 		}
 		if (listAbort) {
 			listAbort.abort();
 		}
 		listAbort = new AbortController();
+		var d = dadosFiltroNoticias(t);
 		var params = new URLSearchParams();
-		if (t) {
-			params.set('pesquisa', t);
+		if (d.pesquisa) {
+			params.set('pesquisa', d.pesquisa);
+		}
+		params.set('categorias_modo', d.categorias_modo);
+		if (d.categorias) {
+			params.set('categorias', d.categorias);
 		}
 		params.set('partial', '1');
 		var url = listUrl + (listUrl.indexOf('?') >= 0 ? '&' : '?') + params.toString();
@@ -358,11 +439,11 @@ document.addEventListener('DOMContentLoaded', function () {
 			})
 			.then(function (html) {
 				listAbort = null;
-				lastFetchedTerm = t;
+				lastFetchedKey = key;
 				destroyNoticiasListWidgets($root);
 				$root.html(html);
 				initNoticiasMasonryIn($root);
-				syncUrlPesquisa(t);
+				syncUrlFiltros(t);
 			})
 			.catch(function (err) {
 				if (err && err.name === 'AbortError') {
@@ -385,18 +466,45 @@ document.addEventListener('DOMContentLoaded', function () {
 		}, force ? 0 : debounceMs);
 	}
 
+	function restaurarCategoriasDaUrl() {
+		var u = new URL(window.location.href);
+		var modo = u.searchParams.get('categorias_modo') || 'todas';
+		var ids = [];
+		var raw = u.searchParams.get('categorias') || '';
+		if (raw) {
+			raw.split(',').forEach(function (part) {
+				var n = parseInt(part, 10);
+				if (n > 0) {
+					ids.push(n);
+				}
+			});
+		}
+		if (modo === 'nenhuma') {
+			categoriasModo = 'nenhuma';
+			categoriasIds = [];
+		} else if (modo === 'ids' && ids.length > 0) {
+			categoriasModo = 'ids';
+			categoriasIds = ids;
+		} else {
+			categoriasModo = 'todas';
+			categoriasIds = idsTodasCategorias();
+		}
+		atualizarBotoesCategorias();
+	}
+
 	$(document).ready(function () {
 		var $root = $('#vl-noticias-list-root');
 		if (!$root.length) {
 			return;
 		}
+		restaurarCategoriasDaUrl();
 		initNoticiasMasonryIn($root);
 
 		if (typeof fetch !== 'function') {
 			return;
 		}
 
-		lastFetchedTerm = $('#pesquisa').val() != null ? String($('#pesquisa').val()).trim() : '';
+		lastFetchedKey = chaveFiltro($('#pesquisa').val() != null ? String($('#pesquisa').val()).trim() : '');
 
 		$('#pesquisa').on('keyup input', function () {
 			scheduleFetchFromInput(false);
@@ -412,9 +520,62 @@ document.addEventListener('DOMContentLoaded', function () {
 		$('#vl-noticias-limpar').on('click', function (e) {
 			e.preventDefault();
 			$('#pesquisa').val('');
+			categoriasModo = 'todas';
+			categoriasIds = idsTodasCategorias();
+			atualizarBotoesCategorias();
 			clearTimeout(debounceTimer);
 			debounceTimer = null;
 			fetchNoticiasList('', true);
+		});
+
+		$('#btn-categorias-todas').on('click', function () {
+			categoriasModo = 'todas';
+			categoriasIds = idsTodasCategorias();
+			atualizarBotoesCategorias();
+			clearTimeout(debounceTimer);
+			debounceTimer = null;
+			fetchNoticiasList($('#pesquisa').val(), true);
+		});
+
+		$('#btn-categorias-limpar').on('click', function () {
+			categoriasModo = 'nenhuma';
+			categoriasIds = [];
+			atualizarBotoesCategorias();
+			clearTimeout(debounceTimer);
+			debounceTimer = null;
+			fetchNoticiasList($('#pesquisa').val(), true);
+		});
+
+		$(document).on('click', '.btn-filtro-categoria', function () {
+			var id = parseInt($(this).attr('data-id'), 10);
+			if (!id) {
+				return;
+			}
+			if (categoriasModo === 'todas') {
+				categoriasModo = 'ids';
+				categoriasIds = idsTodasCategorias();
+			} else if (categoriasModo === 'nenhuma') {
+				categoriasModo = 'ids';
+				categoriasIds = [];
+			}
+			var pos = categoriasIds.indexOf(id);
+			if (pos === -1) {
+				categoriasIds.push(id);
+			} else {
+				categoriasIds.splice(pos, 1);
+			}
+			var todosIds = idsTodasCategorias();
+			if (categoriasIds.length === 0) {
+				categoriasModo = 'nenhuma';
+			} else if (categoriasIds.length === todosIds.length) {
+				categoriasModo = 'todas';
+			} else {
+				categoriasModo = 'ids';
+			}
+			atualizarBotoesCategorias();
+			clearTimeout(debounceTimer);
+			debounceTimer = null;
+			fetchNoticiasList($('#pesquisa').val(), true);
 		});
 	});
 

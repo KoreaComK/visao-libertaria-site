@@ -109,14 +109,39 @@ class Site extends BaseController
 		$pautasModel = new \App\Models\PautasModel();
 		$get         = $this->request->getGet();
 		$pesquisa    = (isset($get['pesquisa']) && $get['pesquisa'] !== '') ? $get['pesquisa'] : null;
-		$pautas       = $pautasModel->getPautas(false, false, false, $pesquisa);
+
+		$modo = isset($get['categorias_modo']) ? (string) $get['categorias_modo'] : 'todas';
+		$ids  = [];
+		if (isset($get['categorias']) && $get['categorias'] !== '') {
+			foreach (explode(',', (string) $get['categorias']) as $id) {
+				$n = (int) $id;
+				if ($n > 0) {
+					$ids[] = $n;
+				}
+			}
+		}
+
+		$filtroVazio = ($modo === 'nenhuma' || ($modo === 'ids' && $ids === []));
+		$data['filtroCategoriasVazio'] = $filtroVazio;
 
 		$perPage = 12;
 
-		$data['pautasList'] = [
-			'pautas' => $pautas->paginate($perPage, 'noticias'),
-			'pager'  => $pautas->pager,
-		];
+		if ($filtroVazio) {
+			$data['pautasList'] = [
+				'pautas' => [],
+				'pager'  => null,
+			];
+		} else {
+			$pautas = $pautasModel->getPautas(false, false, false, $pesquisa);
+			if ($modo === 'ids') {
+				$pautas->aplicarFiltroPorCategorias($ids);
+			}
+
+			$data['pautasList'] = [
+				'pautas' => $pautas->paginate($perPage, 'noticias'),
+				'pager'  => $pautas->pager,
+			];
+		}
 
 		$listaSomente = $this->request->getMethod() === 'GET'
 			&& (
@@ -155,8 +180,9 @@ class Site extends BaseController
 			}
 		}
 
-		$data['active_menu']   = 'noticias';
-		$data['colaboradores'] = $this->session->get('colaboradores');
+		$data['categoriasAtivas'] = (new \App\Models\CategoriasModel())->listarAtivasIdNome();
+		$data['active_menu']     = 'noticias';
+		$data['colaboradores']   = $this->session->get('colaboradores');
 
 		return view('_noticias', $data);
 	}

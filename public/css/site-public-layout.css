@@ -807,14 +807,6 @@
 	font-size: 0.875rem;
 }
 
-.vl-site-noticias #formFiltroNoticias .input-group-sm > .form-control,
-.vl-site-noticias #formFiltroNoticias .input-group-sm > .input-group-text {
-	padding: 0.15rem 0.45rem;
-	font-size: 0.8125rem;
-	line-height: 1.25;
-	min-height: 1.65rem;
-}
-
 .vl-site-noticias #formFiltroNoticias .input-group-sm > .input-group-text {
 	display: flex;
 	align-items: center;
@@ -831,6 +823,44 @@
 	min-height: 2.5rem;
 	padding: 0.375rem 0.75rem;
 	box-sizing: border-box;
+}
+
+/* Chips de categorias no filtro de notícias */
+.vl-site-noticias .vl-noticias-categorias .form-label {
+	margin-bottom: 0.25rem;
+	font-size: 0.875rem;
+}
+
+.vl-site-noticias .vl-noticias-chip {
+	background-color: transparent;
+	border: 1px solid #6c757d;
+	color: #e9ecef;
+	font-weight: 500;
+}
+
+.vl-site-noticias .vl-noticias-chip:hover,
+.vl-site-noticias .vl-noticias-chip:focus {
+	background-color: rgba(185, 141, 19, 0.15);
+	border-color: var(--primary-color);
+	color: #fff;
+}
+
+.vl-site-noticias .vl-noticias-chip.is-active {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+	color: #1a1408;
+	font-weight: 600;
+}
+
+.vl-site-noticias .vl-noticias-chip.is-active:hover,
+.vl-site-noticias .vl-noticias-chip.is-active:focus {
+	background-color: #d4a82a;
+	border-color: #d4a82a;
+	color: #1a1408;
+}
+
+.vl-site-noticias .vl-noticias-chip:focus-visible {
+	box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.45);
 }
 
 .vl-site-noticias .page-load-status {
