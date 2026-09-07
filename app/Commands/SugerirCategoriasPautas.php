@@ -59,6 +59,7 @@ class SugerirCategoriasPautas extends BaseCommand
 		$vinculos = new PautasCategoriasModel();
 		$ok = 0;
 		$falhas = 0;
+		$avisos = 0;
 
 		foreach ($pautas as $pauta) {
 			$id = (string) ($pauta['id'] ?? '');
@@ -71,8 +72,13 @@ class SugerirCategoriasPautas extends BaseCommand
 			try {
 				$resultado = $ia->sugerirPauta($pauta, $categorias);
 				if (! $resultado['ok']) {
-					$falhas++;
-					$this->registrar('Falha na pauta ' . $id . ': ' . $resultado['erro'], 'error');
+					$nivel = $this->nivelFalhaIa($resultado['erro']);
+					if ($nivel === 'warning') {
+						$avisos++;
+					} else {
+						$falhas++;
+					}
+					$this->registrar('Falha na pauta ' . $id . ': ' . $resultado['erro'], $nivel);
 					continue;
 				}
 
@@ -86,12 +92,45 @@ class SugerirCategoriasPautas extends BaseCommand
 					: implode(',', $resultado['ids']);
 				CLI::write($id . ' → ' . $lista);
 			} catch (\Throwable $e) {
-				$falhas++;
-				$this->registrar('Falha na pauta ' . $id . ': ' . $e->getMessage(), 'error');
+				$nivel = $this->nivelFalhaIa($e->getMessage());
+				if ($nivel === 'warning') {
+					$avisos++;
+				} else {
+					$falhas++;
+				}
+				$this->registrar('Falha na pauta ' . $id . ': ' . $e->getMessage(), $nivel);
 			}
 		}
 
-		return $this->encerrar('Concluído: ' . $ok . ' ok, ' . $falhas . ' falha(s).');
+		return $this->encerrar(
+			'Concluído: ' . $ok . ' ok, ' . $avisos . ' aviso(s), ' . $falhas . ' falha(s).'
+		);
+	}
+
+	/**
+	 * Timeout e alta demanda do modelo são transitórios: warning (não dispara e-mail de erro).
+	 */
+	private function nivelFalhaIa(string $mensagem): string
+	{
+		$texto = strtolower($mensagem);
+
+		$timeout = str_contains($texto, 'timeout')
+			|| str_contains($texto, 'timed out')
+			|| str_contains($texto, 'curl error 28')
+			|| str_contains($texto, 'operation timed out');
+
+		$altaDemanda = str_contains($texto, 'high demand')
+			|| str_contains($texto, 'overloaded')
+			|| str_contains($texto, 'resource exhausted')
+			|| str_contains($texto, 'resource_exhausted')
+			|| str_contains($texto, 'unavailable')
+			|| str_contains($texto, 'status_429')
+			|| str_contains($texto, 'status_503')
+			|| str_contains($texto, 'rate limit')
+			|| str_contains($texto, 'rate_limit')
+			|| str_contains($texto, 'too many requests');
+
+		return ($timeout || $altaDemanda) ? 'warning' : 'error';
 	}
 
 	private function encerrar(string $mensagem, string $nivel = 'info'): int
@@ -106,6 +145,12 @@ class SugerirCategoriasPautas extends BaseCommand
 		if ($nivel === 'error') {
 			CLI::error($mensagem);
 			$this->logger->error('sugerir:categorias-pautas: ' . $mensagem);
+			return;
+		}
+
+		if ($nivel === 'warning') {
+			CLI::write($mensagem, 'yellow');
+			$this->logger->warning('sugerir:categorias-pautas: ' . $mensagem);
 			return;
 		}
 
