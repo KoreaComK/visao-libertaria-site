@@ -286,7 +286,7 @@
 		});
 
 		(function () {
-			const COINGECKO_BTC_BRL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl';
+			const URL_COTACAO_BTC = <?= json_encode(base_url('colaboradores/admin/financeiro/cotacaoBitcoin')) ?>;
 
 			function atualizarCalcBtc() {
 				const qtdReais = pagamentosBrlDisplayToNumber($('#calc_qtd_reais').val());
@@ -347,16 +347,16 @@
 				const $msg = $('#calc_btc_fetch_msg');
 				$btn.prop('disabled', true);
 				$msg.text('Buscando cotação…');
-				fetch(COINGECKO_BTC_BRL)
+				fetch(URL_COTACAO_BTC)
 					.then(function (r) {
 						if (!r.ok) throw new Error('Falha na resposta da API');
 						return r.json();
 					})
 					.then(function (data) {
-						const brl = data && data.bitcoin && typeof data.bitcoin.brl === 'number' ? data.bitcoin.brl : null;
-						if (brl == null || !(brl > 0)) throw new Error('Cotação indisponível');
+						const brl = data && typeof data.brl === 'number' ? data.brl : parseFloat(data && data.brl);
+						if (!isFinite(brl) || !(brl > 0)) throw new Error('Cotação indisponível');
 						$('#calc_btc_brl').val(pagamentosFormatBrl(brl));
-						$msg.text('Cotação atualizada (CoinGecko).');
+						$msg.text('Cotação atualizada.');
 						atualizarCalcBtc();
 					})
 					.catch(function () {
