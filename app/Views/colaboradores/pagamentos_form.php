@@ -425,6 +425,9 @@
 				if (r.tipo === 'F') {
 					return 'Valor fixo';
 				}
+				if (r.tipo === 'A') {
+					return r.horas_label ? ('Por horas e valor fixo · ' + r.horas_label) : 'Por horas e valor fixo';
+				}
 				if (r.tipo === 'H') {
 					return r.horas_label ? ('Por horas · ' + r.horas_label) : 'Por horas';
 				}
@@ -434,6 +437,12 @@
 			function celulaRemuneracaoAvulso(r) {
 				const $cell = $('<td>');
 				$cell.append($('<div>').addClass('small').text(textoEnvioAvulso(r)));
+				if (r.tipo === 'A' && r.valor_fixo_reais > 0 && r.quantidade_reais > 0) {
+					const horasValor = Math.round((r.quantidade_reais - r.valor_fixo_reais) * 100) / 100;
+					$cell.append($('<div>').addClass('small text-muted').text(
+						'Fixo R$ ' + pagamentosFormatBrl(r.valor_fixo_reais) + ' · Horas R$ ' + pagamentosFormatBrl(horasValor)
+					));
+				}
 				if (r.tem_arquivo && r.remuneracao_id) {
 					const nome = (r.arquivo_nome || 'Baixar arquivo').toString();
 					$cell.append(
@@ -485,6 +494,7 @@
 					valor_bitcoin: 0,
 					tipo: '',
 					horas_label: '',
+					valor_fixo_reais: 0,
 					remuneracao_id: 0,
 					tem_arquivo: false,
 					arquivo_nome: ''
@@ -564,6 +574,7 @@
 							valor_bitcoin: 0,
 							tipo: (c.tipo || '').toString(),
 							horas_label: (c.horas_label || '').toString(),
+							valor_fixo_reais: parseFloat(c.valor_fixo_reais) || 0,
 							remuneracao_id: parseInt(c.remuneracao_id, 10) || 0,
 							tem_arquivo: !!c.tem_arquivo,
 							arquivo_nome: (c.arquivo_nome || '').toString()

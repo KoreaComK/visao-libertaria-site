@@ -324,10 +324,28 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 						$remuneracaoHistorico = $remuneracao_historico ?? [];
 						$remuneracaoCompetencia = $remuneracao_competencia ?? date('Y-m');
 						$remuneracaoBloqueada = is_array($remuneracaoAtual) && !empty($remuneracaoAtual['pagamentos_id']);
-						$tipoAtual = (is_array($remuneracaoAtual) && ($remuneracaoAtual['tipo'] ?? '') === 'F') ? 'F' : 'H';
-						$valorExibicao = (is_array($remuneracaoAtual) && isset($remuneracaoAtual['valor_reais']))
+						$tipoSalvo = is_array($remuneracaoAtual) ? (string) ($remuneracaoAtual['tipo'] ?? '') : '';
+						$tipoAtual = in_array($tipoSalvo, ['F', 'H', 'A'], true) ? $tipoSalvo : 'H';
+						$mostraHoras = $tipoAtual === 'H' || $tipoAtual === 'A';
+						$valorExibicao = ($tipoAtual !== 'A' && is_array($remuneracaoAtual) && isset($remuneracaoAtual['valor_reais']))
 							? number_format((float) $remuneracaoAtual['valor_reais'], 2, ',', '.')
 							: '';
+						$valorFixoExibicao = '';
+						$valorHorasExibicao = '';
+						if ($tipoAtual === 'A' && is_array($remuneracaoAtual) && isset($remuneracaoAtual['valor_fixo_reais']) && $remuneracaoAtual['valor_fixo_reais'] !== null && $remuneracaoAtual['valor_fixo_reais'] !== '') {
+							$fixoAtual = (float) $remuneracaoAtual['valor_fixo_reais'];
+							$valorFixoExibicao = number_format($fixoAtual, 2, ',', '.');
+							$valorHorasExibicao = number_format(round((float) $remuneracaoAtual['valor_reais'] - $fixoAtual, 2), 2, ',', '.');
+						}
+						$rotuloTipoRemuneracao = static function (string $tipo): string {
+							if ($tipo === 'F') {
+								return 'Valor fixo';
+							}
+							if ($tipo === 'A') {
+								return 'Por horas e valor fixo';
+							}
+							return 'Por horas';
+						};
 						$horasExibicao = (is_array($remuneracaoAtual) && isset($remuneracaoAtual['horas_trabalhadas']) && $remuneracaoAtual['horas_trabalhadas'] !== null && $remuneracaoAtual['horas_trabalhadas'] !== '')
 							? decimal_para_duracao_hhmm($remuneracaoAtual['horas_trabalhadas'])
 							: '';
@@ -372,16 +390,40 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 													value="F" <?= $tipoAtual === 'F' ? 'checked' : ''; ?>>
 												<label class="form-check-label" for="remuneracao_tipo_fixo">Valor fixo</label>
 											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo" id="remuneracao_tipo_ambos"
+													value="A" <?= $tipoAtual === 'A' ? 'checked' : ''; ?>>
+												<label class="form-check-label" for="remuneracao_tipo_ambos">Por horas e valor fixo</label>
+											</div>
 										</div>
 
-										<div class="mb-3">
+										<div id="remuneracao_campo_valor" class="mb-3<?= $tipoAtual === 'A' ? ' d-none' : ''; ?>">
 											<label for="remuneracao_valor_reais" class="form-label">Valor a receber (R$)</label>
 											<input type="text" class="form-control" id="remuneracao_valor_reais"
 												name="valor_reais" inputmode="decimal" autocomplete="off"
-												placeholder="0,00" value="<?= esc($valorExibicao); ?>" required>
+												placeholder="0,00" value="<?= esc($valorExibicao); ?>"
+												<?= $tipoAtual === 'A' ? 'disabled' : 'required'; ?>>
 										</div>
 
-										<div id="remuneracao_campos_horas" class="<?= $tipoAtual === 'H' ? '' : 'd-none'; ?>">
+										<div id="remuneracao_campos_ambos" class="<?= $tipoAtual === 'A' ? '' : 'd-none'; ?>">
+											<div class="mb-3">
+												<label for="remuneracao_valor_fixo" class="form-label">Valor fixo (R$)</label>
+												<input type="text" class="form-control" id="remuneracao_valor_fixo"
+													name="valor_fixo_reais" inputmode="decimal" autocomplete="off"
+													placeholder="0,00" value="<?= esc($valorFixoExibicao); ?>"
+													<?= $tipoAtual === 'A' ? 'required' : 'disabled'; ?>>
+											</div>
+											<div class="mb-3">
+												<label for="remuneracao_valor_horas" class="form-label">Valor por horas (R$)</label>
+												<input type="text" class="form-control" id="remuneracao_valor_horas"
+													name="valor_horas_reais" inputmode="decimal" autocomplete="off"
+													placeholder="0,00" value="<?= esc($valorHorasExibicao); ?>"
+													<?= $tipoAtual === 'A' ? 'required' : 'disabled'; ?>>
+												<div class="form-text">O valor a receber é a soma do valor fixo com o valor por horas: <strong id="remuneracao_total">R$ 0,00</strong>.</div>
+											</div>
+										</div>
+
+										<div id="remuneracao_campos_horas" class="<?= $mostraHoras ? '' : 'd-none'; ?>">
 											<div class="mb-3">
 												<label for="remuneracao_horas" class="form-label">Horas trabalhadas</label>
 												<input type="text" class="form-control" id="remuneracao_horas"
@@ -441,10 +483,19 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 												<?php foreach ($remuneracaoHistorico as $item): ?>
 													<tr>
 														<td><?= esc($formatarCompetencia((string) $item['competencia'])); ?></td>
-														<td><?= ($item['tipo'] ?? '') === 'F' ? 'Valor fixo' : 'Por horas'; ?></td>
-														<td>R$ <?= number_format((float) $item['valor_reais'], 2, ',', '.'); ?></td>
+														<td><?= esc($rotuloTipoRemuneracao((string) ($item['tipo'] ?? ''))); ?></td>
 														<td>
-															<?php if (($item['tipo'] ?? '') === 'H' && $item['horas_trabalhadas'] !== null && $item['horas_trabalhadas'] !== ''): ?>
+															R$ <?= number_format((float) $item['valor_reais'], 2, ',', '.'); ?>
+															<?php if (($item['tipo'] ?? '') === 'A' && isset($item['valor_fixo_reais']) && $item['valor_fixo_reais'] !== null && $item['valor_fixo_reais'] !== ''): ?>
+																<?php
+																	$fixoItem = (float) $item['valor_fixo_reais'];
+																	$horasItem = round((float) $item['valor_reais'] - $fixoItem, 2);
+																?>
+																<div class="small text-muted">Fixo R$ <?= number_format($fixoItem, 2, ',', '.'); ?> · Horas R$ <?= number_format($horasItem, 2, ',', '.'); ?></div>
+															<?php endif; ?>
+														</td>
+														<td>
+															<?php if ((($item['tipo'] ?? '') === 'H' || ($item['tipo'] ?? '') === 'A') && $item['horas_trabalhadas'] !== null && $item['horas_trabalhadas'] !== ''): ?>
 																<?= esc(decimal_para_duracao_hhmm($item['horas_trabalhadas'])); ?>
 															<?php else: ?>
 																—
@@ -967,15 +1018,37 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 			});
 		});
 
+		function parseValorRemuneracao(valor) {
+			var v = String(valor || '').trim().replace(/R\$/g, '').replace(/\s/g, '');
+			if (v.indexOf(',') !== -1) {
+				v = v.replace(/\./g, '').replace(',', '.');
+			}
+			var n = parseFloat(v);
+			return isFinite(n) ? n : 0;
+		}
+
+		function atualizarTotalRemuneracao() {
+			var total = parseValorRemuneracao($('#remuneracao_valor_fixo').val()) + parseValorRemuneracao($('#remuneracao_valor_horas').val());
+			$('#remuneracao_total').text('R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+		}
+
 		function atualizarCamposRemuneracaoPorTipo() {
-			var porHoras = $('#remuneracao_tipo_horas').is(':checked');
+			var tipo = $('#colaboradores_remuneracao input[name="tipo"]:checked').val();
+			var porHoras = tipo === 'H' || tipo === 'A';
+			var ambos = tipo === 'A';
 			$('#remuneracao_campos_horas').toggleClass('d-none', !porHoras);
 			$('#remuneracao_horas, #remuneracao_arquivo').prop('disabled', !porHoras);
+			$('#remuneracao_campo_valor').toggleClass('d-none', ambos);
+			$('#remuneracao_valor_reais').prop('disabled', ambos).prop('required', !ambos);
+			$('#remuneracao_campos_ambos').toggleClass('d-none', !ambos);
+			$('#remuneracao_valor_fixo, #remuneracao_valor_horas').prop('disabled', !ambos).prop('required', ambos);
+			atualizarTotalRemuneracao();
 		}
 
 		if ($('#colaboradores_remuneracao').length) {
 			atualizarCamposRemuneracaoPorTipo();
 			$('#colaboradores_remuneracao input[name="tipo"]').on('change', atualizarCamposRemuneracaoPorTipo);
+			$('#remuneracao_valor_fixo, #remuneracao_valor_horas').on('input', atualizarTotalRemuneracao);
 
 			$('#remuneracao_horas').on('blur', function () {
 				var v = String($(this).val() || '').trim().replace(/[hH\s]/g, '').replace(/[.,]/g, ':');

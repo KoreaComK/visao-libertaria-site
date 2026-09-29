@@ -290,10 +290,18 @@ class Perfil extends BaseController
 
 		$post = service('request')->getPost();
 		$tipo = $post['tipo'] ?? '';
-		$tipo = ($tipo === 'H' || $tipo === 'F') ? $tipo : '';
+		$tipo = ($tipo === 'H' || $tipo === 'F' || $tipo === 'A') ? $tipo : '';
 		$post['tipo'] = $tipo;
-		$post['valor_reais'] = $this->normalizarDecimal($post['valor_reais'] ?? '');
-		if ($tipo === 'H') {
+		$exigeHoras = $tipo === 'H' || $tipo === 'A';
+		if ($tipo === 'A') {
+			$post['valor_fixo_reais'] = $this->normalizarDecimal($post['valor_fixo_reais'] ?? '');
+			$post['valor_horas_reais'] = $this->normalizarDecimal($post['valor_horas_reais'] ?? '');
+			unset($post['valor_reais']);
+		} else {
+			$post['valor_reais'] = $this->normalizarDecimal($post['valor_reais'] ?? '');
+			unset($post['valor_fixo_reais'], $post['valor_horas_reais']);
+		}
+		if ($exigeHoras) {
 			helper('duracao');
 			$post['horas_trabalhadas'] = duracao_hhmm_normalizar($post['horas_trabalhadas'] ?? '');
 		} else {
@@ -306,14 +314,14 @@ class Perfil extends BaseController
 			return $retorno->retorno(false, $this->errosValidacao($valida), true);
 		}
 
-		if ($tipo === 'H' && duracao_hhmm_para_decimal($post['horas_trabalhadas']) === null) {
+		if ($exigeHoras && duracao_hhmm_para_decimal($post['horas_trabalhadas']) === null) {
 			return $retorno->retorno(false, 'Informe um tempo de horas trabalhadas maior que 0:00.', true);
 		}
 
 		$arquivo = $this->request->getFile('arquivo');
 		$enviouArquivo = $arquivo !== null && $arquivo->getError() !== UPLOAD_ERR_NO_FILE && $arquivo->getName() !== '';
 
-		if ($tipo === 'H') {
+		if ($exigeHoras) {
 			$precisaArquivo = $atual === null || empty($atual['arquivo']);
 			if ($precisaArquivo && !$enviouArquivo) {
 				return $retorno->retorno(false, 'Envie o arquivo de detalhamento do serviço.', true);
@@ -326,13 +334,22 @@ class Perfil extends BaseController
 			}
 		}
 
+		if ($tipo === 'A') {
+			$valorReais = $this->somarDecimais($post['valor_fixo_reais'], $post['valor_horas_reais']);
+			$valorFixoReais = $post['valor_fixo_reais'];
+		} else {
+			$valorReais = $post['valor_reais'];
+			$valorFixoReais = null;
+		}
+
 		$agora = Time::now()->toDateTimeString();
 		$dados = [
 			'colaboradores_id' => (int) $session['id'],
 			'competencia' => $competencia,
 			'tipo' => $tipo,
-			'valor_reais' => $post['valor_reais'],
-			'horas_trabalhadas' => $tipo === 'H' ? duracao_hhmm_para_decimal($post['horas_trabalhadas']) : null,
+			'valor_reais' => $valorReais,
+			'valor_fixo_reais' => $valorFixoReais,
+			'horas_trabalhadas' => $exigeHoras ? duracao_hhmm_para_decimal($post['horas_trabalhadas']) : null,
 			'atualizado' => $agora,
 		];
 
@@ -344,7 +361,7 @@ class Perfil extends BaseController
 			}
 		}
 
-		if ($tipo === 'H' && $enviouArquivo) {
+		if ($exigeHoras && $enviouArquivo) {
 			$salvo = $this->salvarArquivoRemuneracao($arquivo, (int) $session['id'], $competencia);
 			if ($salvo === null) {
 				return $retorno->retorno(false, 'Não foi possível salvar o arquivo. Tente novamente.', true);
@@ -509,6 +526,15 @@ class Perfil extends BaseController
 			$valor = str_replace(',', '.', $valor);
 		}
 		return $valor;
+	}
+
+	private function somarDecimais(string $a, string $b): string
+	{
+		if (function_exists('bcadd')) {
+			return bcadd($a, $b, 2);
+		}
+
+		return number_format(((float) $a + (float) $b), 2, '.', '');
 	}
 
 	private function salvarArquivoRemuneracao($arquivo, int $colaboradorId, string $competencia): ?array

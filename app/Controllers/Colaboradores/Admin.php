@@ -1281,10 +1281,11 @@ class Admin extends BaseController
 		foreach ($out as &$c) {
 			$rem = $porColaborador[$c['id']] ?? null;
 			$tipo = is_array($rem) ? (string) ($rem['tipo'] ?? '') : '';
-			$horas = (is_array($rem) && $tipo === 'H' && $rem['horas_trabalhadas'] !== null && $rem['horas_trabalhadas'] !== '')
+			$horas = (is_array($rem) && ($tipo === 'H' || $tipo === 'A') && $rem['horas_trabalhadas'] !== null && $rem['horas_trabalhadas'] !== '')
 				? decimal_para_duracao_hhmm($rem['horas_trabalhadas'])
 				: '';
 			$c['quantidade_reais'] = is_array($rem) ? (float) ($rem['valor_reais'] ?? 0) : 0.0;
+			$c['valor_fixo_reais'] = (is_array($rem) && $tipo === 'A') ? (float) ($rem['valor_fixo_reais'] ?? 0) : 0.0;
 			$c['tipo'] = $tipo;
 			$c['horas_label'] = $horas;
 			$c['remuneracao_id'] = is_array($rem) ? (int) ($rem['id'] ?? 0) : 0;

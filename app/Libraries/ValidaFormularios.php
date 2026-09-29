@@ -425,17 +425,29 @@ class ValidaFormularios extends BaseController
 	public function validaFormularioRemuneracao($post)
 	{
 		$validation = \Config\Services::validation();
+		$tipo = $post['tipo'] ?? '';
 		$rules = [
 			'tipo' => [
 				'label' => 'Tipo de remuneração',
-				'rules' => 'required|in_list[F,H]'
-			],
-			'valor_reais' => [
-				'label' => 'Valor a receber',
-				'rules' => 'required|decimal|greater_than[0]'
+				'rules' => 'required|in_list[F,H,A]'
 			],
 		];
-		if (($post['tipo'] ?? '') === 'H') {
+		if ($tipo === 'A') {
+			$rules['valor_fixo_reais'] = [
+				'label' => 'Valor fixo',
+				'rules' => 'required|decimal|greater_than[0]'
+			];
+			$rules['valor_horas_reais'] = [
+				'label' => 'Valor por horas',
+				'rules' => 'required|decimal|greater_than[0]'
+			];
+		} else {
+			$rules['valor_reais'] = [
+				'label' => 'Valor a receber',
+				'rules' => 'required|decimal|greater_than[0]'
+			];
+		}
+		if ($tipo === 'H' || $tipo === 'A') {
 			$rules['horas_trabalhadas'] = [
 				'label' => 'Horas trabalhadas',
 				'rules' => 'required|regex_match[/^\d{1,4}:[0-5]\d$/]',
