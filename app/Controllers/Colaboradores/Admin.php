@@ -699,17 +699,6 @@ class Admin extends BaseController
 			return view('colaboradores/pagamentos_form', $data);
 		}
 
-		if ($acao === 'cotacaoBitcoin') {
-			if ($this->request->getMethod() !== 'GET') {
-				return $this->response->setStatusCode(405)->setJSON(['erro' => 'Método não permitido']);
-			}
-			$brl = $this->buscarCotacaoBitcoinBrl();
-			if ($brl === null) {
-				return $this->response->setStatusCode(502)->setJSON(['erro' => 'Cotação indisponível']);
-			}
-			return $this->response->setJSON(['brl' => $brl]);
-		}
-
 		if ($acao === 'buscarColaboradores') {
 			if ($this->request->getMethod() === 'GET') {
 				$q = trim((string) ($this->request->getGet('q') ?? ''));
@@ -792,79 +781,6 @@ class Admin extends BaseController
 			$data['titulo'] = 'Pagamentos realizados';
 			return view('colaboradores/pagamentos_list', $data);
 		}
-	}
-
-	private function buscarCotacaoBitcoinBrl(): ?float
-	{
-		$fontes = [
-			[
-				'nome' => 'Binance',
-				'url' => 'https://api.binance.com/api/v3/ticker/price?symbol=BTCBRL',
-				'ler' => static function (array $data): float {
-					return isset($data['price']) ? (float) $data['price'] : 0.0;
-				},
-			],
-			[
-				'nome' => 'AwesomeAPI',
-				'url' => 'https://economia.awesomeapi.com.br/json/last/BTC-BRL',
-				'ler' => static function (array $data): float {
-					return isset($data['BTCBRL']['bid']) ? (float) $data['BTCBRL']['bid'] : 0.0;
-				},
-			],
-		];
-
-		foreach ($fontes as $fonte) {
-			try {
-				$preco = $this->lerPrecoCotacao($fonte['url'], $fonte['ler'], true);
-			} catch (\Throwable $e) {
-				$ssl = str_contains(strtolower($e->getMessage()), 'ssl')
-					|| str_contains(strtolower($e->getMessage()), 'certificate')
-					|| str_contains($e->getMessage(), '60 :');
-				if (ENVIRONMENT !== 'development' || !$ssl) {
-					log_message('error', '[financeiro/cotacaoBitcoin] ' . $fonte['nome'] . ': ' . $e->getMessage());
-					continue;
-				}
-				try {
-					$preco = $this->lerPrecoCotacao($fonte['url'], $fonte['ler'], false);
-				} catch (\Throwable $e2) {
-					log_message('error', '[financeiro/cotacaoBitcoin] ' . $fonte['nome'] . ': ' . $e2->getMessage());
-					continue;
-				}
-			}
-			if ($preco > 0) {
-				return $preco;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param callable(array): float $ler
-	 */
-	private function lerPrecoCotacao(string $url, callable $ler, bool $verificarSsl): float
-	{
-		$client = \Config\Services::curlrequest([
-			'timeout' => 8,
-			'connect_timeout' => 5,
-			'http_errors' => false,
-			'headers' => [
-				'Accept' => 'application/json',
-				'User-Agent' => 'VisaoLibertaria/1.0',
-			],
-			'verify' => $verificarSsl,
-		], null, null, false);
-
-		$resposta = $client->request('GET', $url);
-		if ($resposta->getStatusCode() !== 200) {
-			return 0.0;
-		}
-		$data = json_decode((string) $resposta->getBody(), true);
-		if (!is_array($data)) {
-			return 0.0;
-		}
-
-		return $ler($data);
 	}
 
 	public function pagamentosList()
