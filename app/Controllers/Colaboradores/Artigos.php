@@ -95,6 +95,9 @@ class Artigos extends BaseController
 	public function cadastrar($artigoId = NULL)
 	{
 		$this->verificaPermissao->PermiteAcesso('2');
+		if (($artigoId === null || $artigoId === '') && $this->semCarteiraBitcoin()) {
+			return $this->redirecionaSemCarteira();
+		}
 		$data = $this->iniciaVariavel;
 
 		//Carrega formulário artigo apenas para cadastro
@@ -232,6 +235,10 @@ class Artigos extends BaseController
 
 		if ($this->request->getMethod() !== 'POST') {
 			return $retorno->retorno(false, 'Dados não informados.', true);
+		}
+
+		if (($artigoId === null || $artigoId === '') && $this->semCarteiraBitcoin()) {
+			return $retorno->retorno(false, 'Cadastre sua carteira Bitcoin no perfil antes de escrever um artigo.', true);
 		}
 
 		$permissoes = $this->session->get('colaboradores')['permissoes'];
@@ -889,6 +896,10 @@ class Artigos extends BaseController
 
 	public function artigosColaborar()
 	{
+		if ($this->semCarteiraBitcoin()) {
+			return $this->redirecionaSemCarteira();
+		}
+
 		$data = array();
 		$data['resumo'] = array();
 		$data['resumo']['revisar'] = 0;
@@ -1644,6 +1655,23 @@ class Artigos extends BaseController
 
 			return $artigo_id;
 		}
+	}
+
+	private function semCarteiraBitcoin(): bool
+	{
+		$id = $this->session->get('colaboradores')['id'] ?? null;
+		if ($id === null || $id === '') {
+			return true;
+		}
+
+		return ! colaborador_tem_carteira((int) $id);
+	}
+
+	private function redirecionaSemCarteira()
+	{
+		session()->setFlashdata('mostrar_modal_carteira', '1');
+
+		return redirect()->to(site_url('colaboradores/artigos/dashboard'));
 	}
 
 	private function cadastrarArtigo()

@@ -96,5 +96,5 @@ class Autoload extends AutoloadConfig
      * @var string[]
      * @phpstan-var list<string>
      */
-    public $helpers = ['time', 'avatar', 'pauta_imagem'];
+    public $helpers = ['time', 'avatar', 'pauta_imagem', 'carteira'];
 }

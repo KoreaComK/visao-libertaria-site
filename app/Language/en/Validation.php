@@ -49,7 +49,7 @@ $lang['ext_in']						= "O campo {field} deve ser do(s) tipo(s) {param}.";
 $lang['is_image']					= "O campo {field} deve ser uma imagem.";
 
 $lang['string_com_acentos']			= "O campo {field} deve ter apenas letras com ou sem acentuação, números, espaço e caracteres especiais.";
-$lang['carteira_bitcoin']			= "O campo {field} deve conter um endereço Bitcoin válido (1..., 3... ou bc1...).";
+$lang['carteira_bitcoin']			= "Cadastre uma carteira Bitcoin on-chain. O endereço deve começar com 1, 3 ou bc1. Endereços da Lightning não são aceitos.";
 
 // override core en language system validation or define your own en language validation message
 return $lang;

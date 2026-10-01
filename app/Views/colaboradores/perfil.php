@@ -7,6 +7,7 @@ $pct_semanal = $limites['limite_pautas_semanal'] > 0
 	: 0;
 $temAvatarPersonalizado = avatar_personalizado($colaboradores['avatar'] ?? null);
 $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
+$temCarteira = carteira_cadastrada($colaboradores['carteira'] ?? null);
 ?>
 <?= $this->extend('layouts/main'); ?>
 
@@ -75,8 +76,10 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 					</li>
 					<?php if (!empty($eh_contratado)): ?>
 					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="tab-remuneracao" data-bs-toggle="tab"
-							data-bs-target="#painel-remuneracao" type="button" role="tab"
+						<button class="nav-link" id="tab-remuneracao" type="button" role="tab"
+							<?php if ($temCarteira): ?>
+							data-bs-toggle="tab" data-bs-target="#painel-remuneracao"
+							<?php endif; ?>
 							aria-controls="painel-remuneracao" aria-selected="false">Remuneração</button>
 					</li>
 					<?php endif; ?>
@@ -557,7 +560,7 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 											placeholder="Digite sua carteira bitcoin"
 											value="<?= esc($colaboradores['carteira'] ?? ''); ?>">
 										<div class="form-text">
-											Endereços válidos começam com 1, 3 ou bc1.
+											Use um endereço Bitcoin on-chain, que começa com 1, 3 ou bc1. Endereços da Lightning não são aceitos.
 										</div>
 									</div>
 
@@ -657,6 +660,10 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 		</div>
 	</div>
 </div>
+
+<?php if (!empty($eh_contratado) && !$temCarteira): ?>
+<?= view('partials/modal_carteira_ausente'); ?>
+<?php endif; ?>
 
 <div class="modal fade" id="modal-excluir" tabindex="-1" role="dialog" aria-labelledby="modal-excluir-label"
 	aria-hidden="true">
@@ -1060,10 +1067,25 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 				$(this).val(v);
 			});
 
+			var temCarteira = <?= $temCarteira ? 'true' : 'false' ?>;
+
+			if (!temCarteira) {
+				$('#tab-remuneracao').on('click', function (e) {
+					e.preventDefault();
+					if (typeof mostrarModalCarteiraAusente === 'function') {
+						mostrarModalCarteiraAusente();
+					}
+				});
+			}
+
 			if (window.location.hash === '#painel-remuneracao') {
-				var tabRemuneracao = document.getElementById('tab-remuneracao');
-				if (tabRemuneracao && window.bootstrap && bootstrap.Tab) {
-					bootstrap.Tab.getOrCreateInstance(tabRemuneracao).show();
+				if (!temCarteira && typeof mostrarModalCarteiraAusente === 'function') {
+					mostrarModalCarteiraAusente();
+				} else if (temCarteira) {
+					var tabRemuneracao = document.getElementById('tab-remuneracao');
+					if (tabRemuneracao && window.bootstrap && bootstrap.Tab) {
+						bootstrap.Tab.getOrCreateInstance(tabRemuneracao).show();
+					}
 				}
 			}
 
@@ -1124,6 +1146,17 @@ $avatarSrc = avatar_url($colaboradores['avatar'] ?? null);
 				}
 			});
 		});
+
+		if (window.location.hash === '#painel-perfil') {
+			var tabPerfil = document.getElementById('tab-perfil');
+			if (tabPerfil && window.bootstrap && bootstrap.Tab) {
+				bootstrap.Tab.getOrCreateInstance(tabPerfil).show();
+			}
+			var campoCarteira = document.getElementById('carteira');
+			if (campoCarteira) {
+				campoCarteira.focus();
+			}
+		}
 	});
 </script>
 

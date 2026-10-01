@@ -276,6 +276,9 @@ class Perfil extends BaseController
 		if (($colaborador['contratado'] ?? 'N') !== 'S') {
 			return $retorno->retorno(false, 'Apenas colaboradores associados podem informar a remuneração.', true);
 		}
+		if (! carteira_cadastrada($colaborador['carteira'] ?? null)) {
+			return $retorno->retorno(false, 'Cadastre sua carteira Bitcoin no perfil antes de informar a remuneração.', true);
+		}
 
 		$competencia = Time::now()->format('Y-m');
 		$remuneracoesModel = new \App\Models\ColaboradoresRemuneracoesModel();

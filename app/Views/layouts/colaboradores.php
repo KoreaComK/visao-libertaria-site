@@ -280,6 +280,15 @@
 			</div>
 		</div>
 	</div>
+	<?php
+	$colaboradorIdMenu = $_SESSION['colaboradores']['id'] ?? null;
+	$semCarteiraBitcoin = $colaboradorIdMenu !== null && $colaboradorIdMenu !== ''
+		&& ! colaborador_tem_carteira((int) $colaboradorIdMenu);
+	$abrirModalCarteira = session()->getFlashdata('mostrar_modal_carteira');
+	?>
+	<?php if ($semCarteiraBitcoin): ?>
+	<?= view('partials/modal_carteira_ausente'); ?>
+	<?php endif; ?>
 </body>
 
 <script type="text/javascript">
@@ -321,5 +330,43 @@
 		localStorage.setItem('dark-mode', 'light');
 	});
 </script>
+
+<?php if ($semCarteiraBitcoin): ?>
+<script>
+	(function () {
+		function destinoExigeCarteira(href) {
+			if (!href) {
+				return false;
+			}
+			var url;
+			try {
+				url = new URL(href, window.location.href);
+			} catch (e) {
+				return false;
+			}
+			var path = url.pathname.replace(/\/+$/, '');
+			return path.endsWith('/colaboradores/artigos/cadastrar')
+				|| path.endsWith('/colaboradores/artigos/artigosColaborar');
+		}
+
+		document.addEventListener('click', function (e) {
+			var link = e.target.closest('a');
+			if (!link || !destinoExigeCarteira(link.getAttribute('href'))) {
+				return;
+			}
+			e.preventDefault();
+			if (typeof mostrarModalCarteiraAusente === 'function') {
+				mostrarModalCarteiraAusente();
+			}
+		});
+
+		<?php if ($abrirModalCarteira): ?>
+		if (typeof mostrarModalCarteiraAusente === 'function') {
+			mostrarModalCarteiraAusente();
+		}
+		<?php endif; ?>
+	})();
+</script>
+<?php endif; ?>
 
 </html>
