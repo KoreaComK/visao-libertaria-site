@@ -94,28 +94,43 @@
 			</div>
 		</section>
 
-		<?php if (isset($_SESSION['colaboradores']['id'])): ?>
-			<div class="mb-4 text-center">
-				<?php
-				$mensagemLimitePauta = $limiteDiario === true
-					? 'Você atingiu o limite diário de pautas. Tente novamente amanhã.'
-					: 'Você atingiu o limite semanal de pautas. Tente novamente outro dia.';
-				?>
-				<button type="button" class="btn vl-noticias-btn-filtro" id="btn-sugerir-pauta"
-					<?php if ($limiteDiario === false && $limiteSemanal === false): ?>
-						data-bs-toggle="modal" data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Cadastre uma pauta"
+		<section class="mb-4" id="sugerir-pauta">
+			<div class="card border-secondary bg-dark text-light">
+				<div class="card-header border-secondary">
+					<h2 class="h5 card-title mb-0 text-white">
+						<i class="bi bi-lightbulb pe-2" aria-hidden="true"></i>Sugerir pauta
+					</h2>
+				</div>
+				<div class="card-body">
+					<?php if (isset($_SESSION['colaboradores']['id'])): ?>
+						<?php
+						$mensagemLimitePauta = $limiteDiario === true
+							? 'Você atingiu o limite diário de pautas. Tente novamente amanhã.'
+							: 'Você atingiu o limite semanal de pautas. Tente novamente outro dia.';
+						?>
+						<div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+							<p class="mb-0 text-white-50">Envie o link de uma notícia para a equipe avaliar.</p>
+							<button type="button" class="btn vl-noticias-btn-filtro text-nowrap flex-shrink-0" id="btn-sugerir-pauta"
+								<?php if ($limiteDiario === false && $limiteSemanal === false): ?>
+									data-bs-toggle="modal" data-bs-target="#modalSugerirPauta" data-bs-titulo-modal="Cadastre uma pauta"
+								<?php else: ?>
+									data-limite-pauta-msg="<?= esc($mensagemLimitePauta); ?>"
+								<?php endif; ?>>
+								Sugerir pauta
+							</button>
+						</div>
 					<?php else: ?>
-						data-limite-pauta-msg="<?= esc($mensagemLimitePauta); ?>"
-					<?php endif; ?>>
-					Sugerir pauta
-				</button>
+						<div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+							<p class="mb-0 text-white-50">Quer sugerir uma pauta ou colaborar?</p>
+							<div class="d-flex flex-wrap gap-2 flex-shrink-0">
+								<button type="button" class="btn vl-noticias-btn-filtro" data-bs-toggle="modal" data-bs-target="#header-login-modal">Entrar</button>
+								<a href="<?= site_url('site/cadastre-se'); ?>" class="btn btn-outline-light">Cadastre-se</a>
+							</div>
+						</div>
+					<?php endif; ?>
+				</div>
 			</div>
-		<?php else: ?>
-			<p class="text-center text-white-50 small mb-4">
-				Quer sugerir uma pauta ou colaborar?
-				<a href="<?= site_url('site') . '?openLogin=1'; ?>" class="vl-noticias-entrar-link">Entrar</a>
-			</p>
-		<?php endif; ?>
+		</section>
 
 		<div id="vl-noticias-list-root">
 			<?= view('template/templatePautasListSite', [

@@ -214,6 +214,9 @@
 										<li class="menu-item <?= ($active_menu ?? '') === 'noticias' ? 'active' : ''; ?>">
 											<a href="<?= site_url('site/noticias'); ?>">Notícias</a>
 										</li>
+										<li class="menu-item">
+											<a href="<?= site_url('site/noticias'); ?>#sugerir-pauta">Sugerir pauta</a>
+										</li>
 										<?php if (isset($_SESSION['colaboradores']) && $_SESSION['colaboradores']['id'] !== null): ?>
 											<li class="menu-item">
 												<a href="<?= site_url('colaboradores/artigos/dashboard'); ?>">Colaborar</a>
@@ -359,6 +362,8 @@
 						<div class="col-6">
 							<ul class="nav flex-column">
 								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/contato'); ?>">Contato</a>
+								</li>
+								<li class="nav-item"><a class="mb-2" href="<?= site_url('site/noticias'); ?>#sugerir-pauta">Sugerir pauta</a>
 								</li>
 							</ul>
 						</div>

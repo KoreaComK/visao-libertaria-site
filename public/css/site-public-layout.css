@@ -91,14 +91,15 @@
 			background: transparent;
 		}
 
-		/* Login/cadastro no menu hamburger — só no mobile (os botões .gen-button somem em ≤767px) */
-		#gen-main-menu .menu-item-mobile-auth {
+		/* Login/cadastro no menu hamburger — só no mobile (os botões .gen-button somem em ≤767px).
+		   A especificidade precisa vencer o display:inline-block de style.css nos itens do menu. */
+		header#gen-header .gen-bottom-header .navbar #gen-main-menu.navbar-nav li.menu-item-mobile-auth {
 			display: none;
 		}
 
 		@media (max-width: 767px) {
-			#gen-main-menu .menu-item-mobile-auth {
-				display: list-item;
+			header#gen-header .gen-bottom-header .navbar #gen-main-menu.navbar-nav li.menu-item-mobile-auth {
+				display: inline-block;
 			}
 		}
 
@@ -788,17 +789,9 @@
 	box-shadow: 0 0 0 0.2rem rgba(185, 141, 19, 0.45);
 }
 
-/* Mesma cor do item ativo do menu (var(--primary-color) em style.css) */
-.vl-site-noticias .vl-noticias-entrar-link {
-	color: var(--primary-color);
-	font-weight: 600;
-	text-decoration: none;
-}
-
-.vl-site-noticias .vl-noticias-entrar-link:hover,
-.vl-site-noticias .vl-noticias-entrar-link:focus {
-	color: #d4a82a;
-	text-decoration: underline;
+/* Âncora do menu: o cabeçalho sobrepõe o topo da página */
+.vl-site-noticias #sugerir-pauta {
+	scroll-margin-top: 6.5rem;
 }
 
 /* Busca em notícias: só o input mais baixo que o .input-group-sm padrão */

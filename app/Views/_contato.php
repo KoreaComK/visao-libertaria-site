@@ -114,6 +114,7 @@ $hcSiteKey = config('Hcaptcha')->siteKey ?? '';
 							<p class="mt-3 mb-0 text-white-50">
 								Caso persista, os e-mails serão colocados em uma blacklist.
 							</p>
+							<a href="<?= site_url('site/noticias'); ?>#sugerir-pauta" class="btn vl-noticias-btn-filtro mt-3">Sugerir pauta</a>
 						</div>
 					</div>
 				</div>
