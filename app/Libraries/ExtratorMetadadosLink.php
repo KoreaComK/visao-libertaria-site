@@ -8,6 +8,7 @@ use DOMElement;
 class ExtratorMetadadosLink
 {
 	private const TIMEOUT = 3;
+	private const TIMEOUT_FALLBACK = 12;
 	private const MAX_BYTES = 2097152;
 	private const MAX_REDIRECTS = 3;
 	private const MAX_DESCRICAO = 1000;
@@ -60,16 +61,8 @@ class ExtratorMetadadosLink
 			];
 		}
 
-		$html = $this->buscarHtml($urlValidada);
-		if ($html === null) {
-			return [
-				'sucesso' => false,
-				'erro' => 'Não foi possível trazer informações da pauta automaticamente.',
-			];
-		}
-
-		$metadados = $this->extrairMetadadosDeHtml($html, $urlValidada);
-		if ($metadados['titulo'] === '' || $metadados['descricao'] === '') {
+		$metadados = $this->metadadosDoHtml($urlValidada) ?? $this->obterMetadadosViaMicrolink($urlValidada);
+		if ($metadados === null) {
 			return [
 				'sucesso' => false,
 				'erro' => 'Não foi possível trazer informações da pauta automaticamente.',
@@ -85,6 +78,44 @@ class ExtratorMetadadosLink
 		];
 	}
 
+	public function interpretarRespostaMicrolink(string $json): ?array
+	{
+		$dados = json_decode($json, true);
+		if (!is_array($dados) || ($dados['status'] ?? '') !== 'success' || !is_array($dados['data'] ?? null)) {
+			return null;
+		}
+
+		$conteudo = $dados['data'];
+		$titulo = $this->decodificarTexto(trim((string) ($conteudo['title'] ?? '')));
+		$descricao = $this->truncarTexto(
+			$this->decodificarTexto(trim((string) ($conteudo['description'] ?? ''))),
+			self::MAX_DESCRICAO
+		);
+		if ($titulo === '' || $descricao === '') {
+			return null;
+		}
+
+		$imagem = '';
+		if (is_array($conteudo['image'] ?? null)) {
+			$imagem = (string) ($conteudo['image']['url'] ?? '');
+		} elseif (is_string($conteudo['image'] ?? null)) {
+			$imagem = $conteudo['image'];
+		}
+
+		$dias = null;
+		$diferenca = $this->diferencaEmDias($this->valorTexto($conteudo['date'] ?? null));
+		if ($diferenca !== null) {
+			$dias = $diferenca->days;
+		}
+
+		return [
+			'titulo' => $titulo,
+			'descricao' => $descricao,
+			'imagem' => trim((string) $imagem),
+			'dias' => $dias,
+		];
+	}
+
 	public function extrairMetadadosDeHtml(string $html, string $baseUrl): array
 	{
 		$metadados = $this->extrairMetadados($html, $baseUrl);
@@ -94,10 +125,10 @@ class ExtratorMetadadosLink
 		return $metadados;
 	}
 
-	public function validarUrl(string $url): ?string
+	public function validarUrl(string $url, int $tamanhoMaximo = 2048): ?string
 	{
 		$url = trim($url);
-		if ($url === '' || strlen($url) > 2048) {
+		if ($url === '' || strlen($url) > $tamanhoMaximo) {
 			return null;
 		}
 
@@ -258,17 +289,86 @@ class ExtratorMetadadosLink
 		return null;
 	}
 
-	private function requisicaoHttp(string $metodo, string $url, array $headersExtras = []): ?array
+	private function metadadosDoHtml(string $url): ?array
 	{
-		$urlValidada = $this->validarUrl($url);
+		$html = $this->buscarHtml($url);
+		if ($html === null) {
+			return null;
+		}
+
+		$metadados = $this->extrairMetadadosDeHtml($html, $url);
+		if ($metadados['titulo'] === '' || $metadados['descricao'] === '') {
+			return null;
+		}
+
+		return $metadados;
+	}
+
+	private function obterMetadadosViaMicrolink(string $url): ?array
+	{
+		$endpoint = 'https://api.microlink.io/?' . http_build_query([
+			'url' => $url,
+			'screenshot' => 'false',
+			'video' => 'false',
+			'audio' => 'false',
+			'iframe' => 'false',
+			'palette' => 'false',
+		], '', '&', PHP_QUERY_RFC3986);
+
+		$resposta = $this->requisicaoHttp('GET', $endpoint, [
+			'Accept' => 'application/json',
+		], self::TIMEOUT_FALLBACK, 8192);
+		if ($resposta === null) {
+			return null;
+		}
+
+		[$status, $body] = $resposta;
+		if ($status < 200 || $status >= 300 || $body === '') {
+			return null;
+		}
+
+		$metadados = $this->interpretarRespostaMicrolink($body);
+		if ($metadados === null) {
+			return null;
+		}
+
+		$metadados['imagem'] = $this->imagemAceitavel($metadados['imagem']);
+
+		return $metadados;
+	}
+
+	private function imagemAceitavel(string $url): string
+	{
+		$url = trim($url);
+		if ($url === '') {
+			return '';
+		}
+
+		$validada = $this->validarImagemRemota($url);
+		if ($validada !== '') {
+			return $validada;
+		}
+
+		$codificada = $this->codificarSegmentosUrl($url);
+		if ($this->extensaoPareceImagem($codificada) && $this->validarUrl($codificada) !== null) {
+			return $codificada;
+		}
+
+		return '';
+	}
+
+	private function requisicaoHttp(string $metodo, string $url, array $headersExtras = [], ?int $timeout = null, int $tamanhoMaximoUrl = 2048): ?array
+	{
+		$urlValidada = $this->validarUrl($url, $tamanhoMaximoUrl);
 		if ($urlValidada === null) {
 			return null;
 		}
 
 		try {
+			$timeout = $timeout ?? self::TIMEOUT;
 			$client = \Config\Services::curlrequest([
-				'timeout' => self::TIMEOUT,
-				'connect_timeout' => self::TIMEOUT,
+				'timeout' => $timeout,
+				'connect_timeout' => $timeout,
 				'allow_redirects' => false,
 				'headers' => array_merge([
 					'User-Agent' => 'VisaoLibertariaBot/1.0',
@@ -278,7 +378,7 @@ class ExtratorMetadadosLink
 			$response = $client->request($metodo, $urlValidada, ['http_errors' => false]);
 			$headersResposta = [];
 			foreach ($response->headers() as $nome => $header) {
-				$headersResposta[$nome] = $response->getHeaderLine($nome);
+				$headersResposta[$nome] = $this->valorCabecalho($header);
 			}
 
 			return [
@@ -289,6 +389,29 @@ class ExtratorMetadadosLink
 		} catch (\Throwable $e) {
 			return null;
 		}
+	}
+
+	private function valorCabecalho($header): string
+	{
+		if (is_array($header)) {
+			$partes = [];
+			foreach ($header as $item) {
+				$partes[] = $this->valorCabecalho($item);
+			}
+
+			return implode(', ', array_filter($partes, static fn (string $parte): bool => $parte !== ''));
+		}
+
+		if (is_object($header) && method_exists($header, 'getValue')) {
+			$valor = $header->getValue();
+			if (is_array($valor)) {
+				return $this->valorCabecalho($valor);
+			}
+
+			return trim((string) $valor);
+		}
+
+		return is_scalar($header) ? trim((string) $header) : '';
 	}
 
 	private function extrairMetadados(string $html, string $baseUrl): array
