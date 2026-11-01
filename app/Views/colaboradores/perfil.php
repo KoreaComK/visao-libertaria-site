@@ -661,7 +661,7 @@ $temCarteira = carteira_cadastrada($colaboradores['carteira'] ?? null);
 	</div>
 </div>
 
-<?php if (!empty($eh_contratado) && !$temCarteira): ?>
+<?php if (!empty($eh_contratado)): ?>
 <?= view('partials/modal_carteira_ausente'); ?>
 <?php endif; ?>
 
@@ -704,6 +704,46 @@ $temCarteira = carteira_cadastrada($colaboradores['carteira'] ?? null);
 
 	var csrfName = <?= json_encode(csrf_token()) ?>;
 	var csrfHash = <?= json_encode(csrf_hash()) ?>;
+
+	var temCarteira = <?= $temCarteira ? 'true' : 'false' ?>;
+
+	function aplicarTravaRemuneracao() {
+		var $tab = $('#tab-remuneracao');
+		if (!$tab.length) {
+			return;
+		}
+
+		$tab.off('click.travaCarteira');
+		if (temCarteira) {
+			$tab.attr({
+				'data-bs-toggle': 'tab',
+				'data-bs-target': '#painel-remuneracao'
+			});
+			return;
+		}
+
+		$tab.removeAttr('data-bs-toggle').removeAttr('data-bs-target');
+		$tab.on('click.travaCarteira', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			if (typeof mostrarModalCarteiraAusente === 'function') {
+				mostrarModalCarteiraAusente();
+			}
+		});
+	}
+
+	function definirCarteiraCadastrada(cadastrada) {
+		temCarteira = !!cadastrada;
+		aplicarTravaRemuneracao();
+		if (!temCarteira && $('#painel-remuneracao').hasClass('active')) {
+			var tabPerfil = document.getElementById('tab-perfil');
+			if (tabPerfil && window.bootstrap && bootstrap.Tab) {
+				bootstrap.Tab.getOrCreateInstance(tabPerfil).show();
+			}
+		}
+	}
+
+	aplicarTravaRemuneracao();
 
 	function appendCsrf(formData) {
 		formData.append(csrfName, csrfHash);
@@ -985,6 +1025,9 @@ $temCarteira = carteira_cadastrada($colaboradores['carteira'] ?? null);
 							temAvatarPersonalizado = true;
 							definirBotaoRemoverAvatar(true);
 						}
+						if (retorno.parametros && typeof retorno.parametros.tem_carteira !== 'undefined') {
+							definirCarteiraCadastrada(retorno.parametros.tem_carteira);
+						}
 					} else {
 						popMessage('ATENÇÃO', retorno.mensagem, TOAST_STATUS.DANGER);
 						restaurarAvatarPreview();
@@ -1066,17 +1109,6 @@ $temCarteira = carteira_cadastrada($colaboradores['carteira'] ?? null);
 				}
 				$(this).val(v);
 			});
-
-			var temCarteira = <?= $temCarteira ? 'true' : 'false' ?>;
-
-			if (!temCarteira) {
-				$('#tab-remuneracao').on('click', function (e) {
-					e.preventDefault();
-					if (typeof mostrarModalCarteiraAusente === 'function') {
-						mostrarModalCarteiraAusente();
-					}
-				});
-			}
 
 			if (window.location.hash === '#painel-remuneracao') {
 				if (!temCarteira && typeof mostrarModalCarteiraAusente === 'function') {

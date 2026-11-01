@@ -111,11 +111,13 @@ class Perfil extends BaseController
 		}
 
 		$colaborador = $this->gravarColaborador('save', $dados);
+		$parametros = [];
 		if ($colaborador) {
 			$session['nome'] = $dados['apelido'];
 			$this->session->set(array('colaboradores' => $session));
+			$parametros['tem_carteira'] = carteira_cadastrada($dados['carteira'] ?? null);
 		}
-		return $retorno->retorno(true, 'Perfil atualizado com sucesso.', true);
+		return $retorno->retorno(true, 'Perfil atualizado com sucesso.', true, $parametros);
 	}
 
 	public function removerAvatar()
