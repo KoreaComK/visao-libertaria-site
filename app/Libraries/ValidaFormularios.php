@@ -232,6 +232,23 @@ class ValidaFormularios extends BaseController
 		return $validation;
 	}
 
+	public function validaFormularioArtigoCriador($post)
+	{
+		$validation = \Config\Services::validation();
+		$validation->setRules([
+			'video_link' => [
+				'label' => 'Link do Vídeo no YouTube',
+				'rules' => 'permit_empty|max_length[255]|valid_url_strict'
+			],
+			'shorts_link' => [
+				'label' => 'Link do Shorts no YouTube',
+				'rules' => 'permit_empty|max_length[255]|valid_url_strict'
+			]
+		]);
+		$validation->run($post);
+		return $validation;
+	}
+
 	public function validaFormularioArtigo($post, $pauta = false)
 	{
 		$validation = \Config\Services::validation();

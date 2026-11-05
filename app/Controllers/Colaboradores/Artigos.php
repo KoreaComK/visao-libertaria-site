@@ -145,6 +145,7 @@ class Artigos extends BaseController
 		$data['cadastro'] = ($artigoId === NULL) ? (true) : (false);
 
 		$data['artigo']['fase_producao_id'] = (!isset($artigo) || $artigo['fase_producao_id'] == '1') ? ('1') : ('2');
+		$data['criador'] = ($data['artigo']['fase_producao_id'] == '1' && $this->isCriador());
 		if ($data['artigo']['fase_producao_id'] == '1') {
 			$config['artigo_regras_escrever'] = $configuracaoModel->find('artigo_regras_escrever')['config_valor'];
 		} else {
@@ -257,6 +258,9 @@ class Artigos extends BaseController
 
 		$post = $this->request->getPost();
 		$valida = $validaFormularios->validaFormularioArtigoSalvar($post, ($this->request->getGet('pauta')) ? (true) : (false));
+		if (empty($valida->getErrors()) && $this->isCriador() && isset($post['video_link'])) {
+			$valida = $validaFormularios->validaFormularioArtigoCriador($post);
+		}
 		if (empty($valida->getErrors())) {
 			if ($artigoId === NULL) {
 				$retornoGravado = $this->cadastrarArtigo();
@@ -679,6 +683,17 @@ class Artigos extends BaseController
 				$config['artigo_tamanho_minimo'] = (int) $configuracaoModel->find('artigo_tamanho_minimo')['config_valor'];
 				$palavras = contar_palavras_texto($artigo['texto']);
 				if ($palavras <= $config['artigo_tamanho_maximo'] && $palavras >= $config['artigo_tamanho_minimo']) {
+					if ($this->isCriador()) {
+						if ($artigo['link_produzido'] === NULL || trim($artigo['link_produzido']) === '') {
+							return $retorno->retorno(false, 'Informe e salve o link do vídeo no YouTube antes de enviar o artigo para publicação.', true);
+						}
+						$isGravado = $this->artigoCriadorParaPublicacao($artigoId);
+						if ($isGravado === true) {
+							return $retorno->retorno(true, 'Seu artigo foi enviado para publicação com sucesso.', true);
+						} else {
+							return $retorno->retorno(false, 'Ocorreu um erro ao enviar para publicação.', true);
+						}
+					}
 					$isGravado = $this->artigoProximo($artigoId);
 					if ($isGravado === true) {
 						return $retorno->retorno(true, 'Seu artigo foi submetido para revisão com sucesso.', true);
@@ -1274,8 +1289,8 @@ class Artigos extends BaseController
 
 	public function detalhamento($artigoId = null)
 	{
-		// Qualquer papel da área de colaboração (1–11); antes só '1' bloqueava quem era só Escritor ('2') ou outros papéis.
-		$this->verificaPermissao->PermiteAcesso(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']);
+		// Qualquer papel da área de colaboração (1–12); antes só '1' bloqueava quem era só Escritor ('2') ou outros papéis.
+		$this->verificaPermissao->PermiteAcesso(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
 		if ($artigoId === null) {
 			return redirect()->to(base_url() . 'colaboradores/artigos/artigosColaborar');
 		}
@@ -1621,6 +1636,33 @@ class Artigos extends BaseController
 		return $retorno;
 	}
 
+	private function isCriador(): bool
+	{
+		$permissoes = $this->session->get('colaboradores')['permissoes'] ?? array();
+		return in_array('12', $permissoes);
+	}
+
+	private function artigoCriadorParaPublicacao($artigoId)
+	{
+		$artigosModel = new \App\Models\ArtigosModel();
+		$artigo = $artigosModel->find($artigoId);
+		$colaborador = $this->session->get('colaboradores')['id'];
+		$palavras = contar_palavras_texto($artigo['texto']);
+
+		$artigo = $this->contadorAntiIa($artigo);
+		$artigo['fase_producao_id'] = 5;
+		$artigo['revisado_colaboradores_id'] = $colaborador;
+		$artigo['narrado_colaboradores_id'] = $colaborador;
+		$artigo['produzido_colaboradores_id'] = $colaborador;
+		$artigo['palavras_revisor'] = $palavras;
+		$artigo['palavras_narrador'] = $palavras;
+		$artigo['palavras_produtor'] = $palavras;
+
+		$retorno = $this->gravarArtigos('update', $artigo, $artigoId);
+		$this->artigosMarcacao->desmarcarArtigo($artigoId);
+		return $retorno;
+	}
+
 
 	private function revisarArtigo($idArtigo)
 	{
@@ -1693,6 +1735,10 @@ class Artigos extends BaseController
 			$gravar['palavras_escritor'] = contar_palavras_texto($post['texto']);
 			$gravar['fase_producao_id'] = 1;
 			$gravar['link'] = $post['link'];
+			if ($this->isCriador() && isset($post['video_link'])) {
+				$gravar['link_produzido'] = (trim($post['video_link']) !== '') ? (trim($post['video_link'])) : (NULL);
+				$gravar['link_shorts'] = (trim($post['shorts_link'] ?? '') !== '') ? (trim($post['shorts_link'])) : (NULL);
+			}
 
 			$pautasModel = new \App\Models\PautasModel();
 			$pauta = $pautasModel->where('link', $post['link'])->get()->getResultArray();
@@ -1725,6 +1771,11 @@ class Artigos extends BaseController
 			$gravar['atualizado'] = $artigosModel->getNow();
 
 			$artigo_anterior = $artigosModel->find($idArtigo);
+
+			if ($this->isCriador() && isset($post['video_link']) && $artigo_anterior['fase_producao_id'] == '1') {
+				$gravar['link_produzido'] = (trim($post['video_link']) !== '') ? (trim($post['video_link'])) : (NULL);
+				$gravar['link_shorts'] = (trim($post['shorts_link'] ?? '') !== '') ? (trim($post['shorts_link'])) : (NULL);
+			}
 
 			//$artigo_id = $artigosModel->update(['id' => $idArtigo], $gravar);
 			$artigo_id = $this->gravarArtigos('update', $gravar, $idArtigo);

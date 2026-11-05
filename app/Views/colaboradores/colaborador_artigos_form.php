@@ -205,6 +205,33 @@ use CodeIgniter\I18n\Time;
 								</div>
 							</div>
 
+							<?php if (!empty($criador)): ?>
+								<div class="col-12">
+									<div class="mb-3">
+										<label class="form-label small text-muted mb-1" for="video_link">Link do Vídeo no YouTube</label>
+										<div class="input-group input-group-sm">
+											<div class="input-group-text"><i class="fas fa-link"></i></div>
+											<input type="text" class="form-control form-control-sm" id="video_link"
+												placeholder="Link do vídeo no YouTube" name="video_link" maxlength="255"
+												value="<?= esc($artigo['link_produzido'] ?? '', 'attr'); ?>">
+										</div>
+										<small>Como criador, o artigo irá direto para a publicação. Obrigatório para enviar o artigo.</small>
+									</div>
+								</div>
+								<div class="col-12">
+									<div class="mb-3">
+										<label class="form-label small text-muted mb-1" for="shorts_link">Link do Shorts no YouTube</label>
+										<div class="input-group input-group-sm">
+											<div class="input-group-text"><i class="fas fa-link"></i></div>
+											<input type="text" class="form-control form-control-sm" id="shorts_link"
+												placeholder="Link do shorts no YouTube" name="shorts_link" maxlength="255"
+												value="<?= esc($artigo['link_shorts'] ?? '', 'attr'); ?>">
+										</div>
+										<small>Opcional.</small>
+									</div>
+								</div>
+							<?php endif; ?>
+
 							<div class="d-flex justify-content-center">
 								<button class="btn btn-primary btn-sm w-100 mb-3" id="enviar_artigo"
 									type="button">Salvar artigo</button>
@@ -220,8 +247,8 @@ use CodeIgniter\I18n\Time;
 				<?php if (!$cadastro && $artigo['fase_producao_id'] == '1'): ?>
 					<div class="card border rounded-3 shadow-sm mb-3">
 						<div class="card-body">
-							<h6 class="card-title fw-semibold mb-2">Submeter para revisão</h6>
-							<p class="card-text small text-muted mb-2">Ao submeter para revisão aceito os seguintes termos:</p>
+							<h6 class="card-title fw-semibold mb-2"><?= !empty($criador) ? 'Enviar para publicação' : 'Submeter para revisão'; ?></h6>
+							<p class="card-text small text-muted mb-2">Ao <?= !empty($criador) ? 'enviar para publicação' : 'submeter para revisão'; ?> aceito os seguintes termos:</p>
 							<div class="form-check form-switch">
 								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-1">
 								<label class="form-check-label small" for="aceito-fase1-1">
@@ -235,7 +262,7 @@ use CodeIgniter\I18n\Time;
 								<input class="form-check-input aceite-submeter-fase1" type="checkbox" id="aceito-fase1-2">
 								<label class="form-check-label small" for="aceito-fase1-2">
 									Entendo que não poderei mais descartar o texto após enviá-lo para a
-									revisão.
+									<?= !empty($criador) ? 'publicação' : 'revisão'; ?>.
 								</label>
 							</div>
 							<div class="form-check form-switch">
@@ -261,7 +288,7 @@ use CodeIgniter\I18n\Time;
 							<div class="text-end">
 								<button type="button" disabled="" class="btn btn-primary btn-sm mt-2 submeter-revisao">Enviar
 									para
-									revisão</button>
+									<?= !empty($criador) ? 'publicação' : 'revisão'; ?></button>
 							</div>
 						</div>
 					</div>
@@ -547,8 +574,14 @@ use CodeIgniter\I18n\Time;
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 				</div>
 				<div class="modal-body">
-					<p>Seu artigo está salvo, mas não foi submetido para revisão.</p>
-					<p>Pra submetê-lo, aceite os termos na parte inferior da tela e clique em ENVIAR PARA REVISÃO.</p>
+					<?php if (!empty($criador)): ?>
+						<p>Seu artigo está salvo, mas não foi enviado para publicação.</p>
+						<p>Pra enviá-lo, salve o link do vídeo no YouTube, aceite os termos na parte inferior da tela e clique em ENVIAR PARA PUBLICAÇÃO.</p>
+					<?php else: ?>
+						<p>Seu artigo está salvo, mas não foi submetido para revisão.</p>
+						<p>Pra submetê-lo, aceite os termos na parte inferior da tela e clique em ENVIAR PARA REVISÃO.</p>
+					<?php endif; ?>
+
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

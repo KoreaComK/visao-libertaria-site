@@ -19,5 +19,6 @@ class Atribuicoes extends Seeder
 		$this->db->table('atribuicoes')->insert(array('nome'=>'Recrutador','cor'=>'white'));
 		$this->db->table('atribuicoes')->insert(array('nome'=>'Pautador','cor'=>'info'));
 		$this->db->table('atribuicoes')->insert(array('nome'=>'Redator','cor'=>'secondary'));
+		$this->db->table('atribuicoes')->insert(array('nome'=>'Criador','cor'=>'primary'));
 	}
 }
