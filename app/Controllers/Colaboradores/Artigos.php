@@ -867,6 +867,10 @@ class Artigos extends BaseController
 				$artigosModel->whereIn('I.id', array($get['fase_producao']));
 			}
 
+			if (!empty($get['tipo']) && in_array($get['tipo'], ['T', 'N'], true)) {
+				$artigosModel->where('artigos.tipo_artigo', $get['tipo']);
+			}
+
 			if (!is_null($get['colaborador']) && !empty($get['colaborador']) && $get['colaborador'] != '') {
 				if (!is_null($get['fase_producao_colaborador']) && !empty($get['fase_producao_colaborador']) && $get['fase_producao_colaborador'] != '') {
 					$artigosModel->like($get['fase_producao_colaborador'] . '.apelido', $get['colaborador']);

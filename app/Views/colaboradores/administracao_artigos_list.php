@@ -229,6 +229,34 @@
 	});
 
 	$(document).ready(function () {
+		var params = new URLSearchParams(window.location.search);
+		var fase = params.get('fase') || '';
+		var tipo = params.get('tipo') || '';
+		var papel = params.get('papel') || '';
+		var colaborador = params.get('colaborador') || '';
+		var abrirFiltros = false;
+		if (fase !== '') {
+			$('#select-pesquisa').val(fase);
+			abrirFiltros = true;
+		}
+		if (tipo === 'T' || tipo === 'N') {
+			$('#select-tipo').val(tipo);
+			abrirFiltros = true;
+		}
+		if (papel !== '') {
+			$('#select-colaborador').val(papel);
+			abrirFiltros = true;
+		}
+		if (colaborador !== '') {
+			$('#text-colaborador').val(colaborador);
+			abrirFiltros = true;
+		}
+		if (abrirFiltros) {
+			var elCol = document.getElementById('filtrosAvancadosListagemAdmin');
+			if (elCol && typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+				bootstrap.Collapse.getOrCreateInstance(elCol).show();
+			}
+		}
 		refreshListPublicado(false);
 	});
 
